@@ -1,0 +1,4 @@
+[submodule "common"]
+	path = common
+	url = https://bitbucket.org/blackstrawai/amazon_order_scraping_common.git
+	branch = develop
