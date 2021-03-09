@@ -22,6 +22,20 @@
 		1CBF6DC925F62A34001A801B /* ASLException.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6DC825F62A34001A801B /* ASLException.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXBuildRule section */
+		1CBF6DD625F67378001A801B /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			fileType = pattern.proxy;
+			inputFiles = (
+			);
+			isEditable = 1;
+			outputFiles = (
+			);
+			script = "# Type a script or drag a script file from your workspace to insert its path.\n";
+		};
+/* End PBXBuildRule section */
+
 /* Begin PBXContainerItemProxy section */
 		1CBF6D4425F5FFBE001A801B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -162,8 +176,10 @@
 				1CBF6D3525F5FFBE001A801B /* Sources */,
 				1CBF6D3625F5FFBE001A801B /* Frameworks */,
 				1CBF6D3725F5FFBE001A801B /* Resources */,
+				1CBF6DD725F673A0001A801B /* ShellScript */,
 			);
 			buildRules = (
+				1CBF6DD625F67378001A801B /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -243,6 +259,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		1CBF6DD725F673A0001A801B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1CBF6D3525F5FFBE001A801B /* Sources */ = {
