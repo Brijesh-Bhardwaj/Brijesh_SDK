@@ -1,0 +1,6 @@
+framework module OrderScrapper {
+  umbrella header "OrderScrapper.h"
+
+  export *
+  module * { export * }
+}
