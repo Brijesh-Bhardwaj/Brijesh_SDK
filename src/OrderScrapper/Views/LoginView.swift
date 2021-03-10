@@ -16,19 +16,45 @@ struct LoginView : View {
             
             Text("Email or mobile number")
             TextField("Email address", text: $email)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .border(Color.yellow, width: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/)
+                .cornerRadius(4)
             
             Text("Password")
             SecureField("Password", text: $password)
-            
+                .border(Color.yellow, width: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/)
+                .cornerRadius(4)
+
             //Sign Button
-            Button(action: {
+            /*Button(action: {
                 
             }, label: {
                 Text("Submit")
-            })
+            })*/
+            
+            Button(action: {
+                print("Submit tapped!")
+            }) {
+                HStack {
+                    Text("Submit")
+                        .fontWeight(.semibold)
+                        .font(.title)
+                    Image(systemName: "arrow")
+                        .font(.title)
+                    
+                }
+                .frame(minWidth: 0, maxWidth: .infinity)
+                .padding()
+                .foregroundColor(.white)
+                .background(LinearGradient(gradient: Gradient(colors: [Color.orange, Color.yellow]), startPoint: .leading, endPoint: .trailing))
+                .cornerRadius(24)
+            }
             
             Spacer()
         }
+        .background(Color.white)
+        .cornerRadius(40)
+                
     }
 }
 
@@ -38,20 +64,3 @@ struct LoginView_Previews: PreviewProvider {
     }
 }
 
-struct LoginView_Previews_2: PreviewProvider {
-    static var previews: some View {
-        /*@START_MENU_TOKEN@*/Text("Hello, World!")/*@END_MENU_TOKEN@*/
-    }
-}
-
-struct LoginView_Previews_3: PreviewProvider {
-    static var previews: some View {
-        /*@START_MENU_TOKEN@*/Text("Hello, World!")/*@END_MENU_TOKEN@*/
-    }
-}
-
-struct LoginView_Previews_4: PreviewProvider {
-    static var previews: some View {
-        /*@START_MENU_TOKEN@*/Text("Hello, World!")/*@END_MENU_TOKEN@*/
-    }
-}
