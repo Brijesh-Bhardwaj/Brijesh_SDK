@@ -18,10 +18,7 @@
 		1CBF6D1F25F5FE71001A801B /* AmazonOrderScrapperUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D1E25F5FE71001A801B /* AmazonOrderScrapperUITests.swift */; };
 		1CBF6D8C25F626A2001A801B /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CBF6D8A25F6269B001A801B /* OrderScrapper.framework */; };
 		1CBF6D8D25F626A2001A801B /* OrderScrapper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1CBF6D8A25F6269B001A801B /* OrderScrapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-<<<<<<< HEAD
 		1CE8507025F7B646000A7158 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE8506F25F7B646000A7158 /* ContentView.swift */; };
-=======
->>>>>>> develop
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,10 +69,7 @@
 		1CBF6D1E25F5FE71001A801B /* AmazonOrderScrapperUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmazonOrderScrapperUITests.swift; sourceTree = "<group>"; };
 		1CBF6D2025F5FE71001A801B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1CBF6D8A25F6269B001A801B /* OrderScrapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OrderScrapper.framework; sourceTree = "<group>"; };
-<<<<<<< HEAD
 		1CE8506F25F7B646000A7158 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-=======
->>>>>>> develop
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,10 +130,7 @@
 				1CBF6D0725F5FE70001A801B /* LaunchScreen.storyboard */,
 				1CBF6D0A25F5FE70001A801B /* Info.plist */,
 				1CBF6D0225F5FE6F001A801B /* AmazonOrderScrapper.xcdatamodeld */,
-<<<<<<< HEAD
 				1CE8506F25F7B646000A7158 /* ContentView.swift */,
-=======
->>>>>>> develop
 			);
 			path = AmazonOrderScrapper;
 			sourceTree = "<group>";
@@ -294,10 +285,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1CBF6D0425F5FE6F001A801B /* AmazonOrderScrapper.xcdatamodeld in Sources */,
-<<<<<<< HEAD
 				1CE8507025F7B646000A7158 /* ContentView.swift in Sources */,
-=======
->>>>>>> develop
 				1CBF6CFE25F5FE6F001A801B /* ViewController.swift in Sources */,
 				1CBF6CFA25F5FE6F001A801B /* AppDelegate.swift in Sources */,
 				1CBF6CFC25F5FE6F001A801B /* SceneDelegate.swift in Sources */,

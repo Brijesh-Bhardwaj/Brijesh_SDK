@@ -7,68 +7,67 @@ import SwiftUI
 struct LoginView : View {
     @State private var email: String = ""
     @State private var password: String = ""
-    var bundleIdentifier = "ai.blackstraw.orderscrapper.OrderScrapper"
+    let bundle: Bundle! = Bundle(identifier: "ai.blackstraw.orderscrapper.OrderScrapper")
     
     var body: some View {
         VStack {
-            Spacer(minLength: 45)
+            Spacer(minLength: Dimen.spacer1)
             HStack {
-                Image("arrow-back", bundle: Bundle(identifier: bundleIdentifier))
-                    .frame(width: 23.25, height: 23.25)
+                Image(IconNames.BackArrow, bundle: bundle)
+                    .frame(width: Dimen.width_height_back_arrow, height: Dimen.width_height_back_arrow)
                     .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 16))
-                Text("Connect Amazon Account")
-                    .font(.system(size: 17))
-                    .foregroundColor(.black)
+                Text(NSLocalizedString("heading_connect_amazon_account", tableName: nil, bundle: bundle, value: "", comment: ""))
+                    .font(.system(size: Dimen.text_size_heading1))
+                    .foregroundColor(Color("heading_color", bundle: bundle))
                 Spacer()
             }
-            
-            Spacer(minLength: 25)
+            Spacer(minLength: Dimen.spacer2)
             VStack {
                 HStack {
-                    Text("Please sign in with your Amazon credentials")
-                        .font(.system(size: 20))
-                        .foregroundColor(.black)
+                    Text(NSLocalizedString("heading_please_sign_in_with_credentials", tableName: nil, bundle: bundle, value: "", comment: ""))
+                        .font(.system(size: Dimen.text_size_heading2))
+                        .foregroundColor(Color("heading_color", bundle: bundle))
                     Spacer(minLength: 25)
                 }.padding(.top, 30)
                 .padding(.all, 15)
                 
                 //Error view
                 HStack {
-                    Image("error", bundle: Bundle(identifier: bundleIdentifier))
-                        .frame(width: 23.25, height: 23.25, alignment: .leading)
-                    Text("Your email or mobile number and/or password do not match. Please try again")
-                        .font(.system(size: 12))
+                    Image(IconNames.Error, bundle: bundle)
+                        .frame(width: Dimen.width_height_error_icon, height: Dimen.width_height_error_icon, alignment: .leading)
+                    Text(NSLocalizedString("error_enter_valid_username_password", tableName: nil, bundle: bundle, value: "", comment: ""))
+                        .font(.system(size: Dimen.text_size_error_msg))
                         .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 16))
-                        .foregroundColor(.init(UIColor(red: 0.827, green: 0.329, blue: 0, alpha: 1)))
+                        .foregroundColor(Color("error_color", bundle: bundle))
                 }.hidden()
                 
                 HStack {
-                    Text("Email or mobile number")
-                        .font(.system(size: 14))
-                        .foregroundColor(.black)
+                    Text(NSLocalizedString("label_email_or_mobile_number", tableName: nil, bundle: bundle, value: "", comment: ""))
+                        .font(.system(size: Dimen.text_size_label))
+                        .foregroundColor(Color("label_color", bundle: bundle))
                     Spacer()
                 }.padding(EdgeInsets(top: 10, leading: 16, bottom: 0, trailing: 16))
                 
-                TextField("Email address", text: $email)
+                TextField(NSLocalizedString("label_email_or_mobile_number", tableName: nil, bundle: bundle, value: "", comment: ""), text: $email)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .border(Color.yellow, width: 1)
-                    .cornerRadius(4)
+                    .border(Color("border_color_text_field", bundle: bundle), width: 1)
+                    .cornerRadius(Dimen.text_field_corner_radius)
                     .padding(EdgeInsets(top: 5, leading: 16, bottom: 0, trailing: 16))
-                    .frame(width: .infinity , height: 40)
+                    .frame(width: .infinity , height: Dimen.height_text_field)
                 
                 HStack {
-                    Text("Password")
-                        .font(.system(size: 14))
-                        .foregroundColor(.black)
+                    Text(NSLocalizedString("label_password", tableName: nil, bundle: bundle, value: "", comment: ""))
+                        .font(.system(size: Dimen.text_size_label))
+                        .foregroundColor(Color("label_color", bundle: bundle))
                     Spacer()
                 }.padding(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
                 
-                SecureField("Password", text: $password)
+                SecureField(NSLocalizedString("label_password", tableName: nil, bundle: bundle, value: "", comment: ""), text: $password)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .border(Color.yellow, width: 1)
-                    .cornerRadius(4)
+                    .border(Color("border_color_text_field", bundle: bundle), width: 1)
+                    .cornerRadius(Dimen.text_field_corner_radius)
                     .padding(EdgeInsets(top: 5, leading: 16, bottom: 0, trailing: 16))
-                    .frame(width: .infinity , height: 40)
+                    .frame(width: .infinity , height: Dimen.height_text_field)
                 
                 //SignIn Button
                 HStack {
@@ -77,20 +76,21 @@ struct LoginView : View {
                         print("Submit tapped!")
                     }) {
                         HStack(alignment: .center) {
-                            Text("Submit")
+                            Text(NSLocalizedString("btn_submit", tableName: nil, bundle: bundle, value: "", comment: ""))
                                 .fontWeight(.semibold)
-                                .font(.system(size: 18))
+                                .font(.system(size: Dimen.text_size_btn_submit))
                                 .padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 0))
+                                .foregroundColor(Color("btn_color", bundle: bundle))
                             Spacer()
-                            Image("arrow-right", bundle: Bundle(identifier: bundleIdentifier))
+                            Image(IconNames.RightArrow, bundle: bundle)
                                 .frame(width: 18, height:15.35)
                                 .padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 21))
                         }
-                        .frame(width: 133 , height: 48, alignment: .leading)
+                        .frame(width: Dimen.width_btn_submit , height: Dimen.height_btn_submit, alignment: .leading)
                         .padding(EdgeInsets(top: 0, leading: 21, bottom: 0, trailing: 0))
                         .foregroundColor(.white)
-                        .background(LinearGradient(gradient: Gradient(colors: [Color.yellow, Color.orange]), startPoint: .leading, endPoint: .trailing))
-                        .cornerRadius(24)
+                        .background(LinearGradient(gradient: Gradient(colors: [Color("color_linear_gradient2", bundle: bundle), Color("color_linear_gradient1", bundle: bundle)]), startPoint: .leading, endPoint: .trailing))
+                        .cornerRadius(Dimen.btn_corner_radius)
                     }.padding(EdgeInsets(top: 45, leading: 0, bottom: 0, trailing: 16))
                 }
                 
@@ -98,7 +98,7 @@ struct LoginView : View {
                 Spacer()
                 
             }.background(Color.white)
-            .cornerRadius(35, corners: [.topLeft, .topRight])
+            .cornerRadius(Dimen.parent_corner_radius, corners: [.topLeft, .topRight])
         }.background(Color.yellow)
         .ignoresSafeArea()
         
