@@ -18,10 +18,10 @@
 		1CBF6DAF25F629CF001A801B /* AuthProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6DAE25F629CF001A801B /* AuthProvider.swift */; };
 		1CBF6DB325F629DA001A801B /* OrderScrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6DB225F629DA001A801B /* OrderScrapper.swift */; };
 		1CBF6DB725F629DF001A801B /* ViewPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6DB625F629DF001A801B /* ViewPresenter.swift */; };
-		1CBF6DBE25F62A02001A801B /* ServiceProviderEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6DBD25F62A02001A801B /* ServiceProviderEnum.swift */; };
-		1CBF6DC225F62A07001A801B /* StatusEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6DC125F62A07001A801B /* StatusEnum.swift */; };
-		1CBF6DC925F62A34001A801B /* ASLException.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6DC825F62A34001A801B /* ASLException.swift */; };
 		1CE8505825F77C38000A7158 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE8505725F77C38000A7158 /* LoginView.swift */; };
+		1CBF6DBE25F62A02001A801B /* OrderSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6DBD25F62A02001A801B /* OrderSource.swift */; };
+		1CBF6DC225F62A07001A801B /* AccountState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6DC125F62A07001A801B /* AccountState.swift */; };
+		1CBF6DC925F62A34001A801B /* ASLException.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6DC825F62A34001A801B /* ASLException.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -63,10 +63,10 @@
 		1CBF6DAE25F629CF001A801B /* AuthProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthProvider.swift; sourceTree = "<group>"; };
 		1CBF6DB225F629DA001A801B /* OrderScrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderScrapper.swift; sourceTree = "<group>"; };
 		1CBF6DB625F629DF001A801B /* ViewPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewPresenter.swift; sourceTree = "<group>"; };
-		1CBF6DBD25F62A02001A801B /* ServiceProviderEnum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceProviderEnum.swift; sourceTree = "<group>"; };
-		1CBF6DC125F62A07001A801B /* StatusEnum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusEnum.swift; sourceTree = "<group>"; };
-		1CBF6DC825F62A34001A801B /* ASLException.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASLException.swift; sourceTree = "<group>"; };
 		1CE8505725F77C38000A7158 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		1CBF6DBD25F62A02001A801B /* OrderSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderSource.swift; sourceTree = "<group>"; };
+		1CBF6DC125F62A07001A801B /* AccountState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountState.swift; sourceTree = "<group>"; };
+		1CBF6DC825F62A34001A801B /* ASLException.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASLException.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -146,8 +146,8 @@
 		1CBF6DBC25F629F6001A801B /* Enums */ = {
 			isa = PBXGroup;
 			children = (
-				1CBF6DC125F62A07001A801B /* StatusEnum.swift */,
-				1CBF6DBD25F62A02001A801B /* ServiceProviderEnum.swift */,
+				1CBF6DC125F62A07001A801B /* AccountState.swift */,
+				1CBF6DBD25F62A02001A801B /* OrderSource.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -304,11 +304,11 @@
 				1CBF6DA325F629BD001A801B /* Account.swift in Sources */,
 				1CBF6DC925F62A34001A801B /* ASLException.swift in Sources */,
 				1CBF6DB725F629DF001A801B /* ViewPresenter.swift in Sources */,
-				1CBF6DC225F62A07001A801B /* StatusEnum.swift in Sources */,
+				1CE8505825F77C38000A7158 /* LoginView.swift in Sources */,
+				1CBF6DC225F62A07001A801B /* AccountState.swift in Sources */,
 				1CBF6DB325F629DA001A801B /* OrderScrapper.swift in Sources */,
 				1CBF6DAF25F629CF001A801B /* AuthProvider.swift in Sources */,
-				1CBF6DBE25F62A02001A801B /* ServiceProviderEnum.swift in Sources */,
-				1CE8505825F77C38000A7158 /* LoginView.swift in Sources */,
+				1CBF6DBE25F62A02001A801B /* OrderSource.swift in Sources */,
 				1CBF6DAB25F629CB001A801B /* AccountDisconnectedListener.swift in Sources */,
 				1CBF6DA725F629C5001A801B /* AccountConnectedListener.swift in Sources */,
 			);

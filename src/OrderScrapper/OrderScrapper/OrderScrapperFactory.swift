@@ -5,6 +5,6 @@
 import Foundation
 public class OrderScrapperFactory {
     public init() {}
-    public func createScrapper(serviceProvider : ServiceProvider, authProvider : AuthProvider, viewPresenter : ViewPresenter) -> Void {
+    public func createScrapper(serviceProvider : OrderSource, authProvider : AuthProvider, viewPresenter : ViewPresenter) -> Void {
       }
 }
