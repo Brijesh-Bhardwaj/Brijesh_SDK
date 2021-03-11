@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C21493325F948A400B1B034 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1C21491F25F93B1B00B1B034 /* Assets.xcassets */; };
 		1CBF6D4325F5FFBE001A801B /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CBF6D3925F5FFBE001A801B /* OrderScrapper.framework */; };
 		1CBF6D4825F5FFBE001A801B /* OrderScrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D4725F5FFBE001A801B /* OrderScrapperTests.swift */; };
 		1CBF6D4A25F5FFBE001A801B /* OrderScrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CBF6D3C25F5FFBE001A801B /* OrderScrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -21,7 +22,6 @@
 		1CBF6DC225F62A07001A801B /* StatusEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6DC125F62A07001A801B /* StatusEnum.swift */; };
 		1CBF6DC925F62A34001A801B /* ASLException.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6DC825F62A34001A801B /* ASLException.swift */; };
 		1CE8505825F77C38000A7158 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE8505725F77C38000A7158 /* LoginView.swift */; };
-		1CE8506C25F7B427000A7158 /* HikeBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE8506B25F7B427000A7158 /* HikeBadge.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -49,6 +49,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1C21491F25F93B1B00B1B034 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1CBF6D3925F5FFBE001A801B /* OrderScrapper.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OrderScrapper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CBF6D3C25F5FFBE001A801B /* OrderScrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OrderScrapper.h; sourceTree = "<group>"; };
 		1CBF6D3D25F5FFBE001A801B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -66,7 +67,6 @@
 		1CBF6DC125F62A07001A801B /* StatusEnum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusEnum.swift; sourceTree = "<group>"; };
 		1CBF6DC825F62A34001A801B /* ASLException.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASLException.swift; sourceTree = "<group>"; };
 		1CE8505725F77C38000A7158 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
-		1CE8506B25F7B427000A7158 /* HikeBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HikeBadge.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +91,7 @@
 		1CBF6D2F25F5FFBE001A801B = {
 			isa = PBXGroup;
 			children = (
+				1C21491F25F93B1B00B1B034 /* Assets.xcassets */,
 				1CE8505625F77C10000A7158 /* Views */,
 				1CBF6DC725F62A23001A801B /* Exception */,
 				1CBF6DBC25F629F6001A801B /* Enums */,
@@ -163,7 +164,6 @@
 			isa = PBXGroup;
 			children = (
 				1CE8505725F77C38000A7158 /* LoginView.swift */,
-				1CE8506B25F7B427000A7158 /* HikeBadge.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -262,6 +262,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C21493325F948A400B1B034 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -309,7 +310,6 @@
 				1CBF6DBE25F62A02001A801B /* ServiceProviderEnum.swift in Sources */,
 				1CE8505825F77C38000A7158 /* LoginView.swift in Sources */,
 				1CBF6DAB25F629CB001A801B /* AccountDisconnectedListener.swift in Sources */,
-				1CE8506C25F7B427000A7158 /* HikeBadge.swift in Sources */,
 				1CBF6DA725F629C5001A801B /* AccountConnectedListener.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
