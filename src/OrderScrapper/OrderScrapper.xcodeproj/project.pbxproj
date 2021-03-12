@@ -10,6 +10,8 @@
 		1C21493325F948A400B1B034 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1C21491F25F93B1B00B1B034 /* Assets.xcassets */; };
 		1C4AA5B725FA43A00006D26F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1C4AA5B925FA43A00006D26F /* Localizable.strings */; };
 		1C4AA5BF25FA4FF90006D26F /* IconNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C4AA5BE25FA4FF90006D26F /* IconNames.swift */; };
+		1CA165BC25FBBB4200CFC30C /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA165BB25FBBB4200CFC30C /* View.swift */; };
+		1CA165C225FBBB9E00CFC30C /* RoundedCorners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA165C125FBBB9E00CFC30C /* RoundedCorners.swift */; };
 		1CBF6D4325F5FFBE001A801B /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CBF6D3925F5FFBE001A801B /* OrderScrapper.framework */; };
 		1CBF6D4825F5FFBE001A801B /* OrderScrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D4725F5FFBE001A801B /* OrderScrapperTests.swift */; };
 		1CBF6D4A25F5FFBE001A801B /* OrderScrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CBF6D3C25F5FFBE001A801B /* OrderScrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -54,6 +56,8 @@
 		1C21491F25F93B1B00B1B034 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1C4AA5B825FA43A00006D26F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		1C4AA5BE25FA4FF90006D26F /* IconNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconNames.swift; sourceTree = "<group>"; };
+		1CA165BB25FBBB4200CFC30C /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
+		1CA165C125FBBB9E00CFC30C /* RoundedCorners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCorners.swift; sourceTree = "<group>"; };
 		1CBF6D3925F5FFBE001A801B /* OrderScrapper.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OrderScrapper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CBF6D3C25F5FFBE001A801B /* OrderScrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OrderScrapper.h; sourceTree = "<group>"; };
 		1CBF6D3D25F5FFBE001A801B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -100,9 +104,18 @@
 			path = Constants;
 			sourceTree = "<group>";
 		};
+		1CA165BA25FBBB1E00CFC30C /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				1CA165BB25FBBB4200CFC30C /* View.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		1CBF6D2F25F5FFBE001A801B = {
 			isa = PBXGroup;
 			children = (
+				1CA165BA25FBBB1E00CFC30C /* Extensions */,
 				1C4AA5B925FA43A00006D26F /* Localizable.strings */,
 				1C4AA5AC25FA2CE60006D26F /* Constants */,
 				1C21491F25F93B1B00B1B034 /* Assets.xcassets */,
@@ -178,6 +191,7 @@
 			isa = PBXGroup;
 			children = (
 				1CE8505725F77C38000A7158 /* LoginView.swift */,
+				1CA165C125FBBB9E00CFC30C /* RoundedCorners.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -315,6 +329,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1CA165BC25FBBB4200CFC30C /* View.swift in Sources */,
 				1CBF6D9C25F6294C001A801B /* OrderScrapperFactory.swift in Sources */,
 				1CBF6DA325F629BD001A801B /* Account.swift in Sources */,
 				1CBF6DC925F62A34001A801B /* ASLException.swift in Sources */,
@@ -323,6 +338,7 @@
 				1CBF6DC225F62A07001A801B /* AccountState.swift in Sources */,
 				1C4AA5BF25FA4FF90006D26F /* IconNames.swift in Sources */,
 				1CBF6DB325F629DA001A801B /* OrderScrapper.swift in Sources */,
+				1CA165C225FBBB9E00CFC30C /* RoundedCorners.swift in Sources */,
 				1CBF6DAF25F629CF001A801B /* AuthProvider.swift in Sources */,
 				1CBF6DBE25F62A02001A801B /* OrderSource.swift in Sources */,
 				1CBF6DAB25F629CB001A801B /* AccountDisconnectedListener.swift in Sources */,
