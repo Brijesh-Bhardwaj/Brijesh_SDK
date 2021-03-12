@@ -2,8 +2,7 @@
 //  View.swift
 //  OrderScrapper
 //
-//  Created by Prakhar on 12/03/21.
-//
+
 
 import Foundation
 import SwiftUI
