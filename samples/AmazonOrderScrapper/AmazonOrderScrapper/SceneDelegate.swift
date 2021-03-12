@@ -2,8 +2,6 @@
 //  SceneDelegate.swift
 //  AmazonOrderScrapper
 //
-//  Created by Prakhar on 08/03/21.
-//
 
 import UIKit
 

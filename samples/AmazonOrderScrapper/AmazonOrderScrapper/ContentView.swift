@@ -2,8 +2,7 @@
 //  ContentView.swift
 //  AmazonOrderScrapper
 //
-//  Created by Prakhar on 09/03/21.
-//
+
 
 import Foundation
 import SwiftUI
