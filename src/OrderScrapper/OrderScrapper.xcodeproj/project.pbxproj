@@ -10,7 +10,6 @@
 		1C21493325F948A400B1B034 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1C21491F25F93B1B00B1B034 /* Assets.xcassets */; };
 		1C4AA5B725FA43A00006D26F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1C4AA5B925FA43A00006D26F /* Localizable.strings */; };
 		1C4AA5BF25FA4FF90006D26F /* IconNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C4AA5BE25FA4FF90006D26F /* IconNames.swift */; };
-		1C4AA5C925FA6E5D0006D26F /* Dimen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C4AA5C825FA6E5D0006D26F /* Dimen.swift */; };
 		1CBF6D4325F5FFBE001A801B /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CBF6D3925F5FFBE001A801B /* OrderScrapper.framework */; };
 		1CBF6D4825F5FFBE001A801B /* OrderScrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D4725F5FFBE001A801B /* OrderScrapperTests.swift */; };
 		1CBF6D4A25F5FFBE001A801B /* OrderScrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CBF6D3C25F5FFBE001A801B /* OrderScrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -55,7 +54,6 @@
 		1C21491F25F93B1B00B1B034 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1C4AA5B825FA43A00006D26F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		1C4AA5BE25FA4FF90006D26F /* IconNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconNames.swift; sourceTree = "<group>"; };
-		1C4AA5C825FA6E5D0006D26F /* Dimen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dimen.swift; sourceTree = "<group>"; };
 		1CBF6D3925F5FFBE001A801B /* OrderScrapper.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OrderScrapper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CBF6D3C25F5FFBE001A801B /* OrderScrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OrderScrapper.h; sourceTree = "<group>"; };
 		1CBF6D3D25F5FFBE001A801B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -98,7 +96,6 @@
 			isa = PBXGroup;
 			children = (
 				1C4AA5BE25FA4FF90006D26F /* IconNames.swift */,
-				1C4AA5C825FA6E5D0006D26F /* Dimen.swift */,
 			);
 			path = Constants;
 			sourceTree = "<group>";
@@ -328,7 +325,6 @@
 				1CBF6DB325F629DA001A801B /* OrderScrapper.swift in Sources */,
 				1CBF6DAF25F629CF001A801B /* AuthProvider.swift in Sources */,
 				1CBF6DBE25F62A02001A801B /* OrderSource.swift in Sources */,
-				1C4AA5C925FA6E5D0006D26F /* Dimen.swift in Sources */,
 				1CBF6DAB25F629CB001A801B /* AccountDisconnectedListener.swift in Sources */,
 				1CBF6DA725F629C5001A801B /* AccountConnectedListener.swift in Sources */,
 			);
