@@ -101,7 +101,7 @@ struct LoginView : View {
                 Spacer()
             }.background(Color.white)
             .cornerRadius((sizeClass == .regular) ? 35 : 35, corners: [.topLeft, .topRight])
-        }.background(Color("color_radial_gradient1", bundle: bundle))
+        }.background(RadialGradient(gradient: Gradient(colors: [Color("color_radial_gradient1", bundle: bundle), Color("color_radial_gradient2", bundle: bundle)]), center: .center, startRadius: 1, endRadius: 100))
         .ignoresSafeArea()
         
     }
