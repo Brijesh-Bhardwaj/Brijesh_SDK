@@ -6,5 +6,5 @@
 import Foundation
 
 protocol NavigationHelper {
-    func navigationActionForURL(url: URL?) -> NavigationAction
+    func navigateWithURL(url: URL?)
 }

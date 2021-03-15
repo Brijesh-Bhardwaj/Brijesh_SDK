@@ -4,6 +4,8 @@
 //
 
 import Foundation
+import SwiftUI
+import Combine
 
 struct AmazonURL {
     static let signIn           =   "ap/signin"
@@ -15,26 +17,64 @@ struct AmazonURL {
 }
 
 class AmazonNavigationHelper: NavigationHelper {
+    @ObservedObject var viewModel: ViewModel
     
-    func navigationActionForURL(url: URL?) -> NavigationAction {
-        guard let url = url else { return .none }
-        
-        var action: NavigationAction = .none
+    var jsResultSubscriber: AnyCancellable? = nil
+    let authenticator: AmazonAuthenticator
+    
+    required init(_ viewModel: ViewModel) {
+        self.viewModel = viewModel
+        self.authenticator = AmazonAuthenticator(viewModel)
+    }
+    
+    deinit {
+        self.jsResultSubscriber?.cancel()
+    }
+    
+    func navigateWithURL(url: URL?) {
+        guard let url = url else { return }
         
         let urlString = url.absoluteString
         
         if (urlString.contains(AmazonURL.signIn)) {
-            action = .authenticate
-        } else if (urlString.contains(AmazonURL.authApproval)) {
-            action = .approveAuth
-        } else if (urlString.contains(AmazonURL.twoFactorAuth)) {
-            action = .twoFactorAuth
+            self.authenticator.authenticate()
+        } else if (urlString.contains(AmazonURL.authApproval)
+                    || urlString.contains(AmazonURL.twoFactorAuth)) {
+            self.viewModel.showWebView.send(true)
         } else if (urlString.contains(AmazonURL.downloadReport)
                     && urlString.contains(AmazonURL.reportID)) {
-            action = .downloadReport
+            self.injectDownloadReportJS()
         } else if (urlString.contains(AmazonURL.generateReport)) {
-            action = .generateReport
+            self.injectGenerateReportJS()
         }
-        return action
+    }
+    
+    private func injectGenerateReportJS() {
+        let startDay = "1";
+        let startMonth = "5";
+        let startyear = "2008";
+        let endDay = "17";
+        let endMonth = "2";
+        let endYear = "2021";
+        let reportType = "SHIPMENTS";
+        
+        let js = "javascript:" +
+            "document.getElementById('report-type').value = '" + reportType + "';" +
+            "document.getElementById('report-month-start').value = '" + startMonth + "';" +
+            "document.getElementById('report-day-start').value = '" + startDay + "';" +
+            "document.getElementById('report-year-start').value = '" + startyear + "';" +
+            "document.getElementById('report-month-end').value = '" + endMonth + "';" +
+            "document.getElementById('report-day-end').value = '" + endDay + "';" +
+            "document.getElementById('report-year-end').value = '" + endYear + "';" +
+            "document.getElementById('report-confirm').click()"
+        
+        self.viewModel.jsPublisher.send((.generateReport, js))
+    }
+    
+    private func injectDownloadReportJS() {
+        let js = "javascript:" +
+            "document.getElementById(window['download-cell-'+new URLSearchParams(window.location.search).get(\"reportId\")].id).click()"
+        
+        self.viewModel.jsPublisher.send((.downloadReport, js))
     }
 }

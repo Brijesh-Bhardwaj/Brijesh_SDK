@@ -19,11 +19,11 @@ struct ConnectAccountView: View {
     
     var body: some View {
         ZStack {
-            WebView(url: .publicUrl, viewModel: viewModel)
-            Color.yellow.frame(width: .infinity, height: .infinity, alignment: .center)
-            VStack {
-                Text("Yolo")
-            }.background(Color.yellow)
+            WebView(viewModel: viewModel)
+//            Color.yellow.frame(width: .infinity, height: .infinity, alignment: .center)
+//            VStack {
+//                Text("Yolo")
+//            }.background(Color.yellow)
         }.edgesIgnoringSafeArea(.all)
         .navigationBarHidden(true)
     }

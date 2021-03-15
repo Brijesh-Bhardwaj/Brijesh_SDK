@@ -9,10 +9,10 @@ import SwiftUI
 import Combine
 
 enum JSInjectValue {
-    case email, password, captcha, error, identification
+    case email, password, captcha, error, identification, generateReport, downloadReport
 }
 
-class AmazonAuthenticator {
+internal class AmazonAuthenticator {
     @ObservedObject var viewModel: ViewModel
     
     var jsResultSubscriber: AnyCancellable? = nil
@@ -31,7 +31,7 @@ class AmazonAuthenticator {
                 print("JS Result: ", injectValue, result)
                 let (response, _) = result
                 switch injectValue {
-                case .email, .password: break
+                case .email, .password, .generateReport, .downloadReport: break
                 case .error:
                     if let response = response {
                         let strResult = response as! String

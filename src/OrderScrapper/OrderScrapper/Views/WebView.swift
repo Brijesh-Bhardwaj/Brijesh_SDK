@@ -26,8 +26,6 @@ struct WebView: UIViewRepresentable, WebViewHandlerDelegate {
         print("String value received from web is: \(value)")
     }
     
-    var url: WebUrlType
-    
     // Viewmodel object
     @ObservedObject var viewModel: ViewModel
     
@@ -49,14 +47,15 @@ struct WebView: UIViewRepresentable, WebViewHandlerDelegate {
         let webView = WKWebView(frame: CGRect.zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
         
+        if let url = URL(string: "https://www.amazon.com/ap/signin?_encoding=UTF8&openid.assoc_handle=usflex&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.mode=checkid_setup&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&openid.ns.pape=http%3A%2F%2Fspecs.openid.net%2Fextensions%2Fpape%2F1.0&openid.pape.max_auth_age=900&openid.return_to=https%3A%2F%2Fwww.amazon.com%2Fgp%2Fb2b%2Freports%2F136-9723095-1427523%3Fie%3DUTF8%26%252AVersion%252A%3D1%26%252Aentries%252A%3D0") {
+            webView.load(URLRequest(url: url))
+        }
+        
         return webView
     }
     
     func updateUIView(_ webView: WKWebView, context: Context) {
         
-        if let url = URL(string: "https://www.amazon.com/ap/signin?_encoding=UTF8&openid.assoc_handle=usflex&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.mode=checkid_setup&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&openid.ns.pape=http%3A%2F%2Fspecs.openid.net%2Fextensions%2Fpape%2F1.0&openid.pape.max_auth_age=900&openid.return_to=https%3A%2F%2Fwww.amazon.com%2Fgp%2Fb2b%2Freports%2F136-9723095-1427523%3Fie%3DUTF8%26%252AVersion%252A%3D1%26%252Aentries%252A%3D0") {
-            webView.load(URLRequest(url: url))
-        }
     }
     
     class Coordinator : NSObject, WKNavigationDelegate {
@@ -65,13 +64,12 @@ struct WebView: UIViewRepresentable, WebViewHandlerDelegate {
         var valueSubscriber: AnyCancellable? = nil
         var webViewNavigationSubscriber: AnyCancellable? = nil
         
-        let authenticator: AmazonAuthenticator
-        let navigationHelper: NavigationHelper = AmazonNavigationHelper()
+        let navigationHelper: NavigationHelper
         
         init(_ uiWebView: WebView) {
             self.parent = uiWebView
             self.delegate = parent
-            self.authenticator = AmazonAuthenticator(self.parent.viewModel)
+            self.navigationHelper = AmazonNavigationHelper(self.parent.viewModel)
         }
         
         deinit {
@@ -90,56 +88,7 @@ struct WebView: UIViewRepresentable, WebViewHandlerDelegate {
                 }
             })
             
-            var js = ""
-            
-            let navigationAction = navigationHelper.navigationActionForURL(url: webView.url)
-            switch navigationAction {
-            case .authenticate:
-                self.authenticator.authenticate()
-            case .approveAuth, .twoFactorAuth:
-                self.parent.viewModel.showWebView.send(true)
-            case .generateReport:
-                js = self.injectGenerateReportJS()
-            case .downloadReport:
-                js = injectDownloadReportJS()
-            case .none: return
-            }
-            
-            if !js.isEmpty {
-                webView.evaluateJavaScript(js) { (_, error) in
-                    if let error = error {
-                        print(error)
-                    }
-                }
-            }
- 
-            // Page loaded so no need to show loader anymore
-            self.parent.viewModel.showLoader.send(false)
-        }
-        
-        func injectGenerateReportJS() -> String {
-            let startDay = "1";
-            let startMonth = "5";
-            let startyear = "2008";
-            let endDay = "17";
-            let endMonth = "2";
-            let endYear = "2021";
-            let reportType = "SHIPMENTS";
-            
-            return "javascript:" +
-                "document.getElementById('report-type').value = '" + reportType + "';" +
-                "document.getElementById('report-month-start').value = '" + startMonth + "';" +
-                "document.getElementById('report-day-start').value = '" + startDay + "';" +
-                "document.getElementById('report-year-start').value = '" + startyear + "';" +
-                "document.getElementById('report-month-end').value = '" + endMonth + "';" +
-                "document.getElementById('report-day-end').value = '" + endDay + "';" +
-                "document.getElementById('report-year-end').value = '" + endYear + "';" +
-                "document.getElementById('report-confirm').click()"
-        }
-        
-        func injectDownloadReportJS() -> String {
-            return "javascript:" +
-                "document.getElementById(window['download-cell-'+new URLSearchParams(window.location.search).get(\"reportId\")].id).click()"
+            navigationHelper.navigateWithURL(url: webView.url)
         }
         
         /* Here I implemented most of the WKWebView's delegate functions so that you can know them and

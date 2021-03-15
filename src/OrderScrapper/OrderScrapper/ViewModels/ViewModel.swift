@@ -23,8 +23,3 @@ class ViewModel: ObservableObject {
 enum WebViewNavigation {
     case backward, forward, reload
 }
-
-// For identifying what type of url should load into WebView
-enum WebUrlType {
-    case localUrl, publicUrl
-}
