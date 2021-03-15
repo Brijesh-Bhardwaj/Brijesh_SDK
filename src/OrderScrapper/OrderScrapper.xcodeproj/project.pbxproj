@@ -7,26 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1C21493325F948A400B1B034 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1C21491F25F93B1B00B1B034 /* Assets.xcassets */; };
-		1C4AA5B725FA43A00006D26F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1C4AA5B925FA43A00006D26F /* Localizable.strings */; };
-		1C4AA5BF25FA4FF90006D26F /* IconNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C4AA5BE25FA4FF90006D26F /* IconNames.swift */; };
-		1CA165BC25FBBB4200CFC30C /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA165BB25FBBB4200CFC30C /* View.swift */; };
-		1CA165C225FBBB9E00CFC30C /* RoundedCorners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA165C125FBBB9E00CFC30C /* RoundedCorners.swift */; };
 		1CBF6D4325F5FFBE001A801B /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CBF6D3925F5FFBE001A801B /* OrderScrapper.framework */; };
 		1CBF6D4825F5FFBE001A801B /* OrderScrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D4725F5FFBE001A801B /* OrderScrapperTests.swift */; };
 		1CBF6D4A25F5FFBE001A801B /* OrderScrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CBF6D3C25F5FFBE001A801B /* OrderScrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1CBF6D9C25F6294C001A801B /* OrderScrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D9B25F6294C001A801B /* OrderScrapperFactory.swift */; };
-		1CBF6DA325F629BD001A801B /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6DA225F629BD001A801B /* Account.swift */; };
-		1CBF6DA725F629C5001A801B /* AccountConnectedListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6DA625F629C5001A801B /* AccountConnectedListener.swift */; };
-		1CBF6DAB25F629CB001A801B /* AccountDisconnectedListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6DAA25F629CB001A801B /* AccountDisconnectedListener.swift */; };
-		1CBF6DAF25F629CF001A801B /* AuthProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6DAE25F629CF001A801B /* AuthProvider.swift */; };
-		1CBF6DB725F629DF001A801B /* ViewPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6DB625F629DF001A801B /* ViewPresenter.swift */; };
-		1CBF6DBE25F62A02001A801B /* OrderSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6DBD25F62A02001A801B /* OrderSource.swift */; };
-		1CBF6DC225F62A07001A801B /* AccountState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6DC125F62A07001A801B /* AccountState.swift */; };
-		1CBF6DC925F62A34001A801B /* ASLException.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6DC825F62A34001A801B /* ASLException.swift */; };
-		1CE8505825F77C38000A7158 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE8505725F77C38000A7158 /* LoginView.swift */; };
-		E148DA7125FF1E8D001430BE /* OrderScrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DA7025FF1E8D001430BE /* OrderScrapper.swift */; };
-		E1E8CECD25F8A3D90064A55F /* AmazonOrderScrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E8CECC25F8A3D90064A55F /* AmazonOrderScrapper.swift */; };
+		E148DB5C25FF2BFD001430BE /* AmazonOrderScrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB4125FF2BFD001430BE /* AmazonOrderScrapper.swift */; };
+		E148DB5D25FF2BFD001430BE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E148DB4225FF2BFD001430BE /* Assets.xcassets */; };
+		E148DB5E25FF2BFD001430BE /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB4425FF2BFD001430BE /* View.swift */; };
+		E148DB5F25FF2BFD001430BE /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB4625FF2BFD001430BE /* LoginView.swift */; };
+		E148DB6025FF2BFD001430BE /* RoundedCorners.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB4725FF2BFD001430BE /* RoundedCorners.swift */; };
+		E148DB6125FF2BFD001430BE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E148DB4925FF2BFD001430BE /* Localizable.strings */; };
+		E148DB6225FF2BFD001430BE /* IconNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB4C25FF2BFD001430BE /* IconNames.swift */; };
+		E148DB6325FF2BFD001430BE /* AccountState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB4E25FF2BFD001430BE /* AccountState.swift */; };
+		E148DB6425FF2BFD001430BE /* OrderSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB4F25FF2BFD001430BE /* OrderSource.swift */; };
+		E148DB6525FF2BFD001430BE /* StatusEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5025FF2BFD001430BE /* StatusEnum.swift */; };
+		E148DB6625FF2BFD001430BE /* ServiceProviderEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5125FF2BFD001430BE /* ServiceProviderEnum.swift */; };
+		E148DB6725FF2BFD001430BE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E148DB5225FF2BFD001430BE /* Images.xcassets */; };
+		E148DB6825FF2BFD001430BE /* AuthProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5425FF2BFD001430BE /* AuthProvider.swift */; };
+		E148DB6925FF2BFD001430BE /* OrderScrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5525FF2BFD001430BE /* OrderScrapper.swift */; };
+		E148DB6A25FF2BFD001430BE /* AccountConnectedListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5625FF2BFD001430BE /* AccountConnectedListener.swift */; };
+		E148DB6B25FF2BFD001430BE /* ViewPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5725FF2BFD001430BE /* ViewPresenter.swift */; };
+		E148DB6C25FF2BFD001430BE /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5825FF2BFD001430BE /* Account.swift */; };
+		E148DB6D25FF2BFD001430BE /* AccountDisconnectedListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5925FF2BFD001430BE /* AccountDisconnectedListener.swift */; };
+		E148DB6E25FF2BFD001430BE /* ASLException.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5B25FF2BFD001430BE /* ASLException.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -54,11 +57,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1C21491F25F93B1B00B1B034 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		1C4AA5B825FA43A00006D26F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		1C4AA5BE25FA4FF90006D26F /* IconNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconNames.swift; sourceTree = "<group>"; };
-		1CA165BB25FBBB4200CFC30C /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
-		1CA165C125FBBB9E00CFC30C /* RoundedCorners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCorners.swift; sourceTree = "<group>"; };
 		1CBF6D3925F5FFBE001A801B /* OrderScrapper.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OrderScrapper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CBF6D3C25F5FFBE001A801B /* OrderScrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OrderScrapper.h; sourceTree = "<group>"; };
 		1CBF6D3D25F5FFBE001A801B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -66,17 +64,25 @@
 		1CBF6D4725F5FFBE001A801B /* OrderScrapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderScrapperTests.swift; sourceTree = "<group>"; };
 		1CBF6D4925F5FFBE001A801B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1CBF6D9B25F6294C001A801B /* OrderScrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderScrapperFactory.swift; sourceTree = "<group>"; };
-		1CBF6DA225F629BD001A801B /* Account.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
-		1CBF6DA625F629C5001A801B /* AccountConnectedListener.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountConnectedListener.swift; sourceTree = "<group>"; };
-		1CBF6DAA25F629CB001A801B /* AccountDisconnectedListener.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountDisconnectedListener.swift; sourceTree = "<group>"; };
-		1CBF6DAE25F629CF001A801B /* AuthProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthProvider.swift; sourceTree = "<group>"; };
-		1CBF6DB625F629DF001A801B /* ViewPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewPresenter.swift; sourceTree = "<group>"; };
-		1CBF6DBD25F62A02001A801B /* OrderSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderSource.swift; sourceTree = "<group>"; };
-		1CBF6DC125F62A07001A801B /* AccountState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountState.swift; sourceTree = "<group>"; };
-		1CBF6DC825F62A34001A801B /* ASLException.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASLException.swift; sourceTree = "<group>"; };
-		1CE8505725F77C38000A7158 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
-		E148DA7025FF1E8D001430BE /* OrderScrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderScrapper.swift; sourceTree = "<group>"; };
-		E1E8CECC25F8A3D90064A55F /* AmazonOrderScrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmazonOrderScrapper.swift; sourceTree = "<group>"; };
+		E148DB4125FF2BFD001430BE /* AmazonOrderScrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmazonOrderScrapper.swift; sourceTree = "<group>"; };
+		E148DB4225FF2BFD001430BE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		E148DB4425FF2BFD001430BE /* View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
+		E148DB4625FF2BFD001430BE /* LoginView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		E148DB4725FF2BFD001430BE /* RoundedCorners.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundedCorners.swift; sourceTree = "<group>"; };
+		E148DB4A25FF2BFD001430BE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Localizable.strings; sourceTree = "<group>"; };
+		E148DB4C25FF2BFD001430BE /* IconNames.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconNames.swift; sourceTree = "<group>"; };
+		E148DB4E25FF2BFD001430BE /* AccountState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountState.swift; sourceTree = "<group>"; };
+		E148DB4F25FF2BFD001430BE /* OrderSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderSource.swift; sourceTree = "<group>"; };
+		E148DB5025FF2BFD001430BE /* StatusEnum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusEnum.swift; sourceTree = "<group>"; };
+		E148DB5125FF2BFD001430BE /* ServiceProviderEnum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceProviderEnum.swift; sourceTree = "<group>"; };
+		E148DB5225FF2BFD001430BE /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		E148DB5425FF2BFD001430BE /* AuthProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthProvider.swift; sourceTree = "<group>"; };
+		E148DB5525FF2BFD001430BE /* OrderScrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderScrapper.swift; sourceTree = "<group>"; };
+		E148DB5625FF2BFD001430BE /* AccountConnectedListener.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountConnectedListener.swift; sourceTree = "<group>"; };
+		E148DB5725FF2BFD001430BE /* ViewPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewPresenter.swift; sourceTree = "<group>"; };
+		E148DB5825FF2BFD001430BE /* Account.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
+		E148DB5925FF2BFD001430BE /* AccountDisconnectedListener.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountDisconnectedListener.swift; sourceTree = "<group>"; };
+		E148DB5B25FF2BFD001430BE /* ASLException.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASLException.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,34 +104,9 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1C4AA5AC25FA2CE60006D26F /* Constants */ = {
-			isa = PBXGroup;
-			children = (
-				1C4AA5BE25FA4FF90006D26F /* IconNames.swift */,
-			);
-			path = Constants;
-			sourceTree = "<group>";
-		};
-		1CA165BA25FBBB1E00CFC30C /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-				1CA165BB25FBBB4200CFC30C /* View.swift */,
-			);
-			path = Extensions;
-			sourceTree = "<group>";
-		};
 		1CBF6D2F25F5FFBE001A801B = {
 			isa = PBXGroup;
 			children = (
-				E1E8CECB25F8A3C10064A55F /* Classes */,
-				1CA165BA25FBBB1E00CFC30C /* Extensions */,
-				1C4AA5B925FA43A00006D26F /* Localizable.strings */,
-				1C4AA5AC25FA2CE60006D26F /* Constants */,
-				1C21491F25F93B1B00B1B034 /* Assets.xcassets */,
-				1CE8505625F77C10000A7158 /* Views */,
-				1CBF6DC725F62A23001A801B /* Exception */,
-				1CBF6DBC25F629F6001A801B /* Enums */,
-				1CBF6DA125F6298B001A801B /* Protocols */,
 				1CBF6D3B25F5FFBE001A801B /* OrderScrapper */,
 				1CBF6D4625F5FFBE001A801B /* OrderScrapperTests */,
 				1CBF6D3A25F5FFBE001A801B /* Products */,
@@ -144,6 +125,16 @@
 		1CBF6D3B25F5FFBE001A801B /* OrderScrapper */ = {
 			isa = PBXGroup;
 			children = (
+				E148DB4225FF2BFD001430BE /* Assets.xcassets */,
+				E148DB4025FF2BFD001430BE /* Classes */,
+				E148DB4B25FF2BFD001430BE /* Constants */,
+				E148DB4825FF2BFD001430BE /* en.lproj */,
+				E148DB4D25FF2BFD001430BE /* Enums */,
+				E148DB5A25FF2BFD001430BE /* Exception */,
+				E148DB4325FF2BFD001430BE /* Extensions */,
+				E148DB5225FF2BFD001430BE /* Images.xcassets */,
+				E148DB5325FF2BFD001430BE /* Protocols */,
+				E148DB4525FF2BFD001430BE /* Views */,
 				1CBF6D3C25F5FFBE001A801B /* OrderScrapper.h */,
 				1CBF6D3D25F5FFBE001A801B /* Info.plist */,
 				1CBF6D9B25F6294C001A801B /* OrderScrapperFactory.swift */,
@@ -160,51 +151,77 @@
 			path = OrderScrapperTests;
 			sourceTree = "<group>";
 		};
-		1CBF6DA125F6298B001A801B /* Protocols */ = {
+		E148DB4025FF2BFD001430BE /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				E148DA7025FF1E8D001430BE /* OrderScrapper.swift */,
-				1CBF6DB625F629DF001A801B /* ViewPresenter.swift */,
-				1CBF6DAE25F629CF001A801B /* AuthProvider.swift */,
-				1CBF6DAA25F629CB001A801B /* AccountDisconnectedListener.swift */,
-				1CBF6DA625F629C5001A801B /* AccountConnectedListener.swift */,
-				1CBF6DA225F629BD001A801B /* Account.swift */,
+				E148DB4125FF2BFD001430BE /* AmazonOrderScrapper.swift */,
 			);
-			path = Protocols;
+			path = Classes;
 			sourceTree = "<group>";
 		};
-		1CBF6DBC25F629F6001A801B /* Enums */ = {
+		E148DB4325FF2BFD001430BE /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				1CBF6DC125F62A07001A801B /* AccountState.swift */,
-				1CBF6DBD25F62A02001A801B /* OrderSource.swift */,
+				E148DB4425FF2BFD001430BE /* View.swift */,
 			);
-			path = Enums;
+			path = Extensions;
 			sourceTree = "<group>";
 		};
-		1CBF6DC725F62A23001A801B /* Exception */ = {
+		E148DB4525FF2BFD001430BE /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				1CBF6DC825F62A34001A801B /* ASLException.swift */,
-			);
-			path = Exception;
-			sourceTree = "<group>";
-		};
-		1CE8505625F77C10000A7158 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				1CE8505725F77C38000A7158 /* LoginView.swift */,
-				1CA165C125FBBB9E00CFC30C /* RoundedCorners.swift */,
+				E148DB4625FF2BFD001430BE /* LoginView.swift */,
+				E148DB4725FF2BFD001430BE /* RoundedCorners.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
 		};
-		E1E8CECB25F8A3C10064A55F /* Classes */ = {
+		E148DB4825FF2BFD001430BE /* en.lproj */ = {
 			isa = PBXGroup;
 			children = (
-				E1E8CECC25F8A3D90064A55F /* AmazonOrderScrapper.swift */,
+				E148DB4925FF2BFD001430BE /* Localizable.strings */,
 			);
-			path = Classes;
+			path = en.lproj;
+			sourceTree = "<group>";
+		};
+		E148DB4B25FF2BFD001430BE /* Constants */ = {
+			isa = PBXGroup;
+			children = (
+				E148DB4C25FF2BFD001430BE /* IconNames.swift */,
+			);
+			path = Constants;
+			sourceTree = "<group>";
+		};
+		E148DB4D25FF2BFD001430BE /* Enums */ = {
+			isa = PBXGroup;
+			children = (
+				E148DB4E25FF2BFD001430BE /* AccountState.swift */,
+				E148DB4F25FF2BFD001430BE /* OrderSource.swift */,
+				E148DB5025FF2BFD001430BE /* StatusEnum.swift */,
+				E148DB5125FF2BFD001430BE /* ServiceProviderEnum.swift */,
+			);
+			path = Enums;
+			sourceTree = "<group>";
+		};
+		E148DB5325FF2BFD001430BE /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				E148DB5425FF2BFD001430BE /* AuthProvider.swift */,
+				E148DB5525FF2BFD001430BE /* OrderScrapper.swift */,
+				E148DB5625FF2BFD001430BE /* AccountConnectedListener.swift */,
+				E148DB5725FF2BFD001430BE /* ViewPresenter.swift */,
+				E148DB5825FF2BFD001430BE /* Account.swift */,
+				E148DB5925FF2BFD001430BE /* AccountDisconnectedListener.swift */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
+		E148DB5A25FF2BFD001430BE /* Exception */ = {
+			isa = PBXGroup;
+			children = (
+				E148DB5B25FF2BFD001430BE /* ASLException.swift */,
+			);
+			path = Exception;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -301,8 +318,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1C21493325F948A400B1B034 /* Assets.xcassets in Resources */,
-				1C4AA5B725FA43A00006D26F /* Localizable.strings in Resources */,
+				E148DB6725FF2BFD001430BE /* Images.xcassets in Resources */,
+				E148DB5D25FF2BFD001430BE /* Assets.xcassets in Resources */,
+				E148DB6125FF2BFD001430BE /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -340,22 +358,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1CA165BC25FBBB4200CFC30C /* View.swift in Sources */,
+				E148DB6025FF2BFD001430BE /* RoundedCorners.swift in Sources */,
+				E148DB6425FF2BFD001430BE /* OrderSource.swift in Sources */,
+				E148DB6925FF2BFD001430BE /* OrderScrapper.swift in Sources */,
+				E148DB6225FF2BFD001430BE /* IconNames.swift in Sources */,
+				E148DB6525FF2BFD001430BE /* StatusEnum.swift in Sources */,
+				E148DB6C25FF2BFD001430BE /* Account.swift in Sources */,
+				E148DB6D25FF2BFD001430BE /* AccountDisconnectedListener.swift in Sources */,
+				E148DB6E25FF2BFD001430BE /* ASLException.swift in Sources */,
+				E148DB6A25FF2BFD001430BE /* AccountConnectedListener.swift in Sources */,
+				E148DB5C25FF2BFD001430BE /* AmazonOrderScrapper.swift in Sources */,
 				1CBF6D9C25F6294C001A801B /* OrderScrapperFactory.swift in Sources */,
-				1CBF6DA325F629BD001A801B /* Account.swift in Sources */,
-				1CBF6DC925F62A34001A801B /* ASLException.swift in Sources */,
-				1CBF6DB725F629DF001A801B /* ViewPresenter.swift in Sources */,
-				1CBF6DC225F62A07001A801B /* AccountState.swift in Sources */,
-				E1E8CECD25F8A3D90064A55F /* AmazonOrderScrapper.swift in Sources */,
-				1CE8505825F77C38000A7158 /* LoginView.swift in Sources */,
-				1CBF6DC225F62A07001A801B /* AccountState.swift in Sources */,
-				1C4AA5BF25FA4FF90006D26F /* IconNames.swift in Sources */,
-				E148DA7125FF1E8D001430BE /* OrderScrapper.swift in Sources */,
-				1CA165C225FBBB9E00CFC30C /* RoundedCorners.swift in Sources */,
-				1CBF6DAF25F629CF001A801B /* AuthProvider.swift in Sources */,
-				1CBF6DBE25F62A02001A801B /* OrderSource.swift in Sources */,
-				1CBF6DAB25F629CB001A801B /* AccountDisconnectedListener.swift in Sources */,
-				1CBF6DA725F629C5001A801B /* AccountConnectedListener.swift in Sources */,
+				E148DB6325FF2BFD001430BE /* AccountState.swift in Sources */,
+				E148DB6B25FF2BFD001430BE /* ViewPresenter.swift in Sources */,
+				E148DB6625FF2BFD001430BE /* ServiceProviderEnum.swift in Sources */,
+				E148DB5F25FF2BFD001430BE /* LoginView.swift in Sources */,
+				E148DB5E25FF2BFD001430BE /* View.swift in Sources */,
+				E148DB6825FF2BFD001430BE /* AuthProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -378,10 +397,10 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		1C4AA5B925FA43A00006D26F /* Localizable.strings */ = {
+		E148DB4925FF2BFD001430BE /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				1C4AA5B825FA43A00006D26F /* en */,
+				E148DB4A25FF2BFD001430BE /* en */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
