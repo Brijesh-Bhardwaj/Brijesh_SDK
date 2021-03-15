@@ -1,0 +1,13 @@
+/* 
+  Localizable.strings
+  OrderScrapper
+
+  
+*/
+//For Login screen
+"heading_connect_amazon_account" = "Connect Amazon Account";
+"heading_please_sign_in_with_credentials" = "Please sign in with your Amazon credentials";
+"error_enter_valid_username_password" = "Your email or mobile number and/or password do not match. Please try again";
+"label_email_or_mobile_number" = "Email or mobile number";
+"label_password" = "Password";
+"btn_submit" = "Submit";

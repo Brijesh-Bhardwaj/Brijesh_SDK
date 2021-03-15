@@ -2,8 +2,6 @@
 //  AmazonOrderScrapperTests.swift
 //  AmazonOrderScrapperTests
 //
-//  Created by Prakhar on 08/03/21.
-//
 
 import XCTest
 @testable import AmazonOrderScrapper
