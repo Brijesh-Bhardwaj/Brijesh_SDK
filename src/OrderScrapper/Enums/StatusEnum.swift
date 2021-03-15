@@ -5,7 +5,7 @@
 
 import Foundation
 
-public enum AccountState {
+public enum StatusEnum {
     case NeverConnected
     case Connected
     case ConnectedAndDisconnected

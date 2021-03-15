@@ -3,8 +3,18 @@
 //  OrderScrapper
 //
 import Foundation
+
 public class OrderScrapperFactory {
-    public init() {}
-    public func createScrapper(serviceProvider : OrderSource, authProvider : AuthProvider, viewPresenter : ViewPresenter) -> Void {
-      }
+    public static func createScrapper(orderSource : OrderSource,
+                                      authProvider : AuthProvider,
+                                      viewPresenter : ViewPresenter) -> OrderScrapper {
+        var orderScrapperLib: OrderScrapper
+        
+        switch orderSource {
+        case .Amazon:
+            orderScrapperLib = AmazonOrderScrapper(authProvider: authProvider, viewPresenter: viewPresenter)
+        }
+        
+        return orderScrapperLib
+    }
 }

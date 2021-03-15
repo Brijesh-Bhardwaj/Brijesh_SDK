@@ -12,10 +12,10 @@
 		1CBF6CFE25F5FE6F001A801B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6CFD25F5FE6F001A801B /* ViewController.swift */; };
 		1CBF6D0125F5FE6F001A801B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1CBF6CFF25F5FE6F001A801B /* Main.storyboard */; };
 		1CBF6D0425F5FE6F001A801B /* AmazonOrderScrapper.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D0225F5FE6F001A801B /* AmazonOrderScrapper.xcdatamodeld */; };
-		1CBF6D0625F5FE70001A801B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1CBF6D0525F5FE70001A801B /* Assets.xcassets */; };
 		1CBF6D0925F5FE70001A801B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1CBF6D0725F5FE70001A801B /* LaunchScreen.storyboard */; };
 		1CBF6D1425F5FE71001A801B /* AmazonOrderScrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D1325F5FE71001A801B /* AmazonOrderScrapperTests.swift */; };
 		1CBF6D1F25F5FE71001A801B /* AmazonOrderScrapperUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D1E25F5FE71001A801B /* AmazonOrderScrapperUITests.swift */; };
+		E1E8CFCD25FA2EF20064A55F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E1E8CFCC25FA2EF20064A55F /* Assets.xcassets */; };
 		1CBF6D8C25F626A2001A801B /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CBF6D8A25F6269B001A801B /* OrderScrapper.framework */; };
 		1CBF6D8D25F626A2001A801B /* OrderScrapper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1CBF6D8A25F6269B001A801B /* OrderScrapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1CE8507025F7B646000A7158 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE8506F25F7B646000A7158 /* ContentView.swift */; };
@@ -39,13 +39,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		1CBF6D8E25F626A2001A801B /* Embed Frameworks */ = {
+		E1E8CFA525FA23CB0064A55F /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				1CBF6D8D25F626A2001A801B /* OrderScrapper.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -59,7 +58,6 @@
 		1CBF6CFD25F5FE6F001A801B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		1CBF6D0025F5FE6F001A801B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1CBF6D0325F5FE6F001A801B /* AmazonOrderScrapper.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = AmazonOrderScrapper.xcdatamodel; sourceTree = "<group>"; };
-		1CBF6D0525F5FE70001A801B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1CBF6D0825F5FE70001A801B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1CBF6D0A25F5FE70001A801B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1CBF6D0F25F5FE71001A801B /* AmazonOrderScrapperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AmazonOrderScrapperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -68,6 +66,7 @@
 		1CBF6D1A25F5FE71001A801B /* AmazonOrderScrapperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AmazonOrderScrapperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CBF6D1E25F5FE71001A801B /* AmazonOrderScrapperUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmazonOrderScrapperUITests.swift; sourceTree = "<group>"; };
 		1CBF6D2025F5FE71001A801B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E1E8CFCC25FA2EF20064A55F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1CBF6D8A25F6269B001A801B /* OrderScrapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OrderScrapper.framework; sourceTree = "<group>"; };
 		1CE8506F25F7B646000A7158 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -77,7 +76,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1CBF6D8C25F626A2001A801B /* OrderScrapper.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,11 +99,11 @@
 		1CBF6CED25F5FE6F001A801B = {
 			isa = PBXGroup;
 			children = (
-				1CBF6D8A25F6269B001A801B /* OrderScrapper.framework */,
 				1CBF6CF825F5FE6F001A801B /* AmazonOrderScrapper */,
 				1CBF6D1225F5FE71001A801B /* AmazonOrderScrapperTests */,
 				1CBF6D1D25F5FE71001A801B /* AmazonOrderScrapperUITests */,
 				1CBF6CF725F5FE6F001A801B /* Products */,
+				E1052A2D25F7A22500B67F90 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -122,11 +120,11 @@
 		1CBF6CF825F5FE6F001A801B /* AmazonOrderScrapper */ = {
 			isa = PBXGroup;
 			children = (
+				E1E8CFCC25FA2EF20064A55F /* Assets.xcassets */,
 				1CBF6CF925F5FE6F001A801B /* AppDelegate.swift */,
 				1CBF6CFB25F5FE6F001A801B /* SceneDelegate.swift */,
 				1CBF6CFD25F5FE6F001A801B /* ViewController.swift */,
 				1CBF6CFF25F5FE6F001A801B /* Main.storyboard */,
-				1CBF6D0525F5FE70001A801B /* Assets.xcassets */,
 				1CBF6D0725F5FE70001A801B /* LaunchScreen.storyboard */,
 				1CBF6D0A25F5FE70001A801B /* Info.plist */,
 				1CBF6D0225F5FE6F001A801B /* AmazonOrderScrapper.xcdatamodeld */,
@@ -153,6 +151,13 @@
 			path = AmazonOrderScrapperUITests;
 			sourceTree = "<group>";
 		};
+		E1052A2D25F7A22500B67F90 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -163,7 +168,7 @@
 				1CBF6CF225F5FE6F001A801B /* Sources */,
 				1CBF6CF325F5FE6F001A801B /* Frameworks */,
 				1CBF6CF425F5FE6F001A801B /* Resources */,
-				1CBF6D8E25F626A2001A801B /* Embed Frameworks */,
+				E1E8CFA525FA23CB0064A55F /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -258,7 +263,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1CBF6D0925F5FE70001A801B /* LaunchScreen.storyboard in Resources */,
-				1CBF6D0625F5FE70001A801B /* Assets.xcassets in Resources */,
+				E1E8CFCD25FA2EF20064A55F /* Assets.xcassets in Resources */,
 				1CBF6D0125F5FE6F001A801B /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -462,7 +467,6 @@
 		1CBF6D2425F5FE71001A801B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -470,6 +474,7 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = AmazonOrderScrapper/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -484,7 +489,6 @@
 		1CBF6D2525F5FE71001A801B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -492,6 +496,7 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = AmazonOrderScrapper/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

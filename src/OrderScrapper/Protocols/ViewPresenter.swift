@@ -3,8 +3,9 @@
 //  OrderScrapper
 //
 import Foundation
+import UIKit
+
 public protocol ViewPresenter {
-    //TODO presentView() params
-    func presentView() -> Void
+    func presentView(view: UIViewController) -> Void
     func dismissView() -> Void
 }

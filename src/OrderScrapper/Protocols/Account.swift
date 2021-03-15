@@ -3,7 +3,8 @@
 //  OrderScrapper
 //
 import Foundation
-protocol Account {
+
+public protocol Account {
     func getUserEmailId() -> String
     func getLinkStatus() -> AccountState
 }

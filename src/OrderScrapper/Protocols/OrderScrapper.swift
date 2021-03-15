@@ -3,7 +3,8 @@
 //  OrderScrapper
 //
 import Foundation
-protocol OrderScrapper {
+
+public protocol OrderScrapper {
     func getAccounts() -> [Account]
     func connectAccount(accountConnectionListener : AccountConnectedListener) -> Void
     func disconnectAccount(account: Account,

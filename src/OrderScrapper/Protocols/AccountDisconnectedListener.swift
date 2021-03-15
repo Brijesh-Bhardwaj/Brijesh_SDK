@@ -3,7 +3,8 @@
 //  OrderScrapper
 //
 import Foundation
-protocol AccountDisconnectedListener {
+
+public protocol AccountDisconnectedListener {
     func onAccountDisconnected(account : Account) -> Void
     func onAccountDisconnectionFailed(account : Account) -> Void
 }
