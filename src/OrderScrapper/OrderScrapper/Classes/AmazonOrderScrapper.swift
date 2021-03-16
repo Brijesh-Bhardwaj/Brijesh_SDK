@@ -20,7 +20,7 @@ class AmazonOrderScrapper: OrderScrapper {
     }
     
     func connectAccount(accountConnectionListener: AccountConnectedListener) {
-        let viewController = UIHostingController(rootView: LoginView())
+        let viewController = UIHostingController(rootView: ConnectAccountView(email: "avinash.mohanta18@gmail.com", password: "Welcome@123"))
         self.viewPresenter.presentView(view: viewController)
     }
     

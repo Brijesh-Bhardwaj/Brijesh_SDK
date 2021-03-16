@@ -15,10 +15,10 @@
 		1CBF6D0925F5FE70001A801B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1CBF6D0725F5FE70001A801B /* LaunchScreen.storyboard */; };
 		1CBF6D1425F5FE71001A801B /* AmazonOrderScrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D1325F5FE71001A801B /* AmazonOrderScrapperTests.swift */; };
 		1CBF6D1F25F5FE71001A801B /* AmazonOrderScrapperUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D1E25F5FE71001A801B /* AmazonOrderScrapperUITests.swift */; };
-		E1E8CFCD25FA2EF20064A55F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E1E8CFCC25FA2EF20064A55F /* Assets.xcassets */; };
-		1CBF6D8C25F626A2001A801B /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CBF6D8A25F6269B001A801B /* OrderScrapper.framework */; };
-		1CBF6D8D25F626A2001A801B /* OrderScrapper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1CBF6D8A25F6269B001A801B /* OrderScrapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1CE8507025F7B646000A7158 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE8506F25F7B646000A7158 /* ContentView.swift */; };
+		E148DBF026006118001430BE /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E148DBEF26006118001430BE /* OrderScrapper.framework */; };
+		E148DBF126006118001430BE /* OrderScrapper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E148DBEF26006118001430BE /* OrderScrapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E1E8CFCD25FA2EF20064A55F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E1E8CFCC25FA2EF20064A55F /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +45,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				E148DBF126006118001430BE /* OrderScrapper.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -66,9 +67,9 @@
 		1CBF6D1A25F5FE71001A801B /* AmazonOrderScrapperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AmazonOrderScrapperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CBF6D1E25F5FE71001A801B /* AmazonOrderScrapperUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmazonOrderScrapperUITests.swift; sourceTree = "<group>"; };
 		1CBF6D2025F5FE71001A801B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		E1E8CFCC25FA2EF20064A55F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		1CBF6D8A25F6269B001A801B /* OrderScrapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OrderScrapper.framework; sourceTree = "<group>"; };
 		1CE8506F25F7B646000A7158 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		E148DBEF26006118001430BE /* OrderScrapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OrderScrapper.framework; path = ../../bin/OrderScrapper.framework; sourceTree = "<group>"; };
+		E1E8CFCC25FA2EF20064A55F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +77,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E148DBF026006118001430BE /* OrderScrapper.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -154,6 +156,7 @@
 		E1052A2D25F7A22500B67F90 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E148DBEF26006118001430BE /* OrderScrapper.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -472,6 +475,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/../../bin",
 				);
 				INFOPLIST_FILE = AmazonOrderScrapper/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
@@ -494,6 +498,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/../../bin",
 				);
 				INFOPLIST_FILE = AmazonOrderScrapper/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
