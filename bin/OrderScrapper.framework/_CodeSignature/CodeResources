@@ -22,11 +22,11 @@
 		</data>
 		<key>Modules/OrderScrapper.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo</key>
 		<data>
-		xo0/QabIMg70ja2+EifNV67GZ0M=
+		ZuCTEgpKdHBE7EAHQuKP/S7yHkA=
 		</data>
 		<key>Modules/OrderScrapper.swiftmodule/Project/x86_64.swiftsourceinfo</key>
 		<data>
-		xo0/QabIMg70ja2+EifNV67GZ0M=
+		ZuCTEgpKdHBE7EAHQuKP/S7yHkA=
 		</data>
 		<key>Modules/OrderScrapper.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
@@ -34,7 +34,7 @@
 		</data>
 		<key>Modules/OrderScrapper.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		GaGUjsjXzjC+eLC2PHpmGwtQtfI=
+		paL9tANW+BeGkYvDx8bXmNMyARo=
 		</data>
 		<key>Modules/OrderScrapper.swiftmodule/x86_64.swiftdoc</key>
 		<data>
@@ -42,7 +42,7 @@
 		</data>
 		<key>Modules/OrderScrapper.swiftmodule/x86_64.swiftmodule</key>
 		<data>
-		GaGUjsjXzjC+eLC2PHpmGwtQtfI=
+		paL9tANW+BeGkYvDx8bXmNMyARo=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -85,14 +85,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			pfGOUe7p2RQ9i/IhHQksxhRKsafeNq28EA9oOzH6kY8=
+			CTGJHGTWpux5So9n4bsYCA36j1/V0nPCZjjdz5dXpls=
 			</data>
 		</dict>
 		<key>Modules/OrderScrapper.swiftmodule/Project/x86_64.swiftsourceinfo</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			pfGOUe7p2RQ9i/IhHQksxhRKsafeNq28EA9oOzH6kY8=
+			CTGJHGTWpux5So9n4bsYCA36j1/V0nPCZjjdz5dXpls=
 			</data>
 		</dict>
 		<key>Modules/OrderScrapper.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
@@ -106,7 +106,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Rp/oLyUrRhLD0o9ODBzy/5/LyoJDWkEMx7y3oYcwd/U=
+			NWsKu6jfYSdIiMUb242SdVq2BJPJgLdGLQsx2y5dbws=
 			</data>
 		</dict>
 		<key>Modules/OrderScrapper.swiftmodule/x86_64.swiftdoc</key>
@@ -120,7 +120,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Rp/oLyUrRhLD0o9ODBzy/5/LyoJDWkEMx7y3oYcwd/U=
+			NWsKu6jfYSdIiMUb242SdVq2BJPJgLdGLQsx2y5dbws=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>

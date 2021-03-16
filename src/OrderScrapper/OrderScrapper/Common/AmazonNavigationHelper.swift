@@ -17,12 +17,12 @@ struct AmazonURL {
 }
 
 class AmazonNavigationHelper: NavigationHelper {
-    @ObservedObject var viewModel: ViewModel
+    @ObservedObject var viewModel: WebViewModel
     
     var jsResultSubscriber: AnyCancellable? = nil
     let authenticator: AmazonAuthenticator
     
-    required init(_ viewModel: ViewModel) {
+    required init(_ viewModel: WebViewModel) {
         self.viewModel = viewModel
         self.authenticator = AmazonAuthenticator(viewModel)
     }

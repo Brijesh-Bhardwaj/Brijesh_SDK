@@ -8,11 +8,12 @@
 import SwiftUI
 
 struct ConnectAccountView: View {
-    @ObservedObject var viewModel: ViewModel
+    @ObservedObject var viewModel: WebViewModel
+    @State var showWebView = false
     
     init(email: String, password: String) {
         print("Init Connect Account View ", email, password)
-        self.viewModel = ViewModel()
+        self.viewModel = WebViewModel()
         self.viewModel.userEmail = email
         self.viewModel.userPassword = password
     }
@@ -20,12 +21,16 @@ struct ConnectAccountView: View {
     var body: some View {
         ZStack {
             WebView(viewModel: viewModel)
-//            Color.yellow.frame(width: .infinity, height: .infinity, alignment: .center)
-//            VStack {
-//                Text("Yolo")
-//            }.background(Color.yellow)
+            if (!self.showWebView) {
+                Color.yellow.frame(width: .infinity, height: .infinity, alignment: .center)
+            }
         }.edgesIgnoringSafeArea(.all)
         .navigationBarHidden(true)
+        .onReceive(self.viewModel.showWebView.receive(on: RunLoop.main)) { value in
+            if (showWebView != value) {
+                showWebView = value
+            }
+        }
     }
 }
 

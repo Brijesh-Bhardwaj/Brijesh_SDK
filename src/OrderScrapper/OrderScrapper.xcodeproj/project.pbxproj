@@ -20,8 +20,6 @@
 		E148DB6225FF2BFD001430BE /* IconNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB4C25FF2BFD001430BE /* IconNames.swift */; };
 		E148DB6325FF2BFD001430BE /* AccountState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB4E25FF2BFD001430BE /* AccountState.swift */; };
 		E148DB6425FF2BFD001430BE /* OrderSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB4F25FF2BFD001430BE /* OrderSource.swift */; };
-		E148DB6525FF2BFD001430BE /* StatusEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5025FF2BFD001430BE /* StatusEnum.swift */; };
-		E148DB6625FF2BFD001430BE /* ServiceProviderEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5125FF2BFD001430BE /* ServiceProviderEnum.swift */; };
 		E148DB6725FF2BFD001430BE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E148DB5225FF2BFD001430BE /* Images.xcassets */; };
 		E148DB6825FF2BFD001430BE /* AuthProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5425FF2BFD001430BE /* AuthProvider.swift */; };
 		E148DB6925FF2BFD001430BE /* OrderScrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5525FF2BFD001430BE /* OrderScrapper.swift */; };
@@ -33,8 +31,7 @@
 		E148DB7925FF310E001430BE /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB7725FF310E001430BE /* WebView.swift */; };
 		E148DB7A25FF310E001430BE /* ConnectAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB7825FF310E001430BE /* ConnectAccountView.swift */; };
 		E148DB7E25FF313A001430BE /* AmazonNavigationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB7D25FF313A001430BE /* AmazonNavigationHelper.swift */; };
-		E148DB8325FF317B001430BE /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB8225FF317B001430BE /* ViewModel.swift */; };
-		E148DB8925FF3195001430BE /* NavigationAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB8725FF3195001430BE /* NavigationAction.swift */; };
+		E148DB8325FF317B001430BE /* WebViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB8225FF317B001430BE /* WebViewModel.swift */; };
 		E148DB8D25FF31B4001430BE /* NavigationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB8C25FF31B4001430BE /* NavigationHelper.swift */; };
 		E148DB9325FF3D8A001430BE /* AmazonAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB9225FF3D8A001430BE /* AmazonAuthenticator.swift */; };
 /* End PBXBuildFile section */
@@ -80,8 +77,6 @@
 		E148DB4C25FF2BFD001430BE /* IconNames.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconNames.swift; sourceTree = "<group>"; };
 		E148DB4E25FF2BFD001430BE /* AccountState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountState.swift; sourceTree = "<group>"; };
 		E148DB4F25FF2BFD001430BE /* OrderSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderSource.swift; sourceTree = "<group>"; };
-		E148DB5025FF2BFD001430BE /* StatusEnum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusEnum.swift; sourceTree = "<group>"; };
-		E148DB5125FF2BFD001430BE /* ServiceProviderEnum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceProviderEnum.swift; sourceTree = "<group>"; };
 		E148DB5225FF2BFD001430BE /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		E148DB5425FF2BFD001430BE /* AuthProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthProvider.swift; sourceTree = "<group>"; };
 		E148DB5525FF2BFD001430BE /* OrderScrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderScrapper.swift; sourceTree = "<group>"; };
@@ -93,8 +88,7 @@
 		E148DB7725FF310E001430BE /* WebView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		E148DB7825FF310E001430BE /* ConnectAccountView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectAccountView.swift; sourceTree = "<group>"; };
 		E148DB7D25FF313A001430BE /* AmazonNavigationHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AmazonNavigationHelper.swift; path = Common/AmazonNavigationHelper.swift; sourceTree = "<group>"; };
-		E148DB8225FF317B001430BE /* ViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ViewModel.swift; path = ViewModels/ViewModel.swift; sourceTree = "<group>"; };
-		E148DB8725FF3195001430BE /* NavigationAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationAction.swift; sourceTree = "<group>"; };
+		E148DB8225FF317B001430BE /* WebViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WebViewModel.swift; path = ViewModels/WebViewModel.swift; sourceTree = "<group>"; };
 		E148DB8C25FF31B4001430BE /* NavigationHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationHelper.swift; sourceTree = "<group>"; };
 		E148DB9225FF3D8A001430BE /* AmazonAuthenticator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AmazonAuthenticator.swift; path = Common/AmazonAuthenticator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -213,11 +207,8 @@
 		E148DB4D25FF2BFD001430BE /* Enums */ = {
 			isa = PBXGroup;
 			children = (
-				E148DB8725FF3195001430BE /* NavigationAction.swift */,
 				E148DB4E25FF2BFD001430BE /* AccountState.swift */,
 				E148DB4F25FF2BFD001430BE /* OrderSource.swift */,
-				E148DB5025FF2BFD001430BE /* StatusEnum.swift */,
-				E148DB5125FF2BFD001430BE /* ServiceProviderEnum.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -247,7 +238,7 @@
 		E148DB8125FF316B001430BE /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				E148DB8225FF317B001430BE /* ViewModel.swift */,
+				E148DB8225FF317B001430BE /* WebViewModel.swift */,
 			);
 			name = ViewModels;
 			sourceTree = "<group>";
@@ -401,19 +392,16 @@
 				E148DB6425FF2BFD001430BE /* OrderSource.swift in Sources */,
 				E148DB6925FF2BFD001430BE /* OrderScrapper.swift in Sources */,
 				E148DB6225FF2BFD001430BE /* IconNames.swift in Sources */,
-				E148DB6525FF2BFD001430BE /* StatusEnum.swift in Sources */,
 				E148DB6C25FF2BFD001430BE /* Account.swift in Sources */,
 				E148DB6D25FF2BFD001430BE /* AccountDisconnectedListener.swift in Sources */,
 				E148DB6E25FF2BFD001430BE /* ASLException.swift in Sources */,
 				E148DB6A25FF2BFD001430BE /* AccountConnectedListener.swift in Sources */,
-				E148DB8925FF3195001430BE /* NavigationAction.swift in Sources */,
 				E148DB5C25FF2BFD001430BE /* AmazonOrderScrapper.swift in Sources */,
 				E148DB9325FF3D8A001430BE /* AmazonAuthenticator.swift in Sources */,
 				1CBF6D9C25F6294C001A801B /* OrderScrapperFactory.swift in Sources */,
 				E148DB6325FF2BFD001430BE /* AccountState.swift in Sources */,
-				E148DB8325FF317B001430BE /* ViewModel.swift in Sources */,
+				E148DB8325FF317B001430BE /* WebViewModel.swift in Sources */,
 				E148DB6B25FF2BFD001430BE /* ViewPresenter.swift in Sources */,
-				E148DB6625FF2BFD001430BE /* ServiceProviderEnum.swift in Sources */,
 				E148DB5F25FF2BFD001430BE /* LoginView.swift in Sources */,
 				E148DB7A25FF310E001430BE /* ConnectAccountView.swift in Sources */,
 				E148DB7925FF310E001430BE /* WebView.swift in Sources */,

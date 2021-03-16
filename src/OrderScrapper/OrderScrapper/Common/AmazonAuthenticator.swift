@@ -13,11 +13,11 @@ enum JSInjectValue {
 }
 
 internal class AmazonAuthenticator {
-    @ObservedObject var viewModel: ViewModel
+    @ObservedObject var viewModel: WebViewModel
     
     var jsResultSubscriber: AnyCancellable? = nil
     
-    required init(_ viewModel: ViewModel) {
+    required init(_ viewModel: WebViewModel) {
         self.viewModel = viewModel
     }
     
@@ -36,12 +36,12 @@ internal class AmazonAuthenticator {
                     if let response = response {
                         let strResult = response as! String
                         if (strResult.isEmpty) {
-                            self.injectFieldIdentificationJS()
+                            self.injectCaptchaIdentificationJS()
                         } else {
                             //Error
                         }
                     } else {
-                        self.injectFieldIdentificationJS()
+                        self.injectCaptchaIdentificationJS()
                     }
                 case .identification:
                     if let response = response as? String {
@@ -56,11 +56,16 @@ internal class AmazonAuthenticator {
                 case .captcha:
                     if let response = response as? String {
                         if response.contains("captcha") {
-                            
+                            self.viewModel.showWebView.send(true)
+                        } else {
+                            self.injectFieldIdentificationJS()
                         }
+                    } else {
+                        self.injectFieldIdentificationJS()
                     }
                 }
             })
+        
         self.injectAuthErrorVerificationJS()
     }
     
@@ -104,7 +109,7 @@ internal class AmazonAuthenticator {
     private func injectCaptchaIdentificationJS() {
         let js = "(function() { var element = document.getElementById('auth-captcha-guess');" +
             "if (element != null && element.innerHTML !== null) " +
-            "{return 'capcha'} else {" +
+            "{return 'captcha'} else {" +
             " return null}})()"
         
         self.viewModel.jsPublisher.send((.captcha, js))
