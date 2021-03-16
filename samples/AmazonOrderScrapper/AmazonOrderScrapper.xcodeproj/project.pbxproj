@@ -16,8 +16,8 @@
 		1CBF6D1425F5FE71001A801B /* AmazonOrderScrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D1325F5FE71001A801B /* AmazonOrderScrapperTests.swift */; };
 		1CBF6D1F25F5FE71001A801B /* AmazonOrderScrapperUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D1E25F5FE71001A801B /* AmazonOrderScrapperUITests.swift */; };
 		1CE8507025F7B646000A7158 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE8506F25F7B646000A7158 /* ContentView.swift */; };
-		E148DBDB25FF4D30001430BE /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E148DBDA25FF4D30001430BE /* OrderScrapper.framework */; };
-		E148DBDC25FF4D30001430BE /* OrderScrapper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E148DBDA25FF4D30001430BE /* OrderScrapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E148DBF026006118001430BE /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E148DBEF26006118001430BE /* OrderScrapper.framework */; };
+		E148DBF126006118001430BE /* OrderScrapper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E148DBEF26006118001430BE /* OrderScrapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E1E8CFCD25FA2EF20064A55F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E1E8CFCC25FA2EF20064A55F /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -45,7 +45,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				E148DBDC25FF4D30001430BE /* OrderScrapper.framework in Embed Frameworks */,
+				E148DBF126006118001430BE /* OrderScrapper.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -68,7 +68,7 @@
 		1CBF6D1E25F5FE71001A801B /* AmazonOrderScrapperUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmazonOrderScrapperUITests.swift; sourceTree = "<group>"; };
 		1CBF6D2025F5FE71001A801B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1CE8506F25F7B646000A7158 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		E148DBDA25FF4D30001430BE /* OrderScrapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OrderScrapper.framework; path = ../../bin/OrderScrapper.framework; sourceTree = "<group>"; };
+		E148DBEF26006118001430BE /* OrderScrapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OrderScrapper.framework; path = ../../bin/OrderScrapper.framework; sourceTree = "<group>"; };
 		E1E8CFCC25FA2EF20064A55F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -77,7 +77,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E148DBDB25FF4D30001430BE /* OrderScrapper.framework in Frameworks */,
+				E148DBF026006118001430BE /* OrderScrapper.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,7 +156,7 @@
 		E1052A2D25F7A22500B67F90 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E148DBDA25FF4D30001430BE /* OrderScrapper.framework */,
+				E148DBEF26006118001430BE /* OrderScrapper.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -475,6 +475,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/../../bin",
 				);
 				INFOPLIST_FILE = AmazonOrderScrapper/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
@@ -497,6 +498,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/../../bin",
 				);
 				INFOPLIST_FILE = AmazonOrderScrapper/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
