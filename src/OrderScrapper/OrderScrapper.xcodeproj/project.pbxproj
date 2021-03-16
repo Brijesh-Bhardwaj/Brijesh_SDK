@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C006FA4260099FA00F9263E /* FetchDataStepsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FA1260099FA00F9263E /* FetchDataStepsView.swift */; };
+		1C006FA5260099FA00F9263E /* ProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FA2260099FA00F9263E /* ProgressBar.swift */; };
+		1C006FA6260099FA00F9263E /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FA3260099FA00F9263E /* ErrorView.swift */; };
+		1C006FAA26009BE500F9263E /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FA926009BE500F9263E /* AppConstants.swift */; };
+		1C006FB12600B7DA00F9263E /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FB02600B7DA00F9263E /* Utils.swift */; };
+		1C006FB72600BDA800F9263E /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FB62600BDA800F9263E /* Strings.swift */; };
+		1C006FBB2600C02700F9263E /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FBA2600C02700F9263E /* Colors.swift */; };
+		1C006FBF2600D75D00F9263E /* ValidationUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FBE2600D75D00F9263E /* ValidationUtil.swift */; };
 		1CBF6D4325F5FFBE001A801B /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CBF6D3925F5FFBE001A801B /* OrderScrapper.framework */; };
 		1CBF6D4825F5FFBE001A801B /* OrderScrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D4725F5FFBE001A801B /* OrderScrapperTests.swift */; };
 		1CBF6D4A25F5FFBE001A801B /* OrderScrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CBF6D3C25F5FFBE001A801B /* OrderScrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -61,6 +69,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1C006FA1260099FA00F9263E /* FetchDataStepsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchDataStepsView.swift; sourceTree = "<group>"; };
+		1C006FA2260099FA00F9263E /* ProgressBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressBar.swift; sourceTree = "<group>"; };
+		1C006FA3260099FA00F9263E /* ErrorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
+		1C006FA926009BE500F9263E /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
+		1C006FB02600B7DA00F9263E /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		1C006FB62600BDA800F9263E /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
+		1C006FBA2600C02700F9263E /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		1C006FBE2600D75D00F9263E /* ValidationUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationUtil.swift; sourceTree = "<group>"; };
 		1CBF6D3925F5FFBE001A801B /* OrderScrapper.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OrderScrapper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CBF6D3C25F5FFBE001A801B /* OrderScrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OrderScrapper.h; sourceTree = "<group>"; };
 		1CBF6D3D25F5FFBE001A801B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -112,6 +128,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1C006FAF2600B7AD00F9263E /* Utility */ = {
+			isa = PBXGroup;
+			children = (
+				1C006FB02600B7DA00F9263E /* Utils.swift */,
+				1C006FBE2600D75D00F9263E /* ValidationUtil.swift */,
+			);
+			path = Utility;
+			sourceTree = "<group>";
+		};
 		1CBF6D2F25F5FFBE001A801B = {
 			isa = PBXGroup;
 			children = (
@@ -133,6 +158,7 @@
 		1CBF6D3B25F5FFBE001A801B /* OrderScrapper */ = {
 			isa = PBXGroup;
 			children = (
+				1C006FAF2600B7AD00F9263E /* Utility */,
 				E148DB8125FF316B001430BE /* ViewModels */,
 				E148DB4225FF2BFD001430BE /* Assets.xcassets */,
 				E148DB4025FF2BFD001430BE /* Classes */,
@@ -180,6 +206,9 @@
 		E148DB4525FF2BFD001430BE /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				1C006FA3260099FA00F9263E /* ErrorView.swift */,
+				1C006FA1260099FA00F9263E /* FetchDataStepsView.swift */,
+				1C006FA2260099FA00F9263E /* ProgressBar.swift */,
 				E148DB7825FF310E001430BE /* ConnectAccountView.swift */,
 				E148DB7725FF310E001430BE /* WebView.swift */,
 				E148DB4625FF2BFD001430BE /* LoginView.swift */,
@@ -200,6 +229,9 @@
 			isa = PBXGroup;
 			children = (
 				E148DB4C25FF2BFD001430BE /* IconNames.swift */,
+				1C006FA926009BE500F9263E /* AppConstants.swift */,
+				1C006FB62600BDA800F9263E /* Strings.swift */,
+				1C006FBA2600C02700F9263E /* Colors.swift */,
 			);
 			path = Constants;
 			sourceTree = "<group>";
@@ -387,21 +419,29 @@
 			buildActionMask = 2147483647;
 			files = (
 				E148DB6025FF2BFD001430BE /* RoundedCorners.swift in Sources */,
+				1C006FA4260099FA00F9263E /* FetchDataStepsView.swift in Sources */,
 				E148DB8D25FF31B4001430BE /* NavigationHelper.swift in Sources */,
 				E148DB7E25FF313A001430BE /* AmazonNavigationHelper.swift in Sources */,
 				E148DB6425FF2BFD001430BE /* OrderSource.swift in Sources */,
+				1C006FBF2600D75D00F9263E /* ValidationUtil.swift in Sources */,
+				1C006FB12600B7DA00F9263E /* Utils.swift in Sources */,
 				E148DB6925FF2BFD001430BE /* OrderScrapper.swift in Sources */,
 				E148DB6225FF2BFD001430BE /* IconNames.swift in Sources */,
+				1C006FA6260099FA00F9263E /* ErrorView.swift in Sources */,
 				E148DB6C25FF2BFD001430BE /* Account.swift in Sources */,
+				1C006FB72600BDA800F9263E /* Strings.swift in Sources */,
+				1C006FA5260099FA00F9263E /* ProgressBar.swift in Sources */,
 				E148DB6D25FF2BFD001430BE /* AccountDisconnectedListener.swift in Sources */,
 				E148DB6E25FF2BFD001430BE /* ASLException.swift in Sources */,
 				E148DB6A25FF2BFD001430BE /* AccountConnectedListener.swift in Sources */,
 				E148DB5C25FF2BFD001430BE /* AmazonOrderScrapper.swift in Sources */,
 				E148DB9325FF3D8A001430BE /* AmazonAuthenticator.swift in Sources */,
+				1C006FBB2600C02700F9263E /* Colors.swift in Sources */,
 				1CBF6D9C25F6294C001A801B /* OrderScrapperFactory.swift in Sources */,
 				E148DB6325FF2BFD001430BE /* AccountState.swift in Sources */,
 				E148DB8325FF317B001430BE /* WebViewModel.swift in Sources */,
 				E148DB6B25FF2BFD001430BE /* ViewPresenter.swift in Sources */,
+				1C006FAA26009BE500F9263E /* AppConstants.swift in Sources */,
 				E148DB5F25FF2BFD001430BE /* LoginView.swift in Sources */,
 				E148DB7A25FF310E001430BE /* ConnectAccountView.swift in Sources */,
 				E148DB7925FF310E001430BE /* WebView.swift in Sources */,

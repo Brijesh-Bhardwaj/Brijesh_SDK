@@ -11,3 +11,17 @@
 "label_email_or_mobile_number" = "Email or mobile number";
 "label_password" = "Password";
 "btn_submit" = "Submit";
+"no_connection" = "No Connection";
+"no_connection_msg" = "Please check your internet connection and try again";
+"btn_try_again" = "Try Again";
+"error_encountered_unexpected_error" = "We encountered an unexpected error, please try again";
+"heading_connecting_amazon_account" = "Connecting Amazon Account";
+"subheading_stay_on_this_screen_until_completion" = "Please stay on this screen until completion";
+"heading_fetching_your_receipts" = "Fetching your receipts";
+"msg_report_downloaded_successfully" = "Report downloaded successfully";
+"btn_ok" = "Okay";
+"validation_please_enter_valid_email" = "Please enter valid email address";
+"validation_please_enter_valid_password" = "Please enter valid password";
+"step1" = "Step1";
+"step2" = "Step2";
+"step3" = "Step3";
