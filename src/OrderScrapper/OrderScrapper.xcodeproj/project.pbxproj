@@ -42,6 +42,10 @@
 		E148DB8325FF317B001430BE /* WebViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB8225FF317B001430BE /* WebViewModel.swift */; };
 		E148DB8D25FF31B4001430BE /* NavigationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB8C25FF31B4001430BE /* NavigationHelper.swift */; };
 		E148DB9325FF3D8A001430BE /* AmazonAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB9225FF3D8A001430BE /* AmazonAuthenticator.swift */; };
+		E148DC012600DD64001430BE /* FileHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DC002600DD64001430BE /* FileHelper.swift */; };
+		E148DC072600F7DB001430BE /* FileDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DC062600F7DB001430BE /* FileDownloader.swift */; };
+		E148DC0B26010D28001430BE /* Authenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DC0A26010D28001430BE /* Authenticator.swift */; };
+		E148DC182601F3AA001430BE /* ReportConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DC172601F3AA001430BE /* ReportConfig.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -107,6 +111,10 @@
 		E148DB8225FF317B001430BE /* WebViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WebViewModel.swift; path = ViewModels/WebViewModel.swift; sourceTree = "<group>"; };
 		E148DB8C25FF31B4001430BE /* NavigationHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationHelper.swift; sourceTree = "<group>"; };
 		E148DB9225FF3D8A001430BE /* AmazonAuthenticator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AmazonAuthenticator.swift; path = Common/AmazonAuthenticator.swift; sourceTree = "<group>"; };
+		E148DC002600DD64001430BE /* FileHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileHelper.swift; sourceTree = "<group>"; };
+		E148DC062600F7DB001430BE /* FileDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloader.swift; sourceTree = "<group>"; };
+		E148DC0A26010D28001430BE /* Authenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Authenticator.swift; sourceTree = "<group>"; };
+		E148DC172601F3AA001430BE /* ReportConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportConfig.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,6 +166,7 @@
 		1CBF6D3B25F5FFBE001A801B /* OrderScrapper */ = {
 			isa = PBXGroup;
 			children = (
+				E148DC162601F371001430BE /* Models */,
 				1C006FAF2600B7AD00F9263E /* Utility */,
 				E148DB8125FF316B001430BE /* ViewModels */,
 				E148DB4225FF2BFD001430BE /* Assets.xcassets */,
@@ -255,6 +264,7 @@
 				E148DB5725FF2BFD001430BE /* ViewPresenter.swift */,
 				E148DB5825FF2BFD001430BE /* Account.swift */,
 				E148DB5925FF2BFD001430BE /* AccountDisconnectedListener.swift */,
+				E148DC0A26010D28001430BE /* Authenticator.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -275,11 +285,21 @@
 			name = ViewModels;
 			sourceTree = "<group>";
 		};
+		E148DC162601F371001430BE /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				E148DC172601F3AA001430BE /* ReportConfig.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		E1D9B2A525FB871B00D6A240 /* Common */ = {
 			isa = PBXGroup;
 			children = (
 				E148DB9225FF3D8A001430BE /* AmazonAuthenticator.swift */,
 				E148DB7D25FF313A001430BE /* AmazonNavigationHelper.swift */,
+				E148DC002600DD64001430BE /* FileHelper.swift */,
+				E148DC062600F7DB001430BE /* FileDownloader.swift */,
 			);
 			name = Common;
 			sourceTree = "<group>";
@@ -418,9 +438,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E148DC182601F3AA001430BE /* ReportConfig.swift in Sources */,
 				E148DB6025FF2BFD001430BE /* RoundedCorners.swift in Sources */,
 				1C006FA4260099FA00F9263E /* FetchDataStepsView.swift in Sources */,
 				E148DB8D25FF31B4001430BE /* NavigationHelper.swift in Sources */,
+				E148DC012600DD64001430BE /* FileHelper.swift in Sources */,
 				E148DB7E25FF313A001430BE /* AmazonNavigationHelper.swift in Sources */,
 				E148DB6425FF2BFD001430BE /* OrderSource.swift in Sources */,
 				1C006FBF2600D75D00F9263E /* ValidationUtil.swift in Sources */,
@@ -441,9 +463,11 @@
 				E148DB6325FF2BFD001430BE /* AccountState.swift in Sources */,
 				E148DB8325FF317B001430BE /* WebViewModel.swift in Sources */,
 				E148DB6B25FF2BFD001430BE /* ViewPresenter.swift in Sources */,
+				E148DC0B26010D28001430BE /* Authenticator.swift in Sources */,
 				1C006FAA26009BE500F9263E /* AppConstants.swift in Sources */,
 				E148DB5F25FF2BFD001430BE /* LoginView.swift in Sources */,
 				E148DB7A25FF310E001430BE /* ConnectAccountView.swift in Sources */,
+				E148DC072600F7DB001430BE /* FileDownloader.swift in Sources */,
 				E148DB7925FF310E001430BE /* WebView.swift in Sources */,
 				E148DB5E25FF2BFD001430BE /* View.swift in Sources */,
 				E148DB6825FF2BFD001430BE /* AuthProvider.swift in Sources */,

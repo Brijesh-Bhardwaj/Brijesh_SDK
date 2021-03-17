@@ -12,7 +12,7 @@ enum JSInjectValue {
     case email, password, captcha, error, identification, generateReport, downloadReport
 }
 
-internal class AmazonAuthenticator {
+internal class AmazonAuthenticator: Authenticator {
     @ObservedObject var viewModel: WebViewModel
     
     var jsResultSubscriber: AnyCancellable? = nil
@@ -25,7 +25,7 @@ internal class AmazonAuthenticator {
         self.jsResultSubscriber?.cancel()
     }
     
-    public func authenticate() {
+    func authenticate() {
         self.jsResultSubscriber = viewModel.jsResultPublisher.receive(on: RunLoop.main)
             .sink(receiveValue: { (injectValue, result) in
                 print("JS Result: ", injectValue, result)
@@ -65,7 +65,7 @@ internal class AmazonAuthenticator {
                     }
                 }
             })
-        
+
         self.injectAuthErrorVerificationJS()
     }
     

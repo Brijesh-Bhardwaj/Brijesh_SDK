@@ -11,7 +11,7 @@ import WebKit
 
 // MARK: - WebView
 struct WebView: UIViewRepresentable {
-   // Viewmodel object
+    // Viewmodel object
     @ObservedObject var viewModel: WebViewModel
     
     // Make a coordinator to co-ordinate with WKWebView's default delegate functions
@@ -75,6 +75,30 @@ struct WebView: UIViewRepresentable {
         func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
             // Shows loader
             parent.viewModel.showWebView.send(false)
+        }
+        
+        func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
+            if let mimeType = navigationResponse.response.mimeType {
+                let result = mimeType.compare("text/csv")
+                if result == .orderedSame {
+                    if let url = navigationResponse.response.url {
+                        let fileName = FileHelper.getReportFileNameFromResponse(navigationResponse.response)
+                        webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { cookies in
+                            let fileDownloader = FileDownloader()
+                            fileDownloader.downloadReportFile(fromURL: url, cookies: cookies) { success, tempURL in
+                                if success, let tempURL = tempURL {
+                                    let downloadURL = FileHelper.getReportDownloadPath(fileName: fileName, orderSource: .Amazon)
+                                    let _ = FileHelper.moveFileToPath(fromURL: tempURL, destinationURL: downloadURL)
+                                    print("Report downloaded in path: ", downloadURL)
+                                }
+                            }
+                        }
+                        decisionHandler(.cancel)
+                        return
+                    }
+                }
+            }
+            decisionHandler(.allow)
         }
         
         // This function is essential for intercepting every navigation in the webview

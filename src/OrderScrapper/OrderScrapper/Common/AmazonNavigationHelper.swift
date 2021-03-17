@@ -20,7 +20,7 @@ class AmazonNavigationHelper: NavigationHelper {
     @ObservedObject var viewModel: WebViewModel
     
     var jsResultSubscriber: AnyCancellable? = nil
-    let authenticator: AmazonAuthenticator
+    let authenticator: Authenticator
     
     required init(_ viewModel: WebViewModel) {
         self.viewModel = viewModel
@@ -50,25 +50,19 @@ class AmazonNavigationHelper: NavigationHelper {
     }
     
     private func injectGenerateReportJS() {
-        let startDay = "1";
-        let startMonth = "5";
-        let startyear = "2008";
-        let endDay = "17";
-        let endMonth = "2";
-        let endYear = "2021";
-        let reportType = "SHIPMENTS";
+        if let reportConfig = self.viewModel.reportConfig {
+            let js = "javascript:" +
+                "document.getElementById('report-type').value = '" + reportConfig.reportType + "';" +
+                "document.getElementById('report-month-start').value = '" + reportConfig.startMonth + "';" +
+                "document.getElementById('report-day-start').value = '" + reportConfig.startDate + "';" +
+                "document.getElementById('report-year-start').value = '" + reportConfig.startYear + "';" +
+                "document.getElementById('report-month-end').value = '" + reportConfig.endMonth + "';" +
+                "document.getElementById('report-day-end').value = '" + reportConfig.endDate + "';" +
+                "document.getElementById('report-year-end').value = '" + reportConfig.endYear + "';" +
+                "document.getElementById('report-confirm').click()"
         
-        let js = "javascript:" +
-            "document.getElementById('report-type').value = '" + reportType + "';" +
-            "document.getElementById('report-month-start').value = '" + startMonth + "';" +
-            "document.getElementById('report-day-start').value = '" + startDay + "';" +
-            "document.getElementById('report-year-start').value = '" + startyear + "';" +
-            "document.getElementById('report-month-end').value = '" + endMonth + "';" +
-            "document.getElementById('report-day-end').value = '" + endDay + "';" +
-            "document.getElementById('report-year-end').value = '" + endYear + "';" +
-            "document.getElementById('report-confirm').click()"
-        
-        self.viewModel.jsPublisher.send((.generateReport, js))
+            self.viewModel.jsPublisher.send((.generateReport, js))
+        }
     }
     
     private func injectDownloadReportJS() {
