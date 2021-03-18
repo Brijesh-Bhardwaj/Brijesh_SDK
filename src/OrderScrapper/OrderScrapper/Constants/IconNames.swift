@@ -10,4 +10,5 @@ struct IconNames {
     static let Error = "error"
     static let RightArrow = "arrow-right"
     static let ErrorLarge = "error-large"
+    static let Tick = "tick"
 }

@@ -59,6 +59,7 @@ struct WebView: UIViewRepresentable {
         }
         
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            print(webView.url)
             /* An observer that observes 'viewModel.jsPublisher' to get javascript value and
              pass that value to web app by calling JavaScript function */
             jsSubscriber = parent.viewModel.jsPublisher.receive(on: RunLoop.main).sink(receiveValue: {

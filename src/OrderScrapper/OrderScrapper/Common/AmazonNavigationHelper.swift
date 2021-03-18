@@ -16,6 +16,10 @@ struct AmazonURL {
     static let generateReport   =   "gp/b2b/reports/"
 }
 
+private enum Step {
+    case authentication, generateReport, downloadReport, parseCSV, uploadReport
+}
+
 class AmazonNavigationHelper: NavigationHelper {
     @ObservedObject var viewModel: WebViewModel
     
@@ -38,14 +42,17 @@ class AmazonNavigationHelper: NavigationHelper {
         
         if (urlString.contains(AmazonURL.signIn)) {
             self.authenticator.authenticate()
+            self.viewModel.progressValue.send(getProgressPercentage(step: .authentication))
         } else if (urlString.contains(AmazonURL.authApproval)
                     || urlString.contains(AmazonURL.twoFactorAuth)) {
             self.viewModel.showWebView.send(true)
         } else if (urlString.contains(AmazonURL.downloadReport)
                     && urlString.contains(AmazonURL.reportID)) {
             self.injectDownloadReportJS()
+            self.viewModel.progressValue.send(getProgressPercentage(step: .downloadReport))
         } else if (urlString.contains(AmazonURL.generateReport)) {
             self.injectGenerateReportJS()
+            self.viewModel.progressValue.send(getProgressPercentage(step: .generateReport))
         }
     }
     
@@ -70,5 +77,24 @@ class AmazonNavigationHelper: NavigationHelper {
             "document.getElementById(window['download-cell-'+new URLSearchParams(window.location.search).get(\"reportId\")].id).click()"
         
         self.viewModel.jsPublisher.send((.downloadReport, js))
+    }
+    
+    private func getProgressPercentage(step : Step) -> Float {
+        var progressValue: Float = 0
+    
+        switch step {
+        case .authentication:
+            progressValue = 1;
+        case .generateReport:
+            progressValue = 2;
+        case .downloadReport:
+            progressValue = 3;
+        case .parseCSV:
+            progressValue = 4;
+        case .uploadReport:
+            progressValue = 5;
+        }
+        print("ProgressStep ",progressValue)
+        return progressValue/AppConstants.numberOfSteps
     }
 }

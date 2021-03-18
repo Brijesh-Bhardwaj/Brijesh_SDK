@@ -10,10 +10,10 @@ class ValidationUtil {
     
     static func isValidEmail(email: String) -> Bool {
         let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        if email.isEmpty || emailTest.evaluate(with: email) {
-            return false
+        if !email.isEmpty && emailTest.evaluate(with: email) {
+            return true
         }
-           return true
+           return false
     }
     
     static func isValidPassword(password: String) -> Bool {

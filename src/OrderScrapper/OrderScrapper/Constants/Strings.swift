@@ -25,4 +25,6 @@ struct Strings {
     static let Step1 = "step1"
     static let Step2 = "step2"
     static let Step3 = "step3"
+    static let SuccessMsgReceiptsFechedSuccessfully = "success_msg_receipts_fetched_successfully"
+
 }

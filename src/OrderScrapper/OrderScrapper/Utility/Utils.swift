@@ -16,4 +16,6 @@ class Utils {
     static func getColor(key : String) -> Color {
         return Color(key, bundle: AppConstants.bundle)
     }
+    
+    
 }

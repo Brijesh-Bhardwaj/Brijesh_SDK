@@ -15,4 +15,5 @@ class WebViewModel: ObservableObject {
     var webviewError = PassthroughSubject<String, Never>()
     var jsPublisher = PassthroughSubject<(JSInjectValue, String), Never>()
     var jsResultPublisher = PassthroughSubject<(JSInjectValue, (Any?, Error?)), Never>()
+    var progressValue = PassthroughSubject<Float, Never>()
 }

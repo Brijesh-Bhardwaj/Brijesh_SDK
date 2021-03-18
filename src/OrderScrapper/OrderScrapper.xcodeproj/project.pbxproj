@@ -15,6 +15,7 @@
 		1C006FB72600BDA800F9263E /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FB62600BDA800F9263E /* Strings.swift */; };
 		1C006FBB2600C02700F9263E /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FBA2600C02700F9263E /* Colors.swift */; };
 		1C006FBF2600D75D00F9263E /* ValidationUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FBE2600D75D00F9263E /* ValidationUtil.swift */; };
+		1C2CD4CC2601E5B70042FF61 /* DataFetchSuccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2CD4CB2601E5B70042FF61 /* DataFetchSuccessView.swift */; };
 		1CBF6D4325F5FFBE001A801B /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CBF6D3925F5FFBE001A801B /* OrderScrapper.framework */; };
 		1CBF6D4825F5FFBE001A801B /* OrderScrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D4725F5FFBE001A801B /* OrderScrapperTests.swift */; };
 		1CBF6D4A25F5FFBE001A801B /* OrderScrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CBF6D3C25F5FFBE001A801B /* OrderScrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -81,6 +82,7 @@
 		1C006FB62600BDA800F9263E /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
 		1C006FBA2600C02700F9263E /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		1C006FBE2600D75D00F9263E /* ValidationUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationUtil.swift; sourceTree = "<group>"; };
+		1C2CD4CB2601E5B70042FF61 /* DataFetchSuccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataFetchSuccessView.swift; sourceTree = "<group>"; };
 		1CBF6D3925F5FFBE001A801B /* OrderScrapper.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OrderScrapper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CBF6D3C25F5FFBE001A801B /* OrderScrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OrderScrapper.h; sourceTree = "<group>"; };
 		1CBF6D3D25F5FFBE001A801B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -222,6 +224,7 @@
 				E148DB7725FF310E001430BE /* WebView.swift */,
 				E148DB4625FF2BFD001430BE /* LoginView.swift */,
 				E148DB4725FF2BFD001430BE /* RoundedCorners.swift */,
+				1C2CD4CB2601E5B70042FF61 /* DataFetchSuccessView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -449,6 +452,7 @@
 				1C006FB12600B7DA00F9263E /* Utils.swift in Sources */,
 				E148DB6925FF2BFD001430BE /* OrderScrapper.swift in Sources */,
 				E148DB6225FF2BFD001430BE /* IconNames.swift in Sources */,
+				1C2CD4CC2601E5B70042FF61 /* DataFetchSuccessView.swift in Sources */,
 				1C006FA6260099FA00F9263E /* ErrorView.swift in Sources */,
 				E148DB6C25FF2BFD001430BE /* Account.swift in Sources */,
 				1C006FB72600BDA800F9263E /* Strings.swift in Sources */,

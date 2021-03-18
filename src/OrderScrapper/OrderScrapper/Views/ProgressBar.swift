@@ -9,7 +9,6 @@ import SwiftUI
 struct ProgressBar: View {
     @Binding var value: Float
     var progressPadding : CGFloat = 6
-    
     var body: some View {
         GeometryReader { geometry in
             HStack {
