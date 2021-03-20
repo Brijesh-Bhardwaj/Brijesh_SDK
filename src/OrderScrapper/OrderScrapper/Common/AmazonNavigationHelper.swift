@@ -6,6 +6,7 @@
 import Foundation
 import SwiftUI
 import Combine
+import RNCryptor
 
 struct AmazonURL {
     static let signIn           =   "ap/signin"
@@ -43,6 +44,8 @@ class AmazonNavigationHelper: NavigationHelper {
         if (urlString.contains(AmazonURL.signIn)) {
             self.authenticator.authenticate()
             self.viewModel.progressValue.send(getProgressPercentage(step: .authentication))
+            //On authentication add user account details to DB
+            addUserAccountInDB()
         } else if (urlString.contains(AmazonURL.authApproval)
                     || urlString.contains(AmazonURL.twoFactorAuth)) {
             self.viewModel.showWebView.send(true)
@@ -67,7 +70,7 @@ class AmazonNavigationHelper: NavigationHelper {
                 "document.getElementById('report-day-end').value = '" + reportConfig.endDate + "';" +
                 "document.getElementById('report-year-end').value = '" + reportConfig.endYear + "';" +
                 "document.getElementById('report-confirm').click()"
-        
+            
             self.viewModel.jsPublisher.send((.generateReport, js))
         }
     }
@@ -79,9 +82,11 @@ class AmazonNavigationHelper: NavigationHelper {
         self.viewModel.jsPublisher.send((.downloadReport, js))
     }
     
+    /*
+     * get progress value in the range 0 to 1 from step number
+     **/
     private func getProgressPercentage(step : Step) -> Float {
         var progressValue: Float = 0
-    
         switch step {
         case .authentication:
             progressValue = 1;
@@ -97,4 +102,19 @@ class AmazonNavigationHelper: NavigationHelper {
         print("ProgressStep ",progressValue)
         return progressValue/AppConstants.numberOfSteps
     }
+    
+    /*
+     * add user account details in DB
+     */
+    private func addUserAccountInDB() {
+        let userId = self.viewModel.userEmail!
+        let userPassword = self.viewModel.userPassword!
+        //Encrypt password before storing into DB
+        let encrytedPassword = RNCryptoUtil.encryptData(userId: userId, value: userPassword)
+        
+        CoreDataManager.shared.addAccount(userId: userId, password: encrytedPassword, accountStatus: AccountState.Connected.rawValue, orderSource: OrderSource.Amazon.rawValue)
+    }
+    
 }
+
+

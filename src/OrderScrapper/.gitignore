@@ -15,3 +15,7 @@ xcuserdata/
 .build/
 
 *.xcworkspace
+
+## Carthage
+Carthage/Checkouts/
+Carthage/Build/

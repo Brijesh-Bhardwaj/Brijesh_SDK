@@ -1,0 +1,86 @@
+//
+//  CoreDataManager.swift
+//  OrderScrapper
+
+
+import Foundation
+import CoreData
+
+public class CoreDataManager {
+    static let shared: CoreDataManager = {
+        let instance = CoreDataManager()
+        return instance
+    }()
+    
+    private init() {}
+    
+    lazy var persistentContainer: NSPersistentContainer = {
+        let messageKitBundle = Bundle(identifier: AppConstants.identifier)
+        let modelURL = messageKitBundle!.url(forResource: AppConstants.resource, withExtension: AppConstants.extensionName)!
+        let managedObjectModel =  NSManagedObjectModel(contentsOf: modelURL)
+        
+        let container = NSPersistentContainer(name: AppConstants.resource, managedObjectModel: managedObjectModel!)
+        container.loadPersistentStores { (storeDescription, error) in
+            
+            if let err = error {
+                fatalError("Loading of store failed:\(err)")
+            }
+        }
+        return container
+    }()
+    /*
+     * Add account details into the UserAccount table
+     */
+    public func addAccount(userId: String, password: String, accountStatus: Int16, orderSource: Int16){
+        let context = persistentContainer.viewContext
+        let account = NSEntityDescription.insertNewObject(forEntityName: AppConstants.entityName, into: context) as! UserAccountMO
+        
+        account.userId = userId
+        account.password  = password
+        account.accountStatus = accountStatus
+        account.orderSource = orderSource
+        do {
+            try context.save()
+        } catch let error {
+            print("Failed to add account: \(error.localizedDescription)")
+        }
+    }
+    
+    /*
+     * fetch user accounts by OrderSource type
+     */
+    public func fetch(orderSource: Int16)->[UserAccountMO] {
+        let context = persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<UserAccountMO>(entityName: AppConstants.entityName)
+        fetchRequest.predicate = NSPredicate(format: "\(AppConstants.userAccountColumnOrderSource) == \(orderSource)")
+        var accounts = [UserAccountMO]()
+        do{
+            accounts = try context.fetch(fetchRequest)
+        } catch let fetchErr {
+            print("Failed to fetch Account:",fetchErr)
+        }
+        return accounts
+    }
+    
+    /*
+     * Update user account status using userId
+     */
+    public func updateUserAccount(userId: String, accountStatus: Int16) {
+        let context = persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<UserAccountMO>(entityName: AppConstants.entityName)
+        fetchRequest.predicate = NSPredicate(format: "\(AppConstants.userAccountColumnUserId) = %@", userId)
+        do{
+            let accounts = try context.fetch(fetchRequest)
+            let objectUpdate = accounts[0] as NSManagedObject
+            
+            objectUpdate.setValue(accountStatus, forKey: AppConstants.userAccountColumnAccountStatus)
+            do {
+                try context.save()
+            } catch {
+                print(error)
+            }
+        } catch let fetchErr {
+            print("Failed to fetch Account:",fetchErr)
+        }
+    }
+}

@@ -16,7 +16,7 @@ class AmazonOrderScrapper: OrderScrapper {
     }
     
     func getAccounts() -> [Account] {
-        return []
+        return CoreDataManager.shared.fetch(orderSource: OrderSource.Amazon.rawValue)
     }
     
     func connectAccount(accountConnectionListener: AccountConnectedListener) {

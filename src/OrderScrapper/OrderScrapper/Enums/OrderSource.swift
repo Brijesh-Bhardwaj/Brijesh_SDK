@@ -5,6 +5,6 @@
 
 import Foundation
 
-public enum OrderSource {
+public enum OrderSource: Int16 {
     case Amazon
 }
