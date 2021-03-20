@@ -28,7 +28,6 @@ internal class AmazonAuthenticator: Authenticator {
     func authenticate() {
         self.jsResultSubscriber = viewModel.jsResultPublisher.receive(on: RunLoop.main)
             .sink(receiveValue: { (injectValue, result) in
-                print("JS Result: ", injectValue, result)
                 let (response, _) = result
                 switch injectValue {
                 case .email, .password, .generateReport, .downloadReport: break
@@ -38,7 +37,7 @@ internal class AmazonAuthenticator: Authenticator {
                         if (strResult.isEmpty) {
                             self.injectCaptchaIdentificationJS()
                         } else {
-                            //Error
+                            self.viewModel.authError.send(true)
                         }
                     } else {
                         self.injectCaptchaIdentificationJS()
@@ -80,7 +79,6 @@ internal class AmazonAuthenticator: Authenticator {
     
     private func injectEmailJS() {
         let email = self.viewModel.userEmail!
-        print("Injecting email ", email)
         let js = "javascript:" +
             "document.getElementById('ap_email_login').value = '" + email + "';" + "document.querySelector('#accordion-row-login #continue #continue').click()"
         
@@ -89,7 +87,6 @@ internal class AmazonAuthenticator: Authenticator {
     
     private func injectPasswordJS() {
         let password = self.viewModel.userPassword!
-        print("Injecting password: ", password)
         let js = "javascript:" +
             "document.getElementById('ap_password').value = '" + password + "';" +
             "document.getElementById('signInSubmit').click()"

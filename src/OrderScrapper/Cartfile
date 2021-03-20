@@ -1,2 +1,4 @@
+github "Alamofire/Alamofire" ~> 5.2
+github "yaslab/CSV.swift" ~> 2.4.3
 github "RNCryptor/RNCryptor" ~> 5.0
 

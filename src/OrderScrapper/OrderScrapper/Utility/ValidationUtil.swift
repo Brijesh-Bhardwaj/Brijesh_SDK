@@ -13,7 +13,7 @@ class ValidationUtil {
         if !email.isEmpty && emailTest.evaluate(with: email) {
             return true
         }
-           return false
+        return false
     }
     
     static func isValidPassword(password: String) -> Bool {

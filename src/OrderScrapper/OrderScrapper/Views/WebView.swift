@@ -59,7 +59,6 @@ struct WebView: UIViewRepresentable {
         }
         
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            print(webView.url)
             /* An observer that observes 'viewModel.jsPublisher' to get javascript value and
              pass that value to web app by calling JavaScript function */
             jsSubscriber = parent.viewModel.jsPublisher.receive(on: RunLoop.main).sink(receiveValue: {
@@ -70,7 +69,7 @@ struct WebView: UIViewRepresentable {
                 }
             })
             
-            navigationHelper.navigateWithURL(url: webView.url)
+            navigationHelper.navigateWith(url: webView.url)
         }
         
         func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
@@ -79,25 +78,12 @@ struct WebView: UIViewRepresentable {
         }
         
         func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
-            if let mimeType = navigationResponse.response.mimeType {
-                let result = mimeType.compare("text/csv")
-                if result == .orderedSame {
-                    if let url = navigationResponse.response.url {
-                        let fileName = FileHelper.getReportFileNameFromResponse(navigationResponse.response)
-                        webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { cookies in
-                            let fileDownloader = FileDownloader()
-                            fileDownloader.downloadReportFile(fromURL: url, cookies: cookies) { success, tempURL in
-                                if success, let tempURL = tempURL {
-                                    let downloadURL = FileHelper.getReportDownloadPath(fileName: fileName, orderSource: .Amazon)
-                                    let _ = FileHelper.moveFileToPath(fromURL: tempURL, destinationURL: downloadURL)
-                                    print("Report downloaded in path: ", downloadURL)
-                                }
-                            }
-                        }
-                        decisionHandler(.cancel)
-                        return
-                    }
+            if (self.navigationHelper.shouldIntercept(navigationResponse: navigationResponse.response)) {
+                webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { cookies in
+                    self.navigationHelper.intercept(navigationResponse: navigationResponse.response, cookies: cookies)
                 }
+                decisionHandler(.cancel)
+                return
             }
             decisionHandler(.allow)
         }

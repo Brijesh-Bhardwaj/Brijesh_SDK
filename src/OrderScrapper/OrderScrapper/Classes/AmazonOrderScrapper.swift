@@ -13,6 +13,16 @@ class AmazonOrderScrapper: OrderScrapper {
     required init(authProvider:AuthProvider, viewPresenter:ViewPresenter) {
         self.authProvider = authProvider
         self.viewPresenter = viewPresenter
+        
+        let authToken = self.authProvider.getAuthToken()
+        let panelistId = self.authProvider.getPanelistID()
+        
+        if (authToken.isEmpty || panelistId.isEmpty) {
+            // TODO: throw error
+        }
+        
+        LibContext.sharedInstance.authToken = authToken
+        LibContext.sharedInstance.panelistID = panelistId
     }
     
     func getAccounts() -> [Account] {

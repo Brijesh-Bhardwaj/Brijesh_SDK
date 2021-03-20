@@ -6,5 +6,9 @@
 import Foundation
 
 protocol NavigationHelper {
-    func navigateWithURL(url: URL?)
+    func navigateWith(url: URL?)
+    
+    func shouldIntercept(navigationResponse: URLResponse) -> Bool
+    
+    func intercept(navigationResponse: URLResponse, cookies: [HTTPCookie])
 }

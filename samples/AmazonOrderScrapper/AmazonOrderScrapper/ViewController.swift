@@ -32,7 +32,11 @@ extension ViewController: ViewPresenter {
 
 extension ViewController: AuthProvider {
     func getAuthToken() -> String {
-        return ""
+        return "AwFVMUkpWg2l9QEFbdlgt+Pg7EiuCqqbkjvcxc0qP1Mrza5nyDEjmM87fmmmVPEuvHW/RRDUIYcAq8ZdXxnnWpSGx0C9v3ptEjhZ2pcr/AjJpWmWUwzSKsB5CTYUuk10UqaDJkUR9P7vxBGZXoTmp1sMhvAsOp34Je7+xaGy/JuDsg=="
+    }
+    
+    func getPanelistID() -> String {
+        return "420007381"
     }
 }
 

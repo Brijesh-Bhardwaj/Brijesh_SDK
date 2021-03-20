@@ -13,7 +13,6 @@ struct ConnectAccountView: View {
     @State var progressValue: Float = 0
     
     init(email: String, password: String) {
-        print("Init Connect Account View ", email, password)
         self.viewModel = WebViewModel()
         self.viewModel.userEmail = email
         self.viewModel.userPassword = password
@@ -48,14 +47,13 @@ struct ConnectAccountView: View {
                                     .font(.system(size: (sizeClass == .regular) ? 17 : 12))
                                     .foregroundColor(Utils.getColor(key: Colors.ColorHeading))
                                     .padding(.bottom, (sizeClass == .regular) ? 163 : 147)
-                                    
+                                
                                 
                                 //ProgressBar
                                 ProgressBar(value: $progressValue)
                                     .frame(height: (sizeClass == .regular) ? 110 : 80)
-                                   .onReceive(self.viewModel.progressValue.receive(on: RunLoop.main)) { value in
-                                        print("OnReceive Progress ",value)
-                                            progressValue = value
+                                    .onReceive(self.viewModel.progressValue.receive(on: RunLoop.main)) { value in
+                                        progressValue = value
                                     }
                                 
                                 Text(Utils.getString(key: Strings.Step1))
@@ -78,7 +76,6 @@ struct ConnectAccountView: View {
         }.edgesIgnoringSafeArea(.all)
         .navigationBarHidden(true)
         .onReceive(self.viewModel.showWebView.receive(on: RunLoop.main)) { value in
-            print("OnReceive",value)
             if (showWebView != value) {
                 showWebView = value
             }

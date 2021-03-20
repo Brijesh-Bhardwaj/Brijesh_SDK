@@ -1,0 +1,69 @@
+//
+//  PIIScrapper.swift
+//  OrderScrapper
+//
+
+import Foundation
+import CSV
+
+class PIIScrapper {
+    let dispatchQueue = DispatchQueue.global(qos: .background)
+    let fileURL: URL
+    let fileName: String
+    let orderSource: OrderSource
+    
+    init(fileURL url: URL, fileName name: String, orderSource: OrderSource) {
+        self.fileURL = url
+        self.fileName = name
+        self.orderSource = orderSource
+    }
+    
+    func scrapPII(attributes: [PIIAttribute], completionHandler: @escaping (URL?, Error?) -> Void) {
+        dispatchQueue.async {
+            guard let stream = InputStream(url: self.fileURL) else {
+                completionHandler(nil, nil)
+                return
+            }
+            
+            let downloadURL = FileHelper.getReportDownloadPath(fileName: self.fileName, orderSource: self.orderSource)
+
+            guard let outputStream = OutputStream(url: downloadURL, append: false) else {
+                completionHandler(nil, nil)
+                return
+            }
+            
+            do {
+                let writer = try CSVWriter(stream: outputStream)
+                let reader = try CSVReader(stream: stream, hasHeaderRow: true)
+                
+                defer {
+                    writer.stream.close()
+                }
+                
+                var piiAttributes: [String] = []
+                for attribute in attributes {
+                    piiAttributes.append(attribute.attributes)
+                }
+                
+                let headers = reader.headerRow!
+                
+                let requiredHeaders = Array(Set(headers).subtracting(Set(piiAttributes)))
+                
+                try writer.write(row: requiredHeaders)
+                
+                while reader.next() != nil {
+                    writer.beginNewRow()
+                    
+                    for attribute in requiredHeaders {
+                        if let attributeValue = reader[attribute] {
+                            try writer.write(field: attributeValue)
+                        }
+                    }
+                }
+                completionHandler(downloadURL, nil)
+            } catch {
+                completionHandler(nil, nil)
+            }
+        }
+    }
+}
