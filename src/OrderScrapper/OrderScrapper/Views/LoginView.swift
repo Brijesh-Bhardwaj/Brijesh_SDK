@@ -16,6 +16,8 @@ struct LoginView : View {
     @State var showStepScreen: Int? = nil
     @Environment(\.presentationMode) var presentationMode
     
+    @State var authError: String = ""
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -140,6 +142,9 @@ struct LoginView : View {
             .edgesIgnoringSafeArea(.all)
             .navigationBarHidden(true)
         }.navigationBarHidden(true)
+        .onReceive(LibContext.shared.scrapeCompletionPublisher.receive(on: RunLoop.main)) { value in
+            self.presentationMode.wrappedValue.dismiss()
+        }
     }
 }
 struct LoginView_Previews: PreviewProvider {
@@ -151,15 +156,15 @@ struct LoginView_Previews: PreviewProvider {
             LoginView()
                 .previewDevice("iPhone 12 Pro Max")
                 .previewDisplayName("iPhone 12 Pro Max")
-            LoginView()
-                .previewDevice("iPhone 8")
-                .previewDisplayName("iPhone 8")
-            LoginView()
-                .previewDevice("iPhone SE (2nd generation)")
-                .previewDisplayName("iPhone SE (2nd generation)")
-            LoginView()
-                .previewDevice("iPad Pro (12.9-inch) (4th generation)")
-                .previewDisplayName("iPad Pro(11-inch)(2nd generation)")
+//            LoginView()
+//                .previewDevice("iPhone 8")
+//                .previewDisplayName("iPhone 8")
+//            LoginView()
+//                .previewDevice("iPhone SE (2nd generation)")
+//                .previewDisplayName("iPhone SE (2nd generation)")
+//            LoginView()
+//                .previewDevice("iPad Pro (12.9-inch) (4th generation)")
+//                .previewDisplayName("iPad Pro(11-inch)(2nd generation)")
         }
     }
 }

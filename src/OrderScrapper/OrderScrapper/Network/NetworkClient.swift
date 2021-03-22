@@ -43,7 +43,7 @@ class NetworkClient<T: Decodable>: APIClient {
         
         httpHeaders.add(HTTPHeader.contentType(ContentTypeJSON))
         httpHeaders.add(HTTPHeader.accept(ContentTypeJSON))
-        httpHeaders.add(HTTPHeader.authorization(bearerToken: LibContext.sharedInstance.authToken))
+        httpHeaders.add(HTTPHeader.authorization(bearerToken: LibContext.shared.authProvider.getAuthToken()))
         
         debugPrint("URL: ", url)
         debugPrint("Headers: ", httpHeaders as Any)

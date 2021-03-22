@@ -4,12 +4,26 @@
 //
 
 import Foundation
+import Combine
 
 class LibContext {
-    public static let sharedInstance = LibContext()
+    private static var instance: LibContext?
+    
     private init() {
         
     }
-    var panelistID = ""
-    var authToken = ""
+    
+    static var shared: LibContext {
+        get {
+            if LibContext.instance == nil {
+                LibContext.instance = LibContext()
+            }
+            return LibContext.instance!
+        }
+    }
+    
+    var authProvider: AuthProvider!
+    var viewPresenter: ViewPresenter!
+    
+    var scrapeCompletionPublisher = PassthroughSubject<Bool, Never>()
 }

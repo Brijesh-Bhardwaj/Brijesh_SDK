@@ -1,11 +1,12 @@
 //
-//  DataFetchSuccessView.swift
+//  ErrorView.swift
 //  OrderScrapper
+//
 
 import Foundation
 import SwiftUI
 
-struct DataFetchSuccessView : View {
+struct NetworkErrorView : View {
     @Environment(\.horizontalSizeClass) var sizeClass
     let padding_zero : CGFloat  = 0
     
@@ -13,18 +14,23 @@ struct DataFetchSuccessView : View {
     
     var body: some View {
         GeometryReader { geometry in
-            VStack (alignment: .center){
+            VStack (alignment: .center) {
                 Spacer()
                 HStack {
                     Spacer()
                     VStack {
-                        Image(IconNames.Tick, bundle: AppConstants.bundle)
+                        Image(IconNames.ErrorLarge, bundle: AppConstants.bundle)
                             .frame(width: (sizeClass == .regular) ? 105 : 87.19, height: (sizeClass == .regular) ? 105 : 87.19)
                             .padding(.bottom, (sizeClass == .regular) ? 30 : 21.41)
-                        Text(Utils.getString(key: Strings.SuccessMsgReceiptsFechedSuccessfully))
+                        Text(Utils.getString(key: Strings.NoConnection))
                             .font(.system(size: (sizeClass == .regular) ? 27 : 20))
                             .foregroundColor(Utils.getColor(key: Colors.ColorHeading))
-                            .padding(.bottom, (sizeClass == .regular) ? 180 : 180)
+                            .padding(.bottom, (sizeClass == .regular) ? 25 : 15)
+                        
+                        Text(Utils.getString(key: Strings.NoConnection_msg))
+                            .font(.system(size: (sizeClass == .regular) ? 17 : 12))
+                            .foregroundColor(Utils.getColor(key: Colors.ColorHeading))
+                            .padding(.bottom, (sizeClass == .regular) ? 50 : 35)
                         
                         Button(action: {
                             if let buttonClick = onButtonClick {
@@ -32,7 +38,7 @@ struct DataFetchSuccessView : View {
                             }
                         }) {
                             HStack(alignment: .center) {
-                                Text(Utils.getString(key: Strings.BtnOk))
+                                Text(Utils.getString(key: Strings.BtnTryAgain))
                                     .fontWeight(.semibold)
                                     .font(.system(size: (sizeClass == .regular) ? 23 : 18))
                                     .foregroundColor(Utils.getColor(key: Colors.ColorBtn))
@@ -47,29 +53,29 @@ struct DataFetchSuccessView : View {
                 Spacer()
             }
             .background(Utils.getColor(key: Colors.ColorBackgroundErrorView))
-            .cornerRadius(geometry.size.width * 0.1, corners: [.topLeft, .topRight])
             .edgesIgnoringSafeArea(.all)
+            .cornerRadius(geometry.size.width * 0.1, corners: [.topLeft, .topRight])
         }
     }
 }
 
-struct DataFetchSuccessView_Previews : PreviewProvider {
+struct ErrorView_Previews : PreviewProvider {
     
     static var previews: some View {
         Group {
-            DataFetchSuccessView()
+            NetworkErrorView()
                 .previewDevice("iPhone 12 mini")
                 .previewDisplayName("iPhone 12 mini")
-            DataFetchSuccessView()
+            NetworkErrorView()
                 .previewDevice("iPhone 12 Pro Max")
                 .previewDisplayName("iPhone 12 Pro Max")
-            DataFetchSuccessView()
+            NetworkErrorView()
                 .previewDevice("iPhone 8")
                 .previewDisplayName("iPhone 8")
-            DataFetchSuccessView()
+            NetworkErrorView()
                 .previewDevice("iPhone SE (2nd generation)")
                 .previewDisplayName("iPhone SE (2nd generation)")
-            DataFetchSuccessView()
+            NetworkErrorView()
                 .previewDevice("iPad Pro (12.9-inch) (4th generation)")
                 .previewDisplayName("iPad Pro(11-inch)(2nd generation)")
         }

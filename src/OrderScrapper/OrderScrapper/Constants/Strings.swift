@@ -25,6 +25,9 @@ struct Strings {
     static let Step1 = "step1"
     static let Step2 = "step2"
     static let Step3 = "step3"
+    static let Step4 = "step4"
+    static let Step5 = "step5"
+    static let Step6 = "step6"
     static let SuccessMsgReceiptsFechedSuccessfully = "success_msg_receipts_fetched_successfully"
-
+    static let HeadingFetchingReceipts = "heading_fetching_receipts"
 }

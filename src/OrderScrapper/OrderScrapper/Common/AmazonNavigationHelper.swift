@@ -16,8 +16,13 @@ struct AmazonURL {
     static let generateReport   =   "gp/b2b/reports/"
 }
 
-private enum Step {
-    case authentication, generateReport, downloadReport, parseCSV, uploadReport, complete
+private enum Step: Int16 {
+    case authentication = 1,
+         generateReport = 2,
+         downloadReport = 3,
+         parseReport = 4,
+         uploadReport = 5,
+         complete = 6
 }
 
 class AmazonNavigationHelper: NavigationHelper {
@@ -43,19 +48,19 @@ class AmazonNavigationHelper: NavigationHelper {
         
         if (urlString.contains(AmazonURL.signIn)) {
             self.authenticator.authenticate()
-            self.viewModel.progressValue.send(getProgressPercentage(step: .authentication))
-            //On authentication add user account details to DB
-            addUserAccountInDB()
+            publishProgrssFor(step: .authentication)
         } else if (urlString.contains(AmazonURL.authApproval)
                     || urlString.contains(AmazonURL.twoFactorAuth)) {
             self.viewModel.showWebView.send(true)
         } else if (urlString.contains(AmazonURL.downloadReport)
                     && urlString.contains(AmazonURL.reportID)) {
+            //On authentication add user account details to DB
+            self.addUserAccountInDB()
             self.injectDownloadReportJS()
-            self.viewModel.progressValue.send(getProgressPercentage(step: .downloadReport))
+            publishProgrssFor(step: .downloadReport)
         } else if (urlString.contains(AmazonURL.generateReport)) {
             self.getDateRange()
-            self.viewModel.progressValue.send(getProgressPercentage(step: .generateReport))
+            publishProgrssFor(step: .generateReport)
         } 
     }
     
@@ -136,23 +141,43 @@ class AmazonNavigationHelper: NavigationHelper {
     /*
      * get progress value in the range 0 to 1 from step number
      **/
-    private func getProgressPercentage(step : Step) -> Float {
-        var progressValue: Float = 0
+    private func publishProgrssFor(step : Step) {
+        let progressValue = Float(step.rawValue) / AppConstants.numberOfSteps
+        
+        var progressMessage: String?
+        var headerMessage: String?
+        var stepMessage: String
+
         switch step {
         case .authentication:
-            progressValue = 1;
+            stepMessage = Utils.getString(key: Strings.Step1)
+            headerMessage = Utils.getString(key: Strings.HeadingConnectAmazonAccount)
+            progressMessage = Utils.getString(key: Strings.HeadingConnectingAmazonAccount)
         case .generateReport:
-            progressValue = 2;
+            stepMessage = Utils.getString(key: Strings.Step2)
+            headerMessage = Utils.getString(key: Strings.HeadingFetchingReceipts)
+            progressMessage = Utils.getString(key: Strings.HeadingFetchingYourReceipts)
         case .downloadReport:
-            progressValue = 3;
-        case .parseCSV:
-            progressValue = 4;
+            stepMessage = Utils.getString(key: Strings.Step3)
+        case .parseReport:
+            stepMessage = Utils.getString(key: Strings.Step4)
         case .uploadReport:
-            progressValue = 5;
+            stepMessage = Utils.getString(key: Strings.Step5)
         case .complete:
-            progressValue = 6
+            stepMessage = Utils.getString(key: Strings.Step6)
         }
-        return progressValue/AppConstants.numberOfSteps
+        
+        self.viewModel.progressValue.send(progressValue)
+        self.viewModel.stepMessage.send(stepMessage)
+        self.viewModel.completionPublisher.send(step == .complete)
+        
+        if let progressMessage = progressMessage {
+            self.viewModel.progressMessage.send(progressMessage)
+        }
+        
+        if let headerMessage = headerMessage {
+            self.viewModel.headingMessage.send(headerMessage)
+        }
     }
     
     private func getDateRange() {
@@ -168,7 +193,7 @@ class AmazonNavigationHelper: NavigationHelper {
     }
     
     private func removePIIAttributes(fileName: String, fileURL: URL) {
-        self.viewModel.progressValue.send(getProgressPercentage(step: .parseCSV))
+        publishProgrssFor(step: .parseReport)
         
         let tempURL = FileHelper.getReportDownloadPath(fileName: "temp.csv", orderSource: .Amazon)
         _ = FileHelper.moveFileToPath(fromURL: fileURL, destinationURL: tempURL)
@@ -191,7 +216,7 @@ class AmazonNavigationHelper: NavigationHelper {
     }
     
     private func uploadCSVFile(fileURL url: URL) {
-        self.viewModel.progressValue.send(getProgressPercentage(step: .uploadReport))
+        publishProgrssFor(step: .uploadReport)
         
         let reportConfig = self.viewModel.reportConfig!
         let fromDate = reportConfig.fullStartDate!
@@ -201,7 +226,7 @@ class AmazonNavigationHelper: NavigationHelper {
                                      amazonId: self.viewModel.userEmail!,
                                      fromDate: fromDate, toDate: toDate) { response, error in
             if response != nil {
-                self.viewModel.progressValue.send(self.getProgressPercentage(step: .complete))
+                self.publishProgrssFor(step: .complete)
             } else {
                 self.viewModel.webviewError.send(true)
             }

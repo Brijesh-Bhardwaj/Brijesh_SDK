@@ -6,11 +6,21 @@ import SwiftUI
 import Combine
 
 struct ConnectAccountView: View {
-    @ObservedObject var viewModel: WebViewModel
-    @State var showWebView = false
     @Environment(\.horizontalSizeClass) var sizeClass
-    let padding_zero : CGFloat  = 0
+    @Environment(\.presentationMode) var presentationMode
+    
+    @ObservedObject var viewModel: WebViewModel
+    
+    @State var monitor = NetworkMonitor()
+    @State var showWebView = false
     @State var progressValue: Float = 0
+    @State var webviewError = false
+    @State var progressMessage = Utils.getString(key: Strings.HeadingConnectingAmazonAccount)
+    @State var headerTitle = Utils.getString(key: Strings.HeadingConnectAmazonAccount)
+    @State var stepMessage = Utils.getString(key: Strings.Step1)
+    @State var processCompleted = false
+    
+    let padding_zero : CGFloat  = 0
     
     init(email: String, password: String) {
         self.viewModel = WebViewModel()
@@ -22,69 +32,95 @@ struct ConnectAccountView: View {
         ZStack {
             WebView(viewModel: viewModel)
             if (!self.showWebView) {
-                VStack (){
-                    //Text Size
-                    Spacer(minLength: (sizeClass == .regular) ? 45 : 45)
-                    HStack {
-                        Text(Utils.getString(key: Strings.HeadingConnectAmazonAccount))
-                            .font(.system(size: (sizeClass == .regular) ? 25 : 17))
-                            .foregroundColor(Utils.getColor(key: Colors.ColorHeading))
-                            .padding(EdgeInsets(top: padding_zero, leading: (sizeClass == .regular) ? 20 : 20, bottom: padding_zero, trailing: (sizeClass == .regular) ? 16 : 16))
-                        Spacer()
-                    }
-                    Spacer(minLength: (sizeClass == .regular) ? 35 : 35)
-                    Spacer()
-                    VStack (alignment: .center){
+                GeometryReader { geometry in
+                    VStack () {
+                        Spacer(minLength: geometry.size.height * 0.07)
+                        
+                        //Header Title
                         HStack {
+                            Text(self.headerTitle)
+                                .font(.system(size: (sizeClass == .regular) ? 30 : 17))
+                                .foregroundColor(Utils.getColor(key: Colors.ColorHeading))
+                                .padding(.leading, 20)
+                                .onReceive(self.viewModel.headingMessage.receive(on: RunLoop.main)) { value in
+                                    if (!self.headerTitle.elementsEqual(value)) {
+                                        self.headerTitle = value
+                                    }
+                                }
                             Spacer()
-                            VStack {
-                                Text(Utils.getString(key: Strings.HeadingConnectingAmazonAccount))
-                                    .font(.system(size: (sizeClass == .regular) ? 27 : 20))
-                                    .foregroundColor(Utils.getColor(key: Colors.ColorHeading))
-                                    .padding(.bottom, (sizeClass == .regular) ? 20 : 15)
-                                
-                                Text(Utils.getString(key: Strings.SubheadingStayOnThisScreenUntilCompletion))
-                                    .font(.system(size: (sizeClass == .regular) ? 17 : 12))
-                                    .foregroundColor(Utils.getColor(key: Colors.ColorHeading))
-                                    .padding(.bottom, (sizeClass == .regular) ? 163 : 147)
-                                
-                                
-                                //ProgressBar
-                                ProgressBar(value: $progressValue)
-                                    .frame(height: (sizeClass == .regular) ? 110 : 80)
+                        }
+                        
+                        Spacer(minLength: geometry.size.height * 0.05)
+                        
+                        if monitor.status == .connected {
+                            if webviewError {
+                                ExceptionErrorView(onButtonClick: self.onRetry)
+                            } else if processCompleted {
+                                DataFetchSuccessView(onButtonClick: self.onProcessDone)
+                            } else {
+                                ProgressView(progressValue: $progressValue, progressMessage: $progressMessage, stepMessage: $stepMessage)
+                                    .onReceive(self.viewModel.progressMessage.receive(on: RunLoop.main)) {
+                                        value in
+                                        if (!value.elementsEqual(self.progressMessage)) {
+                                            self.progressMessage = value
+                                        }
+                                    }
                                     .onReceive(self.viewModel.progressValue.receive(on: RunLoop.main)) { value in
                                         progressValue = value
                                     }
-                                
-                                Text(Utils.getString(key: Strings.Step1))
-                                    .font(.system(size: (sizeClass == .regular) ? 22 : 17))
-                                    .padding(.top, (sizeClass == .regular) ? 15 : 10)
-                                    .foregroundColor(Utils.getColor(key: Colors.ColorHeading))
-                            }.padding(.top,(sizeClass == .regular) ? 65 : 51)
-                            
-                            
-                            Spacer()
-                        }
-                        Spacer()
-                    }
-                    .background(Utils.getColor(key: Colors.ColorBackgroundErrorView))
-                    .cornerRadius((sizeClass == .regular) ? 35 : 35, corners: [.topLeft, .topRight])
-                    
-                }.background(RadialGradient(gradient: Gradient(colors: [Utils.getColor(key: Colors.ColorRadialGradient1), Utils.getColor(key: Colors.ColorRadialGradient2)]), center: .center, startRadius: 1, endRadius: 100))
+                                    .onReceive(self.viewModel.stepMessage.receive(on: RunLoop.main)) { value in
+                                        if (!value.elementsEqual(self.stepMessage)) {
+                                            self.stepMessage = value
+                                        }
+                                    }
+                            }
+                        } else {
+                            NetworkErrorView(onButtonClick: self.onRetry)
+                         }
+                    }.background(RadialGradient(gradient: Gradient(colors: [Utils.getColor(key: Colors.ColorRadialGradient1), Utils.getColor(key: Colors.ColorRadialGradient2)]), center: .center, startRadius: 1, endRadius: 100))
+                }
                 .edgesIgnoringSafeArea(.all)
             }
         }.edgesIgnoringSafeArea(.all)
         .navigationBarHidden(true)
-        .onReceive(self.viewModel.showWebView.receive(on: RunLoop.main)) { value in
+        .onReceive(self.viewModel.showWebView.receive(on: RunLoop.main)) {
+            value in
             if (showWebView != value) {
                 showWebView = value
             }
         }
+        .onReceive(self.viewModel.webviewError.receive(on: RunLoop.main)) { value in
+            webviewError = value
+        }
+        .onReceive(self.viewModel.completionPublisher.receive(on: RunLoop.main)) { value in
+            if value != self.processCompleted {
+                self.processCompleted = value
+            }
+        }
+        .onReceive(self.viewModel.authError.receive(on: RunLoop.main)) { authError in
+            if authError {
+                self.presentationMode.wrappedValue.dismiss()
+            }
+        }
+    }
+    
+    func onRetry() {
+        self.viewModel.navigationPublisher.send(.reload)
+        self.webviewError = false
+    }
+    
+    func onProcessDone() {
+        LibContext.shared.scrapeCompletionPublisher.send(true)
     }
 }
 
 struct ConnectAccountView_Previews: PreviewProvider {
     static var previews: some View {
-        ConnectAccountView(email: "", password: "")
+        Group {
+            ConnectAccountView(email: "", password: "")
+                .previewDevice("iPhone 12 Pro Max")
+            ConnectAccountView(email: "", password: "")
+                .previewDevice("iPhone 12 mini")
+        }
     }
 }

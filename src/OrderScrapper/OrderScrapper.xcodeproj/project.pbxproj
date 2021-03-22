@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		1C006FA4260099FA00F9263E /* FetchDataStepsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FA1260099FA00F9263E /* FetchDataStepsView.swift */; };
 		1C006FA5260099FA00F9263E /* ProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FA2260099FA00F9263E /* ProgressBar.swift */; };
-		1C006FA6260099FA00F9263E /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FA3260099FA00F9263E /* ErrorView.swift */; };
+		1C006FA6260099FA00F9263E /* NetworkErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FA3260099FA00F9263E /* NetworkErrorView.swift */; };
 		1C006FAA26009BE500F9263E /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FA926009BE500F9263E /* AppConstants.swift */; };
 		1C006FB12600B7DA00F9263E /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FB02600B7DA00F9263E /* Utils.swift */; };
 		1C006FB72600BDA800F9263E /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FB62600BDA800F9263E /* Strings.swift */; };
@@ -69,6 +69,9 @@
 		E148DCBA2605D09D001430BE /* CSV.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E148DCB32605D07D001430BE /* CSV.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E148DCBB2605D09E001430BE /* RNCryptor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E148DCB52605D091001430BE /* RNCryptor.framework */; };
 		E148DCBC2605D09E001430BE /* RNCryptor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E148DCB52605D091001430BE /* RNCryptor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E148DCC1260610C5001430BE /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DCC0260610C4001430BE /* ProgressView.swift */; };
+		E148DCC5260616DB001430BE /* ExceptionErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DCC4260616DB001430BE /* ExceptionErrorView.swift */; };
+		E148DCC826063BE1001430BE /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DCC726063BE1001430BE /* NetworkMonitor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -114,7 +117,7 @@
 /* Begin PBXFileReference section */
 		1C006FA1260099FA00F9263E /* FetchDataStepsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchDataStepsView.swift; sourceTree = "<group>"; };
 		1C006FA2260099FA00F9263E /* ProgressBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressBar.swift; sourceTree = "<group>"; };
-		1C006FA3260099FA00F9263E /* ErrorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
+		1C006FA3260099FA00F9263E /* NetworkErrorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkErrorView.swift; sourceTree = "<group>"; };
 		1C006FA926009BE500F9263E /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
 		1C006FB02600B7DA00F9263E /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		1C006FB62600BDA800F9263E /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
@@ -174,6 +177,9 @@
 		E148DCB12605D064001430BE /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = "Carthage/Build/Alamofire.xcframework/ios-arm64_i386_x86_64-simulator/Alamofire.framework"; sourceTree = "<group>"; };
 		E148DCB32605D07D001430BE /* CSV.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CSV.framework; path = "Carthage/Build/CSV.xcframework/ios-arm64_i386_x86_64-simulator/CSV.framework"; sourceTree = "<group>"; };
 		E148DCB52605D091001430BE /* RNCryptor.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RNCryptor.framework; path = "Carthage/Build/RNCryptor.xcframework/ios-arm64_i386_x86_64-simulator/RNCryptor.framework"; sourceTree = "<group>"; };
+		E148DCC0260610C4001430BE /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
+		E148DCC4260616DB001430BE /* ExceptionErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionErrorView.swift; sourceTree = "<group>"; };
+		E148DCC726063BE1001430BE /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -293,7 +299,7 @@
 		E148DB4525FF2BFD001430BE /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				1C006FA3260099FA00F9263E /* ErrorView.swift */,
+				1C006FA3260099FA00F9263E /* NetworkErrorView.swift */,
 				1C006FA1260099FA00F9263E /* FetchDataStepsView.swift */,
 				1C006FA2260099FA00F9263E /* ProgressBar.swift */,
 				E148DB7825FF310E001430BE /* ConnectAccountView.swift */,
@@ -301,6 +307,8 @@
 				E148DB4625FF2BFD001430BE /* LoginView.swift */,
 				E148DB4725FF2BFD001430BE /* RoundedCorners.swift */,
 				1C2CD4CB2601E5B70042FF61 /* DataFetchSuccessView.swift */,
+				E148DCC0260610C4001430BE /* ProgressView.swift */,
+				E148DCC4260616DB001430BE /* ExceptionErrorView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -422,6 +430,7 @@
 				E148DC952605CB1E001430BE /* PIIScrapper.swift */,
 				E148DB9225FF3D8A001430BE /* AmazonAuthenticator.swift */,
 				E148DB7D25FF313A001430BE /* AmazonNavigationHelper.swift */,
+				E148DCC726063BE1001430BE /* NetworkMonitor.swift */,
 			);
 			name = Common;
 			sourceTree = "<group>";
@@ -570,6 +579,7 @@
 				E148DB7E25FF313A001430BE /* AmazonNavigationHelper.swift in Sources */,
 				E148DB6425FF2BFD001430BE /* OrderSource.swift in Sources */,
 				1C006FBF2600D75D00F9263E /* ValidationUtil.swift in Sources */,
+				E148DCC826063BE1001430BE /* NetworkMonitor.swift in Sources */,
 				1CD2B51326031A710016F752 /* CoreDataModel.xcdatamodeld in Sources */,
 				1C006FB12600B7DA00F9263E /* Utils.swift in Sources */,
 				E148DC9A2605CB1E001430BE /* FileHelper.swift in Sources */,
@@ -577,13 +587,14 @@
 				E148DB6225FF2BFD001430BE /* IconNames.swift in Sources */,
 				1C07410B2604B5B10013067C /* RNCryptoUtil.swift in Sources */,
 				1C2CD4CC2601E5B70042FF61 /* DataFetchSuccessView.swift in Sources */,
-				1C006FA6260099FA00F9263E /* ErrorView.swift in Sources */,
+				1C006FA6260099FA00F9263E /* NetworkErrorView.swift in Sources */,
 				E148DB6C25FF2BFD001430BE /* Account.swift in Sources */,
 				E148DC9B2605CB1E001430BE /* LibContext.swift in Sources */,
 				1C006FB72600BDA800F9263E /* Strings.swift in Sources */,
 				1C006FA5260099FA00F9263E /* ProgressBar.swift in Sources */,
 				E148DC6126038537001430BE /* DateUtils.swift in Sources */,
 				E148DB6D25FF2BFD001430BE /* AccountDisconnectedListener.swift in Sources */,
+				E148DCC1260610C5001430BE /* ProgressView.swift in Sources */,
 				E148DC9C2605CB1E001430BE /* FileDownloader.swift in Sources */,
 				E148DB6E25FF2BFD001430BE /* ASLException.swift in Sources */,
 				E148DB6A25FF2BFD001430BE /* AccountConnectedListener.swift in Sources */,
@@ -595,6 +606,7 @@
 				E148DCA02605CCEC001430BE /* Data.swift in Sources */,
 				E148DC52260339EF001430BE /* AmazonService.swift in Sources */,
 				1CBF6D9C25F6294C001A801B /* OrderScrapperFactory.swift in Sources */,
+				E148DCC5260616DB001430BE /* ExceptionErrorView.swift in Sources */,
 				E148DB6325FF2BFD001430BE /* AccountState.swift in Sources */,
 				E148DC5B26034D7F001430BE /* APIClient.swift in Sources */,
 				E148DB8325FF317B001430BE /* WebViewModel.swift in Sources */,

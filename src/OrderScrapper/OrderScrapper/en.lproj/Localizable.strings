@@ -22,7 +22,11 @@
 "btn_ok" = "Okay";
 "validation_please_enter_valid_email" = "Please enter valid email address";
 "validation_please_enter_valid_password" = "Please enter valid password";
-"step1" = "Step1";
-"step2" = "Step2";
-"step3" = "Step3";
+"step1" = "Step 1";
+"step2" = "Step 2";
+"step3" = "Step 3";
+"step4" = "Step 4";
+"step5" = "Step 5";
+"step6" = "Step 6";
 "success_msg_receipts_fetched_successfully" = "Receipts Fetched successfully";
+"heading_fetching_receipts" = "Fetching Receipts";
