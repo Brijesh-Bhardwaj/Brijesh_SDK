@@ -19,6 +19,7 @@ class APIError: Error {
 }
 
 class NetworkClient<T: Decodable>: APIClient {
+    private let AuthErrorResponseCode = 401
     private let BaseURL = "https://dev-order-scraping.blackstrawlab.com/"
     private let HeaderContentType = "Content-Type"
     private let ContentTypeJSON = "application/json"
@@ -44,12 +45,7 @@ class NetworkClient<T: Decodable>: APIClient {
         httpHeaders.add(HTTPHeader.contentType(ContentTypeJSON))
         httpHeaders.add(HTTPHeader.accept(ContentTypeJSON))
         httpHeaders.add(HTTPHeader.authorization(bearerToken: LibContext.shared.authProvider.getAuthToken()))
-        
-        debugPrint("URL: ", url)
-        debugPrint("Headers: ", httpHeaders as Any)
-        debugPrint("Method: ", requestMethod)
-        debugPrint("Body: ", body as Any)
-        debugPrint("Multipart req: ", multipartFormClosure as Any)
+        httpHeaders.add(HTTPHeader.init(name: "panelist_id", value: LibContext.shared.authProvider.getPanelistID()))
         
         switch self.requestMethod {
         case .get:
@@ -103,11 +99,22 @@ class NetworkClient<T: Decodable>: APIClient {
     private func onResponse(_ response:DataResponse<T, AFError>,
                             _ completionHandler: @escaping (Any?, Error?) -> Void) {
         debugPrint("On Response:", response)
-        switch response.result {
-        case let .success(result):
-            completionHandler(result, nil)
-        case let .failure(error):
-            completionHandler(nil, error)
+        let httpResponseCode = response.response?.statusCode
+        if httpResponseCode == AuthErrorResponseCode {
+            LibContext.shared.authProvider.refreshAuthToken() { authToken, error in
+                if authToken != nil {
+                    self.executeAPI(completionHandler: completionHandler)
+                } else {
+                    completionHandler(nil, error)
+                }
+            }
+        } else {
+            switch response.result {
+            case let .success(result):
+                completionHandler(result, nil)
+            case let .failure(error):
+                completionHandler(nil, error)
+            }
         }
     }
 }

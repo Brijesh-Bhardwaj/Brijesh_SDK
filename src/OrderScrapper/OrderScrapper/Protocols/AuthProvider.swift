@@ -7,4 +7,5 @@ import Foundation
 public protocol AuthProvider {
     func getAuthToken() -> String
     func getPanelistID() -> String
+    func refreshAuthToken(completionHandler:(String?, Error?) -> Void)
 }

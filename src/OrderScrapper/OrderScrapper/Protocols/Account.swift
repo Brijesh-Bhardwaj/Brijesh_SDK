@@ -5,6 +5,6 @@
 import Foundation
 
 public protocol Account {
-    func getUserEmailId() -> String
-    func getLinkStatus() -> AccountState
+    var userID: String { get }
+    var accountState: AccountState { get }
 }

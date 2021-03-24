@@ -37,7 +37,6 @@
 		E148DB6725FF2BFD001430BE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E148DB5225FF2BFD001430BE /* Images.xcassets */; };
 		E148DB6825FF2BFD001430BE /* AuthProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5425FF2BFD001430BE /* AuthProvider.swift */; };
 		E148DB6925FF2BFD001430BE /* OrderScrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5525FF2BFD001430BE /* OrderScrapper.swift */; };
-		E148DB6A25FF2BFD001430BE /* AccountConnectedListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5625FF2BFD001430BE /* AccountConnectedListener.swift */; };
 		E148DB6B25FF2BFD001430BE /* ViewPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5725FF2BFD001430BE /* ViewPresenter.swift */; };
 		E148DB6C25FF2BFD001430BE /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5825FF2BFD001430BE /* Account.swift */; };
 		E148DB6D25FF2BFD001430BE /* AccountDisconnectedListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5925FF2BFD001430BE /* AccountDisconnectedListener.swift */; };
@@ -72,6 +71,8 @@
 		E148DCC1260610C5001430BE /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DCC0260610C4001430BE /* ProgressView.swift */; };
 		E148DCC5260616DB001430BE /* ExceptionErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DCC4260616DB001430BE /* ExceptionErrorView.swift */; };
 		E148DCC826063BE1001430BE /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DCC726063BE1001430BE /* NetworkMonitor.swift */; };
+		E19D4CB72608FD29002C16A7 /* WebCacheCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D4CB62608FD29002C16A7 /* WebCacheCleaner.swift */; };
+		E19D4CBA2609A4A9002C16A7 /* OrderExtractionListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D4CB92609A4A9002C16A7 /* OrderExtractionListener.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -148,7 +149,6 @@
 		E148DB5225FF2BFD001430BE /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		E148DB5425FF2BFD001430BE /* AuthProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthProvider.swift; sourceTree = "<group>"; };
 		E148DB5525FF2BFD001430BE /* OrderScrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderScrapper.swift; sourceTree = "<group>"; };
-		E148DB5625FF2BFD001430BE /* AccountConnectedListener.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountConnectedListener.swift; sourceTree = "<group>"; };
 		E148DB5725FF2BFD001430BE /* ViewPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewPresenter.swift; sourceTree = "<group>"; };
 		E148DB5825FF2BFD001430BE /* Account.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 		E148DB5925FF2BFD001430BE /* AccountDisconnectedListener.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountDisconnectedListener.swift; sourceTree = "<group>"; };
@@ -180,6 +180,8 @@
 		E148DCC0260610C4001430BE /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
 		E148DCC4260616DB001430BE /* ExceptionErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionErrorView.swift; sourceTree = "<group>"; };
 		E148DCC726063BE1001430BE /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		E19D4CB62608FD29002C16A7 /* WebCacheCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebCacheCleaner.swift; sourceTree = "<group>"; };
+		E19D4CB92609A4A9002C16A7 /* OrderExtractionListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderExtractionListener.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -211,6 +213,7 @@
 				1C006FBE2600D75D00F9263E /* ValidationUtil.swift */,
 				E148DC6026038537001430BE /* DateUtils.swift */,
 				1C07410A2604B5B10013067C /* RNCryptoUtil.swift */,
+				E19D4CB62608FD29002C16A7 /* WebCacheCleaner.swift */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -347,11 +350,11 @@
 				E148DB8C25FF31B4001430BE /* NavigationHelper.swift */,
 				E148DB5425FF2BFD001430BE /* AuthProvider.swift */,
 				E148DB5525FF2BFD001430BE /* OrderScrapper.swift */,
-				E148DB5625FF2BFD001430BE /* AccountConnectedListener.swift */,
 				E148DB5725FF2BFD001430BE /* ViewPresenter.swift */,
 				E148DB5825FF2BFD001430BE /* Account.swift */,
 				E148DB5925FF2BFD001430BE /* AccountDisconnectedListener.swift */,
 				E148DC0A26010D28001430BE /* Authenticator.swift */,
+				E19D4CB92609A4A9002C16A7 /* OrderExtractionListener.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -592,12 +595,12 @@
 				E148DC9B2605CB1E001430BE /* LibContext.swift in Sources */,
 				1C006FB72600BDA800F9263E /* Strings.swift in Sources */,
 				1C006FA5260099FA00F9263E /* ProgressBar.swift in Sources */,
+				E19D4CB72608FD29002C16A7 /* WebCacheCleaner.swift in Sources */,
 				E148DC6126038537001430BE /* DateUtils.swift in Sources */,
 				E148DB6D25FF2BFD001430BE /* AccountDisconnectedListener.swift in Sources */,
 				E148DCC1260610C5001430BE /* ProgressView.swift in Sources */,
 				E148DC9C2605CB1E001430BE /* FileDownloader.swift in Sources */,
 				E148DB6E25FF2BFD001430BE /* ASLException.swift in Sources */,
-				E148DB6A25FF2BFD001430BE /* AccountConnectedListener.swift in Sources */,
 				1C07411A2604F2540013067C /* String.swift in Sources */,
 				E148DB5C25FF2BFD001430BE /* AmazonOrderScrapper.swift in Sources */,
 				1CEDD13B26038CAE00E7BAB4 /* UserAccountMO.swift in Sources */,
@@ -616,6 +619,7 @@
 				E148DC992605CB1E001430BE /* PIIScrapper.swift in Sources */,
 				E148DC0B26010D28001430BE /* Authenticator.swift in Sources */,
 				1C006FAA26009BE500F9263E /* AppConstants.swift in Sources */,
+				E19D4CBA2609A4A9002C16A7 /* OrderExtractionListener.swift in Sources */,
 				E148DC4B2603371C001430BE /* APIResponse.swift in Sources */,
 				E148DB5F25FF2BFD001430BE /* LoginView.swift in Sources */,
 				E148DB7A25FF310E001430BE /* ConnectAccountView.swift in Sources */,

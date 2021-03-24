@@ -54,11 +54,11 @@ class AmazonNavigationHelper: NavigationHelper {
             self.viewModel.showWebView.send(true)
         } else if (urlString.contains(AmazonURL.downloadReport)
                     && urlString.contains(AmazonURL.reportID)) {
-            //On authentication add user account details to DB
-            self.addUserAccountInDB()
             self.injectDownloadReportJS()
             publishProgrssFor(step: .downloadReport)
         } else if (urlString.contains(AmazonURL.generateReport)) {
+            //On authentication add user account details to DB
+            self.addUserAccountInDB()
             self.getDateRange()
             publishProgrssFor(step: .generateReport)
         } 

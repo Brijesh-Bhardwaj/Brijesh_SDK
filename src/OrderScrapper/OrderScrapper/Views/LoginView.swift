@@ -16,8 +16,6 @@ struct LoginView : View {
     @State var showStepScreen: Int? = nil
     @Environment(\.presentationMode) var presentationMode
     
-    @State var authError: String = ""
-    
     var body: some View {
         NavigationView {
             VStack {
@@ -67,6 +65,9 @@ struct LoginView : View {
                     }.padding(EdgeInsets(top: (sizeClass == .regular) ? 15 : 10, leading: (sizeClass == .regular) ? 21 : 16, bottom: padding_zero, trailing: (sizeClass == .regular) ? 21 : 16))
                     
                     TextField(Utils.getString(key: Strings.LabelEmailOrMobileNumber), text: $email)
+                        .keyboardType(.emailAddress)
+                        .disableAutocorrection(true)
+                        .autocapitalization(.none)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .border(Utils.getColor(key: Colors.ColorBorderTextField), width: (sizeClass == .regular) ? 1 : 1)
                         .cornerRadius((sizeClass == .regular) ? 4 : 4)
@@ -104,6 +105,8 @@ struct LoginView : View {
                         NavigationLink(destination: ConnectAccountView(email: email, password: password), tag: 1, selection: $showStepScreen) {
                             Spacer()
                             Button(action: {
+                                self.errorInvalidEmailAndPasswrd = ""
+                                
                                 if !ValidationUtil.isValidEmail(email: email) {
                                     self.invalidEmail = Utils.getString(key: Strings.ValidationPleaseEnterValidEmail)
                                     return
@@ -144,6 +147,9 @@ struct LoginView : View {
         }.navigationBarHidden(true)
         .onReceive(LibContext.shared.scrapeCompletionPublisher.receive(on: RunLoop.main)) { value in
             self.presentationMode.wrappedValue.dismiss()
+        }
+        .onReceive(LibContext.shared.webAuthErrorPublisher.receive(on: RunLoop.main)) { value in
+            self.errorInvalidEmailAndPasswrd = Utils.getString(key: Strings.ErrorEnterValidUsernamePassword)
         }
     }
 }

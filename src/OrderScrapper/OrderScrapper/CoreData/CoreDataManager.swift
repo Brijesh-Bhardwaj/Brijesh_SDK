@@ -7,8 +7,12 @@ import Foundation
 import CoreData
 
 public class CoreDataManager {
+    private static var instance: CoreDataManager!
+    
     static let shared: CoreDataManager = {
-        let instance = CoreDataManager()
+        if instance == nil {
+            instance = CoreDataManager()
+        }
         return instance
     }()
     
@@ -33,16 +37,30 @@ public class CoreDataManager {
      */
     public func addAccount(userId: String, password: String, accountStatus: Int16, orderSource: Int16){
         let context = persistentContainer.viewContext
-        let account = NSEntityDescription.insertNewObject(forEntityName: AppConstants.entityName, into: context) as! UserAccountMO
+        let fetchRequest = NSFetchRequest<UserAccountMO>(entityName: AppConstants.entityName)
+        fetchRequest.predicate = NSPredicate(format: "\(AppConstants.userAccountColumnUserId) = %@", userId)
         
-        account.userId = userId
-        account.password  = password
-        account.accountStatus = accountStatus
-        account.orderSource = orderSource
+        var account: UserAccountMO?
         do {
-            try context.save()
+            let accounts = try context.fetch(fetchRequest)
+            if accounts.count > 0 {
+                account = accounts[0] as UserAccountMO
+            } else {
+                account = NSEntityDescription.insertNewObject(forEntityName: AppConstants.entityName, into: context) as? UserAccountMO
+            }
         } catch let error {
-            print("Failed to add account: \(error.localizedDescription)")
+            debugPrint("Failed to fetch account: \(error.localizedDescription)")
+        }
+        if let account = account {
+            account.userId = userId
+            account.password  = password
+            account.accountStatus = accountStatus
+            account.orderSource = orderSource
+            do {
+                try context.save()
+            } catch let error {
+                print("Failed to add account: \(error.localizedDescription)")
+            }
         }
     }
     
@@ -65,22 +83,14 @@ public class CoreDataManager {
     /*
      * Update user account status using userId
      */
-    public func updateUserAccount(userId: String, accountStatus: Int16) {
+    public func updateUserAccount(userId: String, accountStatus: Int16) throws {
         let context = persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<UserAccountMO>(entityName: AppConstants.entityName)
         fetchRequest.predicate = NSPredicate(format: "\(AppConstants.userAccountColumnUserId) = %@", userId)
-        do{
-            let accounts = try context.fetch(fetchRequest)
-            let objectUpdate = accounts[0] as NSManagedObject
-            
-            objectUpdate.setValue(accountStatus, forKey: AppConstants.userAccountColumnAccountStatus)
-            do {
-                try context.save()
-            } catch {
-                print(error)
-            }
-        } catch let fetchErr {
-            print("Failed to fetch Account:",fetchErr)
-        }
+        let accounts = try context.fetch(fetchRequest)
+        let objectUpdate = accounts[0] as NSManagedObject
+        
+        objectUpdate.setValue(accountStatus, forKey: AppConstants.userAccountColumnAccountStatus)
+        try context.save()
     }
 }

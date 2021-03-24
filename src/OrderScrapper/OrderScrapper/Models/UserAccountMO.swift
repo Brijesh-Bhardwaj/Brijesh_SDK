@@ -12,13 +12,11 @@ public class UserAccountMO: NSManagedObject, Account {
     @NSManaged var accountStatus: Int16
     @NSManaged var orderSource: Int16
     
-    public func getUserEmailId() -> String {
+    public var userID: String {
         return userId
     }
     
-    public func getLinkStatus() -> AccountState {
-        
+    public var accountState: AccountState {
         return AccountState(rawValue: accountStatus)!
     }
-    
 }

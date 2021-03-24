@@ -18,6 +18,7 @@
 		1CE8507025F7B646000A7158 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE8506F25F7B646000A7158 /* ContentView.swift */; };
 		E148DBF026006118001430BE /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E148DBEF26006118001430BE /* OrderScrapper.framework */; };
 		E148DBF126006118001430BE /* OrderScrapper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E148DBEF26006118001430BE /* OrderScrapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E19D4CB22608A1D0002C16A7 /* AccountsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D4CB12608A1D0002C16A7 /* AccountsViewController.swift */; };
 		E1E8CFCD25FA2EF20064A55F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E1E8CFCC25FA2EF20064A55F /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -69,6 +70,7 @@
 		1CBF6D2025F5FE71001A801B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1CE8506F25F7B646000A7158 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E148DBEF26006118001430BE /* OrderScrapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OrderScrapper.framework; path = ../../bin/OrderScrapper.framework; sourceTree = "<group>"; };
+		E19D4CB12608A1D0002C16A7 /* AccountsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountsViewController.swift; sourceTree = "<group>"; };
 		E1E8CFCC25FA2EF20064A55F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -131,6 +133,7 @@
 				1CBF6D0A25F5FE70001A801B /* Info.plist */,
 				1CBF6D0225F5FE6F001A801B /* AmazonOrderScrapper.xcdatamodeld */,
 				1CE8506F25F7B646000A7158 /* ContentView.swift */,
+				E19D4CB12608A1D0002C16A7 /* AccountsViewController.swift */,
 			);
 			path = AmazonOrderScrapper;
 			sourceTree = "<group>";
@@ -296,6 +299,7 @@
 				1CE8507025F7B646000A7158 /* ContentView.swift in Sources */,
 				1CBF6CFE25F5FE6F001A801B /* ViewController.swift in Sources */,
 				1CBF6CFA25F5FE6F001A801B /* AppDelegate.swift in Sources */,
+				E19D4CB22608A1D0002C16A7 /* AccountsViewController.swift in Sources */,
 				1CBF6CFC25F5FE6F001A801B /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

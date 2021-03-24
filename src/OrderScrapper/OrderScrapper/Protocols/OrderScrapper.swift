@@ -6,9 +6,8 @@ import Foundation
 
 public protocol OrderScrapper {
     func getAccounts() -> [Account]
-    func connectAccount(accountConnectionListener : AccountConnectedListener) -> Void
+    func connectAccount(orderExtractionListener : OrderExtractionListener) -> Void
     func disconnectAccount(account: Account,
                            accountDisconnectedListener : AccountDisconnectedListener) -> Void
-    func startOrderExtraction() -> Void
-    func verifyAccounts() -> Void
+    func startOrderExtraction(orderExtractionListener: OrderExtractionListener) -> Void
 }

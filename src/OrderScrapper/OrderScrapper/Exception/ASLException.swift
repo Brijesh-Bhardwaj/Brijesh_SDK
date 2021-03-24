@@ -3,6 +3,7 @@
 //  OrderScrapper
 
 import Foundation
-class ASLException: NSException {
+
+public class ASLException: NSException {
     
 }

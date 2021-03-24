@@ -16,12 +16,11 @@ class AmazonService {
     private static let PIIListURL = "pii/deactive_pii_list"
     
     static func getDateRange(amazonId: String,
-                             completionHandler: @escaping (DateRange?, APIError?) -> Void) -> APIClient {
+                             completionHandler: @escaping (DateRange?, Error?) -> Void) -> APIClient {
         let client = NetworkClient<APIResponse<DateRange>>(relativeURL: DateRangeURL, requestMethod: .post)
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         
         client.body = [JSONKeys.panelistId.rawValue: panelistId, JSONKeys.amazonId.rawValue: amazonId]
-        client.headers = [JSONKeys.panelist_id.rawValue: panelistId]
         
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<DateRange> {
@@ -31,7 +30,7 @@ class AmazonService {
                     completionHandler(response.data, nil)
                 }
             } else {
-               completionHandler(nil, nil)
+                completionHandler(nil, nil)
             }
         }
         
@@ -40,11 +39,11 @@ class AmazonService {
     
     static func uploadFile(fileURL: URL, amazonId: String,
                            fromDate: String, toDate: String,
-                           _ completionHandler: @escaping (ReportUpload?, APIError?) -> Void) -> APIClient {
+                           _ completionHandler: @escaping (ReportUpload?, Error?) -> Void) -> APIClient {
         let client = NetworkClient<APIResponse<ReportUpload>>(relativeURL: UploadReportURL, requestMethod: .multipart)
         
         let panelistId = LibContext.shared.authProvider.getPanelistID()
-        client.headers = [JSONKeys.panelist_id.rawValue: panelistId]
+    
         client.multipartFormClosure = { multipartData in
             multipartData.append(fileURL, withName: JSONKeys.file.rawValue)
             multipartData.append(Data(amazonId.utf8), withName: JSONKeys.amazonId.rawValue)
@@ -61,7 +60,7 @@ class AmazonService {
                     completionHandler(response.data, nil)
                 }
             } else {
-               completionHandler(nil, nil)
+                completionHandler(nil, nil)
             }
         }
         
@@ -71,7 +70,6 @@ class AmazonService {
     static func getPIIList(completionHandler: @escaping ([PIIAttribute]?, Error?) -> Void) -> APIClient {
         let client = NetworkClient<APIResponse<[PIIAttribute]>>(relativeURL: PIIListURL, requestMethod: .get)
         
-        client.headers = [JSONKeys.panelist_id.rawValue: LibContext.shared.authProvider.getPanelistID()]
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<[PIIAttribute]> {
                 if response.isError {
@@ -80,7 +78,7 @@ class AmazonService {
                     completionHandler(response.data, nil)
                 }
             } else {
-               completionHandler(nil, nil)
+                completionHandler(nil, nil)
             }
         }
         

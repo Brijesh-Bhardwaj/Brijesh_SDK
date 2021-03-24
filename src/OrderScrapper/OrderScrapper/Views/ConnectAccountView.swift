@@ -100,6 +100,7 @@ struct ConnectAccountView: View {
         .onReceive(self.viewModel.authError.receive(on: RunLoop.main)) { authError in
             if authError {
                 self.presentationMode.wrappedValue.dismiss()
+                LibContext.shared.webAuthErrorPublisher.send(authError)
             }
         }
     }
@@ -110,6 +111,7 @@ struct ConnectAccountView: View {
     }
     
     func onProcessDone() {
+        self.presentationMode.wrappedValue.dismiss()
         LibContext.shared.scrapeCompletionPublisher.send(true)
     }
 }
