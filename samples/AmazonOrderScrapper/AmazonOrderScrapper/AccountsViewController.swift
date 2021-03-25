@@ -21,13 +21,11 @@ class AccountsViewController: UIViewController {
     @IBOutlet weak var actionButton: UIButton!
     @IBOutlet weak var tickImage: UIImageView!
     
-    private var orderScrapperLib: OrderScrapper!
     private var currentAccount: Account!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.orderScrapperLib = OrderScrapperFactory.createScrapper(orderSource: .Amazon, authProvider: self, viewPresenter: self)
+        try! OrdersExtractor.initialize(authProvider: self, viewPresenter: self)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -44,12 +42,13 @@ class AccountsViewController: UIViewController {
     }
     
     private func loadAccounts() {
-        let accounts = self.orderScrapperLib.getAccounts()
-        let connectedAccounts = accounts.filter() { $0.accountState != .ConnectedAndDisconnected }
-        if connectedAccounts.isEmpty {
-            showViewForNoAccount()
-        } else {
-            showViewFor(account: connectedAccounts[0])
+        try! OrdersExtractor.getAccounts(orderSource: nil) { accounts in
+            let connectedAccounts = accounts.filter() { $0.accountState != .ConnectedAndDisconnected }
+            if connectedAccounts.isEmpty {
+                self.showViewForNoAccount()
+            } else {
+                self.showViewFor(account: connectedAccounts[0])
+            }
         }
     }
     
@@ -80,14 +79,14 @@ class AccountsViewController: UIViewController {
     }
     
     @IBAction func disconnectAccount(_ sender: Any) {
-        self.orderScrapperLib.disconnectAccount(account: self.currentAccount, accountDisconnectedListener: self)
+        self.currentAccount.disconnect(accountDisconnectedListener: self)
     }
     
     @IBAction func onActionButtonClick(_ sender: Any) {
         if self.actionButton.tag == ButtonAction.connectAccount.rawValue {
-            self.orderScrapperLib.connectAccount(orderExtractionListener: self)
+            try! OrdersExtractor.registerAccount(orderSource: .Amazon, orderExtractionListner: self)
         } else {
-            self.orderScrapperLib.startOrderExtraction(orderExtractionListener: self)
+            self.currentAccount.fetchOrders(orderExtractionListener: self)
         }
     }
 }

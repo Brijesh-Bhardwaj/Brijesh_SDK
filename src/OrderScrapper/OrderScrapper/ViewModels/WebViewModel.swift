@@ -7,8 +7,8 @@ import Foundation
 import Combine
 
 class WebViewModel: ObservableObject {
-    var userEmail: String?
-    var userPassword: String?
+    var userAccount: Account!
+    
     //TODO: This information will be fetched from the API
     var reportConfig: ReportConfig?
     var showWebView = PassthroughSubject<Bool, Never>()

@@ -7,20 +7,18 @@ import Foundation
 import Combine
 
 class LibContext {
-    private static var instance: LibContext?
+    private static var instance: LibContext!
     
     private init() {
         
     }
     
-    static var shared: LibContext {
-        get {
-            if LibContext.instance == nil {
-                LibContext.instance = LibContext()
-            }
-            return LibContext.instance!
+    static var shared: LibContext = {
+        if instance == nil {
+            instance = LibContext()
         }
-    }
+        return instance
+    }()
     
     var authProvider: AuthProvider!
     var viewPresenter: ViewPresenter!

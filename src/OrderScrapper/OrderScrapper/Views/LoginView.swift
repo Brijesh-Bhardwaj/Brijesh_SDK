@@ -16,6 +16,12 @@ struct LoginView : View {
     @State var showStepScreen: Int? = nil
     @Environment(\.presentationMode) var presentationMode
     
+    private var account: UserAccountMO
+    
+    init(account: UserAccountMO) {
+        self.account = account
+    }
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -102,7 +108,7 @@ struct LoginView : View {
                     }
                     //SignIn Button
                     HStack {
-                        NavigationLink(destination: ConnectAccountView(email: email, password: password), tag: 1, selection: $showStepScreen) {
+                        NavigationLink(destination: ConnectAccountView(account: self.account), tag: 1, selection: $showStepScreen) {
                             Spacer()
                             Button(action: {
                                 self.errorInvalidEmailAndPasswrd = ""
@@ -117,6 +123,8 @@ struct LoginView : View {
                                     return
                                 }
                                 self.invalidPassword = ""
+                                self.account.userID = email
+                                self.account.userPassword = password
                                 self.showStepScreen = 1
                             }) {
                                 HStack(alignment: .center) {
@@ -144,7 +152,8 @@ struct LoginView : View {
             }.background(RadialGradient(gradient: Gradient(colors: [Utils.getColor(key: Colors.ColorRadialGradient1), Utils.getColor(key: Colors.ColorRadialGradient2)]), center: .center, startRadius: 1, endRadius: 100))
             .edgesIgnoringSafeArea(.all)
             .navigationBarHidden(true)
-        }.navigationBarHidden(true)
+        }.navigationViewStyle(StackNavigationViewStyle())
+        .navigationBarHidden(true)
         .onReceive(LibContext.shared.scrapeCompletionPublisher.receive(on: RunLoop.main)) { value in
             self.presentationMode.wrappedValue.dismiss()
         }
@@ -156,10 +165,10 @@ struct LoginView : View {
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            LoginView()
+            LoginView(account: UserAccountMO())
                 .previewDevice("iPhone 12 mini")
                 .previewDisplayName("iPhone 12 mini")
-            LoginView()
+            LoginView(account: UserAccountMO())
                 .previewDevice("iPhone 12 Pro Max")
                 .previewDisplayName("iPhone 12 Pro Max")
 //            LoginView()

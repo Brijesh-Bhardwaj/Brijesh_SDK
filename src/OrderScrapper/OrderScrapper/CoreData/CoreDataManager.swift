@@ -6,7 +6,7 @@
 import Foundation
 import CoreData
 
-public class CoreDataManager {
+class CoreDataManager {
     private static var instance: CoreDataManager!
     
     static let shared: CoreDataManager = {
@@ -67,12 +67,14 @@ public class CoreDataManager {
     /*
      * fetch user accounts by OrderSource type
      */
-    public func fetch(orderSource: Int16)->[UserAccountMO] {
+    public func fetch(orderSource: OrderSource?)->[UserAccountMO] {
         let context = persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<UserAccountMO>(entityName: AppConstants.entityName)
-        fetchRequest.predicate = NSPredicate(format: "\(AppConstants.userAccountColumnOrderSource) == \(orderSource)")
+        if let orderSource = orderSource {
+            fetchRequest.predicate = NSPredicate(format: "\(AppConstants.userAccountColumnOrderSource) == \(orderSource.rawValue)")
+        }
         var accounts = [UserAccountMO]()
-        do{
+        do {
             accounts = try context.fetch(fetchRequest)
         } catch let fetchErr {
             print("Failed to fetch Account:",fetchErr)
@@ -88,9 +90,18 @@ public class CoreDataManager {
         let fetchRequest = NSFetchRequest<UserAccountMO>(entityName: AppConstants.entityName)
         fetchRequest.predicate = NSPredicate(format: "\(AppConstants.userAccountColumnUserId) = %@", userId)
         let accounts = try context.fetch(fetchRequest)
-        let objectUpdate = accounts[0] as NSManagedObject
+        if accounts.count > 0 {
+            let objectUpdate = accounts[0] as NSManagedObject
+            
+            objectUpdate.setValue(accountStatus, forKey: AppConstants.userAccountColumnAccountStatus)
+            try context.save()
+        }
+    }
+    
+    public func createNewAccount() -> UserAccountMO {
+        let context = persistentContainer.viewContext
+        let entity = NSEntityDescription.entity(forEntityName: AppConstants.entityName, in: context)!
         
-        objectUpdate.setValue(accountStatus, forKey: AppConstants.userAccountColumnAccountStatus)
-        try context.save()
+        return NSManagedObject(entity: entity, insertInto: nil) as! UserAccountMO
     }
 }

@@ -37,6 +37,7 @@ internal class AmazonAuthenticator: Authenticator {
                         if (strResult.isEmpty) {
                             self.injectCaptchaIdentificationJS()
                         } else {
+                            self.updateAccountWithExceptionState()
                             self.viewModel.authError.send(true)
                         }
                     } else {
@@ -55,6 +56,7 @@ internal class AmazonAuthenticator: Authenticator {
                 case .captcha:
                     if let response = response as? String {
                         if response.contains("captcha") {
+                            self.updateAccountWithExceptionState()
                             self.viewModel.showWebView.send(true)
                         } else {
                             self.injectFieldIdentificationJS()
@@ -64,7 +66,7 @@ internal class AmazonAuthenticator: Authenticator {
                     }
                 }
             })
-
+        
         self.injectAuthErrorVerificationJS()
     }
     
@@ -78,7 +80,7 @@ internal class AmazonAuthenticator: Authenticator {
     }
     
     private func injectEmailJS() {
-        let email = self.viewModel.userEmail!
+        let email = self.viewModel.userAccount.userID
         let js = "javascript:" +
             "document.getElementById('ap_email_login').value = '" + email + "';" + "document.querySelector('#accordion-row-login #continue #continue').click()"
         
@@ -86,7 +88,7 @@ internal class AmazonAuthenticator: Authenticator {
     }
     
     private func injectPasswordJS() {
-        let password = self.viewModel.userPassword!
+        let password = self.viewModel.userAccount.userPassword
         let js = "javascript:" +
             "document.getElementById('ap_password').value = '" + password + "';" +
             "document.getElementById('signInSubmit').click()"
@@ -110,5 +112,13 @@ internal class AmazonAuthenticator: Authenticator {
             " return null}})()"
         
         self.viewModel.jsPublisher.send((.captcha, js))
+    }
+    
+    private func updateAccountWithExceptionState() {
+        do {
+            try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.ConnectedButException.rawValue)
+        } catch let error {
+            debugPrint("Error while updating account state: ", error)
+        }
     }
 }

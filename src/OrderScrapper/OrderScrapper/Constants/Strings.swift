@@ -30,4 +30,10 @@ struct Strings {
     static let Step6 = "step6"
     static let SuccessMsgReceiptsFechedSuccessfully = "success_msg_receipts_fetched_successfully"
     static let HeadingFetchingReceipts = "heading_fetching_receipts"
+    
+    
+    // Mark:- Non-Localized strings
+    static let ErrorLibAlreadyInitialized = "OrdersExtractor is already initialized."
+    static let ErrorLibNotInitialized = "OrdersExtractor is not initialized."
+    static let ErrorAuthProviderNotImplemented = "AuthProvider implementation is missing."
 }

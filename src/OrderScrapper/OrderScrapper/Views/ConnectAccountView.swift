@@ -22,10 +22,9 @@ struct ConnectAccountView: View {
     
     let padding_zero : CGFloat  = 0
     
-    init(email: String, password: String) {
+    init(account: Account) {
         self.viewModel = WebViewModel()
-        self.viewModel.userEmail = email
-        self.viewModel.userPassword = password
+        self.viewModel.userAccount = account
     }
     
     var body: some View {
@@ -119,9 +118,9 @@ struct ConnectAccountView: View {
 struct ConnectAccountView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            ConnectAccountView(email: "", password: "")
+            ConnectAccountView(account: UserAccountMO())
                 .previewDevice("iPhone 12 Pro Max")
-            ConnectAccountView(email: "", password: "")
+            ConnectAccountView(account: UserAccountMO())
                 .previewDevice("iPhone 12 mini")
         }
     }

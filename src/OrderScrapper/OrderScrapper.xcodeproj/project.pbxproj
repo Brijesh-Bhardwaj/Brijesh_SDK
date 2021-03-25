@@ -18,10 +18,10 @@
 		1C07410B2604B5B10013067C /* RNCryptoUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C07410A2604B5B10013067C /* RNCryptoUtil.swift */; };
 		1C07411A2604F2540013067C /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0741192604F2540013067C /* String.swift */; };
 		1C2CD4CC2601E5B70042FF61 /* DataFetchSuccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2CD4CB2601E5B70042FF61 /* DataFetchSuccessView.swift */; };
+		1C2F8DF4260B25870053E73A /* OrdersExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2F8DF3260B25870053E73A /* OrdersExtractor.swift */; };
 		1CBF6D4325F5FFBE001A801B /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CBF6D3925F5FFBE001A801B /* OrderScrapper.framework */; };
 		1CBF6D4825F5FFBE001A801B /* OrderScrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D4725F5FFBE001A801B /* OrderScrapperTests.swift */; };
 		1CBF6D4A25F5FFBE001A801B /* OrderScrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CBF6D3C25F5FFBE001A801B /* OrderScrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1CBF6D9C25F6294C001A801B /* OrderScrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D9B25F6294C001A801B /* OrderScrapperFactory.swift */; };
 		1CD2B51326031A710016F752 /* CoreDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1CD2B51126031A710016F752 /* CoreDataModel.xcdatamodeld */; };
 		1CD2B51726031C900016F752 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CD2B51626031C900016F752 /* CoreDataManager.swift */; };
 		1CEDD13B26038CAE00E7BAB4 /* UserAccountMO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEDD13A26038CAE00E7BAB4 /* UserAccountMO.swift */; };
@@ -127,13 +127,13 @@
 		1C07410A2604B5B10013067C /* RNCryptoUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNCryptoUtil.swift; sourceTree = "<group>"; };
 		1C0741192604F2540013067C /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		1C2CD4CB2601E5B70042FF61 /* DataFetchSuccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataFetchSuccessView.swift; sourceTree = "<group>"; };
+		1C2F8DF3260B25870053E73A /* OrdersExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrdersExtractor.swift; sourceTree = "<group>"; };
 		1CBF6D3925F5FFBE001A801B /* OrderScrapper.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OrderScrapper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CBF6D3C25F5FFBE001A801B /* OrderScrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OrderScrapper.h; sourceTree = "<group>"; };
 		1CBF6D3D25F5FFBE001A801B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1CBF6D4225F5FFBE001A801B /* OrderScrapperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OrderScrapperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CBF6D4725F5FFBE001A801B /* OrderScrapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderScrapperTests.swift; sourceTree = "<group>"; };
 		1CBF6D4925F5FFBE001A801B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		1CBF6D9B25F6294C001A801B /* OrderScrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderScrapperFactory.swift; sourceTree = "<group>"; };
 		1CD2B51226031A710016F752 /* CoreDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreDataModel.xcdatamodel; sourceTree = "<group>"; };
 		1CD2B51626031C900016F752 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		1CEDD13A26038CAE00E7BAB4 /* UserAccountMO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAccountMO.swift; sourceTree = "<group>"; };
@@ -258,7 +258,6 @@
 				E1D9B2A525FB871B00D6A240 /* Common */,
 				1CBF6D3C25F5FFBE001A801B /* OrderScrapper.h */,
 				1CBF6D3D25F5FFBE001A801B /* Info.plist */,
-				1CBF6D9B25F6294C001A801B /* OrderScrapperFactory.swift */,
 			);
 			path = OrderScrapper;
 			sourceTree = "<group>";
@@ -285,6 +284,7 @@
 			isa = PBXGroup;
 			children = (
 				E148DB4125FF2BFD001430BE /* AmazonOrderScrapper.swift */,
+				1C2F8DF3260B25870053E73A /* OrdersExtractor.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -608,7 +608,6 @@
 				1C006FBB2600C02700F9263E /* Colors.swift in Sources */,
 				E148DCA02605CCEC001430BE /* Data.swift in Sources */,
 				E148DC52260339EF001430BE /* AmazonService.swift in Sources */,
-				1CBF6D9C25F6294C001A801B /* OrderScrapperFactory.swift in Sources */,
 				E148DCC5260616DB001430BE /* ExceptionErrorView.swift in Sources */,
 				E148DB6325FF2BFD001430BE /* AccountState.swift in Sources */,
 				E148DC5B26034D7F001430BE /* APIClient.swift in Sources */,
@@ -619,6 +618,7 @@
 				E148DC992605CB1E001430BE /* PIIScrapper.swift in Sources */,
 				E148DC0B26010D28001430BE /* Authenticator.swift in Sources */,
 				1C006FAA26009BE500F9263E /* AppConstants.swift in Sources */,
+				1C2F8DF4260B25870053E73A /* OrdersExtractor.swift in Sources */,
 				E19D4CBA2609A4A9002C16A7 /* OrderExtractionListener.swift in Sources */,
 				E148DC4B2603371C001430BE /* APIResponse.swift in Sources */,
 				E148DB5F25FF2BFD001430BE /* LoginView.swift in Sources */,
@@ -786,8 +786,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -809,6 +810,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.orderscrapper.OrderScrapper;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -822,8 +824,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -845,6 +848,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.orderscrapper.OrderScrapper;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;

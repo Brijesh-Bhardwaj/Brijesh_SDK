@@ -4,6 +4,10 @@
 
 import Foundation
 
-public class ASLException: NSException {
+public class ASLException: Error {
+    let errorMessage: String?
     
+    init(errorMessage: String?) {
+        self.errorMessage = errorMessage
+    }
 }

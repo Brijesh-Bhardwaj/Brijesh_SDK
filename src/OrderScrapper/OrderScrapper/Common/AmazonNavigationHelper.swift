@@ -181,7 +181,7 @@ class AmazonNavigationHelper: NavigationHelper {
     }
     
     private func getDateRange() {
-        _ = AmazonService.getDateRange(amazonId: self.viewModel.userEmail!) { response, error in
+        _ = AmazonService.getDateRange(amazonId: self.viewModel.userAccount.userID) { response, error in
             if let response = response {
                 let reportConfig = self.parseReportConfig(dateRange: response)
                 self.viewModel.reportConfig = reportConfig
@@ -223,7 +223,7 @@ class AmazonNavigationHelper: NavigationHelper {
         let toDate = reportConfig.fullEndDate!
         
         _ = AmazonService.uploadFile(fileURL: url,
-                                     amazonId: self.viewModel.userEmail!,
+                                     amazonId: self.viewModel.userAccount.userID,
                                      fromDate: fromDate, toDate: toDate) { response, error in
             if response != nil {
                 self.publishProgrssFor(step: .complete)
@@ -237,11 +237,8 @@ class AmazonNavigationHelper: NavigationHelper {
      * add user account details in DB
      */
     private func addUserAccountInDB() {
-        let userId = self.viewModel.userEmail!
-        let userPassword = self.viewModel.userPassword!
-        //Encrypt password before storing into DB
-        let encrytedPassword = RNCryptoUtil.encryptData(userId: userId, value: userPassword)
+        let account = self.viewModel.userAccount as! UserAccountMO
         
-        CoreDataManager.shared.addAccount(userId: userId, password: encrytedPassword, accountStatus: AccountState.Connected.rawValue, orderSource: OrderSource.Amazon.rawValue)
+        CoreDataManager.shared.addAccount(userId: account.userID, password: account.password, accountStatus: AccountState.Connected.rawValue, orderSource: account.orderSource)
     }
 }
