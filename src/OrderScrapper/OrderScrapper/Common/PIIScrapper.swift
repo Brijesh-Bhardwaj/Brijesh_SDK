@@ -26,7 +26,6 @@ class PIIScrapper {
             }
             
             let downloadURL = FileHelper.getReportDownloadPath(fileName: self.fileName, orderSource: self.orderSource)
-
             guard let outputStream = OutputStream(url: downloadURL, append: false) else {
                 completionHandler(nil, nil)
                 return
@@ -46,8 +45,9 @@ class PIIScrapper {
                 }
                 
                 let headers = reader.headerRow!
-                
-                let requiredHeaders = Array(Set(headers).subtracting(Set(piiAttributes)))
+                let requiredHeaders = headers.filter {
+                    !piiAttributes.contains($0)
+                }
                 
                 try writer.write(row: requiredHeaders)
                 
