@@ -113,7 +113,7 @@ struct LoginView : View {
                             Button(action: {
                                 self.errorInvalidEmailAndPasswrd = ""
                                 
-                                if !ValidationUtil.isValidEmail(email: email) {
+                                if !ValidationUtil.isValidEmail(email: email.trimmingCharacters(in: .whitespaces)) {
                                     self.invalidEmail = Utils.getString(key: Strings.ValidationPleaseEnterValidEmail)
                                     return
                                 }
