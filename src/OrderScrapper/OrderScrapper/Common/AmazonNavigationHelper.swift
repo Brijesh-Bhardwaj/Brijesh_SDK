@@ -186,14 +186,14 @@ class AmazonNavigationHelper: NavigationHelper {
                 self.viewModel.reportConfig = reportConfig
                 
                 self.viewModel.jsPublisher.send((.dateRange, self.getOldestPossibleYear()))
-                self.jsInjectionResultCallback()
+                self.setJSInjectionResultSubscriber()
             } else {
                 self.viewModel.webviewError.send(true)
             }
         }
     }
     
-    private func jsInjectionResultCallback() {
+    private func setJSInjectionResultSubscriber() {
         self.jsResultSubscriber = viewModel.jsResultPublisher.receive(on: RunLoop.main)
             .sink(receiveValue: { (injectValue, result) in
                 let (response, _) = result
