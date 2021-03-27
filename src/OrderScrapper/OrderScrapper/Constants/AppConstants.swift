@@ -17,4 +17,7 @@ struct AppConstants {
     static let userAccountColumnUserId = "userId"
     static let userAccountColumnAccountStatus = "accountStatus"
     static let userAccountColumnPassword = "password"
+    static let firstDayOfJan = "1"
+    static let monthJan = "1"
+    static let amazonReportType = "ITEMS"
 }

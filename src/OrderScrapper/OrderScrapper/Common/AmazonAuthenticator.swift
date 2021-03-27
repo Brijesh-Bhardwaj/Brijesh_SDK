@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 enum JSInjectValue {
-    case email, password, captcha, error, identification, generateReport, downloadReport
+    case email, password, captcha, error, identification, generateReport, downloadReport, dateRange
 }
 
 internal class AmazonAuthenticator: Authenticator {
@@ -30,7 +30,7 @@ internal class AmazonAuthenticator: Authenticator {
             .sink(receiveValue: { (injectValue, result) in
                 let (response, _) = result
                 switch injectValue {
-                case .email, .password, .generateReport, .downloadReport: break
+                case .email, .password, .generateReport, .downloadReport, .dateRange: break
                 case .error:
                     if let response = response {
                         let strResult = response as! String

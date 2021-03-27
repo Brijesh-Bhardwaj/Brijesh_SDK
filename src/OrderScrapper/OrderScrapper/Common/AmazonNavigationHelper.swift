@@ -93,7 +93,7 @@ class AmazonNavigationHelper: NavigationHelper {
     private func injectGenerateReportJS() {
         if let reportConfig = self.viewModel.reportConfig {
             let js = "javascript:" +
-                "document.getElementById('report-type').value = '" + reportConfig.reportType + "';" +
+                "document.getElementById('report-type').value = '" + AppConstants.amazonReportType + "';" +
                 "document.getElementById('report-month-start').value = '" + reportConfig.startMonth + "';" +
                 "document.getElementById('report-day-start').value = '" + reportConfig.startDate + "';" +
                 "document.getElementById('report-year-start').value = '" + reportConfig.startYear + "';" +
@@ -101,7 +101,6 @@ class AmazonNavigationHelper: NavigationHelper {
                 "document.getElementById('report-day-end').value = '" + reportConfig.endDate + "';" +
                 "document.getElementById('report-year-end').value = '" + reportConfig.endYear + "';" +
                 "document.getElementById('report-confirm').click()"
-            
             self.viewModel.jsPublisher.send((.generateReport, js))
         }
     }
@@ -185,11 +184,52 @@ class AmazonNavigationHelper: NavigationHelper {
             if let response = response {
                 let reportConfig = self.parseReportConfig(dateRange: response)
                 self.viewModel.reportConfig = reportConfig
-                self.injectGenerateReportJS()
+                
+                self.viewModel.jsPublisher.send((.dateRange, self.getOldestPossibleYear()))
+                self.setJSInjectionResultSubscriber()
             } else {
                 self.viewModel.webviewError.send(true)
             }
         }
+    }
+    
+    private func setJSInjectionResultSubscriber() {
+        self.jsResultSubscriber = viewModel.jsResultPublisher.receive(on: RunLoop.main)
+            .sink(receiveValue: { (injectValue, result) in
+                let (response, _) = result
+                switch injectValue {
+                case .captcha,.downloadReport, .email, .generateReport, .identification, .password, .error: break
+                case .dateRange:
+                    if let response = response {
+                        let strResult = response as! String
+                        if (!strResult.isEmpty) {
+                            let year = Int(strResult) ?? 0
+                            let startYear = Int(self.viewModel.reportConfig!.startYear)
+                            let endYear = Int(self.viewModel.reportConfig!.endYear)
+
+                            if year > startYear! {
+                                self.viewModel.reportConfig?.startYear = String(year)
+                                self.viewModel.reportConfig?.startDate = AppConstants.firstDayOfJan
+                                self.viewModel.reportConfig?.startMonth =  AppConstants.monthJan
+                            }
+                            if year > endYear! {
+                                self.viewModel.reportConfig?.endYear = String(year)
+                            }
+                        }
+                        self.injectGenerateReportJS()
+                    }
+                }
+            })
+        
+    }
+    
+    private func getOldestPossibleYear() -> String {
+        return "(function() {var listOfYears = document.getElementById('report-year-start');" +
+                "var oldestYear = 0;" +
+                "for (i = 0; i < listOfYears.options.length; i++) {" +
+                "if(!isNaN(listOfYears.options[i].value) && (listOfYears.options[i].value < oldestYear || oldestYear ==0))" +
+                "{ oldestYear = listOfYears.options[i].value;}" +
+                "} return oldestYear })()"
     }
     
     private func removePIIAttributes(fileName: String, fileURL: URL) {
