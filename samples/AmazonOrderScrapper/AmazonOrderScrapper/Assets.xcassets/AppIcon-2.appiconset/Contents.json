@@ -31,7 +31,6 @@
       "size" : "40x40"
     },
     {
-      "filename" : "120x120px_bg.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "60x60"
@@ -77,19 +76,16 @@
       "size" : "76x76"
     },
     {
-      "filename" : "152x152px_bg.png",
       "idiom" : "ipad",
       "scale" : "2x",
       "size" : "76x76"
     },
     {
-      "filename" : "167x167px_bg.png",
       "idiom" : "ipad",
       "scale" : "2x",
       "size" : "83.5x83.5"
     },
     {
-      "filename" : "1024x1024px_fill.png",
       "idiom" : "ios-marketing",
       "scale" : "1x",
       "size" : "1024x1024"
