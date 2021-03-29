@@ -12,6 +12,18 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 
 ## [Unreleased]
 
+## [0.1.1] - 2021-03-26
+
+### Fixed
+
+- Fixed CSV column headers getting generated randomly, the order of the headers is fixed 
+- Fixed the issue with Dark mode of the device, the SDK allows only Light mode
+
+ ### Changed
+ 
+- SDK interface changes: Refactored the design so that application code can just query the list of
+   accounts and perform operation on the account from the list.
+- Changed the hint label on the Connect Amazon Account screen for email and mobile number
 
 ## [0.1.0] - 2021-03-23
 

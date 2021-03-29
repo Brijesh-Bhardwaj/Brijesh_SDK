@@ -1,12 +1,12 @@
 //
-//  NetworkErrorView.swift
+//  FetchSuccessView.swift
 //  OrderScrapper
 //
 
 import UIKit
 
-class NetworkErrorView: UIView {
-    let nibName = "NetworkErrorView"
+class FetchSuccessView: UIView {
+    let nibName = "FetchSuccessView"
     
     var buttonClickHandler: (() -> Void)?
     
@@ -22,7 +22,7 @@ class NetworkErrorView: UIView {
         initView()
     }
     
-    @IBAction func didClickRetryButton(_ sender: Any) {
+    @IBAction func didClickOkButton(_ sender: Any) {
         if let clickHandler = buttonClickHandler {
             clickHandler()
         }

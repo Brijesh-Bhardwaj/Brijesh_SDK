@@ -105,7 +105,7 @@ extension AccountsViewController: AccountDisconnectedListener {
 
 extension AccountsViewController: ViewPresenter {
     func presentView(view: UIViewController) {
-        self.navigationController?.pushViewController(view, animated: true)
+        self.present(view, animated: true, completion: nil)
     }
     
     func dismissView() {
@@ -135,15 +135,17 @@ extension AccountsViewController: OrderExtractionListener {
     }
     
     func onOrderExtractionFailure(error: ASLException) {
-        
+        showAlert(title: "Alert", message: error.localizedDescription, completionHandler: nil)
     }
 }
 
 extension UIViewController {
-    func showAlert(title: String, message: String, completionHandler: @escaping (UIAlertAction) -> Void) {
+    func showAlert(title: String, message: String, completionHandler: ((UIAlertAction) -> Void)?) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
-            completionHandler(action)
+            if completionHandler != nil {
+                completionHandler!(action)
+            }
         })
         
         //Add OK button to a dialog message

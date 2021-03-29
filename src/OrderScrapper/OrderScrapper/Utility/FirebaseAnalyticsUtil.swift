@@ -13,7 +13,7 @@ class FirebaseAnalyticsUtil {
     static func configure() {
         let filePath = Bundle(identifier: AppConstants.identifier)!.path(forResource: AppConstants.resourceName, ofType: AppConstants.resourceOfType)
         let options = FirebaseOptions.init(contentsOfFile: filePath!)!
-        FirebaseApp.configure(name: AppConstants.analyticsName, options: options)
+        FirebaseApp.configure(options: options)
     }
     
     static func logEvent(eventType: String, eventAttributes: Dictionary<String, String>) {

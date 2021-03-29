@@ -40,14 +40,19 @@ class AmazonOrderScrapper {
     }
     
     func connectAccount(account: Account, orderExtractionListener: OrderExtractionListener) {
-        self.completionSubscriber = LibContext.shared.scrapeCompletionPublisher.receive(on: RunLoop.main).sink() { completed in
+        self.completionSubscriber = LibContext.shared.scrapeCompletionPublisher.receive(on: RunLoop.main).sink() { completed, error in
             if completed {
                 orderExtractionListener.onOrderExtractionSuccess()
             } else {
-                orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: nil))
+                orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: error ?? ""))
             }
         }
-        let viewController = UIHostingController(rootView: LoginView(account: account as! UserAccountMO))
+        
+        let storyboard = UIStoryboard(name: "OSLibUI", bundle: AppConstants.bundle)
+        let viewController = storyboard.instantiateViewController(identifier: "RegisterAccountVC") as! RegisterAccountViewController
+        viewController.account = account as? UserAccountMO
+        viewController.modalPresentationStyle = .fullScreen
+    
         self.viewPresenter.presentView(view: viewController)
     }
     
@@ -64,7 +69,19 @@ class AmazonOrderScrapper {
     }
     
     func startOrderExtraction(account: Account, orderExtractionListener: OrderExtractionListener) {
-        let viewController = UIHostingController(rootView: ConnectAccountView(account: account))
+        self.completionSubscriber = LibContext.shared.scrapeCompletionPublisher.receive(on: RunLoop.main).sink() { completed, error in
+            if completed {
+                orderExtractionListener.onOrderExtractionSuccess()
+            } else {
+                orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: error ?? ""))
+            }
+        }
+        
+        let storyboard = UIStoryboard(name: "OSLibUI", bundle: AppConstants.bundle)
+        let viewController = storyboard.instantiateViewController(identifier: "ConnectAccountVC") as! ConnectAccountViewController
+        viewController.account = account
+        viewController.modalPresentationStyle = .fullScreen
+    
         self.viewPresenter.presentView(view: viewController)
     }
 }

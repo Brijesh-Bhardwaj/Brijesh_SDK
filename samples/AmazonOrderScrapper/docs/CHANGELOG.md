@@ -13,6 +13,16 @@ in this file.
 
 ## [Unreleased]
 
+## [0.1.1] - 2021-03-26
+
+### Fixed
+ 
+- Fixed the issue with Dark mode of the device, the app allows only Light mode
+- Fixed the white bar being present in the Accounts list page
+
+ ### Changed
+ 
+- Changed the app icons
 
 ## [0.1.0] - 2021-03-23
 

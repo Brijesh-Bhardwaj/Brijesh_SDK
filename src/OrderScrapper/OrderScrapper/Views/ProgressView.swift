@@ -3,43 +3,58 @@
 //  OrderScrapper
 //
 
-import SwiftUI
+import UIKit
 
-struct ProgressView: View {
-    @Binding var progressValue: Float
-    @Binding var progressMessage: String
-    @Binding var stepMessage: String
+class ProgressView: UIView {
+    let nibName = "ProgressView"
     
-    var body: some View {
-        GeometryReader { geometry in
-            VStack (alignment: .center){
-                VStack {
-                    Text(self.progressMessage)
-                        .font(.system(size: 24))
-                        .foregroundColor(Utils.getColor(key: Colors.ColorHeading))
-                        .padding(.bottom, 20)
-                    
-                    Text(Utils.getString(key: Strings.SubheadingStayOnThisScreenUntilCompletion))
-                        .font(.system(size: 18))
-                        .foregroundColor(Utils.getColor(key: Colors.ColorHeading))
-                        .padding(.bottom, geometry.size.height * 0.2)
-                    
-                    //ProgressBar
-                    ProgressBar(value: $progressValue)
-                        .frame(height: geometry.size.height * 0.08)
-                        .padding([.leading, .trailing], 10)
-                    
-                    Text(self.stepMessage)
-                        .font(.system(size: 22))
-                        .padding(.top, 15)
-                        .foregroundColor(Utils.getColor(key: Colors.ColorHeading))
-                }.padding([.leading, .trailing], 5)
-                .padding(.top, geometry.size.height * 0.07)
-                
-                Spacer()
-            }
-            .background(Utils.getColor(key: Colors.ColorBackgroundErrorView))
-            .cornerRadius(geometry.size.width * 0.1, corners: [.topLeft, .topRight])
+    @IBOutlet var contentView: UIView!
+    @IBOutlet weak var headerLabel: UILabel!
+    @IBOutlet weak var stepLabel: UILabel!
+    @IBOutlet weak var progressView: HorizontalProgressBar!
+    
+    var headerText: String {
+        get {
+            return ""
         }
+        set {
+            headerLabel.text = newValue
+        }
+    }
+    
+    var stepText: String {
+        get {
+            return ""
+        }
+        set {
+            stepLabel.text = newValue
+        }
+    }
+    
+    var progress: CGFloat {
+        get {
+            return 0
+        }
+        set {
+            progressView.progress = newValue
+        }
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        initView()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        initView()
+    }
+    
+    private func initView() {
+        let nib = UINib(nibName: nibName, bundle: AppConstants.bundle)
+        nib.instantiate(withOwner: self, options: nil)
+
+        self.contentView.frame = self.bounds
+        self.addSubview(self.contentView)
     }
 }

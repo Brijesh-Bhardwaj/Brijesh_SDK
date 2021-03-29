@@ -143,7 +143,7 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FNg-jY-3W4" customClass="Gradient" customModule="ReceiptStraw_Dev" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Accounts Connected" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2CW-FS-8Xg">
                                         <rect key="frame" x="100" y="35" width="214" height="24"/>
@@ -153,7 +153,7 @@
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nl1-eK-5MZ">
                                         <rect key="frame" x="20" y="136" width="374" height="48"/>
-                                        <color key="backgroundColor" red="0.97254901959999995" green="0.67843137249999996" blue="0.1019607843" alpha="1" colorSpace="calibratedRGB"/>
+                                        <color key="backgroundColor" red="0.94117647058823528" green="0.63921568627450975" blue="0.039215686274509803" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="48" id="Io8-1S-0SR"/>
                                         </constraints>
