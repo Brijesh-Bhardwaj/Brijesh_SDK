@@ -877,7 +877,6 @@
 					"$(PROJECT_DIR)/Carthage/Build/CSV.xcframework/ios-arm64_i386_x86_64-simulator",
 					"$(PROJECT_DIR)/Carthage/Build/RNCryptor.xcframework/ios-arm64_i386_x86_64-simulator",
 					"$(PROJECT_DIR)/Carthage/Build/iOS/",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
 					"$(PROJECT_DIR)/../../bin",
 				);
 				INFOPLIST_FILE = OrderScrapper/Info.plist;
