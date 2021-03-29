@@ -24,6 +24,8 @@ public class OrdersExtractor {
             AmazonOrderScrapper.shared.initialize(authProvider: authProvider, viewPresenter: viewPresenter)
         }
         isInitialized = true
+        //Configure firebase analytics 
+        FirebaseAnalyticsUtil.configure()
     }
     
     public static func getAccounts(orderSource: OrderSource?,

@@ -49,9 +49,28 @@ class AmazonNavigationHelper: NavigationHelper {
         if (urlString.contains(AmazonURL.signIn)) {
             self.authenticator.authenticate()
             publishProgrssFor(step: .authentication)
+            
+            //Log event for connect account
+            var logConnectAccountEventAttributes:[String:String] = [:]
+            logConnectAccountEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                  EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                  EventConstant.Status: EventStatus.Connected]
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.AccountConnect, eventAttributes: logConnectAccountEventAttributes)
         } else if (urlString.contains(AmazonURL.authApproval)
                     || urlString.contains(AmazonURL.twoFactorAuth)) {
             self.viewModel.showWebView.send(true)
+            //Log event for authentication approval or two factor authentication
+            var logAuthEventAttributes:[String:String] = [:]
+            var eventType: String
+            if urlString.contains(AmazonURL.authApproval) {
+                eventType = EventType.JSDetectedAuthApproval
+            } else {
+                eventType = EventType.JSDetectedTwoFactorAuth
+            }
+            logAuthEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                  EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                  EventConstant.Status: EventStatus.Success]
+            FirebaseAnalyticsUtil.logEvent(eventType: eventType, eventAttributes: logAuthEventAttributes)
         } else if (urlString.contains(AmazonURL.downloadReport)
                     && urlString.contains(AmazonURL.reportID)) {
             self.injectDownloadReportJS()
@@ -61,7 +80,14 @@ class AmazonNavigationHelper: NavigationHelper {
             self.addUserAccountInDB()
             self.getDateRange()
             publishProgrssFor(step: .generateReport)
-        } 
+        } else {
+            //Log event for getting other url
+            var logOtherUrlEventAttributes:[String:String] = [:]
+            logOtherUrlEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                  EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                  EventConstant.Status: EventStatus.Success]
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectOtherURL, eventAttributes: logOtherUrlEventAttributes)
+        }
     }
     
     func shouldIntercept(navigationResponse response: URLResponse) -> Bool {
@@ -80,11 +106,23 @@ class AmazonNavigationHelper: NavigationHelper {
         
         let fileDownloader = FileDownloader()
         fileDownloader.downloadReportFile(fromURL: url, cookies: cookies) { success, tempURL in
+            var logEventAttributes:[String:String] = [:]
             if success, let tempURL = tempURL {
                 let fileName = FileHelper.getReportFileNameFromResponse(response)
                 self.removePIIAttributes(fileName: fileName, fileURL: tempURL)
+                
+                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                      EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                      EventConstant.Status: EventStatus.Success,
+                                      EventConstant.FileName: fileName]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.OrderCSVDownload, eventAttributes: logEventAttributes)
             } else {
                 self.viewModel.webviewError.send(true)
+                
+                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                      EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                      EventConstant.Status: EventStatus.Failure]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.OrderCSVDownload, eventAttributes: logEventAttributes)
             }
         }
     }
@@ -180,6 +218,7 @@ class AmazonNavigationHelper: NavigationHelper {
     }
     
     private func getDateRange() {
+        var logEventAttributes:[String:String] = [:]
         _ = AmazonService.getDateRange(amazonId: self.viewModel.userAccount.userID) { response, error in
             if let response = response {
                 let reportConfig = self.parseReportConfig(dateRange: response)
@@ -187,8 +226,19 @@ class AmazonNavigationHelper: NavigationHelper {
                 
                 self.viewModel.jsPublisher.send((.dateRange, self.getOldestPossibleYear()))
                 self.setJSInjectionResultSubscriber()
+                //Logging event for successful date range API call
+                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                      EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                      EventConstant.Status: EventStatus.Success]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIDateRange, eventAttributes: logEventAttributes)
             } else {
                 self.viewModel.webviewError.send(true)
+                //Log event for failure of date range API call
+                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                      EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                      EventConstant.ErrorReason: error.debugDescription,
+                                      EventConstant.Status: EventStatus.Failure]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIDateRange, eventAttributes: logEventAttributes)
             }
         }
     }
@@ -234,23 +284,50 @@ class AmazonNavigationHelper: NavigationHelper {
     
     private func removePIIAttributes(fileName: String, fileURL: URL) {
         publishProgrssFor(step: .parseReport)
-        
+        var logAPIEventAttributes:[String:String] = [:]
         let tempURL = FileHelper.getReportDownloadPath(fileName: "temp.csv", orderSource: .Amazon)
         _ = FileHelper.moveFileToPath(fromURL: fileURL, destinationURL: tempURL)
         
         _ = AmazonService.getPIIList() { response, error in
             guard let attributes = response else {
                 self.viewModel.webviewError.send(true)
+                // Log event for PIIList API failure
+                logAPIEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                         EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                         EventConstant.ErrorReason: error.debugDescription,
+                                         EventConstant.Status: EventStatus.Failure]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIPIIList, eventAttributes: logAPIEventAttributes)
                 return
             }
+            // Log event for PIIList API success
+            logAPIEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                  EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                  EventConstant.Status: EventStatus.Success]
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIPIIList, eventAttributes: logAPIEventAttributes)
             
             let scrapper = PIIScrapper(fileURL: tempURL, fileName: fileName, orderSource: .Amazon)
+            var logEventAttributes:[String:String] = [:]
             scrapper.scrapPII(attributes: attributes) { destinationURL, error in
                 guard let destinationURL = destinationURL else {
                     self.viewModel.webviewError.send(true)
+                    
+                    //Log event for error in parsing
+                    logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                          EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                          EventConstant.FileName: fileName,
+                                          EventConstant.ErrorReason: error.debugDescription,
+                                          EventConstant.Status: EventStatus.Failure]
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.OrderCSVPParse, eventAttributes: logEventAttributes)
                     return
                 }
                 self.uploadCSVFile(fileURL: destinationURL)
+                
+                //Log event for successful parsing
+                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                      EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                      EventConstant.FileName: fileName,
+                                      EventConstant.Status: EventStatus.Success]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.OrderCSVPParse, eventAttributes: logEventAttributes)
             }
         }
     }
@@ -265,10 +342,22 @@ class AmazonNavigationHelper: NavigationHelper {
         _ = AmazonService.uploadFile(fileURL: url,
                                      amazonId: self.viewModel.userAccount.userID,
                                      fromDate: fromDate, toDate: toDate) { response, error in
+            var logEventAttributes:[String:String] = [:]
             if response != nil {
                 self.publishProgrssFor(step: .complete)
+                //Log event for successful uploading of csv
+                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                      EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                      EventConstant.Status: EventStatus.Success]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIUploadReport, eventAttributes: logEventAttributes)
             } else {
                 self.viewModel.webviewError.send(true)
+                //Log event for failure in csv upload
+                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                      EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                      EventConstant.ErrorReason: error.debugDescription,
+                                      EventConstant.Status: EventStatus.Failure]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIUploadReport, eventAttributes: logEventAttributes)
             }
         }
     }

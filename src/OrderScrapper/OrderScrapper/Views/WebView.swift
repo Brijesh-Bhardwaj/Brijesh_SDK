@@ -70,6 +70,33 @@ struct WebView: UIViewRepresentable {
                 webView.evaluateJavaScript(javascript) {
                     (response, error) in
                     self.parent.viewModel.jsResultPublisher.send((authState, (response, error)))
+                    
+                    //Log events for JS injection
+                    var logEventAttributes:[String:String] = [:]
+                    var status: String
+                    if error == nil {
+                        status = EventStatus.Success
+                    } else {
+                        status = EventStatus.Failure
+                    }
+                    switch authState {
+                    case .email:
+                        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                              EventConstant.OrderSourceID: self.parent.viewModel.userAccount.userID,
+                                              EventConstant.Status: status]
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSInjectUserName, eventAttributes: logEventAttributes)
+                    case .password:
+                        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                              EventConstant.OrderSourceID: self.parent.viewModel.userAccount.userID,
+                                              EventConstant.Status: status]
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSInjectPassword, eventAttributes: logEventAttributes)
+                    case .captcha:
+                        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                              EventConstant.OrderSourceID: self.parent.viewModel.userAccount.userID,
+                                              EventConstant.Status: status]
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedCaptcha, eventAttributes: logEventAttributes)
+                    case .dateRange, .downloadReport, .generateReport, .identification, .error:break
+                    }
                 }
             })
             
@@ -108,7 +135,10 @@ struct WebView: UIViewRepresentable {
             decisionHandler(.allow)
         }
     }
+    
 }
+
+
 
 // MARK: - Extensions
 extension WebView.Coordinator: WKScriptMessageHandler {

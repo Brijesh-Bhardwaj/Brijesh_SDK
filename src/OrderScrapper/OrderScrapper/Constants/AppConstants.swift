@@ -6,8 +6,8 @@
 import Foundation
 
 struct AppConstants {
-    static let bundle: Bundle! = Bundle(identifier: "ai.blackstraw.receiptstrawlib.dev")
-    static let identifier: String  = "ai.blackstraw.receiptstrawlib.dev"
+    static let bundle: Bundle! = Bundle(identifier: "ai.blackstraw.orderscrapper")
+    static let identifier: String  = "ai.blackstraw.orderscrapper"
     static let numberOfSteps: Float = 6
     static let entityName = "UserAccount"
     static let resource = "CoreDataModel"
@@ -17,6 +17,10 @@ struct AppConstants {
     static let userAccountColumnUserId = "userId"
     static let userAccountColumnAccountStatus = "accountStatus"
     static let userAccountColumnPassword = "password"
+    //Firebase Analytics
+    static let resourceName = "GoogleService-Info"
+    static let resourceOfType = "plist"
+    static let analyticsName = "OrderScrapper"
     static let firstDayOfJan = "1"
     static let monthJan = "1"
     static let amazonReportType = "ITEMS"

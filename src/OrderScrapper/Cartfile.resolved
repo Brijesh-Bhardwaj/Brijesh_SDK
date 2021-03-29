@@ -1,3 +1,4 @@
+binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json" "7.4.0"
 github "Alamofire/Alamofire" "5.4.1"
 github "RNCryptor/RNCryptor" "5.1.0"
 github "yaslab/CSV.swift" "2.4.3"
