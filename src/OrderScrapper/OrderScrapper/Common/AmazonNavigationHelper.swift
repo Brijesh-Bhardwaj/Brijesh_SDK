@@ -221,11 +221,15 @@ class AmazonNavigationHelper: NavigationHelper {
         var logEventAttributes:[String:String] = [:]
         _ = AmazonService.getDateRange(amazonId: self.viewModel.userAccount.userID) { response, error in
             if let response = response {
-                let reportConfig = self.parseReportConfig(dateRange: response)
-                self.viewModel.reportConfig = reportConfig
-                
-                self.viewModel.jsPublisher.send((.dateRange, self.getOldestPossibleYear()))
-                self.setJSInjectionResultSubscriber()
+                if response.enableScraping {
+                    let reportConfig = self.parseReportConfig(dateRange: response)
+                    self.viewModel.reportConfig = reportConfig
+                    
+                    self.viewModel.jsPublisher.send((.dateRange, self.getOldestPossibleYear()))
+                    self.setJSInjectionResultSubscriber()
+                } else {
+                    self.viewModel.disableScrapping.send(true)
+                }
                 //Logging event for successful date range API call
                 logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,

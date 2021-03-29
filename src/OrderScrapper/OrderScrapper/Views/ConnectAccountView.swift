@@ -19,6 +19,7 @@ struct ConnectAccountView: View {
     @State var headerTitle = Utils.getString(key: Strings.HeadingConnectAmazonAccount)
     @State var stepMessage = Utils.getString(key: Strings.Step1)
     @State var processCompleted = false
+    @State var disableScrapping = false
     
     let padding_zero : CGFloat  = 0
     
@@ -101,6 +102,9 @@ struct ConnectAccountView: View {
                 self.presentationMode.wrappedValue.dismiss()
                 LibContext.shared.webAuthErrorPublisher.send(authError)
             }
+        }.onReceive(self.viewModel.disableScrapping.receive(on: RunLoop.main)) { value in
+            disableScrapping = value
+            //TODO navigate to the connect account screen and show alert
         }
     }
     
