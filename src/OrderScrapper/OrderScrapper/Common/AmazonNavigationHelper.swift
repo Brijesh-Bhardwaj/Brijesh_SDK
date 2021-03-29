@@ -224,7 +224,6 @@ class AmazonNavigationHelper: NavigationHelper {
                 if response.enableScraping {
                     let reportConfig = self.parseReportConfig(dateRange: response)
                     self.viewModel.reportConfig = reportConfig
-                    
                     self.viewModel.jsPublisher.send((.dateRange, self.getOldestPossibleYear()))
                     self.setJSInjectionResultSubscriber()
                 } else {
@@ -349,6 +348,7 @@ class AmazonNavigationHelper: NavigationHelper {
             var logEventAttributes:[String:String] = [:]
             if response != nil {
                 self.publishProgrssFor(step: .complete)
+               
                 //Log event for successful uploading of csv
                 logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
@@ -363,6 +363,8 @@ class AmazonNavigationHelper: NavigationHelper {
                                       EventConstant.Status: EventStatus.Failure]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIUploadReport, eventAttributes: logEventAttributes)
             }
+            //Delete downloaded file even if file uploading is successful or failure
+            FileHelper.clearDirectory(orderSource: .Amazon)
         }
     }
     

@@ -59,4 +59,21 @@ class FileHelper {
         let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
         return URL(fileURLWithPath: documentsPath)
     }
+    
+    /*
+     * To delete all files contain in the given directory path
+     */
+    static func clearDirectory(orderSource: OrderSource) {
+        let downloadDirectoryURL: URL = getReportDownloadDirectory(orderSource: orderSource)
+        do {
+            let fileURLs = try FileManager.default.contentsOfDirectory(at: downloadDirectoryURL,
+                                                                       includingPropertiesForKeys: nil,
+                                                                       options: .includesDirectoriesPostOrder)
+            for fileURL in fileURLs {
+                do {
+                    try FileManager.default.removeItem(at: fileURL)
+                } catch {print(error)}
+            }
+        } catch  { print(error) }
+    }
 }

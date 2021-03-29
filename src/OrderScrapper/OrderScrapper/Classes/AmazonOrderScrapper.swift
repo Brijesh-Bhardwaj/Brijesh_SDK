@@ -33,8 +33,6 @@ class AmazonOrderScrapper {
         
         LibContext.shared.authProvider = self.authProvider
         LibContext.shared.viewPresenter = self.viewPresenter
-        
-        FirebaseAnalyticsUtil.configure()
     }
     
     deinit {
