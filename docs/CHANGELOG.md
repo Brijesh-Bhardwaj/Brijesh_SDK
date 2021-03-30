@@ -12,6 +12,42 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 
 ## [Unreleased]
 
+## [0.1.4] - 2021-03-30
+
+### Fixed
+- Fixed incorrect alert message when "enableScrapper" flag is set to false
+- Fixed keyboard dismiss handling
+
+### Changed
+- Changed error messages and UI label strings
+
+## [0.1.3] - 2021-03-29
+
+### Fixed
+- Fixed incorrect date-range values for order csv files uploaded for years later than the expected year.
+
+### Added
+- Integrated Firebase-Analytics in SDK
+- Implemented code to handle "enableScrapper" property in date-range API. Fetch reports only if this property is set to `true`
+
+### Changed
+- Changed UI implementation from SwiftUI to UIKit
+
+## [0.1.2] - 2021-03-28
+
+### Fixed
+
+- Trimmed the trailing white-spaces in user-entered amazon id
+- Fixed the discrepancies observed between reports generated from the apk and amazon.com
+  - Set the report-type to "ITEMS" explicitly without relying on the default
+- Set the start-date and month as 1 if the oldest possible year on report generation page 
+  is later than the expected year from daterange API.
+
+### Added
+
+ - Added code and JS to check the oldest possible year on report generation page, 
+   and use that value if the API fetched start-year is older than the oldest possible value.
+
 ## [0.1.1] - 2021-03-26
 
 ### Fixed

@@ -13,6 +13,27 @@ in this file.
 
 ## [Unreleased]
 
+## [0.1.4] - 2021-03-29
+
+### Fixed
+- Fixed typos in the UI labels
+
+### Changed
+- Added Scrapper SDK version 0.1.4
+
+## [0.1.3] - 2021-03-29
+
+### Added
+- Added alert to show message generated from the SDK
+
+### Changed
+- Added Scrapper SDK version 0.1.3
+
+## [0.1.2] - 2021-03-28
+
+### Changed
+- Added Scrapper SDK version 0.1.2
+
 ## [0.1.1] - 2021-03-26
 
 ### Fixed

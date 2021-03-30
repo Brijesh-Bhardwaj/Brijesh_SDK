@@ -86,12 +86,9 @@
 		E148DC9C2605CB1E001430BE /* FileDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DC982605CB1E001430BE /* FileDownloader.swift */; };
 		E148DCA02605CCEC001430BE /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DC9F2605CCEC001430BE /* Data.swift */; };
 		E148DCC826063BE1001430BE /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DCC726063BE1001430BE /* NetworkMonitor.swift */; };
-		E153421C2612EE760074F3ED /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E153421B2612EE760074F3ED /* Alamofire.framework */; };
-		E153421D2612EE760074F3ED /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E153421B2612EE760074F3ED /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		E15342202612EE8B0074F3ED /* CSV.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E153421F2612EE8B0074F3ED /* CSV.framework */; };
-		E15342212612EE8B0074F3ED /* CSV.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E153421F2612EE8B0074F3ED /* CSV.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		E15342232612EE9C0074F3ED /* RNCryptor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15342222612EE9C0074F3ED /* RNCryptor.framework */; };
-		E15342242612EE9C0074F3ED /* RNCryptor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E15342222612EE9C0074F3ED /* RNCryptor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E1534233261301610074F3ED /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93EE726124FF60065A5CC /* Alamofire.framework */; };
+		E1534237261301D30074F3ED /* CSV.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93EEB261250080065A5CC /* CSV.framework */; };
+		E153423C261301EC0074F3ED /* RNCryptor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93EEF261250190065A5CC /* RNCryptor.framework */; };
 		E19D4CB72608FD29002C16A7 /* WebCacheCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D4CB62608FD29002C16A7 /* WebCacheCleaner.swift */; };
 		E19D4CBA2609A4A9002C16A7 /* OrderExtractionListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D4CB92609A4A9002C16A7 /* OrderExtractionListener.swift */; };
 		E19D4E08260DF055002C16A7 /* OSLibUI.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E19D4E07260DF055002C16A7 /* OSLibUI.storyboard */; };
@@ -121,22 +118,6 @@
 			remoteInfo = OrderScrapper;
 		};
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		E153421E2612EE760074F3ED /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				E153421D2612EE760074F3ED /* Alamofire.framework in Embed Frameworks */,
-				E15342242612EE9C0074F3ED /* RNCryptor.framework in Embed Frameworks */,
-				E15342212612EE8B0074F3ED /* CSV.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1C006FA926009BE500F9263E /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
@@ -238,7 +219,7 @@
 				1CA1EDE0260DCB420000C859 /* PromisesObjC.framework in Frameworks */,
 				1CA1EDD1260DCB420000C859 /* Firebase.framework in Frameworks */,
 				1CA1EDB8260DC6980000C859 /* FirebaseCore.framework in Frameworks */,
-				E15342232612EE9C0074F3ED /* RNCryptor.framework in Frameworks */,
+				E153423C261301EC0074F3ED /* RNCryptor.framework in Frameworks */,
 				1CA1EDDE260DCB420000C859 /* nanopb.framework in Frameworks */,
 				1CA1EDD3260DCB420000C859 /* FirebaseCore.framework in Frameworks */,
 				1CA1EDD8260DCB420000C859 /* GoogleAppMeasurement.framework in Frameworks */,
@@ -250,8 +231,8 @@
 				1CA8609C260CEE1400261595 /* FirebaseAnalytics.framework in Frameworks */,
 				1CA1EDDC260DCB420000C859 /* GoogleUtilities.framework in Frameworks */,
 				1CA1EDCF260DCB420000C859 /* FIRAnalyticsConnector.framework in Frameworks */,
-				E15342202612EE8B0074F3ED /* CSV.framework in Frameworks */,
-				E153421C2612EE760074F3ED /* Alamofire.framework in Frameworks */,
+				E1534237261301D30074F3ED /* CSV.framework in Frameworks */,
+				E1534233261301610074F3ED /* Alamofire.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -575,7 +556,6 @@
 				1CBF6D3625F5FFBE001A801B /* Frameworks */,
 				1CBF6D3725F5FFBE001A801B /* Resources */,
 				1CBF6DD725F673A0001A801B /* ShellScript */,
-				E153421E2612EE760074F3ED /* Embed Frameworks */,
 			);
 			buildRules = (
 				1CBF6DD625F67378001A801B /* PBXBuildRule */,
@@ -909,7 +889,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -919,9 +899,9 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Alamofire.xcframework/ios-arm64_i386_x86_64-simulator",
-					"$(PROJECT_DIR)/Carthage/Build/CSV.xcframework/ios-arm64_i386_x86_64-simulator",
-					"$(PROJECT_DIR)/Carthage/Build/RNCryptor.xcframework/ios-arm64_i386_x86_64-simulator",
+					"$(PROJECT_DIR)/Carthage/Build/Alamofire.xcframework/ios-arm64_armv7",
+					"$(PROJECT_DIR)/Carthage/Build/CSV.xcframework/ios-arm64_armv7",
+					"$(PROJECT_DIR)/Carthage/Build/RNCryptor.xcframework/ios-arm64_armv7",
 					"$(PROJECT_DIR)/Carthage/Build/iOS/",
 				);
 				INFOPLIST_FILE = OrderScrapper/Info.plist;
@@ -932,7 +912,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.1.3;
+				MARKETING_VERSION = 0.1.4;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.orderscrapper;
@@ -952,7 +932,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -961,9 +941,9 @@
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Alamofire.xcframework/ios-arm64_i386_x86_64-simulator",
-					"$(PROJECT_DIR)/Carthage/Build/CSV.xcframework/ios-arm64_i386_x86_64-simulator",
-					"$(PROJECT_DIR)/Carthage/Build/RNCryptor.xcframework/ios-arm64_i386_x86_64-simulator",
+					"$(PROJECT_DIR)/Carthage/Build/Alamofire.xcframework/ios-arm64_armv7",
+					"$(PROJECT_DIR)/Carthage/Build/CSV.xcframework/ios-arm64_armv7",
+					"$(PROJECT_DIR)/Carthage/Build/RNCryptor.xcframework/ios-arm64_armv7",
 					"$(PROJECT_DIR)/Carthage/Build/iOS/",
 				);
 				INFOPLIST_FILE = OrderScrapper/Info.plist;
@@ -974,7 +954,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.1.3;
+				MARKETING_VERSION = 0.1.4;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.orderscrapper;

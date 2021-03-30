@@ -32,8 +32,8 @@ class APIService {
                     let loginResponse = try JSONDecoder().decode(LoginResponse.self, from: data)
                     print(loginResponse)
                     completionHandler(loginResponse, nil)
-                } catch {
-                    print(error)
+                } catch let error {
+                    completionHandler(nil, error)
                 }
             } else {
                 completionHandler(nil, error)

@@ -12,8 +12,9 @@ class ConnectAccountViewController: UIViewController {
     private let baseURL = "https://www.amazon.com/ap/signin?_encoding=UTF8&openid.assoc_handle=usflex&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.mode=checkid_setup&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&openid.ns.pape=http%3A%2F%2Fspecs.openid.net%2Fextensions%2Fpape%2F1.0&openid.pape.max_auth_age=900&openid.return_to=https%3A%2F%2Fwww.amazon.com%2Fgp%2Fb2b%2Freports%2F136-9723095-1427523%3Fie%3DUTF8%26%252AVersion%252A%3D1%26%252Aentries%252A%3D0"
     
     private let viewModel = WebViewModel()
-
+    
     private var navigationHelper: NavigationHelper!
+    private var path: NWPath?
     
     var account: Account!
     
@@ -62,10 +63,12 @@ class ConnectAccountViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.initNetworkMonitor()
+        
         self.viewModel.userAccount = self.account
         
         self.webContentView.navigationDelegate = self
-    
+        
         self.webContentView.evaluateJavaScript("navigator.userAgent") { (agent, error) in
             var userAgent = "iPhone;"
             if let agent = agent as? String {
@@ -95,7 +98,7 @@ class ConnectAccountViewController: UIViewController {
         
         monitor.pathUpdateHandler = { [weak self] path in
             guard let self = self else { return }
-            
+            self.path = path
             // Monitor runs on a background thread so we need to publish
             // on the main thread
             DispatchQueue.main.async {
@@ -107,6 +110,15 @@ class ConnectAccountViewController: UIViewController {
             }
         }
         monitor.start(queue: queue)
+    }
+    
+    private func hasNetwork() -> Bool {
+        if let path = self.path {
+            if path.status == NWPath.Status.satisfied {
+                return true
+            }
+        }
+        return false
     }
     
     private func initViews() {
@@ -233,13 +245,14 @@ class ConnectAccountViewController: UIViewController {
         if let url = URL(string: self.baseURL) {
             self.webContentView.load(URLRequest(url: url))
         }
-        self.progressView.progress = 1/6
-        self.progressView.stepText = Utils.getString(key: Strings.Step1)
         self.contentView.bringSubviewToFront(self.progressView)
+        self.progressView.progress = 0.0
     }
     
     private func buttonClickHandler() {
-        loadWebContent()
+        if hasNetwork() {
+            loadWebContent()
+        }
     }
     
     private func successHandler() {
