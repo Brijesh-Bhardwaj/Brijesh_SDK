@@ -116,7 +116,6 @@ extension AccountsViewController: ViewPresenter {
 extension AccountsViewController: AuthProvider {
     func refreshAuthToken(completionHandler: (String?, Error?) -> Void) {
         //This is for simulation of auth token renewal, actual logic would differ
-        self.panelistID = "420007381"
         completionHandler(authToken, nil)
     }
     

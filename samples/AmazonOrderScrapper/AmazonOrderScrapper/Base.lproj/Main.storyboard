@@ -41,8 +41,8 @@
                                     <constraint firstAttribute="height" constant="170" id="7ya-Xg-xcI"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Panelist ID" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MS5-EY-U08">
-                                <rect key="frame" x="20" y="283.66666666666669" width="80" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Username" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MS5-EY-U08">
+                                <rect key="frame" x="20" y="283.66666666666669" width="79" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -80,6 +80,10 @@
                                     <action selector="login:" destination="BYZ-38-t0r" eventType="touchUpInside" id="63k-cu-2vw"/>
                                 </connections>
                             </button>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="Wwe-QJ-jcs">
+                                <rect key="frame" x="197" y="581" width="20" height="20"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </activityIndicatorView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -105,13 +109,14 @@
                     </view>
                     <navigationItem key="navigationItem" id="zpC-37-kgr"/>
                     <connections>
-                        <outlet property="authToken" destination="6kU-wE-sMO" id="BwP-nK-bgi"/>
-                        <outlet property="panelistID" destination="peb-iD-aqp" id="MBy-e0-RvJ"/>
+                        <outlet property="emailIdLabel" destination="peb-iD-aqp" id="MBy-e0-RvJ"/>
+                        <outlet property="passwordLabel" destination="6kU-wE-sMO" id="BwP-nK-bgi"/>
+                        <outlet property="progressView" destination="Wwe-QJ-jcs" id="R22-n6-gwr"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-626.08695652173913" y="24.776785714285712"/>
+            <point key="canvasLocation" x="-626.08695652173913" y="24.456521739130437"/>
         </scene>
         <!--Accounts View Controller-->
         <scene sceneID="Rgz-Cg-C2h">
