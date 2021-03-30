@@ -135,7 +135,7 @@ extension AccountsViewController: OrderExtractionListener {
     }
     
     func onOrderExtractionFailure(error: ASLException) {
-        showAlert(title: "Alert", message: error.localizedDescription, completionHandler: nil)
+        showAlert(title: "Alert", message: error.errorMessage, completionHandler: nil)
     }
 }
 

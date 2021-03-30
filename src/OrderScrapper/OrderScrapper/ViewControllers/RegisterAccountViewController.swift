@@ -31,6 +31,9 @@ class RegisterAccountViewController: UIViewController {
         makeRoundedView(view: self.userIDTextField)
         makeRoundedView(view: self.passwordTextField)
         
+        self.passwordTextField.delegate = self
+        self.userIDTextField.delegate = self
+        
         setupSubscribers()
     }
 
@@ -43,13 +46,18 @@ class RegisterAccountViewController: UIViewController {
     
     // MARK: - IBActions
     @IBAction func didSubmit(_ sender: Any) {
-        guard let userId = self.userIDTextField.text else {
+        guard let userId = self.userIDTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) else {
+            self.invalidUserIdView.isHidden = false
             return
         }
-        guard let password = self.passwordTextField.text else {
+        guard let password = self.passwordTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) else {
+            self.invalidPasswordView.isHidden = false
             return
         }
         
+        self.invalidUserIdView.isHidden = true
+        self.invalidPasswordView.isHidden = true
+
         if !ValidationUtil.isValidEmail(email: userId) {
             self.invalidUserIdView.isHidden = false
             return
@@ -97,5 +105,17 @@ class RegisterAccountViewController: UIViewController {
         viewController.account = self.account
         viewController.modalPresentationStyle = .fullScreen
         self.present(viewController, animated: true, completion: nil)
+    }
+}
+
+extension RegisterAccountViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if textField.isEqual(self.userIDTextField) {
+            self.passwordTextField.becomeFirstResponder()
+        } else {
+            textField.endEditing(true)
+        }
+        
+        return false
     }
 }

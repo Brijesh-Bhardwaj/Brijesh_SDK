@@ -222,8 +222,9 @@ class ConnectAccountViewController: UIViewController {
         })
         stopScrappingSubscriber = self.viewModel.disableScrapping.receive(on: RunLoop.main).sink(receiveValue: { disable in
             if disable {
-                self.dismiss(animated: true, completion: nil)
-                LibContext.shared.scrapeCompletionPublisher.send((false, Strings.ExtractionDisabled))
+                self.dismiss(animated: true) {
+                    LibContext.shared.scrapeCompletionPublisher.send((false, Strings.ExtractionDisabled))
+                }
             }
         })
     }
@@ -242,8 +243,9 @@ class ConnectAccountViewController: UIViewController {
     }
     
     private func successHandler() {
-        self.dismiss(animated: true, completion: nil)
-        LibContext.shared.scrapeCompletionPublisher.send((true, nil))
+        self.dismiss(animated: true) {
+            LibContext.shared.scrapeCompletionPublisher.send((true, nil))
+        }
     }
 }
 

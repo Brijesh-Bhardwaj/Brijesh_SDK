@@ -17,6 +17,9 @@ class ViewController: UIViewController {
         let panelistID = UserDefaults.standard.string(forKey: ViewController.PanelistID) ?? "420007381"
         let authToken = UserDefaults.standard.string(forKey: ViewController.AuthToken) ?? "AwFVMUkpWg2l9QEFbdlgt+Pg7EiuCqqbkjvcxc0qP1Mrza5nyDEjmM87fmmmVPEuvHW/RRDUIYcAq8ZdXxnnWpSGx0C9v3ptEjhZ2pcr/AjJpWmWUwzSKsB5CTYUuk10UqaDJkUR9P7vxBGZXoTmp1sMhvAsOp34Je7+xaGy/JuDsg=="
         
+        self.panelistID.delegate = self
+        self.authToken.delegate = self
+        
         self.panelistID.text = panelistID
         self.authToken.text = authToken
     }
@@ -35,5 +38,16 @@ class ViewController: UIViewController {
         vc.authToken = authToken.text
         
         self.navigationController?.pushViewController(vc, animated: true)
+    }
+}
+
+extension ViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if textField.isEqual(self.panelistID) {
+            self.authToken.becomeFirstResponder()
+        } else {
+            textField.endEditing(true)
+        }
+        return false
     }
 }

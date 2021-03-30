@@ -41,10 +41,12 @@ class AmazonOrderScrapper {
     
     func connectAccount(account: Account, orderExtractionListener: OrderExtractionListener) {
         self.completionSubscriber = LibContext.shared.scrapeCompletionPublisher.receive(on: RunLoop.main).sink() { completed, error in
-            if completed {
-                orderExtractionListener.onOrderExtractionSuccess()
-            } else {
-                orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: error ?? ""))
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                if completed {
+                    orderExtractionListener.onOrderExtractionSuccess()
+                } else {
+                    orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: error ?? ""))
+                }
             }
         }
         

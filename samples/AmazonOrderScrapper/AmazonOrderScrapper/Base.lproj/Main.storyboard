@@ -124,15 +124,22 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="j7m-V6-WOn" customClass="Gradient" customModule="ReceiptStraw_Dev" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Connect Account" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rQ1-GV-YoR">
-                                        <rect key="frame" x="29" y="52" width="362" height="21"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Connect Account" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rQ1-GV-YoR">
+                                        <rect key="frame" x="238.66666666666663" y="52" width="152.33333333333337" height="21"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="21" id="yLj-nE-9QA"/>
+                                        </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="rQ1-GV-YoR" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="j7m-V6-WOn" secondAttribute="leading" symbolic="YES" id="JNz-6E-e4p"/>
+                                    <constraint firstItem="rQ1-GV-YoR" firstAttribute="top" secondItem="j7m-V6-WOn" secondAttribute="top" constant="52" id="MtZ-2z-doU"/>
+                                    <constraint firstAttribute="trailing" secondItem="rQ1-GV-YoR" secondAttribute="trailing" constant="23" id="cPL-3k-fZx"/>
+                                </constraints>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="color" keyPath="startColor">
                                         <color key="value" red="0.99607843137254903" green="0.76078431372549016" blue="0.13725490196078433" alpha="1" colorSpace="calibratedRGB"/>
@@ -175,8 +182,8 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MvB-Cr-B60">
-                                        <rect key="frame" x="336" y="78.666666666666671" width="70" height="30"/>
-                                        <state key="normal" title="Disonnect"/>
+                                        <rect key="frame" x="328" y="78.666666666666671" width="78" height="30"/>
+                                        <state key="normal" title="Disconnect"/>
                                         <connections>
                                             <action selector="disconnectAccount:" destination="hLj-my-eJj" eventType="touchUpInside" id="ihZ-ne-JD1"/>
                                         </connections>

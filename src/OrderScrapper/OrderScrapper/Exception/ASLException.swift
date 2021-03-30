@@ -5,9 +5,9 @@
 import Foundation
 
 public class ASLException: Error {
-    let errorMessage: String?
+    public let errorMessage: String
     
-    init(errorMessage: String?) {
+    init(errorMessage: String) {
         self.errorMessage = errorMessage
     }
 }
