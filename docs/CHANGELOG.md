@@ -12,12 +12,20 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 
 ## [Unreleased]
 
+## [0.1.7] - 2021-03-31
+
+### Fixed
+- Fixed issue with the reconnect flow
+
+## [0.1.6] - 2021-03-31
+
+### Fixed
+- Alignment fixes for the UI screens
+
 ## [0.1.5] - 2021-03-31
 
 ### Added
-- UI code by using UIKIT instead of SwiftUI
 - Login flow with API integration added
-- Handle new API response "enableScrapper" in date-range API
 - File deletion/purging logic in the SDK
 
 ### Fixed
@@ -30,8 +38,6 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   the process with step 1 but it is shown at the end of the progress bar
 - Complete page was not visible on iPad while trying to enter amazon id and password  
 - Getting an unexpected error during fetching the receipts
-
-
 
 ## [0.1.4] - 2021-03-30
 
