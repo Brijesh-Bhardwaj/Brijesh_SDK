@@ -5,12 +5,14 @@
 import Foundation
 
 public class OrdersExtractor {
+    private init() {}
+    
     private static var isInitialized = false
     
     public static func initialize(authProvider: AuthProvider,
                                   viewPresenter: ViewPresenter) throws {
         if isInitialized {
-            throw ASLException(errorMessage: Strings.ErrorLibAlreadyInitialized)
+            debugPrint(Strings.ErrorLibAlreadyInitialized)
         }
         
         let authToken = authProvider.getAuthToken()
@@ -23,9 +25,11 @@ public class OrdersExtractor {
         if (!AmazonOrderScrapper.isInitialized()) {
             AmazonOrderScrapper.shared.initialize(authProvider: authProvider, viewPresenter: viewPresenter)
         }
-        isInitialized = true
-        //Configure firebase analytics 
+        
+        //Configure firebase analytics
         FirebaseAnalyticsUtil.configure()
+        
+        isInitialized = true
     }
     
     public static func getAccounts(orderSource: OrderSource?,

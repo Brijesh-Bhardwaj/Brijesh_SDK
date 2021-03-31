@@ -40,10 +40,11 @@ class AmazonOrderScrapper {
     }
     
     func connectAccount(account: Account, orderExtractionListener: OrderExtractionListener) {
-        self.completionSubscriber = LibContext.shared.scrapeCompletionPublisher.receive(on: RunLoop.main).sink() { completed, error in
+        self.completionSubscriber = LibContext.shared.scrapeCompletionPublisher.receive(on: RunLoop.main).sink() { result, error in
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                let (completed, successType) = result
                 if completed {
-                    orderExtractionListener.onOrderExtractionSuccess()
+                    orderExtractionListener.onOrderExtractionSuccess(successType: successType!)
                 } else {
                     orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: error ?? ""))
                 }
@@ -71,9 +72,10 @@ class AmazonOrderScrapper {
     }
     
     func startOrderExtraction(account: Account, orderExtractionListener: OrderExtractionListener) {
-        self.completionSubscriber = LibContext.shared.scrapeCompletionPublisher.receive(on: RunLoop.main).sink() { completed, error in
+        self.completionSubscriber = LibContext.shared.scrapeCompletionPublisher.receive(on: RunLoop.main).sink() { result, error in
+            let (completed, successType) = result
             if completed {
-                orderExtractionListener.onOrderExtractionSuccess()
+                orderExtractionListener.onOrderExtractionSuccess(successType: successType!)
             } else {
                 orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: error ?? ""))
             }

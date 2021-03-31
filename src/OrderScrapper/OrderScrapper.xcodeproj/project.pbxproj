@@ -89,6 +89,7 @@
 		E15343A3261386540074F3ED /* RNCryptor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15343A0261386540074F3ED /* RNCryptor.framework */; };
 		E15343A5261386540074F3ED /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15343A1261386540074F3ED /* Alamofire.framework */; };
 		E15343A7261386550074F3ED /* CSV.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15343A2261386540074F3ED /* CSV.framework */; };
+		E15343E8261466700074F3ED /* OrderFetchSuccessType.swift in Sources */ = {isa = PBXBuildFile; fileRef = E15343E7261466700074F3ED /* OrderFetchSuccessType.swift */; };
 		E19D4CB72608FD29002C16A7 /* WebCacheCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D4CB62608FD29002C16A7 /* WebCacheCleaner.swift */; };
 		E19D4CBA2609A4A9002C16A7 /* OrderExtractionListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D4CB92609A4A9002C16A7 /* OrderExtractionListener.swift */; };
 		E19D4E08260DF055002C16A7 /* OSLibUI.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E19D4E07260DF055002C16A7 /* OSLibUI.storyboard */; };
@@ -204,6 +205,7 @@
 		E15343A0261386540074F3ED /* RNCryptor.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RNCryptor.framework; path = ../../bin/RNCryptor.framework; sourceTree = "<group>"; };
 		E15343A1261386540074F3ED /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = ../../bin/Alamofire.framework; sourceTree = "<group>"; };
 		E15343A2261386540074F3ED /* CSV.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CSV.framework; path = ../../bin/CSV.framework; sourceTree = "<group>"; };
+		E15343E7261466700074F3ED /* OrderFetchSuccessType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderFetchSuccessType.swift; sourceTree = "<group>"; };
 		E19D4CB62608FD29002C16A7 /* WebCacheCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebCacheCleaner.swift; sourceTree = "<group>"; };
 		E19D4CB92609A4A9002C16A7 /* OrderExtractionListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderExtractionListener.swift; sourceTree = "<group>"; };
 		E19D4E07260DF055002C16A7 /* OSLibUI.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = OSLibUI.storyboard; sourceTree = "<group>"; };
@@ -408,6 +410,7 @@
 			children = (
 				E148DB4E25FF2BFD001430BE /* AccountState.swift */,
 				E148DB4F25FF2BFD001430BE /* OrderSource.swift */,
+				E15343E7261466700074F3ED /* OrderFetchSuccessType.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -689,6 +692,7 @@
 				E148DC6126038537001430BE /* DateUtils.swift in Sources */,
 				1CA1EDF4260E16EF0000C859 /* Event.swift in Sources */,
 				E148DB6D25FF2BFD001430BE /* AccountDisconnectedListener.swift in Sources */,
+				E15343E8261466700074F3ED /* OrderFetchSuccessType.swift in Sources */,
 				E148DC9C2605CB1E001430BE /* FileDownloader.swift in Sources */,
 				E148DB6E25FF2BFD001430BE /* ASLException.swift in Sources */,
 				1C07411A2604F2540013067C /* String.swift in Sources */,
@@ -879,7 +883,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -900,7 +904,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.1.4;
+				MARKETING_VERSION = 0.1.5;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.orderscrapper;
@@ -920,7 +924,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -940,7 +944,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.1.4;
+				MARKETING_VERSION = 0.1.5;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.orderscrapper;

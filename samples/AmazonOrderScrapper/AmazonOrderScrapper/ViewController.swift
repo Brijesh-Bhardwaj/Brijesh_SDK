@@ -11,6 +11,9 @@ class ViewController: UIViewController {
     @IBOutlet weak var passwordLabel: UITextField!
     @IBOutlet weak var progressView: UIActivityIndicatorView!
     
+    @IBOutlet weak var invalidEmailLabel: UILabel!
+    @IBOutlet weak var invalidPasswordLabel: UILabel!
+    
     var panelistId: String = ""
     var gToken: String = ""
     
@@ -54,12 +57,18 @@ class ViewController: UIViewController {
     }
     
     @IBAction func login(_ sender: Any) {
-        if !emailIdLabel.hasText || !passwordLabel.hasText {
+        self.invalidEmailLabel.isHidden = true
+        self.invalidPasswordLabel.isHidden = true
+        
+        if !emailIdLabel.hasText || !ValidationUtil.isValidEmail(email: self.emailIdLabel.text!) {
+            self.invalidEmailLabel.isHidden = false
             return
         }
-        if !ValidationUtil.isValidEmail(email: self.emailIdLabel.text!) {
+        if !passwordLabel.hasText {
+            self.invalidPasswordLabel.isHidden = false
             return
         }
+        
         let emailId = self.emailIdLabel.text!
         self.progressView.isHidden = false
         APIService.loginAPI(userName: self.emailIdLabel.text!, password: self.passwordLabel.text!) { response, error in

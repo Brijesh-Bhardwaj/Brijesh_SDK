@@ -25,7 +25,11 @@ class AccountsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        try! OrdersExtractor.initialize(authProvider: self, viewPresenter: self)
+        do {
+            try OrdersExtractor.initialize(authProvider: self, viewPresenter: self)
+        } catch let error {
+            debugPrint(error.localizedDescription)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -42,13 +46,18 @@ class AccountsViewController: UIViewController {
     }
     
     private func loadAccounts() {
-        try! OrdersExtractor.getAccounts(orderSource: nil) { accounts in
-            let connectedAccounts = accounts.filter() { $0.accountState != .ConnectedAndDisconnected }
-            if connectedAccounts.isEmpty {
-                self.showViewForNoAccount()
-            } else {
-                self.showViewFor(account: connectedAccounts[0])
+        do {
+            try OrdersExtractor.getAccounts(orderSource: nil) { accounts in
+                let connectedAccounts = accounts.filter() { $0.accountState != .ConnectedAndDisconnected }
+                if connectedAccounts.isEmpty {
+                    self.showViewForNoAccount()
+                } else {
+                    self.showViewFor(account: connectedAccounts[0])
+                }
             }
+        } catch {
+            let message = "An error occurred while loading accounts"
+            showAlert(title: "Alert", message: message, completionHandler: nil)
         }
     }
     
@@ -84,7 +93,12 @@ class AccountsViewController: UIViewController {
     
     @IBAction func onActionButtonClick(_ sender: Any) {
         if self.actionButton.tag == ButtonAction.connectAccount.rawValue {
-            try! OrdersExtractor.registerAccount(orderSource: .Amazon, orderExtractionListner: self)
+            do {
+                try OrdersExtractor.registerAccount(orderSource: .Amazon, orderExtractionListner: self)
+            } catch {
+                let message = "An error occured while displaying register screen"
+                showAlert(title: "Alert", message: message, completionHandler: nil)
+            }
         } else {
             self.currentAccount.fetchOrders(orderExtractionListener: self)
         }
@@ -129,8 +143,10 @@ extension AccountsViewController: AuthProvider {
 }
 
 extension AccountsViewController: OrderExtractionListener {
-    func onOrderExtractionSuccess() {
-        
+    func onOrderExtractionSuccess(successType: OrderFetchSuccessType) {
+        if successType == .fetchSkipped {
+            showAlert(title: "Alert", message: "Receipts scrapped already.", completionHandler: nil)
+        }
     }
     
     func onOrderExtractionFailure(error: ASLException) {

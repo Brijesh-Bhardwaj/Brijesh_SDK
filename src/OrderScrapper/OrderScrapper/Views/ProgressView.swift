@@ -37,7 +37,6 @@ class ProgressView: UIView {
         }
         set {
             progressView.progress = newValue
-            progressView.setNeedsDisplay()
         }
     }
     

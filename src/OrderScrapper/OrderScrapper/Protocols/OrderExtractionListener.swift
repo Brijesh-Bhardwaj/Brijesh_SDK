@@ -6,7 +6,7 @@
 import Foundation
 
 public protocol OrderExtractionListener {
-    func onOrderExtractionSuccess()
+    func onOrderExtractionSuccess(successType: OrderFetchSuccessType)
     
     func onOrderExtractionFailure(error: ASLException)
 }

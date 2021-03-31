@@ -245,7 +245,8 @@ class ConnectAccountViewController: UIViewController {
         stopScrappingSubscriber = self.viewModel.disableScrapping.receive(on: RunLoop.main).sink(receiveValue: { disable in
             if disable {
                 self.dismiss(animated: true) {
-                    LibContext.shared.scrapeCompletionPublisher.send((false, Strings.ExtractionDisabled))
+                    let result = (true, OrderFetchSuccessType.fetchSkipped)
+                    LibContext.shared.scrapeCompletionPublisher.send((result, Strings.ExtractionDisabled))
                 }
             }
         })
@@ -256,7 +257,7 @@ class ConnectAccountViewController: UIViewController {
             self.webContentView.load(URLRequest(url: url))
         }
         self.contentView.bringSubviewToFront(self.progressView)
-        self.progressView.progress = 0.0
+        self.progressView.progress = 1/6
         self.progressView.stepText = Utils.getString(key: Strings.Step1)
     }
     
@@ -268,7 +269,8 @@ class ConnectAccountViewController: UIViewController {
     
     private func successHandler() {
         self.dismiss(animated: true) {
-            LibContext.shared.scrapeCompletionPublisher.send((true, nil))
+            let result = (true, OrderFetchSuccessType.fetchCompleted)
+            LibContext.shared.scrapeCompletionPublisher.send((result, nil))
         }
     }
 }
