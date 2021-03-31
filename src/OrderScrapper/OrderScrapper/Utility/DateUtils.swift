@@ -23,4 +23,14 @@ class DateUtils {
         let calendar = Calendar.current
         return calendar.dateComponents([.day,.month,.year], from: date)
     }
+    
+    static func getFormattedDate(dateStr: String) -> String{
+        let dateFormatterGet = DateFormatter()
+        dateFormatterGet.dateFormat = "dd-MM-yyyy"
+        let date = dateFormatterGet.date(from: dateStr)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd-MM-yyyy"
+        let formattedDate = dateFormatter.string(from: date!)
+        return formattedDate
+    }
 }

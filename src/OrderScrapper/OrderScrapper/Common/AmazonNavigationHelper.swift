@@ -259,14 +259,17 @@ class AmazonNavigationHelper: NavigationHelper {
                             let year = Int(strResult) ?? 0
                             let startYear = Int(self.viewModel.reportConfig!.startYear)
                             let endYear = Int(self.viewModel.reportConfig!.endYear)
-
                             if year > startYear! {
                                 self.viewModel.reportConfig?.startYear = String(year)
                                 self.viewModel.reportConfig?.startDate = AppConstants.firstDayOfJan
                                 self.viewModel.reportConfig?.startMonth =  AppConstants.monthJan
+                                let startDate = AppConstants.firstDayOfJan + "-" + AppConstants.monthJan + "-" + String(year)
+                                self.viewModel.reportConfig?.fullStartDate = DateUtils.getFormattedDate(dateStr: startDate)
                             }
                             if year > endYear! {
                                 self.viewModel.reportConfig?.endYear = String(year)
+                                let endDate = self.viewModel.reportConfig!.endDate + "-" + self.viewModel.reportConfig!.endMonth + "-" + String(year)
+                                self.viewModel.reportConfig?.fullStartDate = DateUtils.getFormattedDate(dateStr: endDate)
                             }
                         }
                         self.injectGenerateReportJS()
@@ -341,7 +344,6 @@ class AmazonNavigationHelper: NavigationHelper {
         let reportConfig = self.viewModel.reportConfig!
         let fromDate = reportConfig.fullStartDate!
         let toDate = reportConfig.fullEndDate!
-        
         _ = AmazonService.uploadFile(fileURL: url,
                                      amazonId: self.viewModel.userAccount.userID,
                                      fromDate: fromDate, toDate: toDate) { response, error in
