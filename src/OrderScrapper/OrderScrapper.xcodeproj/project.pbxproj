@@ -86,9 +86,9 @@
 		E148DC9C2605CB1E001430BE /* FileDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DC982605CB1E001430BE /* FileDownloader.swift */; };
 		E148DCA02605CCEC001430BE /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DC9F2605CCEC001430BE /* Data.swift */; };
 		E148DCC826063BE1001430BE /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DCC726063BE1001430BE /* NetworkMonitor.swift */; };
-		E1534233261301610074F3ED /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93EE726124FF60065A5CC /* Alamofire.framework */; };
-		E1534237261301D30074F3ED /* CSV.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93EEB261250080065A5CC /* CSV.framework */; };
-		E153423C261301EC0074F3ED /* RNCryptor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93EEF261250190065A5CC /* RNCryptor.framework */; };
+		E15343A3261386540074F3ED /* RNCryptor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15343A0261386540074F3ED /* RNCryptor.framework */; };
+		E15343A5261386540074F3ED /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15343A1261386540074F3ED /* Alamofire.framework */; };
+		E15343A7261386550074F3ED /* CSV.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15343A2261386540074F3ED /* CSV.framework */; };
 		E19D4CB72608FD29002C16A7 /* WebCacheCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D4CB62608FD29002C16A7 /* WebCacheCleaner.swift */; };
 		E19D4CBA2609A4A9002C16A7 /* OrderExtractionListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D4CB92609A4A9002C16A7 /* OrderExtractionListener.swift */; };
 		E19D4E08260DF055002C16A7 /* OSLibUI.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E19D4E07260DF055002C16A7 /* OSLibUI.storyboard */; };
@@ -201,6 +201,9 @@
 		E153421B2612EE760074F3ED /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = "Carthage/Build/Alamofire.xcframework/ios-arm64_i386_x86_64-simulator/Alamofire.framework"; sourceTree = "<group>"; };
 		E153421F2612EE8B0074F3ED /* CSV.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CSV.framework; path = "Carthage/Build/CSV.xcframework/ios-arm64_i386_x86_64-simulator/CSV.framework"; sourceTree = "<group>"; };
 		E15342222612EE9C0074F3ED /* RNCryptor.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RNCryptor.framework; path = "Carthage/Build/RNCryptor.xcframework/ios-arm64_i386_x86_64-simulator/RNCryptor.framework"; sourceTree = "<group>"; };
+		E15343A0261386540074F3ED /* RNCryptor.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RNCryptor.framework; path = ../../bin/RNCryptor.framework; sourceTree = "<group>"; };
+		E15343A1261386540074F3ED /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = ../../bin/Alamofire.framework; sourceTree = "<group>"; };
+		E15343A2261386540074F3ED /* CSV.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CSV.framework; path = ../../bin/CSV.framework; sourceTree = "<group>"; };
 		E19D4CB62608FD29002C16A7 /* WebCacheCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebCacheCleaner.swift; sourceTree = "<group>"; };
 		E19D4CB92609A4A9002C16A7 /* OrderExtractionListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderExtractionListener.swift; sourceTree = "<group>"; };
 		E19D4E07260DF055002C16A7 /* OSLibUI.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = OSLibUI.storyboard; sourceTree = "<group>"; };
@@ -217,12 +220,14 @@
 			files = (
 				1CA1EDDA260DCB420000C859 /* GoogleDataTransport.framework in Frameworks */,
 				1CA1EDE0260DCB420000C859 /* PromisesObjC.framework in Frameworks */,
+				E15343A3261386540074F3ED /* RNCryptor.framework in Frameworks */,
 				1CA1EDD1260DCB420000C859 /* Firebase.framework in Frameworks */,
+				E15343A5261386540074F3ED /* Alamofire.framework in Frameworks */,
 				1CA1EDB8260DC6980000C859 /* FirebaseCore.framework in Frameworks */,
-				E153423C261301EC0074F3ED /* RNCryptor.framework in Frameworks */,
 				1CA1EDDE260DCB420000C859 /* nanopb.framework in Frameworks */,
 				1CA1EDD3260DCB420000C859 /* FirebaseCore.framework in Frameworks */,
 				1CA1EDD8260DCB420000C859 /* GoogleAppMeasurement.framework in Frameworks */,
+				E15343A7261386550074F3ED /* CSV.framework in Frameworks */,
 				1CA1EDD6260DCB420000C859 /* FirebaseInstallations.framework in Frameworks */,
 				1CA1EDC0260DC8330000C859 /* FirebaseCore.framework in Frameworks */,
 				1CA1EDD2260DCB420000C859 /* FirebaseAnalytics.framework in Frameworks */,
@@ -231,8 +236,6 @@
 				1CA8609C260CEE1400261595 /* FirebaseAnalytics.framework in Frameworks */,
 				1CA1EDDC260DCB420000C859 /* GoogleUtilities.framework in Frameworks */,
 				1CA1EDCF260DCB420000C859 /* FIRAnalyticsConnector.framework in Frameworks */,
-				E1534237261301D30074F3ED /* CSV.framework in Frameworks */,
-				E1534233261301610074F3ED /* Alamofire.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,20 +261,6 @@
 				1CA860C7260D03DB00261595 /* FirebaseAnalyticsUtil.swift */,
 			);
 			path = Utility;
-			sourceTree = "<group>";
-		};
-		1CA1EDE4260DCD1D0000C859 /* Debug */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Debug;
-			sourceTree = "<group>";
-		};
-		1CA1EDE5260DCD250000C859 /* Release */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Release;
 			sourceTree = "<group>";
 		};
 		1CA1EDF6260E17020000C859 /* Analytics */ = {
@@ -308,8 +297,6 @@
 			children = (
 				E11F415E260F3B7000E90848 /* ViewControllers */,
 				1CA1EDF6260E17020000C859 /* Analytics */,
-				1CA1EDE5260DCD250000C859 /* Release */,
-				1CA1EDE4260DCD1D0000C859 /* Debug */,
 				E148DC2726032F9A001430BE /* Network */,
 				1CD2B51026031A4E0016F752 /* CoreData */,
 				E148DC162601F371001430BE /* Models */,
@@ -479,12 +466,15 @@
 		E148DC2826032FD3001430BE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E15343A1261386540074F3ED /* Alamofire.framework */,
+				E15343A2261386540074F3ED /* CSV.framework */,
 				E15342222612EE9C0074F3ED /* RNCryptor.framework */,
 				E153421F2612EE8B0074F3ED /* CSV.framework */,
 				E153421B2612EE760074F3ED /* Alamofire.framework */,
 				E1B93EEF261250190065A5CC /* RNCryptor.framework */,
 				E1B93EEB261250080065A5CC /* CSV.framework */,
 				E1B93EE726124FF60065A5CC /* Alamofire.framework */,
+				E15343A0261386540074F3ED /* RNCryptor.framework */,
 				1CA8609F260CEE1400261595 /* Firebase.framework */,
 				1CA860A4260CEE1400261595 /* FirebaseCore.framework */,
 				1CA860A6260CEE1400261595 /* FirebaseCoreDiagnostics.framework */,
@@ -899,9 +889,7 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Alamofire.xcframework/ios-arm64_armv7",
-					"$(PROJECT_DIR)/Carthage/Build/CSV.xcframework/ios-arm64_armv7",
-					"$(PROJECT_DIR)/Carthage/Build/RNCryptor.xcframework/ios-arm64_armv7",
+					"$(PROJECT_DIR)/../../bin",
 					"$(PROJECT_DIR)/Carthage/Build/iOS/",
 				);
 				INFOPLIST_FILE = OrderScrapper/Info.plist;
@@ -941,9 +929,7 @@
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Alamofire.xcframework/ios-arm64_armv7",
-					"$(PROJECT_DIR)/Carthage/Build/CSV.xcframework/ios-arm64_armv7",
-					"$(PROJECT_DIR)/Carthage/Build/RNCryptor.xcframework/ios-arm64_armv7",
+					"$(PROJECT_DIR)/../../bin",
 					"$(PROJECT_DIR)/Carthage/Build/iOS/",
 				);
 				INFOPLIST_FILE = OrderScrapper/Info.plist;

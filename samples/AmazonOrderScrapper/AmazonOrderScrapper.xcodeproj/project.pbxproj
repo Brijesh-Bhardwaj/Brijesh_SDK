@@ -13,9 +13,6 @@
 		1C1B209526122C4200214946 /* AppConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1B209426122C4200214946 /* AppConstant.swift */; };
 		1C1B209E26122DBD00214946 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1B209D26122DBD00214946 /* String.swift */; };
 		1C59ED0226135731004ACE38 /* ValidationUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C59ED0126135731004ACE38 /* ValidationUtil.swift */; };
-		1C5F680526135CB000CF2BDB /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E91261204520065A5CC /* FirebaseAnalytics.framework */; };
-		1C5F680D26135CBB00CF2BDB /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E97261204520065A5CC /* OrderScrapper.framework */; };
-		1C5F680E26135CBB00CF2BDB /* OrderScrapper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E97261204520065A5CC /* OrderScrapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1CBF6CFA25F5FE6F001A801B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6CF925F5FE6F001A801B /* AppDelegate.swift */; };
 		1CBF6CFC25F5FE6F001A801B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6CFB25F5FE6F001A801B /* SceneDelegate.swift */; };
 		1CBF6CFE25F5FE6F001A801B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6CFD25F5FE6F001A801B /* ViewController.swift */; };
@@ -31,17 +28,9 @@
 		E1534257261364590074F3ED /* CSV.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E8D261204510065A5CC /* CSV.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E1534258261364590074F3ED /* RNCryptor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E95261204520065A5CC /* RNCryptor.framework */; };
 		E1534259261364590074F3ED /* RNCryptor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E95261204520065A5CC /* RNCryptor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E15343BB26138B270074F3ED /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15343B2261386ED0074F3ED /* OrderScrapper.framework */; };
+		E15343BC26138B270074F3ED /* OrderScrapper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E15343B2261386ED0074F3ED /* OrderScrapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E19D4CB22608A1D0002C16A7 /* AccountsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D4CB12608A1D0002C16A7 /* AccountsViewController.swift */; };
-		E1B93E9B261204520065A5CC /* FIRAnalyticsConnector.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E8C261204510065A5CC /* FIRAnalyticsConnector.framework */; };
-		E1B93E9F261204530065A5CC /* GoogleDataTransport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E8E261204510065A5CC /* GoogleDataTransport.framework */; };
-		E1B93EA1261204530065A5CC /* FirebaseInstallations.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E8F261204510065A5CC /* FirebaseInstallations.framework */; };
-		E1B93EA3261204530065A5CC /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E90261204510065A5CC /* FirebaseCore.framework */; };
-		E1B93EA7261204530065A5CC /* GoogleUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E92261204520065A5CC /* GoogleUtilities.framework */; };
-		E1B93EAB261204530065A5CC /* PromisesObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E94261204520065A5CC /* PromisesObjC.framework */; };
-		E1B93EAF261204530065A5CC /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E96261204520065A5CC /* FirebaseCoreDiagnostics.framework */; };
-		E1B93EB3261204530065A5CC /* nanopb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E98261204520065A5CC /* nanopb.framework */; };
-		E1B93EB5261204530065A5CC /* Firebase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E99261204520065A5CC /* Firebase.framework */; };
-		E1B93EB7261204530065A5CC /* GoogleAppMeasurement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E9A261204520065A5CC /* GoogleAppMeasurement.framework */; };
 		E1E8CFCD25FA2EF20064A55F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E1E8CFCC25FA2EF20064A55F /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -70,9 +59,9 @@
 			dstSubfolderSpec = 10;
 			files = (
 				E1534257261364590074F3ED /* CSV.framework in Embed Frameworks */,
-				1C5F680E26135CBB00CF2BDB /* OrderScrapper.framework in Embed Frameworks */,
 				E1534259261364590074F3ED /* RNCryptor.framework in Embed Frameworks */,
 				E1534255261364580074F3ED /* Alamofire.framework in Embed Frameworks */,
+				E15343BC26138B270074F3ED /* OrderScrapper.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -101,6 +90,7 @@
 		1CBF6D1E25F5FE71001A801B /* AmazonOrderScrapperUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmazonOrderScrapperUITests.swift; sourceTree = "<group>"; };
 		1CBF6D2025F5FE71001A801B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1CE8506F25F7B646000A7158 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		E15343B2261386ED0074F3ED /* OrderScrapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OrderScrapper.framework; path = ../../bin/OrderScrapper.framework; sourceTree = "<group>"; };
 		E19D4CB12608A1D0002C16A7 /* AccountsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountsViewController.swift; sourceTree = "<group>"; };
 		E1B93E8C261204510065A5CC /* FIRAnalyticsConnector.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FIRAnalyticsConnector.framework; path = ../../bin/FIRAnalyticsConnector.framework; sourceTree = "<group>"; };
 		E1B93E8D261204510065A5CC /* CSV.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CSV.framework; path = ../../bin/CSV.framework; sourceTree = "<group>"; };
@@ -113,7 +103,6 @@
 		E1B93E94261204520065A5CC /* PromisesObjC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromisesObjC.framework; path = ../../bin/PromisesObjC.framework; sourceTree = "<group>"; };
 		E1B93E95261204520065A5CC /* RNCryptor.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RNCryptor.framework; path = ../../bin/RNCryptor.framework; sourceTree = "<group>"; };
 		E1B93E96261204520065A5CC /* FirebaseCoreDiagnostics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCoreDiagnostics.framework; path = ../../bin/FirebaseCoreDiagnostics.framework; sourceTree = "<group>"; };
-		E1B93E97261204520065A5CC /* OrderScrapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OrderScrapper.framework; path = ../../bin/OrderScrapper.framework; sourceTree = "<group>"; };
 		E1B93E98261204520065A5CC /* nanopb.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nanopb.framework; path = ../../bin/nanopb.framework; sourceTree = "<group>"; };
 		E1B93E99261204520065A5CC /* Firebase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Firebase.framework; path = ../../bin/Firebase.framework; sourceTree = "<group>"; };
 		E1B93E9A261204520065A5CC /* GoogleAppMeasurement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAppMeasurement.framework; path = ../../bin/GoogleAppMeasurement.framework; sourceTree = "<group>"; };
@@ -125,20 +114,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E1B93E9F261204530065A5CC /* GoogleDataTransport.framework in Frameworks */,
-				E1B93EA3261204530065A5CC /* FirebaseCore.framework in Frameworks */,
 				E1534254261364580074F3ED /* Alamofire.framework in Frameworks */,
-				E1B93EB7261204530065A5CC /* GoogleAppMeasurement.framework in Frameworks */,
-				E1B93EB5261204530065A5CC /* Firebase.framework in Frameworks */,
-				E1B93EAB261204530065A5CC /* PromisesObjC.framework in Frameworks */,
-				E1B93EB3261204530065A5CC /* nanopb.framework in Frameworks */,
 				E1534258261364590074F3ED /* RNCryptor.framework in Frameworks */,
-				E1B93EA1261204530065A5CC /* FirebaseInstallations.framework in Frameworks */,
-				E1B93E9B261204520065A5CC /* FIRAnalyticsConnector.framework in Frameworks */,
-				1C5F680526135CB000CF2BDB /* FirebaseAnalytics.framework in Frameworks */,
-				E1B93EAF261204530065A5CC /* FirebaseCoreDiagnostics.framework in Frameworks */,
-				E1B93EA7261204530065A5CC /* GoogleUtilities.framework in Frameworks */,
-				1C5F680D26135CBB00CF2BDB /* OrderScrapper.framework in Frameworks */,
+				E15343BB26138B270074F3ED /* OrderScrapper.framework in Frameworks */,
 				E1534256261364590074F3ED /* CSV.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -265,6 +243,7 @@
 		E1052A2D25F7A22500B67F90 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E15343B2261386ED0074F3ED /* OrderScrapper.framework */,
 				E1B93E93261204520065A5CC /* Alamofire.framework */,
 				E1B93E8D261204510065A5CC /* CSV.framework */,
 				E1B93E8C261204510065A5CC /* FIRAnalyticsConnector.framework */,
@@ -277,7 +256,6 @@
 				E1B93E8E261204510065A5CC /* GoogleDataTransport.framework */,
 				E1B93E92261204520065A5CC /* GoogleUtilities.framework */,
 				E1B93E98261204520065A5CC /* nanopb.framework */,
-				E1B93E97261204520065A5CC /* OrderScrapper.framework */,
 				E1B93E94261204520065A5CC /* PromisesObjC.framework */,
 				E1B93E95261204520065A5CC /* RNCryptor.framework */,
 			);
@@ -608,7 +586,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -623,7 +601,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACH_O_TYPE = mh_execute;
-				MARKETING_VERSION = 0.1.4;
+				MARKETING_VERSION = 0.1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.receiptstraw.dev;
 				PRODUCT_NAME = "ReceiptStraw-Dev";
 				PROVISIONING_PROFILE_SPECIFIER = receiptstraw_dev_profile;
@@ -640,7 +618,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -655,7 +633,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACH_O_TYPE = mh_execute;
-				MARKETING_VERSION = 0.1.4;
+				MARKETING_VERSION = 0.1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.receiptstraw.dev;
 				PRODUCT_NAME = "ReceiptStraw-Dev";
 				PROVISIONING_PROFILE_SPECIFIER = receiptstraw_dev_profile;

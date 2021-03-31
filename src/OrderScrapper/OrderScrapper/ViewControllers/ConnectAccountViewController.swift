@@ -16,6 +16,8 @@ class ConnectAccountViewController: UIViewController {
     private var navigationHelper: NavigationHelper!
     private var path: NWPath?
     
+    private var viewInit = false
+    
     var account: Account!
     
     // MARK: - Subscribers
@@ -81,7 +83,13 @@ class ConnectAccountViewController: UIViewController {
         }
         self.navigationHelper = AmazonNavigationHelper(self.viewModel)
         self.registerSubscribers()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
         self.initViews()
+        viewInit = true
     }
     
     override func viewWillLayoutSubviews() {
@@ -103,7 +111,9 @@ class ConnectAccountViewController: UIViewController {
             // on the main thread
             DispatchQueue.main.async {
                 if path.status == .satisfied {
-                    self.loadWebContent()
+                    if self.viewInit {
+                        self.loadWebContent()
+                    }
                 } else {
                     self.contentView.bringSubviewToFront(self.networkErrorView)
                 }
@@ -247,6 +257,7 @@ class ConnectAccountViewController: UIViewController {
         }
         self.contentView.bringSubviewToFront(self.progressView)
         self.progressView.progress = 0.0
+        self.progressView.stepText = Utils.getString(key: Strings.Step1)
     }
     
     private func buttonClickHandler() {

@@ -14,6 +14,7 @@ class RegisterAccountViewController: UIViewController {
     @IBOutlet weak var authErrorView: UIView!
     @IBOutlet weak var invalidUserIdView: UILabel!
     @IBOutlet weak var invalidPasswordView: UILabel!
+    @IBOutlet weak var submitButton: UIButton!
     
     var account: UserAccountMO!
     
@@ -42,6 +43,37 @@ class RegisterAccountViewController: UIViewController {
         self.contentView.clipsToBounds = true
         self.contentView.layer.cornerRadius = self.contentView.bounds.width * 0.1
         self.contentView.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.view.frame.origin.y == 0 {
+                let globalPoint = self.submitButton.superview?.convert(self.submitButton.frame.origin, to: nil)
+                let submitButtonFrame = self.submitButton.frame
+                let lowestYPoint = (globalPoint?.y ?? submitButtonFrame.origin.y) + submitButtonFrame.height + 10
+                if lowestYPoint > keyboardSize.origin.y {
+                    self.view.frame.origin.y -= (lowestYPoint - keyboardSize.origin.y)
+                }
+            }
+        }
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if self.view.frame.origin.y != 0 {
+            self.view.frame.origin.y = 0
+        }
     }
     
     // MARK: - IBActions

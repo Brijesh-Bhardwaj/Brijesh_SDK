@@ -5,8 +5,7 @@
 import UIKit
 
 class ViewController: UIViewController {
-    static let PanelistID = "PanelistID"
-    static let AuthToken = "AuthToken"
+    static let UserEmail = "UserEmail"
     
     @IBOutlet weak var emailIdLabel: UITextField!
     @IBOutlet weak var passwordLabel: UITextField!
@@ -18,10 +17,40 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        let userId = UserDefaults.standard.string(forKey: ViewController.PanelistID) ?? ""
+        let userId = UserDefaults.standard.string(forKey: ViewController.UserEmail) ?? ""
         self.emailIdLabel.text = userId
         self.emailIdLabel.delegate = self
         self.passwordLabel.delegate = self
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.view.frame.origin.y == 0 {
+                let frame = self.progressView.frame
+                let endPoint = frame.origin.y + frame.height
+                if endPoint > keyboardSize.origin.y {
+                    self.view.frame.origin.y -= (endPoint - keyboardSize.origin.y)
+                }
+            }
+        }
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if self.view.frame.origin.y != 0 {
+            self.view.frame.origin.y = 0
+        }
     }
     
     @IBAction func login(_ sender: Any) {
@@ -43,9 +72,9 @@ class ViewController: UIViewController {
                             return
                         }
                         self.panelistId = panelistId
-
+                        
                         self.gToken = Util.getToken(username: self.panelistId, password: token, constant: AppConstant.token)
-                        UserDefaults.standard.setValue(emailId, forKey: ViewController.PanelistID)
+                        UserDefaults.standard.setValue(emailId, forKey: ViewController.UserEmail)
                         
                         let mainStoryboard: UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
                         let vc = mainStoryboard.instantiateViewController(withIdentifier: "AccountsVC") as! AccountsViewController
