@@ -13,6 +13,17 @@ in this file.
 
 ## [Unreleased]
 
+## [0.1.5] - 2021-03-31
+
+### Added
+- Progress view added on login screen
+
+### Fixed
+- Login screen email and password validation
+- Disconnect word should show completely
+- Connect account screen header text alignment 
+
+
 ## [0.1.4] - 2021-03-29
 
 ### Fixed

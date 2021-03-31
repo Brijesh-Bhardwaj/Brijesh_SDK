@@ -12,6 +12,27 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 
 ## [Unreleased]
 
+## [0.1.5] - 2021-03-31
+
+### Added
+- UI code by using UIKIT instead of SwiftUI
+- Login flow with API integration added
+- Handle new API response "enableScrapper" in date-range API
+- File deletion/purging logic in the SDK
+
+### Fixed
+- Handling of out of range date/year for amazon order report page
+- Date range does not match with the API and the generated order history report issue fixed
+- 'Fetched' string updated to lowercase on receipts fetched successfully screen
+- The "Fetching receipts" text displayed in the app is not aligned
+- Cosmetic issues of keyboard and UI fixed
+- When an unexpected error occurs, when clicked on the "Try Again" button, it starts 
+  the process with step 1 but it is shown at the end of the progress bar
+- Complete page was not visible on iPad while trying to enter amazon id and password  
+- Getting an unexpected error during fetching the receipts
+
+
+
 ## [0.1.4] - 2021-03-30
 
 ### Fixed
