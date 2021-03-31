@@ -72,6 +72,14 @@ class AccountsViewController: UIViewController {
         self.accountIDLabel.text = userID
         self.actionButton.setTitle("Fetch Receipts", for: .normal)
         self.actionButton.tag = ButtonAction.fetchReceipts.rawValue
+        
+        if account.accountState == .ConnectedButException {
+            self.disconnectButton.setTitle("Reconnect", for: .normal)
+            self.actionButton.isHidden = true
+        } else {
+            self.disconnectButton.setTitle("Disconnect", for: .normal)
+            self.actionButton.isHidden = false
+        }
     }
     
     private func showViewForNoAccount() {
@@ -88,6 +96,12 @@ class AccountsViewController: UIViewController {
     }
     
     @IBAction func disconnectAccount(_ sender: Any) {
+        if let title = self.disconnectButton.title(for: .normal) {
+            if title.elementsEqual("Reconnect") {
+                self.currentAccount.connect(orderExtractionListener: self)
+                return
+            }
+        }
         self.currentAccount.disconnect(accountDisconnectedListener: self)
     }
     

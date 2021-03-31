@@ -36,6 +36,11 @@ class RegisterAccountViewController: UIViewController {
         self.userIDTextField.delegate = self
         
         setupSubscribers()
+        
+        if !account.userID.isEmpty {
+            self.userIDTextField.text = account.userID
+            self.userIDTextField.isEnabled = false
+        }
     }
 
     override func viewWillLayoutSubviews() {
