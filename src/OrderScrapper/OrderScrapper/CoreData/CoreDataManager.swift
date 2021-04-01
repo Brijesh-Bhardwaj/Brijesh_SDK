@@ -1,7 +1,5 @@
-//
 //  CoreDataManager.swift
 //  OrderScrapper
-
 
 import Foundation
 import CoreData

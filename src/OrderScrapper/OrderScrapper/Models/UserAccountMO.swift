@@ -1,9 +1,13 @@
-//
-//  UserAccount.swift
-//  OrderScrapper
-
 import Foundation
 import CoreData
+
+//  UserAccount.swift
+//  OrderScrapper
+/*
+ It is a class used to change account state as connected and disconnected and
+ update it into the core data. Also used to fetch
+ connected account from the core data. It implements Account protocol
+ **/
 
 @objc(UserAccount)
 public class UserAccountMO: NSManagedObject, Account {
@@ -38,7 +42,8 @@ public class UserAccountMO: NSManagedObject, Account {
             accountStatus = newValue.rawValue
         }
     }
-    
+    /// Use this method to change  account state as connected. If already connected it returns from the methods.
+    /// - Parameter orderExtractionListener: It is a listener which gives onOrderExtractionSuccess and onOrderExtractionFailure callback
     public func connect(orderExtractionListener: OrderExtractionListener) {
         if self.accountState == .Connected {
             //Already connected
@@ -51,7 +56,8 @@ public class UserAccountMO: NSManagedObject, Account {
             AmazonOrderScrapper.shared.connectAccount(account: self, orderExtractionListener: orderExtractionListener)
         }
     }
-    
+    /// Use this method to change account state as ConnectedAndDisconnected  and if already connected it returns from the methods.
+    /// - Parameter accountDisconnectedListener: It is a listener which gives onAccountDisconnected and onAccountDisconnectionFailed callback
     public func disconnect(accountDisconnectedListener: AccountDisconnectedListener) {
         if self.accountState == .ConnectedAndDisconnected {
             //Already disconnected
@@ -65,7 +71,8 @@ public class UserAccountMO: NSManagedObject, Account {
                                                          accountDisconnectedListener: accountDisconnectedListener)
         }
     }
-    
+    /// Use this method to fetch already connected account
+    /// - Parameter orderExtractionListener: It is a listener which gives onOrderExtractionSuccess and onOrderExtractionFailure callback
     public func fetchOrders(orderExtractionListener: OrderExtractionListener) {
         let orderSource = getOrderSource()
         switch orderSource {

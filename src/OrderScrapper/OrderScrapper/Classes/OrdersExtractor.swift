@@ -1,14 +1,22 @@
-//
+import Foundation
+
 //  OrderScrapperLib.swift
 //  OrderScrapper
 
-import Foundation
+/*
+ Represents the bridge between the application and the SDK. This class is the first
+ integration point between the app and SDK. The application must call initialize method
+ first before calling any other method
+ **/
 
 public class OrdersExtractor {
     private init() {}
     
     private static var isInitialized = false
     
+    /// Initializes the library and prepares it for the operation
+    /// - Parameter authProvider: It has authToken and panelistId
+    /// - Throws ASLException: If the rauth provider does not provide the required auth token and panelist ID values
     public static func initialize(authProvider: AuthProvider,
                                   viewPresenter: ViewPresenter) throws {
         if isInitialized {
@@ -32,6 +40,11 @@ public class OrdersExtractor {
         isInitialized = true
     }
     
+    /// Get list of accounts for the given order source type. If this value is not provided then it gives all accounts.
+    /// This method asynchronously fetches the accounts and return using the completionhandler callback.
+    /// - Parameter orderSource:the order source type
+    /// - Parameter completionHandler:closure which gives list of connected accounts for order source
+    /// - Throws ASLException: if this method is called before the initialization method
     public static func getAccounts(orderSource: OrderSource?,
                                    completionHandler: @escaping ([Account]) -> Void) throws {
         if isInitialized {
@@ -46,6 +59,10 @@ public class OrdersExtractor {
         }
     }
     
+    /// Registers a new account in the SDK. The SDK shows  the required screen for this operation.
+    /// - Parameter orderSource: the order source type
+    /// - Parameter orderExtractionListner: callback interface to noftify the status
+    /// - Throws ASLException: if this method is called before the initialization method
     public static func registerAccount(orderSource: OrderSource,
                                        orderExtractionListner: OrderExtractionListener) throws {
         if isInitialized {
