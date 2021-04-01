@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -22,16 +22,16 @@
 		1CBF6D1425F5FE71001A801B /* AmazonOrderScrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D1325F5FE71001A801B /* AmazonOrderScrapperTests.swift */; };
 		1CBF6D1F25F5FE71001A801B /* AmazonOrderScrapperUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D1E25F5FE71001A801B /* AmazonOrderScrapperUITests.swift */; };
 		1CE8507025F7B646000A7158 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE8506F25F7B646000A7158 /* ContentView.swift */; };
-		E1534254261364580074F3ED /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E93261204520065A5CC /* Alamofire.framework */; };
-		E1534255261364580074F3ED /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E93261204520065A5CC /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		E1534256261364590074F3ED /* CSV.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E8D261204510065A5CC /* CSV.framework */; };
-		E1534257261364590074F3ED /* CSV.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E8D261204510065A5CC /* CSV.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		E1534258261364590074F3ED /* RNCryptor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E95261204520065A5CC /* RNCryptor.framework */; };
-		E1534259261364590074F3ED /* RNCryptor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E1B93E95261204520065A5CC /* RNCryptor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E15343BB26138B270074F3ED /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15343B2261386ED0074F3ED /* OrderScrapper.framework */; };
 		E15343BC26138B270074F3ED /* OrderScrapper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E15343B2261386ED0074F3ED /* OrderScrapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E19D4CB22608A1D0002C16A7 /* AccountsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D4CB12608A1D0002C16A7 /* AccountsViewController.swift */; };
 		E1E8CFCD25FA2EF20064A55F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E1E8CFCC25FA2EF20064A55F /* Assets.xcassets */; };
+		E1EDF12D2615A65000752507 /* Alamofire.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF11A2615A28700752507 /* Alamofire.xcframework */; };
+		E1EDF12E2615A65000752507 /* Alamofire.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF11A2615A28700752507 /* Alamofire.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E1EDF12F2615A65000752507 /* CSV.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF11B2615A28700752507 /* CSV.xcframework */; };
+		E1EDF1302615A65000752507 /* CSV.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF11B2615A28700752507 /* CSV.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E1EDF1312615A65000752507 /* RNCryptor.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF11C2615A28700752507 /* RNCryptor.xcframework */; };
+		E1EDF1322615A65000752507 /* RNCryptor.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF11C2615A28700752507 /* RNCryptor.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,10 +58,10 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				E1534257261364590074F3ED /* CSV.framework in Embed Frameworks */,
-				E1534259261364590074F3ED /* RNCryptor.framework in Embed Frameworks */,
-				E1534255261364580074F3ED /* Alamofire.framework in Embed Frameworks */,
+				E1EDF12E2615A65000752507 /* Alamofire.xcframework in Embed Frameworks */,
 				E15343BC26138B270074F3ED /* OrderScrapper.framework in Embed Frameworks */,
+				E1EDF1302615A65000752507 /* CSV.xcframework in Embed Frameworks */,
+				E1EDF1322615A65000752507 /* RNCryptor.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -92,10 +92,10 @@
 		1CE8506F25F7B646000A7158 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E15343B2261386ED0074F3ED /* OrderScrapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OrderScrapper.framework; path = ../../bin/OrderScrapper.framework; sourceTree = "<group>"; };
 		E19D4CB12608A1D0002C16A7 /* AccountsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountsViewController.swift; sourceTree = "<group>"; };
-		E1B93E8D261204510065A5CC /* CSV.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CSV.framework; path = ../../bin/CSV.framework; sourceTree = "<group>"; };
-		E1B93E93261204520065A5CC /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = ../../bin/Alamofire.framework; sourceTree = "<group>"; };
-		E1B93E95261204520065A5CC /* RNCryptor.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RNCryptor.framework; path = ../../bin/RNCryptor.framework; sourceTree = "<group>"; };
 		E1E8CFCC25FA2EF20064A55F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		E1EDF11A2615A28700752507 /* Alamofire.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Alamofire.xcframework; path = ../../src/OrderScrapper/Carthage/Build/Alamofire.xcframework; sourceTree = "<group>"; };
+		E1EDF11B2615A28700752507 /* CSV.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = CSV.xcframework; path = ../../src/OrderScrapper/Carthage/Build/CSV.xcframework; sourceTree = "<group>"; };
+		E1EDF11C2615A28700752507 /* RNCryptor.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = RNCryptor.xcframework; path = ../../src/OrderScrapper/Carthage/Build/RNCryptor.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,10 +103,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E1534254261364580074F3ED /* Alamofire.framework in Frameworks */,
-				E1534258261364590074F3ED /* RNCryptor.framework in Frameworks */,
+				E1EDF12D2615A65000752507 /* Alamofire.xcframework in Frameworks */,
 				E15343BB26138B270074F3ED /* OrderScrapper.framework in Frameworks */,
-				E1534256261364590074F3ED /* CSV.framework in Frameworks */,
+				E1EDF12F2615A65000752507 /* CSV.xcframework in Frameworks */,
+				E1EDF1312615A65000752507 /* RNCryptor.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -232,10 +232,10 @@
 		E1052A2D25F7A22500B67F90 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E1EDF11A2615A28700752507 /* Alamofire.xcframework */,
+				E1EDF11B2615A28700752507 /* CSV.xcframework */,
+				E1EDF11C2615A28700752507 /* RNCryptor.xcframework */,
 				E15343B2261386ED0074F3ED /* OrderScrapper.framework */,
-				E1B93E93261204520065A5CC /* Alamofire.framework */,
-				E1B93E8D261204510065A5CC /* CSV.framework */,
-				E1B93E95261204520065A5CC /* RNCryptor.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -564,13 +564,14 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/../../bin",
+					"$(PROJECT_DIR)/../../src/OrderScrapper/Carthage/Build",
 				);
 				INFOPLIST_FILE = AmazonOrderScrapper/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -596,13 +597,14 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/../../bin",
+					"$(PROJECT_DIR)/../../src/OrderScrapper/Carthage/Build",
 				);
 				INFOPLIST_FILE = AmazonOrderScrapper/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;

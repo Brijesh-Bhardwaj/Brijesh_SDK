@@ -1,0 +1,108 @@
+# Summary
+
+Describes steps to integrate `OrderScrapper` SDK in mobile applications written using Native
+iOS SDK
+
+SDK target is a Framework file that can be linked and embedded in target iOS
+applications.
+
+Steps described here use XCode as the development and build tools.
+
+Refer to our implemented application under `samples/AmazonOrderScrapper/` for integration.
+
+# Prerequisites
+
+- XCode 12.4 or higher
+- Carthage 0.37.0
+
+# Steps
+
+## Link/Build settings
+
+- Build the SDK framework by following steps enlisted in `ReadMe.SDK.build.md`
+- Ensure that OrderScrapper.framework file is present under `<order_scrapping_ios>/bin` directory
+- Open your target application in XCode
+- Add the framework and its dependencies to the application at
+  `AppProject -> General -> Framework,Libraries & Embedded Contents`
+  Please note that the SDK is dependent on these three frameworks
+ - Alamofire.xcfrawework
+ - CSV.xcframework
+ - RNCryptor.xcframework
+- Ensure that the bin directory & frameworks download directory is added as a framework search path in the 'Build Settings' of the application project
+  ```
+  $(PROJECT_DIR)/../../bin
+  $(PROJECT_DIR)/<path_to_xcframeworks_directory>
+  ```
+
+## Code integration
+
+SDK provides a class named `OrdersExtractor`. Use this class for your initial
+interactions with the SDK.
+
+All protocols needed to be implemented by the application are
+- AuthProvider
+- ViewPresenter
+- AccountDisconnectedListener
+- OrderExtractionListener
+
+### Initialization
+
+- Write a class/extension to implement `AuthProvider` protocol, or implement the protocol in an existing
+  class to provide functionalities related to Authentication-Token that are needed by the SDK for
+  making API calls.
+
+- Write a class/extension to implement `ViewPresenter` protocol, or implement the protocol in an existing
+  class to provide functionalities related to View presentation that the SDK would internally call
+  whenever needed to present a new screen to users during the account-registration and 
+  order-fetching operations
+  
+  - Note: The application ViewController must present the SDK ViewControllers using 
+  ```
+  viewController.present(sdkViewController, animated: true, completion: nil)
+  ```
+
+- Initiliaze the library before calling its method as below
+  ```
+  OrdersExtractor.initialize(authProvider, viewPresenter)
+  ```
+  parameters *authProvider* and *viewPresenter* are the references implementing `AuthProvider` and
+  `ViewPresenter` protocols.
+  - Note: This method throws a runtime error in case the authProvider interface doesn't return a valid value
+  in the implementation
+
+- Once initialized you can use the static methods to invoke the functionalities provided by
+  the SDK
+
+- In order to connect to a new account call `registerAccount` method as below
+  ```
+  OrdersExtractor.registerAccount(.Amazon,self)
+  ```
+  - Currently the SDK only supports `Amazon` as an order source
+  - orderExtractionListener is the reference implementing the OrderExtractionListener protocol.
+
+- Once your application has registered accounts, they can be fetched back using `getAccounts`
+  method.
+  ```
+  OrdersExtractor.getAccounts(.Amazon)
+  ```
+  - Note that the SDK currently only supports 1 account connection at a time
+  - use the `accountState` property on the returned Account references to identify the current
+    status of an account. The account status is represented by `AccountState` enum with these
+    values:
+    - NeverConnected : Account was never connected
+    - Connected - Account is registered and connected successfully.
+    - ConnectedAndDisconnected - Account is in disconnected state now and was succesfully
+      connected before the SDK encountered issues with the account.
+    - ConnectedButException - Account connected before but SDK encountered issues with the account.
+
+- In order to initiate a order-extraction operation on a connected account, 
+  use instance method `fetchOrders` on account reference as below:
+  ```
+  account.fetchOrders(orderExtractionListener)
+  ```
+  - where orderExtractionListener is a reference implementing protocol `OrderExtractionListener`
+
+# Notes
+- Since SDK includes firebase analytics integration with its own configuration, application
+  developers will have to choose between using the firebase configuration of the SDK or the
+  application and make necessary ammends.
