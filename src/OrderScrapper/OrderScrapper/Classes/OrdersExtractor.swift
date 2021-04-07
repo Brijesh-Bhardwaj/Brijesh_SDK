@@ -16,9 +16,11 @@ public class OrdersExtractor {
     
     /// Initializes the library and prepares it for the operation
     /// - Parameter authProvider: It has authToken and panelistId
+    /// - Parameter viewPresenter: It has viewPresenter to show and hide the view
+    /// - Parameter analyticsProvider: It has analytics provider to log the events
     /// - Throws ASLException: If the rauth provider does not provide the required auth token and panelist ID values
     public static func initialize(authProvider: AuthProvider,
-                                  viewPresenter: ViewPresenter) throws {
+                                  viewPresenter: ViewPresenter, analyticsProvider: AnalyticsProvider?) throws {
         if isInitialized {
             debugPrint(Strings.ErrorLibAlreadyInitialized)
         }
@@ -31,12 +33,14 @@ public class OrdersExtractor {
         }
         
         if (!AmazonOrderScrapper.isInitialized()) {
-            AmazonOrderScrapper.shared.initialize(authProvider: authProvider, viewPresenter: viewPresenter)
+            AmazonOrderScrapper.shared.initialize(authProvider: authProvider,
+                                                  viewPresenter: viewPresenter, analyticsProvider: analyticsProvider)
         }
         
         //Configure firebase analytics
-        FirebaseAnalyticsUtil.configure()
-        
+        if analyticsProvider == nil {
+            FirebaseAnalyticsUtil.configure()
+        }
         isInitialized = true
     }
     

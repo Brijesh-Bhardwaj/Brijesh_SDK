@@ -60,13 +60,15 @@ All protocols needed to be implemented by the application are
   ```
   viewController.present(sdkViewController, animated: true, completion: nil)
   ```
+- Write a class/extension to implement 'AnalyticsProvider' protocol or implement the protocol in an existing
+  class to provide functionalities related to event logging into the app. 
 
 - Initiliaze the library before calling its method as below
   ```
-  OrdersExtractor.initialize(authProvider, viewPresenter)
+  OrdersExtractor.initialize(authProvider, viewPresenter, analyticsProvider?)
   ```
-  parameters *authProvider* and *viewPresenter* are the references implementing `AuthProvider` and
-  `ViewPresenter` protocols.
+  parameters *authProvider*, *viewPresenter* and *analyticsProvider* are the references implementing `AuthProvider`,
+  `ViewPresenter` and 'AnalyticsProvider' protocols. 
   - Note: This method throws a runtime error in case the authProvider interface doesn't return a valid value
   in the implementation
 

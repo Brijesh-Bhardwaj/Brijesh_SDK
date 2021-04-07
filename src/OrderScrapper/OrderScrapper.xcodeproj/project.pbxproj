@@ -17,6 +17,7 @@
 		1C2F8DF4260B25870053E73A /* OrdersExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2F8DF3260B25870053E73A /* OrdersExtractor.swift */; };
 		1C3CD5B02610CF5B00A67117 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1C3CD5AF2610CF5B00A67117 /* GoogleService-Info.plist */; };
 		1C425D1F26109F640009A3FA /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C425D1E26109F640009A3FA /* Dictionary.swift */; };
+		1C8C9928261D8BED0023A16D /* AnalyticsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C9927261D8BED0023A16D /* AnalyticsProvider.swift */; };
 		1CA1EDB8260DC6980000C859 /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA860A4260CEE1400261595 /* FirebaseCore.framework */; };
 		1CA1EDC0260DC8330000C859 /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA860A4260CEE1400261595 /* FirebaseCore.framework */; };
 		1CA1EDC2260DC84A0000C859 /* Firebase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA8609F260CEE1400261595 /* Firebase.framework */; };
@@ -131,6 +132,7 @@
 		1C2F8DF3260B25870053E73A /* OrdersExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrdersExtractor.swift; sourceTree = "<group>"; };
 		1C3CD5AF2610CF5B00A67117 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1C425D1E26109F640009A3FA /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
+		1C8C9927261D8BED0023A16D /* AnalyticsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsProvider.swift; sourceTree = "<group>"; };
 		1CA1EDF0260E16110000C859 /* EventType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
 		1CA1EDF3260E16EF0000C859 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		1CA86090260CE76500261595 /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Carthage/Build/iOS/FirebaseAnalytics.framework; sourceTree = "<group>"; };
@@ -420,6 +422,7 @@
 				E148DB5925FF2BFD001430BE /* AccountDisconnectedListener.swift */,
 				E148DC0A26010D28001430BE /* Authenticator.swift */,
 				E19D4CB92609A4A9002C16A7 /* OrderExtractionListener.swift */,
+				1C8C9927261D8BED0023A16D /* AnalyticsProvider.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -697,6 +700,7 @@
 				E148CA702610AF2000155B96 /* UIViewExtensions.swift in Sources */,
 				E148DC402603306E001430BE /* NetworkClient.swift in Sources */,
 				E148DC6F26045FE1001430BE /* ReportUpload.swift in Sources */,
+				1C8C9928261D8BED0023A16D /* AnalyticsProvider.swift in Sources */,
 				E148DC992605CB1E001430BE /* PIIScrapper.swift in Sources */,
 				E11F4178260F7AF800E90848 /* NetworkErrorView.swift in Sources */,
 				E148DC0B26010D28001430BE /* Authenticator.swift in Sources */,
@@ -879,7 +883,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_BITCODE = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/",
@@ -921,6 +925,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_BITCODE = NO;
+				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/",

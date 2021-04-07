@@ -10,6 +10,7 @@ import Combine
 class AmazonOrderScrapper {
     private var authProvider: AuthProvider!
     private var viewPresenter: ViewPresenter!
+    public var analyticsProvider: AnalyticsProvider?
     private var completionSubscriber: AnyCancellable?
     
     private static var instance: AmazonOrderScrapper!
@@ -27,9 +28,11 @@ class AmazonOrderScrapper {
         return instance != nil
     }
     
-    func initialize(authProvider: AuthProvider, viewPresenter: ViewPresenter) -> Void {
+    func initialize(authProvider: AuthProvider, viewPresenter: ViewPresenter,
+                    analyticsProvider: AnalyticsProvider?) -> Void {
         self.authProvider = authProvider
         self.viewPresenter = viewPresenter
+        self.analyticsProvider = analyticsProvider
         
         LibContext.shared.authProvider = self.authProvider
         LibContext.shared.viewPresenter = self.viewPresenter

@@ -26,7 +26,7 @@ class AccountsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         do {
-            try OrdersExtractor.initialize(authProvider: self, viewPresenter: self)
+            try OrdersExtractor.initialize(authProvider: self, viewPresenter: self, analyticsProvider: nil)
         } catch let error {
             debugPrint(error.localizedDescription)
         }
@@ -168,6 +168,11 @@ extension AccountsViewController: OrderExtractionListener {
     }
 }
 
+extension AccountsViewController: AnalyticsProvider {
+    func logEvent(eventType: String, eventAttributes: Dictionary<String, String>) {
+        print("##### logevent")
+    }
+}
 extension UIViewController {
     func showAlert(title: String, message: String, completionHandler: ((UIAlertAction) -> Void)?) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)

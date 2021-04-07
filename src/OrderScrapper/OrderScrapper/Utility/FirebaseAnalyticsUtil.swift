@@ -20,7 +20,12 @@ class FirebaseAnalyticsUtil {
         var commonEventAttributes = [EventConstant.PanelistID: LibContext.shared.authProvider.getPanelistID(),
                                      EventConstant.AppID: AppConstants.identifier]
         commonEventAttributes.merge(dict: eventAttributes)
-        Analytics.logEvent(eventType, parameters: commonEventAttributes)
+        let analyticsProvider = AmazonOrderScrapper.shared.analyticsProvider
+        if let analyticsProvider = analyticsProvider {
+            analyticsProvider.logEvent(eventType: eventType, eventAttributes: eventAttributes)
+        } else {
+            Analytics.logEvent(eventType, parameters: commonEventAttributes)
+        }
     }
     
 }

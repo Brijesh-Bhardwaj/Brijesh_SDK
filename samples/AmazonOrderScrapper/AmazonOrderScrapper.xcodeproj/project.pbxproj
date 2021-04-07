@@ -232,6 +232,17 @@
 		E1052A2D25F7A22500B67F90 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1C3DD69E261DBEAF00392912 /* FIRAnalyticsConnector.framework */,
+				1C3DD69C261DBEAE00392912 /* FirebaseAnalytics.framework */,
+				1C3DD6A3261DBEAF00392912 /* FirebaseCore.framework */,
+				1C3DD69B261DBEAE00392912 /* FirebaseCoreDiagnostics.framework */,
+				1C3DD6A0261DBEAF00392912 /* FirebaseInstallations.framework */,
+				1C3DD6A1261DBEAF00392912 /* GoogleAppMeasurement.framework */,
+				1C3DD69A261DBEAE00392912 /* GoogleDataTransport.framework */,
+				1C3DD69F261DBEAF00392912 /* GoogleUtilities.framework */,
+				1C3DD6A2261DBEAF00392912 /* nanopb.framework */,
+				1C3DD69D261DBEAF00392912 /* PromisesObjC.framework */,
+				1C3DD68F261DBD7F00392912 /* Firebase.framework */,
 				E1EDF11A2615A28700752507 /* Alamofire.xcframework */,
 				E1EDF11B2615A28700752507 /* CSV.xcframework */,
 				E1EDF11C2615A28700752507 /* RNCryptor.xcframework */,
@@ -476,6 +487,7 @@
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -539,6 +551,7 @@
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -567,6 +580,7 @@
 				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_BITCODE = NO;
+				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -581,6 +595,7 @@
 				);
 				MACH_O_TYPE = mh_execute;
 				MARKETING_VERSION = 0.1.7;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.receiptstraw.dev;
 				PRODUCT_NAME = "ReceiptStraw-Dev";
 				PROVISIONING_PROFILE_SPECIFIER = receiptstraw_dev_profile;
