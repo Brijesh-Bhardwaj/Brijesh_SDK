@@ -1,13 +1,13 @@
-import Foundation
-
 //  OrderScrapperLib.swift
 //  OrderScrapper
 
 /*
  Represents the bridge between the application and the SDK. This class is the first
- integration point between the app and SDK. The application must call initialize method
- first before calling any other method
+ integration point between the app and SDK. The application must call initialize method first before calling any other method
  **/
+
+import Foundation
+import UIKit
 
 public class OrdersExtractor {
     private init() {}
@@ -20,9 +20,11 @@ public class OrdersExtractor {
     /// - Parameter analyticsProvider: It has analytics provider to log the events
     /// - Throws ASLException: If the rauth provider does not provide the required auth token and panelist ID values
     public static func initialize(authProvider: AuthProvider,
-                                  viewPresenter: ViewPresenter, analyticsProvider: AnalyticsProvider?) throws {
+                                  viewPresenter: ViewPresenter,
+                                  analyticsProvider: AnalyticsProvider?) throws {
         if isInitialized {
             debugPrint(Strings.ErrorLibAlreadyInitialized)
+            return
         }
         
         let authToken = authProvider.getAuthToken()
@@ -34,13 +36,16 @@ public class OrdersExtractor {
         
         if (!AmazonOrderScrapper.isInitialized()) {
             AmazonOrderScrapper.shared.initialize(authProvider: authProvider,
-                                                  viewPresenter: viewPresenter, analyticsProvider: analyticsProvider)
+                                                  viewPresenter: viewPresenter,
+                                                  analyticsProvider: analyticsProvider)
         }
         
         //Configure firebase analytics
         if analyticsProvider == nil {
             FirebaseAnalyticsUtil.configure()
         }
+        registerFonts()
+        
         isInitialized = true
     }
     
@@ -80,5 +85,10 @@ public class OrdersExtractor {
         } else {
             throw ASLException(errorMessage: Strings.ErrorLibNotInitialized)
         }
+    }
+    
+    private static func registerFonts() {
+        UIFont.registerFont(withFilenameString: "SF-Pro-Rounded-Bold.otf")
+        UIFont.registerFont(withFilenameString: "SF-Pro-Rounded-Regular.otf")
     }
 }

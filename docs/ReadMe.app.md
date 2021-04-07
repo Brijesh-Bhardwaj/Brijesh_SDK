@@ -60,17 +60,18 @@ All protocols needed to be implemented by the application are
   ```
   viewController.present(sdkViewController, animated: true, completion: nil)
   ```
-- Write a class/extension to implement 'AnalyticsProvider' protocol or implement the protocol in an existing
-  class to provide functionalities related to event logging into the app. 
 
+- If the app has implemented any analytics service like Firebase etc. then write a class/extension to implement `AnalyticsProvider` protocol or implement the protocol in an existing
+    class to provide functionalities related to event logging for analytics. Otherwise, this protocol implementation is optional. 
+    
 - Initiliaze the library before calling its method as below
   ```
   OrdersExtractor.initialize(authProvider, viewPresenter, analyticsProvider?)
   ```
   parameters *authProvider*, *viewPresenter* and *analyticsProvider* are the references implementing `AuthProvider`,
-  `ViewPresenter` and 'AnalyticsProvider' protocols. 
+  `ViewPresenter` and `AnalyticsProvider` protocols. 
   - Note: This method throws a runtime error in case the authProvider interface doesn't return a valid value
-  in the implementation
+  in the implementation or if Firebase is implemented in the app but analyticsProvider reference is not provided
 
 - Once initialized you can use the static methods to invoke the functionalities provided by
   the SDK

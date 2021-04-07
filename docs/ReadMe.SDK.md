@@ -57,12 +57,6 @@ SDK fetches orders as a CSV file from Amazon's order-report generation page as b
 - the edited CSV is then uploaded to the backend through an upload API.
 - Post upload irrespective of failure/success, the file is deleted from the internal storage too.
 
-### Analytics
-- SDK events are logged using Firebase analytics. 
-- AnalyticsProvider protocol added to handle the event logging if the app also integrated firebase analytics.
-- In the OrderExtractor class, initialize() method has one optional parameter analyticsProvider. If this parameter is nil then event logging will take place through SDK firebase analytics instance otherwise event logging will take place through the app analytics instance.   
-
-
 # Notes
 - Downloaded order reports are always deleted after upload. 
 - while the order fetch is in progress, it is mandatory for users to keep the app running in the foreground and let it finish the operation.

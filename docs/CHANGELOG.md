@@ -12,11 +12,15 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 
 ## [Unreleased]
 
-## [0.1.8] - 2021-04-07
+## [0.1.8] - 2021-04-08
 
 ### Added
 - Added the AnalyticsProvider to delegate the event logging mechanism to the app, in case the app has implemented 
   any analytics. If there is no analytics implemented in the app, the SDK logs the event in Firebase as usual.
+
+### Changed
+- Modified the SDK fonts and color scheme based on the provided specs
+- Changed the email label from 'Email or mobile number with country code' to just 'Email or mobile number'
 
 ## [0.1.7] - 2021-03-31
 

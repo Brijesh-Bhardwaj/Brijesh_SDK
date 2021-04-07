@@ -42,6 +42,10 @@
 		1CD2B51326031A710016F752 /* CoreDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1CD2B51126031A710016F752 /* CoreDataModel.xcdatamodeld */; };
 		1CD2B51726031C900016F752 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CD2B51626031C900016F752 /* CoreDataManager.swift */; };
 		1CEDD13B26038CAE00E7BAB4 /* UserAccountMO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEDD13A26038CAE00E7BAB4 /* UserAccountMO.swift */; };
+		E1155D12261D9B2900739735 /* SF-Pro-Rounded-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E1155D04261D9B2600739735 /* SF-Pro-Rounded-Bold.otf */; };
+		E1155D15261D9B2900739735 /* SF-Pro-Rounded-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = E1155D07261D9B2700739735 /* SF-Pro-Rounded-Regular.otf */; };
+		E1155D28261DC1F200739735 /* GradientButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1155D27261DC1F200739735 /* GradientButton.swift */; };
+		E1155D34261DDC9100739735 /* UIFontExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1155D33261DDC9100739735 /* UIFontExtensions.swift */; };
 		E11F4160260F3BBF00E90848 /* RegisterAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F415F260F3BBF00E90848 /* RegisterAccountViewController.swift */; };
 		E11F4166260F3DE000E90848 /* ConnectAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F4165260F3DE000E90848 /* ConnectAccountViewController.swift */; };
 		E11F4174260F70C500E90848 /* NetworkErrorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E11F4173260F70C500E90848 /* NetworkErrorView.xib */; };
@@ -91,7 +95,6 @@
 		E19D4CB72608FD29002C16A7 /* WebCacheCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D4CB62608FD29002C16A7 /* WebCacheCleaner.swift */; };
 		E19D4CBA2609A4A9002C16A7 /* OrderExtractionListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D4CB92609A4A9002C16A7 /* OrderExtractionListener.swift */; };
 		E19D4E08260DF055002C16A7 /* OSLibUI.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E19D4E07260DF055002C16A7 /* OSLibUI.storyboard */; };
-		E19D4E0C260DF25C002C16A7 /* RadialGradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D4E0B260DF25C002C16A7 /* RadialGradientView.swift */; };
 		E1EDF10B2615A20400752507 /* CSV.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF1082615A20400752507 /* CSV.xcframework */; };
 		E1EDF10D2615A20500752507 /* Alamofire.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF1092615A20400752507 /* Alamofire.xcframework */; };
 		E1EDF10F2615A20600752507 /* RNCryptor.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF10A2615A20400752507 /* RNCryptor.xcframework */; };
@@ -156,6 +159,10 @@
 		1CD2B51226031A710016F752 /* CoreDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreDataModel.xcdatamodel; sourceTree = "<group>"; };
 		1CD2B51626031C900016F752 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		1CEDD13A26038CAE00E7BAB4 /* UserAccountMO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAccountMO.swift; sourceTree = "<group>"; };
+		E1155D04261D9B2600739735 /* SF-Pro-Rounded-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Rounded-Bold.otf"; sourceTree = "<group>"; };
+		E1155D07261D9B2700739735 /* SF-Pro-Rounded-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Rounded-Regular.otf"; sourceTree = "<group>"; };
+		E1155D27261DC1F200739735 /* GradientButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientButton.swift; sourceTree = "<group>"; };
+		E1155D33261DDC9100739735 /* UIFontExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIFontExtensions.swift; sourceTree = "<group>"; };
 		E11F415F260F3BBF00E90848 /* RegisterAccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterAccountViewController.swift; sourceTree = "<group>"; };
 		E11F4165260F3DE000E90848 /* ConnectAccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectAccountViewController.swift; sourceTree = "<group>"; };
 		E11F4173260F70C500E90848 /* NetworkErrorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NetworkErrorView.xib; sourceTree = "<group>"; };
@@ -205,7 +212,6 @@
 		E19D4CB62608FD29002C16A7 /* WebCacheCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebCacheCleaner.swift; sourceTree = "<group>"; };
 		E19D4CB92609A4A9002C16A7 /* OrderExtractionListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderExtractionListener.swift; sourceTree = "<group>"; };
 		E19D4E07260DF055002C16A7 /* OSLibUI.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = OSLibUI.storyboard; sourceTree = "<group>"; };
-		E19D4E0B260DF25C002C16A7 /* RadialGradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadialGradientView.swift; sourceTree = "<group>"; };
 		E1EDF1082615A20400752507 /* CSV.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = CSV.xcframework; path = Carthage/Build/CSV.xcframework; sourceTree = "<group>"; };
 		E1EDF1092615A20400752507 /* Alamofire.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Alamofire.xcframework; path = Carthage/Build/Alamofire.xcframework; sourceTree = "<group>"; };
 		E1EDF10A2615A20400752507 /* RNCryptor.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = RNCryptor.xcframework; path = Carthage/Build/RNCryptor.xcframework; sourceTree = "<group>"; };
@@ -293,6 +299,7 @@
 		1CBF6D3B25F5FFBE001A801B /* OrderScrapper */ = {
 			isa = PBXGroup;
 			children = (
+				E1155D00261D9AEA00739735 /* Fonts */,
 				E11F415E260F3B7000E90848 /* ViewControllers */,
 				1CA1EDF6260E17020000C859 /* Analytics */,
 				E148DC2726032F9A001430BE /* Network */,
@@ -336,6 +343,15 @@
 			path = CoreData;
 			sourceTree = "<group>";
 		};
+		E1155D00261D9AEA00739735 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				E1155D04261D9B2600739735 /* SF-Pro-Rounded-Bold.otf */,
+				E1155D07261D9B2700739735 /* SF-Pro-Rounded-Regular.otf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
 		E11F415E260F3B7000E90848 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -361,6 +377,7 @@
 				1C0741192604F2540013067C /* String.swift */,
 				E148CA6F2610AF2000155B96 /* UIViewExtensions.swift */,
 				1C425D1E26109F640009A3FA /* Dictionary.swift */,
+				E1155D33261DDC9100739735 /* UIFontExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -368,7 +385,6 @@
 		E148DB4525FF2BFD001430BE /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				E19D4E0B260DF25C002C16A7 /* RadialGradientView.swift */,
 				E11F4173260F70C500E90848 /* NetworkErrorView.xib */,
 				E11F4177260F7AF800E90848 /* NetworkErrorView.swift */,
 				E11F417D260F85C100E90848 /* FetchSuccessView.xib */,
@@ -378,6 +394,7 @@
 				E148CA40261040B400155B96 /* ProgressView.swift */,
 				E148CA442610417100155B96 /* ProgressView.xib */,
 				E148CA482610481100155B96 /* HorizontalProgressBar.swift */,
+				E1155D27261DC1F200739735 /* GradientButton.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -612,6 +629,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				E19D4E08260DF055002C16A7 /* OSLibUI.storyboard in Resources */,
+				E1155D12261D9B2900739735 /* SF-Pro-Rounded-Bold.otf in Resources */,
+				E1155D15261D9B2900739735 /* SF-Pro-Rounded-Regular.otf in Resources */,
 				E148CA452610417100155B96 /* ProgressView.xib in Resources */,
 				E148DB6725FF2BFD001430BE /* Images.xcassets in Resources */,
 				1C3CD5B02610CF5B00A67117 /* GoogleService-Info.plist in Resources */,
@@ -658,7 +677,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E148DC182601F3AA001430BE /* ReportConfig.swift in Sources */,
-				E19D4E0C260DF25C002C16A7 /* RadialGradientView.swift in Sources */,
 				E148DB8D25FF31B4001430BE /* NavigationHelper.swift in Sources */,
 				E148DC4E260338B0001430BE /* DateRange.swift in Sources */,
 				E148DC7626048299001430BE /* PIIAttribute.swift in Sources */,
@@ -685,6 +703,7 @@
 				E148DB6D25FF2BFD001430BE /* AccountDisconnectedListener.swift in Sources */,
 				E15343E8261466700074F3ED /* OrderFetchSuccessType.swift in Sources */,
 				E148DC9C2605CB1E001430BE /* FileDownloader.swift in Sources */,
+				E1155D28261DC1F200739735 /* GradientButton.swift in Sources */,
 				E148DB6E25FF2BFD001430BE /* ASLException.swift in Sources */,
 				1C07411A2604F2540013067C /* String.swift in Sources */,
 				E148DB5C25FF2BFD001430BE /* AmazonOrderScrapper.swift in Sources */,
@@ -703,6 +722,7 @@
 				1C8C9928261D8BED0023A16D /* AnalyticsProvider.swift in Sources */,
 				E148DC992605CB1E001430BE /* PIIScrapper.swift in Sources */,
 				E11F4178260F7AF800E90848 /* NetworkErrorView.swift in Sources */,
+				E1155D34261DDC9100739735 /* UIFontExtensions.swift in Sources */,
 				E148DC0B26010D28001430BE /* Authenticator.swift in Sources */,
 				1C006FAA26009BE500F9263E /* AppConstants.swift in Sources */,
 				1C2F8DF4260B25870053E73A /* OrdersExtractor.swift in Sources */,

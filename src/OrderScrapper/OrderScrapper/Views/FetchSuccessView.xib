@@ -7,6 +7,11 @@
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="SF-Pro-Rounded-Regular.otf">
+            <string>SFProRounded-Regular</string>
+        </array>
+    </customFonts>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="FetchSuccessView" customModule="OrderScrapper">
             <connections>
@@ -25,9 +30,8 @@
                         <constraint firstAttribute="width" constant="100" id="gb2-bD-PXW"/>
                     </constraints>
                 </imageView>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WKm-pC-VSr">
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WKm-pC-VSr" customClass="GradientButton" customModule="OrderScrapper">
                     <rect key="frame" x="139" y="544.33333333333337" width="150" height="48"/>
-                    <color key="backgroundColor" red="0.94117647058823528" green="0.63921568627450975" blue="0.039215686274509803" alpha="1" colorSpace="calibratedRGB"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="48" id="W4k-Mg-dSH"/>
                         <constraint firstAttribute="width" constant="150" id="mCh-e4-Wa1"/>
@@ -48,7 +52,7 @@
                     <rect key="frame" x="10" y="441.66666666666669" width="408" height="52.666666666666686"/>
                     <string key="text">Receipts fetched 
 successfully</string>
-                    <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                    <fontDescription key="fontDescription" name="SFProRounded-Regular" family="SF Pro Rounded" pointSize="22"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -71,6 +75,11 @@ successfully</string>
             <point key="canvasLocation" x="140.57971014492756" y="75.669642857142847"/>
         </view>
     </objects>
+    <designables>
+        <designable name="WKm-pC-VSr">
+            <size key="intrinsicContentSize" width="30" height="30"/>
+        </designable>
+    </designables>
     <resources>
         <image name="tick" width="87.333335876464844" height="87.333335876464844"/>
     </resources>
