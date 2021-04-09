@@ -5,6 +5,7 @@
 
 import UIKit
 import OrderScrapper
+import Firebase
 
 enum ButtonAction: Int {
     case connectAccount, fetchReceipts
@@ -26,7 +27,7 @@ class AccountsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         do {
-            try OrdersExtractor.initialize(authProvider: self, viewPresenter: self, analyticsProvider: nil)
+            try OrdersExtractor.initialize(authProvider: self, viewPresenter: self, analyticsProvider: self)
         } catch let error {
             debugPrint(error.localizedDescription)
         }
@@ -170,7 +171,7 @@ extension AccountsViewController: OrderExtractionListener {
 
 extension AccountsViewController: AnalyticsProvider {
     func logEvent(eventType: String, eventAttributes: Dictionary<String, String>) {
-        print("##### logevent")
+        Analytics.logEvent(eventType, parameters: eventAttributes)
     }
 }
 extension UIViewController {

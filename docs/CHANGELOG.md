@@ -12,6 +12,11 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 
 ## [Unreleased]
 
+## [0.1.9] - 2021-04-09
+
+### Removed
+- Removed Firebase library from SDK and used the analytics provider protocol to log the event in the app.
+
 ## [0.1.8] - 2021-04-08
 
 ### Added

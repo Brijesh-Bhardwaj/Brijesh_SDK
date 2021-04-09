@@ -15,26 +15,10 @@
 		1C07410B2604B5B10013067C /* RNCryptoUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C07410A2604B5B10013067C /* RNCryptoUtil.swift */; };
 		1C07411A2604F2540013067C /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0741192604F2540013067C /* String.swift */; };
 		1C2F8DF4260B25870053E73A /* OrdersExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2F8DF3260B25870053E73A /* OrdersExtractor.swift */; };
-		1C3CD5B02610CF5B00A67117 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1C3CD5AF2610CF5B00A67117 /* GoogleService-Info.plist */; };
 		1C425D1F26109F640009A3FA /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C425D1E26109F640009A3FA /* Dictionary.swift */; };
 		1C8C9928261D8BED0023A16D /* AnalyticsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C9927261D8BED0023A16D /* AnalyticsProvider.swift */; };
-		1CA1EDB8260DC6980000C859 /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA860A4260CEE1400261595 /* FirebaseCore.framework */; };
-		1CA1EDC0260DC8330000C859 /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA860A4260CEE1400261595 /* FirebaseCore.framework */; };
-		1CA1EDC2260DC84A0000C859 /* Firebase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA8609F260CEE1400261595 /* Firebase.framework */; };
-		1CA1EDCF260DCB420000C859 /* FIRAnalyticsConnector.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA86095260CEDFF00261595 /* FIRAnalyticsConnector.framework */; };
-		1CA1EDD1260DCB420000C859 /* Firebase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA8609F260CEE1400261595 /* Firebase.framework */; };
-		1CA1EDD2260DCB420000C859 /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA86090260CE76500261595 /* FirebaseAnalytics.framework */; };
-		1CA1EDD3260DCB420000C859 /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA860A4260CEE1400261595 /* FirebaseCore.framework */; };
-		1CA1EDD4260DCB420000C859 /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA860A6260CEE1400261595 /* FirebaseCoreDiagnostics.framework */; };
-		1CA1EDD6260DCB420000C859 /* FirebaseInstallations.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA8609E260CEE1400261595 /* FirebaseInstallations.framework */; };
-		1CA1EDD8260DCB420000C859 /* GoogleAppMeasurement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA860A5260CEE1400261595 /* GoogleAppMeasurement.framework */; };
-		1CA1EDDA260DCB420000C859 /* GoogleDataTransport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA860A3260CEE1400261595 /* GoogleDataTransport.framework */; };
-		1CA1EDDC260DCB420000C859 /* GoogleUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA860A0260CEE1400261595 /* GoogleUtilities.framework */; };
-		1CA1EDDE260DCB420000C859 /* nanopb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA860A1260CEE1400261595 /* nanopb.framework */; };
-		1CA1EDE0260DCB420000C859 /* PromisesObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA860A2260CEE1400261595 /* PromisesObjC.framework */; };
 		1CA1EDF1260E16110000C859 /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1EDF0260E16110000C859 /* EventType.swift */; };
 		1CA1EDF4260E16EF0000C859 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1EDF3260E16EF0000C859 /* Event.swift */; };
-		1CA8609C260CEE1400261595 /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA86090260CE76500261595 /* FirebaseAnalytics.framework */; };
 		1CA860C8260D03DB00261595 /* FirebaseAnalyticsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA860C7260D03DB00261595 /* FirebaseAnalyticsUtil.swift */; };
 		1CBF6D4325F5FFBE001A801B /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CBF6D3925F5FFBE001A801B /* OrderScrapper.framework */; };
 		1CBF6D4825F5FFBE001A801B /* OrderScrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D4725F5FFBE001A801B /* OrderScrapperTests.swift */; };
@@ -133,7 +117,6 @@
 		1C07410A2604B5B10013067C /* RNCryptoUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNCryptoUtil.swift; sourceTree = "<group>"; };
 		1C0741192604F2540013067C /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		1C2F8DF3260B25870053E73A /* OrdersExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrdersExtractor.swift; sourceTree = "<group>"; };
-		1C3CD5AF2610CF5B00A67117 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1C425D1E26109F640009A3FA /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
 		1C8C9927261D8BED0023A16D /* AnalyticsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsProvider.swift; sourceTree = "<group>"; };
 		1CA1EDF0260E16110000C859 /* EventType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
@@ -222,24 +205,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1CA1EDDA260DCB420000C859 /* GoogleDataTransport.framework in Frameworks */,
-				1CA1EDE0260DCB420000C859 /* PromisesObjC.framework in Frameworks */,
 				E1EDF10B2615A20400752507 /* CSV.xcframework in Frameworks */,
-				1CA1EDD1260DCB420000C859 /* Firebase.framework in Frameworks */,
-				1CA1EDB8260DC6980000C859 /* FirebaseCore.framework in Frameworks */,
 				E1EDF10F2615A20600752507 /* RNCryptor.xcframework in Frameworks */,
-				1CA1EDDE260DCB420000C859 /* nanopb.framework in Frameworks */,
 				E1EDF10D2615A20500752507 /* Alamofire.xcframework in Frameworks */,
-				1CA1EDD3260DCB420000C859 /* FirebaseCore.framework in Frameworks */,
-				1CA1EDD8260DCB420000C859 /* GoogleAppMeasurement.framework in Frameworks */,
-				1CA1EDD6260DCB420000C859 /* FirebaseInstallations.framework in Frameworks */,
-				1CA1EDC0260DC8330000C859 /* FirebaseCore.framework in Frameworks */,
-				1CA1EDD2260DCB420000C859 /* FirebaseAnalytics.framework in Frameworks */,
-				1CA1EDC2260DC84A0000C859 /* Firebase.framework in Frameworks */,
-				1CA1EDD4260DCB420000C859 /* FirebaseCoreDiagnostics.framework in Frameworks */,
-				1CA8609C260CEE1400261595 /* FirebaseAnalytics.framework in Frameworks */,
-				1CA1EDDC260DCB420000C859 /* GoogleUtilities.framework in Frameworks */,
-				1CA1EDCF260DCB420000C859 /* FIRAnalyticsConnector.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -279,7 +247,6 @@
 		1CBF6D2F25F5FFBE001A801B = {
 			isa = PBXGroup;
 			children = (
-				1C3CD5AF2610CF5B00A67117 /* GoogleService-Info.plist */,
 				1CBF6D3B25F5FFBE001A801B /* OrderScrapper */,
 				1CBF6D4625F5FFBE001A801B /* OrderScrapperTests */,
 				1CBF6D3A25F5FFBE001A801B /* Products */,
@@ -633,7 +600,6 @@
 				E1155D15261D9B2900739735 /* SF-Pro-Rounded-Regular.otf in Resources */,
 				E148CA452610417100155B96 /* ProgressView.xib in Resources */,
 				E148DB6725FF2BFD001430BE /* Images.xcassets in Resources */,
-				1C3CD5B02610CF5B00A67117 /* GoogleService-Info.plist in Resources */,
 				E148DB5D25FF2BFD001430BE /* Assets.xcassets in Resources */,
 				E11F417E260F85C100E90848 /* FetchSuccessView.xib in Resources */,
 				E148CA2D26103DC200155B96 /* ErrorView.xib in Resources */,
@@ -896,7 +862,7 @@
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -918,7 +884,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.1.8;
+				MARKETING_VERSION = 0.1.9;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.orderscrapper;
@@ -939,7 +905,7 @@
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -960,7 +926,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.1.8;
+				MARKETING_VERSION = 0.1.9;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.orderscrapper;

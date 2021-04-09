@@ -3,17 +3,17 @@
 //  OrderScrapper
 
 import Foundation
-import FirebaseAnalytics
-import Firebase
-import FirebaseCore
+//import FirebaseAnalytics
+//import Firebase
+//import FirebaseCore
 
 
 class FirebaseAnalyticsUtil {
     
     static func configure() {
-        let filePath = Bundle(identifier: AppConstants.identifier)!.path(forResource: AppConstants.resourceName, ofType: AppConstants.resourceOfType)
-        let options = FirebaseOptions.init(contentsOfFile: filePath!)!
-        FirebaseApp.configure(options: options)
+//        let filePath = Bundle(identifier: AppConstants.identifier)!.path(forResource: AppConstants.resourceName, ofType: AppConstants.resourceOfType)
+//        let options = FirebaseOptions.init(contentsOfFile: filePath!)!
+//        FirebaseApp.configure(options: options)
     }
     
     static func logEvent(eventType: String, eventAttributes: Dictionary<String, String>) {
@@ -24,7 +24,7 @@ class FirebaseAnalyticsUtil {
         if let analyticsProvider = analyticsProvider {
             analyticsProvider.logEvent(eventType: eventType, eventAttributes: eventAttributes)
         } else {
-            Analytics.logEvent(eventType, parameters: commonEventAttributes)
+//            Analytics.logEvent(eventType, parameters: commonEventAttributes)
         }
     }
     
