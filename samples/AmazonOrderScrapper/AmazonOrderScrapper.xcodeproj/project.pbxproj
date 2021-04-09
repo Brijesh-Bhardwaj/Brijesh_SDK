@@ -623,6 +623,7 @@
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/../../bin",
 					"$(PROJECT_DIR)/../../src/OrderScrapper/Carthage/Build",
+					"$(PROJECT_DIR)/../../src/OrderScrapper/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = AmazonOrderScrapper/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -658,6 +659,7 @@
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/../../bin",
 					"$(PROJECT_DIR)/../../src/OrderScrapper/Carthage/Build",
+					"$(PROJECT_DIR)/../../src/OrderScrapper/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = AmazonOrderScrapper/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;

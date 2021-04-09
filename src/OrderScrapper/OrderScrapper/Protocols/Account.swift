@@ -15,6 +15,9 @@ public protocol Account {
     /// The encrypted password associated with the account
     var userPassword: String { get }
     
+    ///Account is first account or not for a panalist
+    var firstAccount: Bool { get set }
+    
     /// Connects to the respective e-commerce site and fetches the receipts internally. If the account is
     /// not yet connected this method ensures to show the 'Connect Account' screen to connect the account
     /// - Parameter orderExtractionListener: protocol which notifies the caller about the status

@@ -9,9 +9,9 @@ import Foundation
 public protocol OrderExtractionListener {
     /// Notifies the app if order extraction operation was successful
     /// - Parameter successType: the success type
-    func onOrderExtractionSuccess(successType: OrderFetchSuccessType)
+    func onOrderExtractionSuccess(successType: OrderFetchSuccessType, account: Account)
     
     /// Notifies the app if order extraction operation failed
     /// - Parameter error : the error reason , wrapped in the ASLException object
-    func onOrderExtractionFailure(error: ASLException)
+    func onOrderExtractionFailure(error: ASLException, account: Account)
 }

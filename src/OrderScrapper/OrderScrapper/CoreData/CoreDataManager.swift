@@ -33,7 +33,7 @@ class CoreDataManager {
     /*
      * Add account details into the UserAccount table
      */
-    public func addAccount(userId: String, password: String, accountStatus: Int16, orderSource: Int16){
+    public func addAccount(userId: String, password: String, accountStatus: String, orderSource: Int16) {
         let context = persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<UserAccountMO>(entityName: AppConstants.entityName)
         fetchRequest.predicate = NSPredicate(format: "\(AppConstants.userAccountColumnUserId) = %@", userId)
@@ -83,7 +83,7 @@ class CoreDataManager {
     /*
      * Update user account status using userId
      */
-    public func updateUserAccount(userId: String, accountStatus: Int16) throws {
+    public func updateUserAccount(userId: String, accountStatus: String) throws {
         let context = persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<UserAccountMO>(entityName: AppConstants.entityName)
         fetchRequest.predicate = NSPredicate(format: "\(AppConstants.userAccountColumnUserId) = %@", userId)
@@ -96,6 +96,24 @@ class CoreDataManager {
         }
     }
     
+    public func deleteAccounts(userId: String) {
+        let context = persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.entityName)
+            let predicate = NSPredicate(format: "\(AppConstants.userAccountColumnUserId) = %@", userId)
+            fetchRequest.predicate = predicate
+            let result = try? context.fetch(fetchRequest)
+            let resultData = result as! [UserAccountMO]
+
+            for object in resultData {
+                context.delete(object)
+            }
+            do {
+                try context.save()
+            } catch let error as NSError  {
+                print(error.userInfo)
+            }
+        
+    }
     public func createNewAccount() -> UserAccountMO {
         let context = persistentContainer.viewContext
         let entity = NSEntityDescription.entity(forEntityName: AppConstants.entityName, in: context)!

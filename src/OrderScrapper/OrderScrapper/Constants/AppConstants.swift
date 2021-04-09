@@ -24,4 +24,10 @@ struct AppConstants {
     static let firstDayOfJan = "1"
     static let monthJan = "1"
     static let amazonReportType = "ITEMS"
+    //Update status API messages
+    static let msgDisconnected = "Account Disconnected"
+    static let msgConnected = "Account connected first time successfully"
+    static let msgCapchaEncountered = "Encountered captcha"
+    static let msgAuthError = "Authentication failed"
+    static let msgDBEmpty = "App install again or device change"
 }

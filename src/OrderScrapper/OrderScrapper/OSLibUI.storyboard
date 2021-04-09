@@ -229,6 +229,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="authErrorLabel" destination="kgs-oD-wg3" id="kql-Gw-0oO"/>
                         <outlet property="authErrorView" destination="JPv-As-ksJ" id="1Ez-an-Lb0"/>
                         <outlet property="contentView" destination="hHv-yS-LHo" id="wBM-4g-K7k"/>
                         <outlet property="invalidPasswordView" destination="vHG-92-rJG" id="gUs-YP-dLG"/>

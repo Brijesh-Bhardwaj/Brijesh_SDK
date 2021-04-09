@@ -37,8 +37,8 @@ internal class AmazonAuthenticator: Authenticator {
                         if (strResult.isEmpty) {
                             self.injectCaptchaIdentificationJS()
                         } else {
-                            self.updateAccountWithExceptionState()
-                            self.viewModel.authError.send(true)
+                            self.updateAccountWithExceptionState(message: AppConstants.msgAuthError)
+                            self.viewModel.authError.send((true, ""))
                         }
                     } else {
                         self.injectCaptchaIdentificationJS()
@@ -56,7 +56,7 @@ internal class AmazonAuthenticator: Authenticator {
                 case .captcha:
                     if let response = response as? String {
                         if response.contains("captcha") {
-                            self.updateAccountWithExceptionState()
+                            self.updateAccountWithExceptionState(message: AppConstants.msgCapchaEncountered)
                             self.viewModel.showWebView.send(true)
                         } else {
                             self.injectFieldIdentificationJS()
@@ -114,7 +114,12 @@ internal class AmazonAuthenticator: Authenticator {
         self.viewModel.jsPublisher.send((.captcha, js))
     }
     
-    private func updateAccountWithExceptionState() {
+    private func updateAccountWithExceptionState(message: String) {
+        let userId = self.viewModel.userAccount.userID
+        _ = AmazonService.updateStatus(amazonId: userId, status: AccountState.ConnectedButException.rawValue, message: message) { response, error in
+            //Todo
+        }
+        
         do {
             try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.ConnectedButException.rawValue)
         } catch let error {

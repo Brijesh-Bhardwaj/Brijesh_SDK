@@ -158,13 +158,13 @@ extension AccountsViewController: AuthProvider {
 }
 
 extension AccountsViewController: OrderExtractionListener {
-    func onOrderExtractionSuccess(successType: OrderFetchSuccessType) {
+    func onOrderExtractionSuccess(successType: OrderFetchSuccessType, account: Account) {
         if successType == .fetchSkipped {
             showAlert(title: "Alert", message: "Receipts scrapped already.", completionHandler: nil)
         }
     }
     
-    func onOrderExtractionFailure(error: ASLException) {
+    func onOrderExtractionFailure(error: ASLException, account: Account) {
         showAlert(title: "Alert", message: error.errorMessage, completionHandler: nil)
     }
 }

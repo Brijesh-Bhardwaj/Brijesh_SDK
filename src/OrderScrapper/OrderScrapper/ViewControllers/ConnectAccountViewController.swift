@@ -212,8 +212,8 @@ class ConnectAccountViewController: UIViewController {
             }
         })
         authErrorSubscriber = self.viewModel.authError.receive(on: RunLoop.main).sink(receiveValue: { isError in
-            if isError {
-                LibContext.shared.webAuthErrorPublisher.send(isError)
+            if isError.0 {
+                LibContext.shared.webAuthErrorPublisher.send((isError.0, isError.1))
                 self.dismiss(animated: true, completion: nil)
             }
         })

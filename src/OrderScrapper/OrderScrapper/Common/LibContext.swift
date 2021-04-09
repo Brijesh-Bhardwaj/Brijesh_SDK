@@ -24,6 +24,6 @@ class LibContext {
     var viewPresenter: ViewPresenter!
     
     var scrapeCompletionPublisher = PassthroughSubject<((Bool, OrderFetchSuccessType?), String?), Never>()
-    var webAuthErrorPublisher = PassthroughSubject<Bool, Never>()
+    var webAuthErrorPublisher = PassthroughSubject<(Bool, String), Never>()
     var authenticationErrorPublisher = PassthroughSubject<Bool, Never>()
 }

@@ -4,7 +4,7 @@ import Foundation
 /*
  Represents the connection state of the account
  **/
-public enum AccountState: Int16 {
+public enum AccountState: String {
     case NeverConnected  // the account was never conencted
     case Connected  // the account conencted
     case ConnectedAndDisconnected  // the account was connected one but manually disconnected

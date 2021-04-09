@@ -15,7 +15,7 @@ class RegisterAccountViewController: UIViewController {
     @IBOutlet weak var invalidUserIdView: UILabel!
     @IBOutlet weak var invalidPasswordView: UILabel!
     @IBOutlet weak var submitButton: UIButton!
-    
+    @IBOutlet weak var authErrorLabel: UILabel!
     var account: UserAccountMO!
     
     private var authErrorSubscriber: AnyCancellable? = nil
@@ -126,6 +126,7 @@ class RegisterAccountViewController: UIViewController {
     private func setupSubscribers() {
         authErrorSubscriber = LibContext.shared.webAuthErrorPublisher.receive(on: RunLoop.main).sink { authError in
             self.authErrorView.isHidden = false
+            self.authErrorLabel.text = authError.1
         }
         
         completionSubscriber = LibContext.shared.scrapeCompletionPublisher.receive(on: RunLoop.main).sink { isComplete, error in

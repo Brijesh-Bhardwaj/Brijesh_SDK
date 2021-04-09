@@ -47,9 +47,9 @@ class AmazonOrderScrapper {
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
                 let (completed, successType) = result
                 if completed {
-                    orderExtractionListener.onOrderExtractionSuccess(successType: successType!)
+                    orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
                 } else {
-                    orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: error ?? ""))
+                    orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: error ?? ""), account: account)
                 }
             }
         }
@@ -63,14 +63,19 @@ class AmazonOrderScrapper {
     }
     
     func disconnectAccount(account: Account, accountDisconnectedListener: AccountDisconnectedListener) {
-        do {
-            try CoreDataManager.shared.updateUserAccount(userId: account.userID, accountStatus: AccountState.ConnectedAndDisconnected.rawValue)
-            
-            WebCacheCleaner.clear()
-            
-            accountDisconnectedListener.onAccountDisconnected(account: account)
-        } catch _ {
-            accountDisconnectedListener.onAccountDisconnectionFailed(account: account)
+        _ = AmazonService.updateStatus(amazonId: account.userID, status: AccountState.ConnectedAndDisconnected.rawValue
+                                       , message: AppConstants.msgDisconnected) { response, error in
+            if let response = response {
+                do {
+                    try CoreDataManager.shared.deleteAccounts(userId: account.userID)
+                    WebCacheCleaner.clear()
+                    accountDisconnectedListener.onAccountDisconnected(account: account)
+                } catch _ {
+                    accountDisconnectedListener.onAccountDisconnectionFailed(account: account)
+                }
+            } else {
+                accountDisconnectedListener.onAccountDisconnectionFailed(account: account)
+            }
         }
     }
     
@@ -78,9 +83,9 @@ class AmazonOrderScrapper {
         self.completionSubscriber = LibContext.shared.scrapeCompletionPublisher.receive(on: RunLoop.main).sink() { result, error in
             let (completed, successType) = result
             if completed {
-                orderExtractionListener.onOrderExtractionSuccess(successType: successType!)
+                orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
             } else {
-                orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: error ?? ""))
+                orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: error ?? ""), account: account)
             }
         }
         

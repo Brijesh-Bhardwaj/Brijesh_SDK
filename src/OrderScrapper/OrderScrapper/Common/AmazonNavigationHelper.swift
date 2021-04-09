@@ -76,10 +76,26 @@ class AmazonNavigationHelper: NavigationHelper {
             self.injectDownloadReportJS()
             publishProgrssFor(step: .downloadReport)
         } else if (urlString.contains(AmazonURL.generateReport)) {
-            //On authentication add user account details to DB
-            self.addUserAccountInDB()
-            self.getDateRange()
-            publishProgrssFor(step: .generateReport)
+            let userAccountState = self.viewModel.userAccount.accountState
+            if userAccountState == AccountState.NeverConnected {
+                let userId = self.viewModel.userAccount.userID
+                _ = AmazonService.registerConnection(amazonId: userId) { response, error in
+                    if let response = response  {
+                        //On authentication add user account details to DB
+                        self.viewModel.userAccount.firstAccount = response.firstaccount
+                        self.addUserAccountInDB()
+                        self.getDateRange()
+                        self.publishProgrssFor(step: .generateReport)
+                    } else {
+                        self.viewModel.authError.send((isError: true, errorMsg: error!))
+                    }
+                }
+            } else {
+                //On authentication add user account details to DB
+                self.addUserAccountInDB()
+                self.getDateRange()
+                self.publishProgrssFor(step: .generateReport)
+            }
         } else {
             //Log event for getting other url
             var logOtherUrlEventAttributes:[String:String] = [:]

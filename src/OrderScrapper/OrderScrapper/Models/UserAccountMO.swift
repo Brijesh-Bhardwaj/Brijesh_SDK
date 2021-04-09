@@ -13,8 +13,9 @@ import CoreData
 public class UserAccountMO: NSManagedObject, Account {
     @NSManaged var userId: String
     @NSManaged var password: String
-    @NSManaged var accountStatus: Int16
+    @NSManaged var accountStatus: String
     @NSManaged var orderSource: Int16
+    @NSManaged var firstAcc: Bool
     
     public var userID: String {
         get {
@@ -40,6 +41,15 @@ public class UserAccountMO: NSManagedObject, Account {
         }
         set {
             accountStatus = newValue.rawValue
+        }
+    }
+    
+    public var firstAccount: Bool {
+        get {
+            return firstAcc
+        }
+        set {
+            firstAcc = newValue
         }
     }
     /// Use this method to change  account state as connected. If already connected it returns from the methods.

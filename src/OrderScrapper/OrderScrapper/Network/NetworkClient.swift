@@ -54,7 +54,9 @@ class NetworkClient<T: Decodable>: APIClient {
             executePost(url, httpHeaders, completionHandler)
         case .multipart:
             executeMultipartPost(url, httpHeaders, completionHandler)
-        case .put, .delete: break
+        case .put:
+            executePut(url, httpHeaders, completionHandler)
+        case .delete: break
         }
     }
     
@@ -90,6 +92,19 @@ class NetworkClient<T: Decodable>: APIClient {
         guard let multipartData = self.multipartFormClosure else { return }
         
         _ = AF.upload(multipartFormData:multipartData, to: url, headers: headers)
+            .validate(statusCode: 200..<300)
+            .responseDecodable(of: T.self) { response in
+                self.onResponse(response, completionHandler)
+            }
+    }
+    
+    private func executePut(_ url: String,
+                            _ headers: HTTPHeaders?,
+                            _ completionHandler: @escaping (Any?, Error?) -> Void) {
+        
+        guard let body = self.body else { return }
+        
+        _ = AF.request(url, method: .put, parameters: body, encoding: JSONEncoding.default, headers: headers)
             .validate(statusCode: 200..<300)
             .responseDecodable(of: T.self) { response in
                 self.onResponse(response, completionHandler)

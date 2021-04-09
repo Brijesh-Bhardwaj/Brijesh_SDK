@@ -57,11 +57,41 @@ public class OrdersExtractor {
     public static func getAccounts(orderSource: OrderSource?,
                                    completionHandler: @escaping ([Account]) -> Void) throws {
         if isInitialized {
-            DispatchQueue.global().async {
-                let accounts = CoreDataManager.shared.fetch(orderSource: orderSource)
-                DispatchQueue.main.async {
-                    completionHandler(accounts)
+            _ = AmazonService.getAccounts() { response, error in
+                DispatchQueue.global().async {
+                    let accountsInDB = CoreDataManager.shared.fetch(orderSource: orderSource)
+                    
+                    if let response = response  {
+                        let accountDetails = response
+                        if accountsInDB.isEmpty && accountDetails.isEmpty {
+                            DispatchQueue.main.async {
+                                completionHandler(accountsInDB)
+                            }
+                        } else if !accountDetails.isEmpty && accountsInDB.isEmpty {
+                            let account = accountDetails[0]
+                            CoreDataManager.shared.addAccount(userId: account.amazonId, password: "",
+                                                              accountStatus: AccountState.ConnectedButException.rawValue,
+                                                              orderSource: OrderSource.Amazon.rawValue)
+                            self.updateStatus(amazonId: account.amazonId, status: AccountState.ConnectedButException.rawValue, message: AppConstants.msgDBEmpty)
+                            let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource)
+                            DispatchQueue.main.async {
+                                completionHandler(accountsFromDB)
+                            }
+                        } else {
+                            DispatchQueue.main.async {
+                                completionHandler(accountsInDB)
+                            }
+                        }
+                    } else {
+                        DispatchQueue.global().async {
+                            let accounts = CoreDataManager.shared.fetch(orderSource: orderSource)
+                            DispatchQueue.main.async {
+                                completionHandler(accounts)
+                            }
+                        }
+                    }
                 }
+                
             }
         } else {
             throw ASLException(errorMessage: Strings.ErrorLibNotInitialized)
@@ -90,5 +120,11 @@ public class OrdersExtractor {
     private static func registerFonts() {
         UIFont.registerFont(withFilenameString: "SF-Pro-Rounded-Bold.otf")
         UIFont.registerFont(withFilenameString: "SF-Pro-Rounded-Regular.otf")
+    }
+    
+    private static func updateStatus(amazonId: String, status: String, message: String) {
+        _ = AmazonService.updateStatus(amazonId: amazonId, status: status, message: message) { response, error in
+            
+        }
     }
 }
