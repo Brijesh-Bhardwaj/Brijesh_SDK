@@ -82,7 +82,7 @@ class AmazonNavigationHelper: NavigationHelper {
                 _ = AmazonService.registerConnection(amazonId: userId, status: AccountState.Connected.rawValue, message: "Account connected") { response, error in
                     if let response = response  {
                         //On authentication add user account details to DB
-                        self.viewModel.userAccount.firstAccount = response.firstaccount
+                        self.viewModel.userAccount.isFirstConnectedAccount = response.firstaccount
                         self.addUserAccountInDB()
                         self.getDateRange()
                         self.publishProgrssFor(step: .generateReport)
@@ -391,7 +391,7 @@ class AmazonNavigationHelper: NavigationHelper {
      */
     private func addUserAccountInDB() {
         let account = self.viewModel.userAccount as! UserAccountMO
-        
-        CoreDataManager.shared.addAccount(userId: account.userID, password: account.password, accountStatus: AccountState.Connected.rawValue, orderSource: account.orderSource)
+        let panelistId = LibContext.shared.authProvider.getPanelistID()
+        CoreDataManager.shared.addAccount(userId: account.userID, password: account.password, accountStatus: AccountState.Connected.rawValue, orderSource: account.orderSource, panelistId: panelistId)
     }
 }

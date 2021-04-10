@@ -16,7 +16,10 @@ public protocol Account {
     var userPassword: String { get }
     
     ///Account is first account or not for a panalist
-    var firstAccount: Bool { get set }
+    var isFirstConnectedAccount: Bool { get set }
+    
+    //The panelist associated with the account
+    var panelistID: String { get set}
     
     /// Connects to the respective e-commerce site and fetches the receipts internally. If the account is
     /// not yet connected this method ensures to show the 'Connect Account' screen to connect the account

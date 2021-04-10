@@ -16,6 +16,7 @@ public class UserAccountMO: NSManagedObject, Account {
     @NSManaged var accountStatus: String
     @NSManaged var orderSource: Int16
     @NSManaged var firstAcc: Bool
+    @NSManaged var panelistId: String
     
     public var userID: String {
         get {
@@ -44,12 +45,21 @@ public class UserAccountMO: NSManagedObject, Account {
         }
     }
     
-    public var firstAccount: Bool {
+    public var isFirstConnectedAccount: Bool {
         get {
             return firstAcc
         }
         set {
             firstAcc = newValue
+        }
+    }
+    
+    public var panelistID: String {
+        get {
+            return panelistId
+        }
+        set {
+            panelistId = newValue
         }
     }
     /// Use this method to change  account state as connected. If already connected it returns from the methods.

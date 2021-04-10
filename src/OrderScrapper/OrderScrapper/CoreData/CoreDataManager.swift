@@ -33,11 +33,13 @@ class CoreDataManager {
     /*
      * Add account details into the UserAccount table
      */
-    public func addAccount(userId: String, password: String, accountStatus: String, orderSource: Int16) {
+    public func addAccount(userId: String, password: String, accountStatus: String, orderSource: Int16, panelistId: String) {
         let context = persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<UserAccountMO>(entityName: AppConstants.entityName)
-        fetchRequest.predicate = NSPredicate(format: "\(AppConstants.userAccountColumnUserId) = %@", userId)
-        
+        let userIdPredicate = NSPredicate(format: "\(AppConstants.userAccountColumnUserId) = %@", userId)
+        let panelistIdPredicate = NSPredicate(format: "\(AppConstants.userAcccountColumnPanelistId) = %@", panelistId)
+
+        fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [userIdPredicate, panelistIdPredicate])
         var account: UserAccountMO?
         do {
             let accounts = try context.fetch(fetchRequest)
@@ -54,6 +56,7 @@ class CoreDataManager {
             account.password  = password
             account.accountStatus = accountStatus
             account.orderSource = orderSource
+            account.panelistId = panelistId
             do {
                 try context.save()
             } catch let error {
@@ -65,12 +68,18 @@ class CoreDataManager {
     /*
      * fetch user accounts by OrderSource type
      */
-    public func fetch(orderSource: OrderSource?)->[UserAccountMO] {
+    public func fetch(orderSource: OrderSource?, panelistId: String)->[UserAccountMO] {
         let context = persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<UserAccountMO>(entityName: AppConstants.entityName)
+        var predicates:[NSPredicate] = [NSPredicate]()
         if let orderSource = orderSource {
-            fetchRequest.predicate = NSPredicate(format: "\(AppConstants.userAccountColumnOrderSource) == \(orderSource.rawValue)")
+            let orderSourcePredicate = NSPredicate(format: "\(AppConstants.userAccountColumnOrderSource) == \(orderSource.rawValue)")
+            predicates.append(orderSourcePredicate)
         }
+        let panelistIdPredicate = NSPredicate(format: "\(AppConstants.userAcccountColumnPanelistId) == %@", panelistId)
+        predicates.append(panelistIdPredicate)
+        fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: predicates)
+        
         var accounts = [UserAccountMO]()
         do {
             accounts = try context.fetch(fetchRequest)
@@ -83,10 +92,14 @@ class CoreDataManager {
     /*
      * Update user account status using userId
      */
-    public func updateUserAccount(userId: String, accountStatus: String) throws {
+    public func updateUserAccount(userId: String, accountStatus: String, panelistId: String) throws {
         let context = persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<UserAccountMO>(entityName: AppConstants.entityName)
-        fetchRequest.predicate = NSPredicate(format: "\(AppConstants.userAccountColumnUserId) = %@", userId)
+        
+        let userIdPredicate = NSPredicate(format: "\(AppConstants.userAccountColumnUserId) = %@", userId)
+        let panelistIdPredicate = NSPredicate(format: "\(AppConstants.userAcccountColumnPanelistId) = %@", panelistId)
+        fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [userIdPredicate, panelistIdPredicate])
+        
         let accounts = try context.fetch(fetchRequest)
         if accounts.count > 0 {
             let objectUpdate = accounts[0] as NSManagedObject
@@ -96,22 +109,25 @@ class CoreDataManager {
         }
     }
     
-    public func deleteAccounts(userId: String) {
+    public func deleteAccounts(userId: String, panelistId: String) {
         let context = persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.entityName)
-            let predicate = NSPredicate(format: "\(AppConstants.userAccountColumnUserId) = %@", userId)
-            fetchRequest.predicate = predicate
-            let result = try? context.fetch(fetchRequest)
-            let resultData = result as! [UserAccountMO]
-
-            for object in resultData {
-                context.delete(object)
-            }
-            do {
-                try context.save()
-            } catch let error as NSError  {
-                print(error.userInfo)
-            }
+        
+        let userIdPredicate = NSPredicate(format: "\(AppConstants.userAccountColumnUserId) = %@", userId)
+        let panelistIdPredicate = NSPredicate(format: "\(AppConstants.userAcccountColumnPanelistId) = %@", panelistId)
+        
+        fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [userIdPredicate, panelistIdPredicate])
+        let result = try? context.fetch(fetchRequest)
+        let resultData = result as! [UserAccountMO]
+        
+        for object in resultData {
+            context.delete(object)
+        }
+        do {
+            try context.save()
+        } catch let error as NSError  {
+            print(error.userInfo)
+        }
         
     }
     public func createNewAccount() -> UserAccountMO {

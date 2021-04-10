@@ -67,7 +67,8 @@ class AmazonOrderScrapper {
                                        , message: AppConstants.msgDisconnected) { response, error in
             if let response = response {
                 do {
-                    try CoreDataManager.shared.deleteAccounts(userId: account.userID)
+                    let panelistId = LibContext.shared.authProvider.getPanelistID()
+                    try CoreDataManager.shared.deleteAccounts(userId: account.userID, panelistId: panelistId)
                     WebCacheCleaner.clear()
                     accountDisconnectedListener.onAccountDisconnected(account: account)
                 } catch _ {

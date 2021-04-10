@@ -57,10 +57,11 @@ public class OrdersExtractor {
     public static func getAccounts(orderSource: OrderSource?,
                                    completionHandler: @escaping ([Account]) -> Void) throws {
         if isInitialized {
+            let panelistId = LibContext.shared.authProvider.getPanelistID()
+
             _ = AmazonService.getAccounts() { response, error in
                 DispatchQueue.global().async {
-                    let accountsInDB = CoreDataManager.shared.fetch(orderSource: orderSource)
-                    
+                    let accountsInDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
                     if let response = response  {
                         let accountDetails = response
                         if accountsInDB.isEmpty && accountDetails.isEmpty {
@@ -71,9 +72,9 @@ public class OrdersExtractor {
                             let account = accountDetails[0]
                             CoreDataManager.shared.addAccount(userId: account.amazonId, password: "",
                                                               accountStatus: AccountState.ConnectedButException.rawValue,
-                                                              orderSource: OrderSource.Amazon.rawValue)
+                                                              orderSource: OrderSource.Amazon.rawValue, panelistId: panelistId)
                             self.updateStatus(amazonId: account.amazonId, status: AccountState.ConnectedButException.rawValue, message: AppConstants.msgDBEmpty)
-                            let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource)
+                            let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
                             DispatchQueue.main.async {
                                 completionHandler(accountsFromDB)
                             }
@@ -84,7 +85,7 @@ public class OrdersExtractor {
                         }
                     } else {
                         DispatchQueue.global().async {
-                            let accounts = CoreDataManager.shared.fetch(orderSource: orderSource)
+                            let accounts = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
                             DispatchQueue.main.async {
                                 completionHandler(accounts)
                             }
@@ -110,6 +111,7 @@ public class OrdersExtractor {
             account.password = ""
             account.accountState = .NeverConnected
             account.orderSource = orderSource.rawValue
+            account.panelistId = LibContext.shared.authProvider.getPanelistID()
             
             account.connect(orderExtractionListener: orderExtractionListner)
         } else {
@@ -124,7 +126,7 @@ public class OrdersExtractor {
     
     private static func updateStatus(amazonId: String, status: String, message: String) {
         _ = AmazonService.updateStatus(amazonId: amazonId, status: status, message: message) { response, error in
-            
+            //Todo
         }
     }
 }

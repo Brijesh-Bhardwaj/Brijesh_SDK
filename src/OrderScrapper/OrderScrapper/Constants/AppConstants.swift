@@ -17,6 +17,7 @@ struct AppConstants {
     static let userAccountColumnUserId = "userId"
     static let userAccountColumnAccountStatus = "accountStatus"
     static let userAccountColumnPassword = "password"
+    static let userAcccountColumnPanelistId = "panelistId"
     //Firebase Analytics
     static let resourceName = "GoogleService-Info"
     static let resourceOfType = "plist"
