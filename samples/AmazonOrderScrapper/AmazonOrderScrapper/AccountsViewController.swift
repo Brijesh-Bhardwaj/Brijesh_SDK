@@ -162,6 +162,10 @@ extension AccountsViewController: OrderExtractionListener {
         if successType == .fetchSkipped {
             showAlert(title: "Alert", message: "Receipts scrapped already.", completionHandler: nil)
         }
+        
+        if account.isFirstConnectedAccount {
+           showAlert(title: "Alert", message: "You've received 1000 points for connecting your first Amazon account!", completionHandler: nil)
+        }
     }
     
     func onOrderExtractionFailure(error: ASLException, account: Account) {

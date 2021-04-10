@@ -105,6 +105,8 @@ All protocols needed to be implemented by the application are
   ```
   - where orderExtractionListener is a reference implementing protocol `OrderExtractionListener`
 
+- In order to find whether the account is the first connected account with a panelist, use the `isFirstConnectedAccount` property on the Account object returned in the OrderExtractionListener methods.
+
 # Notes
 - Since SDK includes firebase analytics integration with its own configuration, application
   developers will have to choose between using the firebase configuration of the SDK or the

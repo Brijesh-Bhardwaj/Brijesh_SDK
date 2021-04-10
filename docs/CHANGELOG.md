@@ -12,6 +12,21 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 
 ## [Unreleased]
 
+## [0.1.10] - 2021-04-10
+
+### Added
+- Integrated the account management APIs: register account, update account and get list of accounts.
+
+### Changed
+- Modified the orderExtractionCallback to retun the Account object as well, with the firstConnection flag info
+- Changed SDK internal DB schema and DB queries as per the new design
+
+### Fixed
+- Fixed the view offset issue while the keyboard is shown on the register account screen
+
+### Notes:
+- Since this release contains, DB schema changes. The app should be re-installed for the new SDK integration. DB versioning would be added in future releases.
+
 ## [0.1.9] - 2021-04-09
 
 ### Removed
