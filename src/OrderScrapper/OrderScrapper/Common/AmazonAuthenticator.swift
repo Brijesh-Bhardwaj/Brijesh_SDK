@@ -37,8 +37,7 @@ internal class AmazonAuthenticator: Authenticator {
                         if (strResult.isEmpty) {
                             self.injectCaptchaIdentificationJS()
                         } else {
-                            self.updateAccountWithExceptionState(message: AppConstants.msgAuthError)
-                            self.viewModel.authError.send((true, ""))
+                            self.notifyAuthError(errorMessage: strResult)
                         }
                     } else {
                         self.injectCaptchaIdentificationJS()
@@ -125,5 +124,19 @@ internal class AmazonAuthenticator: Authenticator {
         } catch let error {
             debugPrint("Error while updating account state: ", error)
         }
+    }
+    
+    private func notifyAuthError(errorMessage: String) {
+        let accountState = self.viewModel.userAccount.accountState.rawValue
+        if accountState == AccountState.NeverConnected.rawValue {
+            let userId = self.viewModel.userAccount.userID
+            _ = AmazonService.registerConnection(amazonId: userId,
+                                                 status: AccountState.NeverConnected.rawValue,
+                                                 message: errorMessage) { response, error in
+            }
+        } else {
+            self.updateAccountWithExceptionState(message: AppConstants.msgAuthError)
+        }
+        self.viewModel.authError.send((true, ""))
     }
 }

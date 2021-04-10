@@ -108,12 +108,13 @@ class AmazonService {
         return client
     }
     
-    static func registerConnection(amazonId: String,
+    static func registerConnection(amazonId: String, status: String, message: String,
                                  completionHandler: @escaping (AccountDetails?, String?) -> Void) -> APIClient {
         let client = NetworkClient<APIResponse<AccountDetails>>(relativeURL: CreateConnection, requestMethod: .post)
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         
-        client.body = [JSONKeys.panelistId.rawValue: panelistId, JSONKeys.amazonId.rawValue: amazonId]
+        client.body = [JSONKeys.panelistId.rawValue: panelistId, JSONKeys.amazonId.rawValue: amazonId,
+                       JSONKeys.status.rawValue: status, JSONKeys.message.rawValue: message]
         
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<AccountDetails> {
