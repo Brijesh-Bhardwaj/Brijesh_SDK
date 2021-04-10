@@ -13,6 +13,34 @@ in this file.
 
 ## [Unreleased]
 
+## [0.2.0] - 2021-04-10
+
+### Added
+- Alert message shown to user in case user has logged in to the application for the first time.
+
+### Changed
+- Added Scrapper SDK version 0.2.0
+
+## [0.1.9] - 2021-04-09
+
+### Changed
+- Added Scrapper SDK version 0.1.9
+
+## [0.1.8] - 2021-04-07
+
+### Changed
+- Added Scrapper SDK version 0.1.8
+
+## [0.1.7] - 2021-04-01
+
+### Changed
+- Added Scrapper SDK version 0.1.7
+
+## [0.1.6] - 2021-03-31
+
+### Changed
+- Added Scrapper SDK version 0.1.6
+
 ## [0.1.5] - 2021-03-31
 
 ### Added

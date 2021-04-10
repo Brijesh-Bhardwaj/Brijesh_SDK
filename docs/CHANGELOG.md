@@ -17,6 +17,9 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 ### Added
 - Integrated the account management APIs: register account, update account and get list of accounts.
 - Register connection API called on authentication failure also for the backend to keep track of connections.
+- Logged the Never connected account state with backend for connection logging to NCP
+- Added panelist id column in SDK DB
+- DB queries in the SDK are based on panelist id
 
 ### Changed
 - Modified the orderExtractionCallback to retun the Account object as well, with the firstConnection flag info
