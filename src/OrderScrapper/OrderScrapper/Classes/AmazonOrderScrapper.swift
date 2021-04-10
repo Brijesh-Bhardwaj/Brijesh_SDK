@@ -65,15 +65,11 @@ class AmazonOrderScrapper {
     func disconnectAccount(account: Account, accountDisconnectedListener: AccountDisconnectedListener) {
         _ = AmazonService.updateStatus(amazonId: account.userID, status: AccountState.ConnectedAndDisconnected.rawValue
                                        , message: AppConstants.msgDisconnected) { response, error in
-            if let response = response {
-                do {
-                    let panelistId = LibContext.shared.authProvider.getPanelistID()
-                    try CoreDataManager.shared.deleteAccounts(userId: account.userID, panelistId: panelistId)
-                    WebCacheCleaner.clear()
-                    accountDisconnectedListener.onAccountDisconnected(account: account)
-                } catch _ {
-                    accountDisconnectedListener.onAccountDisconnectionFailed(account: account)
-                }
+            if response != nil {
+                let panelistId = LibContext.shared.authProvider.getPanelistID()
+                CoreDataManager.shared.deleteAccounts(userId: account.userID, panelistId: panelistId)
+                WebCacheCleaner.clear()
+                accountDisconnectedListener.onAccountDisconnected(account: account)
             } else {
                 accountDisconnectedListener.onAccountDisconnectionFailed(account: account)
             }
