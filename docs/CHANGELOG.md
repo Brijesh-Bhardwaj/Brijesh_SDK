@@ -12,10 +12,11 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 
 ## [Unreleased]
 
-## [0.1.10] - 2021-04-10
+## [0.2.0] - 2021-04-10
 
 ### Added
 - Integrated the account management APIs: register account, update account and get list of accounts.
+- Register connection API called on authentication failure also for the backend to keep track of connections.
 
 ### Changed
 - Modified the orderExtractionCallback to retun the Account object as well, with the firstConnection flag info
