@@ -117,10 +117,12 @@ internal class AmazonAuthenticator: Authenticator {
         let userId = self.viewModel.userAccount.userID
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         let accountState = self.viewModel.userAccount.accountState
-        var status = AccountState.NeverConnected.rawValue
-        if accountState.rawValue == AccountState.NeverConnected.rawValue {
+        var status: String
+        
+        switch accountState {
+        case .NeverConnected:
             status = AccountState.NeverConnected.rawValue
-        } else {
+        case .ConnectedButException, .ConnectedAndDisconnected, .Connected:
             status = AccountState.ConnectedButException.rawValue
             
             do {

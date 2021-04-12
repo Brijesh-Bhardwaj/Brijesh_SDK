@@ -1,7 +1,7 @@
 import Foundation
 //  OrderStatus.swift
 //  OrderScrapper
-public enum OrderStatus: String {
+enum OrderStatus: String {
     case None
     case Initiated
     case Completed
