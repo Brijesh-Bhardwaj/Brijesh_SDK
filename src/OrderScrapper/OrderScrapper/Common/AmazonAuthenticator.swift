@@ -142,7 +142,7 @@ internal class AmazonAuthenticator: Authenticator {
             let userId = self.viewModel.userAccount.userID
             _ = AmazonService.registerConnection(amazonId: userId,
                                                  status: AccountState.NeverConnected.rawValue,
-                                                 message: errorMessage, orderStatus: OrderStatus.Initiated.rawValue) { response, error in
+                                                 message: errorMessage, orderStatus: OrderStatus.None.rawValue) { response, error in
                //TODO
             }
         } else {
