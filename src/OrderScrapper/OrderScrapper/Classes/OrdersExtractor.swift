@@ -73,7 +73,7 @@ public class OrdersExtractor {
                             CoreDataManager.shared.addAccount(userId: account.amazonId, password: "",
                                                               accountStatus: AccountState.ConnectedButException.rawValue,
                                                               orderSource: OrderSource.Amazon.rawValue, panelistId: panelistId)
-                            self.updateStatus(amazonId: account.amazonId, status: AccountState.ConnectedButException.rawValue, message: AppConstants.msgDBEmpty)
+                            self.updateStatus(amazonId: account.amazonId, status: AccountState.ConnectedButException.rawValue, message: AppConstants.msgDBEmpty, orderStatus: OrderStatus.None.rawValue)
                             let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
                             DispatchQueue.main.async {
                                 completionHandler(accountsFromDB)
@@ -124,9 +124,14 @@ public class OrdersExtractor {
         UIFont.registerFont(withFilenameString: "SF-Pro-Rounded-Regular.otf")
     }
     
-    private static func updateStatus(amazonId: String, status: String, message: String) {
-        _ = AmazonService.updateStatus(amazonId: amazonId, status: status, message: message) { response, error in
+    private static func updateStatus(amazonId: String, status: String, message: String, orderStatus: String) {
+        _ = AmazonService.updateStatus(amazonId: amazonId, status: status, message: message, orderStatus: orderStatus) { response, error in
             //Todo
+            if let response = response {
+                print("### getAccounts Res ", response)
+            } else {
+                print("### getAccounts Res ", error as Any)
+            }
         }
     }
 }
