@@ -79,7 +79,7 @@ class AmazonNavigationHelper: NavigationHelper {
             let userAccountState = self.viewModel.userAccount.accountState
             if userAccountState == AccountState.NeverConnected {
                 let userId = self.viewModel.userAccount.userID
-                _ = AmazonService.registerConnection(amazonId: userId, status: AccountState.NeverConnected.rawValue, message: "Account connected", orderStatus: OrderStatus.Initiated.rawValue) { response, error in
+                _ = AmazonService.registerConnection(amazonId: userId, status: AccountState.NeverConnected.rawValue, message: AppConstants.msgAccountConnected, orderStatus: OrderStatus.InProgress.rawValue) { response, error in
                     if let response = response  {
                         //On authentication add user account details to DB
                         self.viewModel.userAccount.isFirstConnectedAccount = response.firstaccount

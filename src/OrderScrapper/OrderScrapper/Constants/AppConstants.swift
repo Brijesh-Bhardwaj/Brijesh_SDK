@@ -32,4 +32,5 @@ struct AppConstants {
     static let msgAuthError = "Authentication failed"
     static let msgDBEmpty = "App install again or device change"
     static let msgCSVUploadFailed = "CSV upload failed"
+    static let msgAccountConnected = "Account connected"
 }
