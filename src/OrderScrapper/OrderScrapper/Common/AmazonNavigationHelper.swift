@@ -79,7 +79,7 @@ class AmazonNavigationHelper: NavigationHelper {
             let userAccountState = self.viewModel.userAccount.accountState
             if userAccountState == AccountState.NeverConnected {
                 let userId = self.viewModel.userAccount.userID
-                _ = AmazonService.registerConnection(amazonId: userId, status: AccountState.Connected.rawValue, message: "Account connected") { response, error in
+                _ = AmazonService.registerConnection(amazonId: userId, status: AccountState.NeverConnected.rawValue, message: AppConstants.msgAccountConnected, orderStatus: OrderStatus.Initiated.rawValue) { response, error in
                     if let response = response  {
                         //On authentication add user account details to DB
                         self.viewModel.userAccount.isFirstConnectedAccount = response.firstaccount
@@ -366,7 +366,14 @@ class AmazonNavigationHelper: NavigationHelper {
             var logEventAttributes:[String:String] = [:]
             if response != nil {
                 self.publishProgrssFor(step: .complete)
-               
+                let panelistId = LibContext.shared.authProvider.getPanelistID()
+
+                do {
+                    try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.Connected.rawValue, panelistId: panelistId)
+                } catch let error {
+                    debugPrint("Error while updating account state: ", error)
+                }
+                
                 //Log event for successful uploading of csv
                 logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
@@ -374,6 +381,12 @@ class AmazonNavigationHelper: NavigationHelper {
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIUploadReport, eventAttributes: logEventAttributes)
             } else {
                 self.viewModel.webviewError.send(true)
+                
+                _ = AmazonService.updateStatus(amazonId: self.viewModel.userAccount.userID,
+                                               status: AccountState.NeverConnected.rawValue, message: AppConstants.msgCSVUploadFailed, orderStatus: OrderStatus.Failed.rawValue) { response, error in
+                    //Todo
+                }
+                
                 //Log event for failure in csv upload
                 logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,

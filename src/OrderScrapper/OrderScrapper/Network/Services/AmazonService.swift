@@ -7,7 +7,7 @@ import Foundation
 import Alamofire
 
 private enum JSONKeys: String, CodingKey {
-    case panelistId, panelist_id, amazonId, file, fromDate, toDate, status, message
+    case panelistId, panelist_id, amazonId, file, fromDate, toDate, status, message, orderStatus
 }
 
 class AmazonService {
@@ -108,13 +108,13 @@ class AmazonService {
         return client
     }
     
-    static func registerConnection(amazonId: String, status: String, message: String,
+    static func registerConnection(amazonId: String, status: String, message: String, orderStatus: String,
                                  completionHandler: @escaping (AccountDetails?, String?) -> Void) -> APIClient {
         let client = NetworkClient<APIResponse<AccountDetails>>(relativeURL: CreateConnection, requestMethod: .post)
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         
         client.body = [JSONKeys.panelistId.rawValue: panelistId, JSONKeys.amazonId.rawValue: amazonId,
-                       JSONKeys.status.rawValue: status, JSONKeys.message.rawValue: message]
+                       JSONKeys.status.rawValue: status, JSONKeys.message.rawValue: message, JSONKeys.orderStatus.rawValue: orderStatus]
         
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<AccountDetails> {
@@ -131,12 +131,12 @@ class AmazonService {
         return client
     }
     
-    static func updateStatus(amazonId: String, status: String, message: String,
+    static func updateStatus(amazonId: String, status: String, message: String, orderStatus: String,
                                  completionHandler: @escaping (AccountDetails?, Error?) -> Void) -> APIClient {
         let relativeUrl = UpdateStatus + "/" + amazonId
         let client = NetworkClient<APIResponse<AccountDetails>>(relativeURL: relativeUrl, requestMethod: .put)
         
-        client.body = [JSONKeys.status.rawValue: status, JSONKeys.message.rawValue: message]
+        client.body = [JSONKeys.status.rawValue: status, JSONKeys.message.rawValue: message, JSONKeys.orderStatus.rawValue: orderStatus]
         
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<AccountDetails> {

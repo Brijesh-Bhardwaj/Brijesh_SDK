@@ -116,14 +116,27 @@ internal class AmazonAuthenticator: Authenticator {
     private func updateAccountWithExceptionState(message: String) {
         let userId = self.viewModel.userAccount.userID
         let panelistId = LibContext.shared.authProvider.getPanelistID()
-        _ = AmazonService.updateStatus(amazonId: userId, status: AccountState.ConnectedButException.rawValue, message: message) { response, error in
-            //Todo
-        }
+        let accountState = self.viewModel.userAccount.accountState
+        var status: String
         
-        do {
-            try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: panelistId)
-        } catch let error {
-            debugPrint("Error while updating account state: ", error)
+        switch accountState {
+        case .NeverConnected:
+            status = AccountState.NeverConnected.rawValue
+        case .ConnectedButException, .ConnectedAndDisconnected, .Connected:
+            status = AccountState.ConnectedButException.rawValue
+            
+            do {
+                try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: panelistId)
+            } catch let error {
+                debugPrint("Error while updating account state: ", error)
+            }
+        }
+        if accountState == AccountState.Connected {
+            status = AccountState.Connected.rawValue
+        }
+        _ = AmazonService.updateStatus(amazonId: userId, status: status
+                                       , message: message, orderStatus: OrderStatus.Initiated.rawValue) { response, error in
+            //Todo
         }
     }
     
@@ -133,11 +146,13 @@ internal class AmazonAuthenticator: Authenticator {
             let userId = self.viewModel.userAccount.userID
             _ = AmazonService.registerConnection(amazonId: userId,
                                                  status: AccountState.NeverConnected.rawValue,
-                                                 message: errorMessage) { response, error in
+                                                 message: errorMessage, orderStatus: OrderStatus.None.rawValue) { response, error in
+               //TODO
             }
         } else {
             self.updateAccountWithExceptionState(message: AppConstants.msgAuthError)
         }
         self.viewModel.authError.send((true, ""))
+        WebCacheCleaner.clear()
     }
 }
