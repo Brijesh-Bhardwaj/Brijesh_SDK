@@ -81,14 +81,12 @@ class AmazonNavigationHelper: NavigationHelper {
                 let userId = self.viewModel.userAccount.userID
                 _ = AmazonService.registerConnection(amazonId: userId, status: AccountState.NeverConnected.rawValue, message: "Account connected", orderStatus: OrderStatus.Initiated.rawValue) { response, error in
                     if let response = response  {
-                        print("###GenerateReport Res ", response)
                         //On authentication add user account details to DB
                         self.viewModel.userAccount.isFirstConnectedAccount = response.firstaccount
                         self.addUserAccountInDB()
                         self.getDateRange()
                         self.publishProgrssFor(step: .generateReport)
                     } else {
-                        print("###GenerateReport Err ", error as Any)
                         self.viewModel.authError.send((isError: true, errorMsg: error!))
                     }
                 }

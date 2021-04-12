@@ -127,11 +127,6 @@ public class OrdersExtractor {
     private static func updateStatus(amazonId: String, status: String, message: String, orderStatus: String) {
         _ = AmazonService.updateStatus(amazonId: amazonId, status: status, message: message, orderStatus: orderStatus) { response, error in
             //Todo
-            if let response = response {
-                print("### getAccounts Res ", response)
-            } else {
-                print("### getAccounts Res ", error as Any)
-            }
         }
     }
 }
