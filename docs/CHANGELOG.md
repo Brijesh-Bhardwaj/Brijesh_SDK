@@ -12,6 +12,12 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 
 ## [Unreleased]
 
+## [0.2.1] - 2021-04-13
+
+### Added
+- OrderStatus enum added
+- Order status param added in the register_connection and update_status API which pass the status of the order fetching process
+
 ## [0.2.0] - 2021-04-10
 
 ### Added
