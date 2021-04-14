@@ -81,6 +81,7 @@
 		E19D4CB72608FD29002C16A7 /* WebCacheCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D4CB62608FD29002C16A7 /* WebCacheCleaner.swift */; };
 		E19D4CBA2609A4A9002C16A7 /* OrderExtractionListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D4CB92609A4A9002C16A7 /* OrderExtractionListener.swift */; };
 		E19D4E08260DF055002C16A7 /* OSLibUI.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E19D4E07260DF055002C16A7 /* OSLibUI.storyboard */; };
+		E1AAFF4F26274808000F5CD2 /* GetAccountsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AAFF4E26274808000F5CD2 /* GetAccountsResponse.swift */; };
 		E1EDF10B2615A20400752507 /* CSV.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF1082615A20400752507 /* CSV.xcframework */; };
 		E1EDF10D2615A20500752507 /* Alamofire.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF1092615A20400752507 /* Alamofire.xcframework */; };
 		E1EDF10F2615A20600752507 /* RNCryptor.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF10A2615A20400752507 /* RNCryptor.xcframework */; };
@@ -199,6 +200,7 @@
 		E19D4CB62608FD29002C16A7 /* WebCacheCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebCacheCleaner.swift; sourceTree = "<group>"; };
 		E19D4CB92609A4A9002C16A7 /* OrderExtractionListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderExtractionListener.swift; sourceTree = "<group>"; };
 		E19D4E07260DF055002C16A7 /* OSLibUI.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = OSLibUI.storyboard; sourceTree = "<group>"; };
+		E1AAFF4E26274808000F5CD2 /* GetAccountsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetAccountsResponse.swift; sourceTree = "<group>"; };
 		E1EDF1082615A20400752507 /* CSV.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = CSV.xcframework; path = Carthage/Build/CSV.xcframework; sourceTree = "<group>"; };
 		E1EDF1092615A20400752507 /* Alamofire.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Alamofire.xcframework; path = Carthage/Build/Alamofire.xcframework; sourceTree = "<group>"; };
 		E1EDF10A2615A20400752507 /* RNCryptor.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = RNCryptor.xcframework; path = Carthage/Build/RNCryptor.xcframework; sourceTree = "<group>"; };
@@ -481,6 +483,7 @@
 				E148DC6E26045FE1001430BE /* ReportUpload.swift */,
 				E148DC7526048299001430BE /* PIIAttribute.swift */,
 				1CE22FA5261EDC2A002B9902 /* AccountDetails.swift */,
+				E1AAFF4E26274808000F5CD2 /* GetAccountsResponse.swift */,
 			);
 			path = Response;
 			sourceTree = "<group>";
@@ -691,6 +694,7 @@
 				E148DB6B25FF2BFD001430BE /* ViewPresenter.swift in Sources */,
 				E148CA702610AF2000155B96 /* UIViewExtensions.swift in Sources */,
 				1CB9A7A8262427B60085E494 /* OrderStatus.swift in Sources */,
+				E1AAFF4F26274808000F5CD2 /* GetAccountsResponse.swift in Sources */,
 				E148DC402603306E001430BE /* NetworkClient.swift in Sources */,
 				E148DC6F26045FE1001430BE /* ReportUpload.swift in Sources */,
 				1C8C9928261D8BED0023A16D /* AnalyticsProvider.swift in Sources */,

@@ -63,7 +63,14 @@ public class OrdersExtractor {
                 DispatchQueue.global().async {
                     let accountsInDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
                     if let response = response  {
-                        let accountDetails = response
+                        guard let accountDetails = response.accounts else {
+                            let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
+                            DispatchQueue.main.async {
+                                completionHandler(accountsFromDB)
+                            }
+                            return
+                        }
+                        
                         if accountsInDB.isEmpty && accountDetails.isEmpty {
                             DispatchQueue.main.async {
                                 completionHandler(accountsInDB)

@@ -88,13 +88,13 @@ class AmazonService {
         return client
     }
     
-    static func getAccounts(completionHandler: @escaping ([AccountDetails]?, Error?) -> Void) -> APIClient {
+    static func getAccounts(completionHandler: @escaping (GetAccountsResponse?, Error?) -> Void) -> APIClient {
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         let relativeUrl = GetAccounts + "/" + panelistId
-        let client = NetworkClient<APIResponse<[AccountDetails]>>(relativeURL: relativeUrl, requestMethod: .get)
+        let client = NetworkClient<APIResponse<GetAccountsResponse>>(relativeURL: relativeUrl, requestMethod: .get)
        
         client.executeAPI() { (response, error) in
-            if let response = response as? APIResponse<[AccountDetails]> {
+            if let response = response as? APIResponse<GetAccountsResponse> {
                 if response.isError {
                     completionHandler(nil, APIError(error: response.error ?? "Error"))
                 } else {
