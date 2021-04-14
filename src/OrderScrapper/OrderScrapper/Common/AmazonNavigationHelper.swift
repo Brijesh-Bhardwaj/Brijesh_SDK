@@ -83,7 +83,6 @@ class AmazonNavigationHelper: NavigationHelper {
                     if let response = response  {
                         //On authentication add user account details to DB
                         self.viewModel.userAccount.isFirstConnectedAccount = response.firstaccount
-                        self.addUserAccountInDB()
                         self.getDateRange()
                         self.publishProgrssFor(step: .generateReport)
                     } else {
@@ -92,6 +91,7 @@ class AmazonNavigationHelper: NavigationHelper {
                 }
             } else {
                 //On authentication add user account details to DB
+                self.updateAccountStatusToConnected(orderStatus: OrderStatus.Initiated.rawValue)
                 self.addUserAccountInDB()
                 self.getDateRange()
                 self.publishProgrssFor(step: .generateReport)
@@ -133,6 +133,7 @@ class AmazonNavigationHelper: NavigationHelper {
                                       EventConstant.FileName: fileName]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.OrderCSVDownload, eventAttributes: logEventAttributes)
             } else {
+                self.updateOrderStatusFor(error: AppConstants.msgDownloadCSVFailed, accountStatus: self.viewModel.userAccount.accountState.rawValue)
                 self.viewModel.webviewError.send(true)
                 
                 logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
@@ -243,6 +244,8 @@ class AmazonNavigationHelper: NavigationHelper {
                     self.viewModel.jsPublisher.send((.dateRange, self.getOldestPossibleYear()))
                     self.setJSInjectionResultSubscriber()
                 } else {
+                    self.updateAccountStatusToConnected(orderStatus: OrderStatus.None.rawValue)
+                    self.addUserAccountInDB()
                     self.viewModel.disableScrapping.send(true)
                 }
                 //Logging event for successful date range API call
@@ -251,6 +254,7 @@ class AmazonNavigationHelper: NavigationHelper {
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIDateRange, eventAttributes: logEventAttributes)
             } else {
+                self.updateOrderStatusFor(error: AppConstants.msgDateRangeAPIFailed, accountStatus: self.viewModel.userAccount.accountState.rawValue)
                 self.viewModel.webviewError.send(true)
                 //Log event for failure of date range API call
                 logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
@@ -312,6 +316,7 @@ class AmazonNavigationHelper: NavigationHelper {
         
         _ = AmazonService.getPIIList() { response, error in
             guard let attributes = response else {
+                self.updateOrderStatusFor(error: AppConstants.msgPIIAPIFailed, accountStatus: self.viewModel.userAccount.accountState.rawValue)
                 self.viewModel.webviewError.send(true)
                 // Log event for PIIList API failure
                 logAPIEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
@@ -331,6 +336,7 @@ class AmazonNavigationHelper: NavigationHelper {
             var logEventAttributes:[String:String] = [:]
             scrapper.scrapPII(attributes: attributes) { destinationURL, error in
                 guard let destinationURL = destinationURL else {
+                    self.updateOrderStatusFor(error: AppConstants.msgCSVParsingFailed, accountStatus: self.viewModel.userAccount.accountState.rawValue)
                     self.viewModel.webviewError.send(true)
                     
                     //Log event for error in parsing
@@ -366,14 +372,7 @@ class AmazonNavigationHelper: NavigationHelper {
             var logEventAttributes:[String:String] = [:]
             if response != nil {
                 self.publishProgrssFor(step: .complete)
-                let panelistId = LibContext.shared.authProvider.getPanelistID()
-
-                do {
-                    try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.Connected.rawValue, panelistId: panelistId)
-                } catch let error {
-                    debugPrint("Error while updating account state: ", error)
-                }
-                
+                self.addUserAccountInDB()
                 //Log event for successful uploading of csv
                 logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
@@ -406,5 +405,23 @@ class AmazonNavigationHelper: NavigationHelper {
         let account = self.viewModel.userAccount as! UserAccountMO
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         CoreDataManager.shared.addAccount(userId: account.userID, password: account.password, accountStatus: AccountState.Connected.rawValue, orderSource: account.orderSource, panelistId: panelistId)
+    }
+    
+    private func updateOrderStatusFor(error: String, accountStatus: String) {
+        let amazonId = self.viewModel.userAccount.userID
+        _ = AmazonService.updateStatus(amazonId: amazonId,
+                                       status: accountStatus,
+                                       message: error,
+                                       orderStatus: OrderStatus.Failed.rawValue) { response, error in
+        }
+    }
+    
+    private func updateAccountStatusToConnected(orderStatus: String) {
+        let amazonId = self.viewModel.userAccount.userID
+        _ = AmazonService.updateStatus(amazonId: amazonId,
+                                       status: AccountState.Connected.rawValue,
+                                       message: AppConstants.msgConnected,
+                                       orderStatus: orderStatus) { response, error in
+        }
     }
 }

@@ -110,6 +110,7 @@ class RegisterAccountViewController: UIViewController {
         self.invalidPasswordView.isHidden = true
         self.authErrorView.isHidden = true
         
+        WebCacheCleaner.clear()
         self.presentConnectVC(userID: userId, password: password)
     }
     

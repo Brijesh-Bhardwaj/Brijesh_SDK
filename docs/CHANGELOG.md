@@ -12,6 +12,11 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 
 ## [Unreleased]
 
+## [0.2.2] - 2021-04-14
+
+### Fixed
+- Fixed issue with account and order status logging to the backend
+
 ## [0.2.1] - 2021-04-13
 
 ### Added

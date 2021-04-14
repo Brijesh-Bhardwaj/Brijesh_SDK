@@ -33,4 +33,8 @@ struct AppConstants {
     static let msgDBEmpty = "App install again or device change"
     static let msgCSVUploadFailed = "CSV upload failed"
     static let msgAccountConnected = "Account connected"
+    static let msgPIIAPIFailed = "PII details api failed"
+    static let msgDateRangeAPIFailed = "Date-range api failed"
+    static let msgDownloadCSVFailed = "Exception while downloading csv file"
+    static let msgCSVParsingFailed = "Exception while updating csv file"
 }
