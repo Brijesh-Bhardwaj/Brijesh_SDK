@@ -21,14 +21,12 @@ class RegisterAccountViewController: UIViewController {
     var account: UserAccountMO!
     
     private var authErrorSubscriber: AnyCancellable? = nil
-    private var completionSubscriber: AnyCancellable? = nil
     
     private var showPassword = false
     
     // MARK: - Lifecycle Methods
     deinit {
         authErrorSubscriber?.cancel()
-        completionSubscriber?.cancel()
     }
     
     override func viewDidLoad() {
@@ -121,10 +119,6 @@ class RegisterAccountViewController: UIViewController {
                 message = Utils.getString(key: Strings.ErrorEnterValidUsernamePassword)
             }
             self.authErrorLabel.text = message
-        }
-        
-        completionSubscriber = LibContext.shared.scrapeCompletionPublisher.receive(on: RunLoop.main).sink { isComplete, error in
-            self.dismiss(animated: true, completion: nil)
         }
     }
     

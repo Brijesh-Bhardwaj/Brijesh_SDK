@@ -138,7 +138,7 @@ extension AccountsViewController: ViewPresenter {
     }
     
     func dismissView() {
-        self.navigationController?.dismiss(animated: true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
 }
 

@@ -44,14 +44,13 @@ class AmazonOrderScrapper {
     
     func connectAccount(account: Account, orderExtractionListener: OrderExtractionListener) {
         self.completionSubscriber = LibContext.shared.scrapeCompletionPublisher.receive(on: RunLoop.main).sink() { result, error in
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                let (completed, successType) = result
-                if completed {
-                    orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
-                } else {
-                    orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: error ?? ""), account: account)
-                }
+            let (completed, successType) = result
+            if completed {
+                orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
+            } else {
+                orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: error ?? ""), account: account)
             }
+            self.viewPresenter.dismissView()
         }
         
         let storyboard = UIStoryboard(name: "OSLibUI", bundle: AppConstants.bundle)
@@ -83,6 +82,7 @@ class AmazonOrderScrapper {
             } else {
                 orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: error ?? ""), account: account)
             }
+            self.viewPresenter.dismissView()
         }
         
         let storyboard = UIStoryboard(name: "OSLibUI", bundle: AppConstants.bundle)
