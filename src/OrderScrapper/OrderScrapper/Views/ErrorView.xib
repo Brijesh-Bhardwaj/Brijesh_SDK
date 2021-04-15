@@ -26,7 +26,7 @@
             <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="error-large" translatesAutoresizingMaskIntoConstraints="NO" id="96h-8J-eI2">
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="status_alert" translatesAutoresizingMaskIntoConstraints="NO" id="96h-8J-eI2">
                     <rect key="frame" x="164" y="309" width="100" height="100"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="100" id="VIb-j5-jTp"/>
@@ -75,7 +75,7 @@
         </view>
     </objects>
     <resources>
-        <image name="error-large" width="87.333335876464844" height="87.333335876464844"/>
         <image name="image_btn_bg" width="227" height="40"/>
+        <image name="status_alert" width="170.66667175292969" height="170.66667175292969"/>
     </resources>
 </document>

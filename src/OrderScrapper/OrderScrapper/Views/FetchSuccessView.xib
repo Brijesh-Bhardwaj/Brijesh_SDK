@@ -26,7 +26,7 @@
             <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="account_status_ok" translatesAutoresizingMaskIntoConstraints="NO" id="Led-aZ-txw">
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="status_ok" translatesAutoresizingMaskIntoConstraints="NO" id="Led-aZ-txw">
                     <rect key="frame" x="164" y="320" width="100" height="100"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="100" id="KP5-8k-eLv"/>
@@ -73,7 +73,7 @@
         </view>
     </objects>
     <resources>
-        <image name="account_status_ok" width="20" height="20"/>
         <image name="image_btn_bg" width="227" height="40"/>
+        <image name="status_ok" width="60" height="60"/>
     </resources>
 </document>

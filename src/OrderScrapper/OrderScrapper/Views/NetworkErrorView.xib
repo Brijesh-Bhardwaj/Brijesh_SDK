@@ -54,7 +54,7 @@
                         <action selector="didClickRetryButton:" destination="-1" eventType="touchUpInside" id="0sg-Ke-bXb"/>
                     </connections>
                 </button>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="error-large" translatesAutoresizingMaskIntoConstraints="NO" id="QVS-QD-pH3">
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="status_alert" translatesAutoresizingMaskIntoConstraints="NO" id="QVS-QD-pH3">
                     <rect key="frame" x="116" y="82.5" width="88" height="88"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="88" id="97z-um-5mI"/>
@@ -83,7 +83,7 @@
         </view>
     </objects>
     <resources>
-        <image name="error-large" width="88" height="88"/>
         <image name="image_btn_bg" width="227" height="40"/>
+        <image name="status_alert" width="256" height="256"/>
     </resources>
 </document>
