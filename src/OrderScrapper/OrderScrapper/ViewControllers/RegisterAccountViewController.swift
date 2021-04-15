@@ -47,6 +47,10 @@ class RegisterAccountViewController: UIViewController {
         }
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        WebCacheCleaner.clear(completionHandler: nil)
+    }
+    
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         self.contentView.clipsToBounds = true
@@ -82,8 +86,9 @@ class RegisterAccountViewController: UIViewController {
         self.invalidPasswordView.isHidden = true
         self.authErrorView.isHidden = true
         
-        WebCacheCleaner.clear()
-        self.presentConnectVC(userID: userId, password: password)
+        WebCacheCleaner.clear() { cleared in
+            self.presentConnectVC(userID: userId, password: password)
+        }
     }
     
     @IBAction func onBackEvent(_ sender: Any) {

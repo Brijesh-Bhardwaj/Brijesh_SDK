@@ -67,7 +67,7 @@ class AmazonOrderScrapper {
             if response != nil {
                 let panelistId = LibContext.shared.authProvider.getPanelistID()
                 CoreDataManager.shared.deleteAccounts(userId: account.userID, panelistId: panelistId)
-                WebCacheCleaner.clear()
+                WebCacheCleaner.clear(completionHandler: nil)
                 accountDisconnectedListener.onAccountDisconnected(account: account)
             } else {
                 accountDisconnectedListener.onAccountDisconnectionFailed(account: account)

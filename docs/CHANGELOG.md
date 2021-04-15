@@ -21,6 +21,9 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 - Added show password feature
 - Added additional flag `hasNeverConnected` in response to getAccounts() method for certain UI flows 
 
+### Fixed
+- Fixed issue with webcache not clearing 
+
 ## [0.2.2] - 2021-04-14
 
 ### Fixed

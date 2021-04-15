@@ -153,6 +153,6 @@ internal class AmazonAuthenticator: Authenticator {
             self.updateAccountWithExceptionState(message: AppConstants.msgAuthError)
         }
         self.viewModel.authError.send((true, ""))
-        WebCacheCleaner.clear()
+        WebCacheCleaner.clear(completionHandler: nil)
     }
 }
