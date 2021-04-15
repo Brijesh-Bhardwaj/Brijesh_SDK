@@ -55,25 +55,26 @@ public class OrdersExtractor {
     /// - Parameter completionHandler:closure which gives list of connected accounts for order source
     /// - Throws ASLException: if this method is called before the initialization method
     public static func getAccounts(orderSource: OrderSource?,
-                                   completionHandler: @escaping ([Account]) -> Void) throws {
+                                   completionHandler: @escaping ([Account], Bool) -> Void) throws {
         if isInitialized {
             let panelistId = LibContext.shared.authProvider.getPanelistID()
-
+            var hasNeverConnected: Bool = false
             _ = AmazonService.getAccounts() { response, error in
                 DispatchQueue.global().async {
                     let accountsInDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
                     if let response = response  {
+                        hasNeverConnected = response.hasNeverConnected
                         guard let accountDetails = response.accounts else {
                             let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
                             DispatchQueue.main.async {
-                                completionHandler(accountsFromDB)
+                                completionHandler(accountsFromDB, hasNeverConnected)
                             }
                             return
                         }
                         
                         if accountsInDB.isEmpty && accountDetails.isEmpty {
                             DispatchQueue.main.async {
-                                completionHandler(accountsInDB)
+                                completionHandler(accountsInDB, hasNeverConnected)
                             }
                         } else if !accountDetails.isEmpty && accountsInDB.isEmpty {
                             let account = accountDetails[0]
@@ -85,18 +86,18 @@ public class OrdersExtractor {
                             self.updateStatus(amazonId: account.amazonId, status: AccountState.ConnectedButException.rawValue, message: AppConstants.msgDBEmpty, orderStatus: OrderStatus.None.rawValue)
                             let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
                             DispatchQueue.main.async {
-                                completionHandler(accountsFromDB)
+                                completionHandler(accountsFromDB, hasNeverConnected)
                             }
                         } else {
                             DispatchQueue.main.async {
-                                completionHandler(accountsInDB)
+                                completionHandler(accountsInDB, hasNeverConnected)
                             }
                         }
                     } else {
                         DispatchQueue.global().async {
                             let accounts = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
                             DispatchQueue.main.async {
-                                completionHandler(accounts)
+                                completionHandler(accounts, hasNeverConnected)
                             }
                         }
                     }

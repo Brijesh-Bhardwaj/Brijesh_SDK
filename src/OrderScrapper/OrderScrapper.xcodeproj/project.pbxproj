@@ -52,7 +52,6 @@
 		E148DB6425FF2BFD001430BE /* OrderSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB4F25FF2BFD001430BE /* OrderSource.swift */; };
 		E148DB6725FF2BFD001430BE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E148DB5225FF2BFD001430BE /* Images.xcassets */; };
 		E148DB6825FF2BFD001430BE /* AuthProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5425FF2BFD001430BE /* AuthProvider.swift */; };
-		E148DB6925FF2BFD001430BE /* OrderScrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5525FF2BFD001430BE /* OrderScrapper.swift */; };
 		E148DB6B25FF2BFD001430BE /* ViewPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5725FF2BFD001430BE /* ViewPresenter.swift */; };
 		E148DB6C25FF2BFD001430BE /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5825FF2BFD001430BE /* Account.swift */; };
 		E148DB6D25FF2BFD001430BE /* AccountDisconnectedListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = E148DB5925FF2BFD001430BE /* AccountDisconnectedListener.swift */; };
@@ -171,7 +170,6 @@
 		E148DB4F25FF2BFD001430BE /* OrderSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderSource.swift; sourceTree = "<group>"; };
 		E148DB5225FF2BFD001430BE /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		E148DB5425FF2BFD001430BE /* AuthProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthProvider.swift; sourceTree = "<group>"; };
-		E148DB5525FF2BFD001430BE /* OrderScrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderScrapper.swift; sourceTree = "<group>"; };
 		E148DB5725FF2BFD001430BE /* ViewPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewPresenter.swift; sourceTree = "<group>"; };
 		E148DB5825FF2BFD001430BE /* Account.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 		E148DB5925FF2BFD001430BE /* AccountDisconnectedListener.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountDisconnectedListener.swift; sourceTree = "<group>"; };
@@ -407,7 +405,6 @@
 			children = (
 				E148DB8C25FF31B4001430BE /* NavigationHelper.swift */,
 				E148DB5425FF2BFD001430BE /* AuthProvider.swift */,
-				E148DB5525FF2BFD001430BE /* OrderScrapper.swift */,
 				E148DB5725FF2BFD001430BE /* ViewPresenter.swift */,
 				E148DB5825FF2BFD001430BE /* Account.swift */,
 				E148DB5925FF2BFD001430BE /* AccountDisconnectedListener.swift */,
@@ -662,7 +659,6 @@
 				1CD2B51326031A710016F752 /* CoreDataModel.xcdatamodeld in Sources */,
 				1C006FB12600B7DA00F9263E /* Utils.swift in Sources */,
 				E148DC9A2605CB1E001430BE /* FileHelper.swift in Sources */,
-				E148DB6925FF2BFD001430BE /* OrderScrapper.swift in Sources */,
 				1CE22FA6261EDC2A002B9902 /* AccountDetails.swift in Sources */,
 				1CA1EDF1260E16110000C859 /* EventType.swift in Sources */,
 				E148DB6225FF2BFD001430BE /* IconNames.swift in Sources */,

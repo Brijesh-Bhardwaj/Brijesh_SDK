@@ -48,7 +48,7 @@ class AccountsViewController: UIViewController {
     
     private func loadAccounts() {
         do {
-            try OrdersExtractor.getAccounts(orderSource: nil) { accounts in
+            try OrdersExtractor.getAccounts(orderSource: nil) { accounts, hasNeverConnected in
                 let connectedAccounts = accounts.filter() { $0.accountState != .ConnectedAndDisconnected }
                 if connectedAccounts.isEmpty {
                     self.showViewForNoAccount()
