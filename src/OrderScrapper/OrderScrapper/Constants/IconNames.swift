@@ -11,4 +11,6 @@ struct IconNames {
     static let RightArrow = "arrow-right"
     static let ErrorLarge = "error-large"
     static let Tick = "tick"
+    static let CheckboxChecked = "checkbox_check_new"
+    static let CheckboxUnchecked = "checkbox_uncheck_new"
 }

@@ -12,6 +12,15 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 
 ## [Unreleased]
 
+## [0.2.3] - 2021-04-15
+
+### Changed
+- UI changes as per the provided specs including button background changes, icon changes and text changes
+
+### Added
+- Added show password feature
+- Added additional flag `hasNeverConnected` in response to getAccounts() method for certain UI flows 
+
 ## [0.2.2] - 2021-04-14
 
 ### Fixed

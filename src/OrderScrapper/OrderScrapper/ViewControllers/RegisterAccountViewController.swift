@@ -16,11 +16,14 @@ class RegisterAccountViewController: UIViewController {
     @IBOutlet weak var invalidPasswordView: UILabel!
     @IBOutlet weak var submitButton: UIButton!
     @IBOutlet weak var authErrorLabel: UILabel!
+    @IBOutlet weak var showPasswordButton: UIButton!
     
     var account: UserAccountMO!
     
     private var authErrorSubscriber: AnyCancellable? = nil
     private var completionSubscriber: AnyCancellable? = nil
+    
+    private var showPassword = false
     
     // MARK: - Lifecycle Methods
     deinit {
@@ -85,6 +88,17 @@ class RegisterAccountViewController: UIViewController {
     
     @IBAction func onBackEvent(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func toggleShowPassword(_ sender: Any) {
+        showPassword = !showPassword
+        if showPassword {
+            self.showPasswordButton.setBackgroundImage(Utils.getImage(named: IconNames.CheckboxChecked), for: .normal)
+            self.passwordTextField.isSecureTextEntry = false
+        } else {
+            self.showPasswordButton.setBackgroundImage(Utils.getImage(named: IconNames.CheckboxUnchecked), for: .normal)
+            self.passwordTextField.isSecureTextEntry = true
+        }
     }
     
     // MARK: - Private Methods

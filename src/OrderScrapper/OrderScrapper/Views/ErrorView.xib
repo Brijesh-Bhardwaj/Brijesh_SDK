@@ -8,6 +8,9 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
+        <array key="SF-Pro-Rounded-Bold.otf">
+            <string>SFProRounded-Bold</string>
+        </array>
         <array key="SF-Pro-Rounded-Regular.otf">
             <string>SFProRounded-Regular</string>
         </array>
@@ -38,21 +41,16 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jep-aj-9D9" customClass="GradientButton" customModule="OrderScrapper">
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jep-aj-9D9">
                     <rect key="frame" x="139" y="542" width="150" height="48"/>
-                    <color key="backgroundColor" red="0.94117647058823528" green="0.63921568627450975" blue="0.039215686274509803" alpha="1" colorSpace="calibratedRGB"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="150" id="e1Q-6W-mG8"/>
                         <constraint firstAttribute="height" constant="48" id="g3a-TP-G2q"/>
                     </constraints>
-                    <state key="normal" title="Try Again">
+                    <fontDescription key="fontDescription" name="SFProRounded-Bold" family="SF Pro Rounded" pointSize="15"/>
+                    <state key="normal" title="Try Again" backgroundImage="image_btn_bg">
                         <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </state>
-                    <userDefinedRuntimeAttributes>
-                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                            <real key="value" value="24"/>
-                        </userDefinedRuntimeAttribute>
-                    </userDefinedRuntimeAttributes>
                     <connections>
                         <action selector="didClickRetryButton:" destination="-1" eventType="touchUpInside" id="9CZ-64-LVc"/>
                     </connections>
@@ -76,12 +74,8 @@
             <point key="canvasLocation" x="141" y="76"/>
         </view>
     </objects>
-    <designables>
-        <designable name="Jep-aj-9D9">
-            <size key="intrinsicContentSize" width="64" height="30"/>
-        </designable>
-    </designables>
     <resources>
         <image name="error-large" width="87.333335876464844" height="87.333335876464844"/>
+        <image name="image_btn_bg" width="227" height="40"/>
     </resources>
 </document>

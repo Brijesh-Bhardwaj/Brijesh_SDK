@@ -17,5 +17,7 @@ class Utils {
         return Color(key, bundle: AppConstants.bundle)
     }
     
-    
+    static func getImage(named imageName: String) -> UIImage? {
+        return UIImage(named: imageName, in: AppConstants.bundle, with: nil)
+    }
 }

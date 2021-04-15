@@ -36,7 +36,7 @@
                                         <rect key="frame" x="0.0" y="81.333333333333314" width="375" height="730.66666666666674"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="ULU-Ht-frQ">
-                                                <rect key="frame" x="15" y="30" width="345" height="192"/>
+                                                <rect key="frame" x="15" y="30" width="345" height="222"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please sign in with your Amazon credentials" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vDl-Bh-621">
                                                         <rect key="frame" x="0.0" y="0.0" width="345" height="46.666666666666664"/>
@@ -107,15 +107,42 @@
                                                         </userDefinedRuntimeAttributes>
                                                     </textField>
                                                     <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please enter a valid password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vHG-92-rJG">
-                                                        <rect key="frame" x="0.0" y="192" width="345" height="0.0"/>
+                                                        <rect key="frame" x="0.0" y="197" width="345" height="0.0"/>
                                                         <fontDescription key="fontDescription" name="SFProRounded-Regular" family="SF Pro Rounded" pointSize="15"/>
                                                         <color key="textColor" red="0.92156862750000001" green="0.3411764706" blue="0.3411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="JPZ-wI-Yvc">
+                                                        <rect key="frame" x="0.0" y="202" width="345" height="20"/>
+                                                        <subviews>
+                                                            <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="jou-dq-vxd">
+                                                                <rect key="frame" x="0.0" y="0.0" width="138" height="20"/>
+                                                                <subviews>
+                                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EZP-gw-xQe">
+                                                                        <rect key="frame" x="0.0" y="0.0" width="20" height="20"/>
+                                                                        <constraints>
+                                                                            <constraint firstAttribute="width" constant="20" id="Zk0-Gf-ZjV"/>
+                                                                            <constraint firstAttribute="height" constant="20" id="sao-hQ-5Nr"/>
+                                                                        </constraints>
+                                                                        <state key="normal" backgroundImage="checkbox_uncheck_new"/>
+                                                                        <connections>
+                                                                            <action selector="toggleShowPassword:" destination="ee2-wd-kaO" eventType="touchUpInside" id="CX6-vJ-Jea"/>
+                                                                        </connections>
+                                                                    </button>
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Show password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HYH-OJ-IiP">
+                                                                        <rect key="frame" x="30" y="1" width="108" height="17.666666666666668"/>
+                                                                        <fontDescription key="fontDescription" name="SFProRounded-Regular" family="SF Pro Rounded" pointSize="15"/>
+                                                                        <nil key="textColor"/>
+                                                                        <nil key="highlightedColor"/>
+                                                                    </label>
+                                                                </subviews>
+                                                            </stackView>
+                                                        </subviews>
+                                                    </stackView>
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="bottom" translatesAutoresizingMaskIntoConstraints="NO" id="RTY-yD-amg">
-                                                <rect key="frame" x="16" y="237" width="349" height="70"/>
+                                                <rect key="frame" x="16" y="252" width="349" height="70"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="w47-wf-S0V">
                                                         <rect key="frame" x="209" y="0.0" width="140" height="70"/>
@@ -145,7 +172,7 @@
                                         <constraints>
                                             <constraint firstItem="ULU-Ht-frQ" firstAttribute="leading" secondItem="gq0-PW-dZT" secondAttribute="leading" constant="15" id="N8N-vR-0hV"/>
                                             <constraint firstAttribute="trailing" secondItem="RTY-yD-amg" secondAttribute="trailing" constant="10" id="crz-8f-QqQ"/>
-                                            <constraint firstItem="RTY-yD-amg" firstAttribute="top" secondItem="ULU-Ht-frQ" secondAttribute="bottom" constant="15" id="d1g-cp-Pp0"/>
+                                            <constraint firstItem="RTY-yD-amg" firstAttribute="top" secondItem="ULU-Ht-frQ" secondAttribute="bottom" id="d1g-cp-Pp0"/>
                                             <constraint firstAttribute="trailing" secondItem="ULU-Ht-frQ" secondAttribute="trailing" constant="15" id="g3s-yN-uE5"/>
                                             <constraint firstItem="ULU-Ht-frQ" firstAttribute="top" secondItem="gq0-PW-dZT" secondAttribute="top" constant="30" id="uTa-wS-OOV"/>
                                             <constraint firstItem="RTY-yD-amg" firstAttribute="leading" secondItem="gq0-PW-dZT" secondAttribute="leading" constant="16" id="xZ1-Mg-X8l"/>
@@ -222,6 +249,7 @@
                         <outlet property="invalidPasswordView" destination="vHG-92-rJG" id="gUs-YP-dLG"/>
                         <outlet property="invalidUserIdView" destination="Ifd-A0-7Le" id="4mO-1D-bjF"/>
                         <outlet property="passwordTextField" destination="QcL-BU-fPG" id="ycs-BY-4Bf"/>
+                        <outlet property="showPasswordButton" destination="EZP-gw-xQe" id="bch-Np-M8C"/>
                         <outlet property="submitButton" destination="w47-wf-S0V" id="EjZ-Sw-Rar"/>
                         <outlet property="userIDTextField" destination="lXm-EU-1TR" id="1Pk-cx-OHc"/>
                     </connections>
@@ -356,6 +384,7 @@
     <resources>
         <image name="Sungradient_back" width="414" height="736"/>
         <image name="back_button_dark" width="14" height="22"/>
+        <image name="checkbox_uncheck_new" width="26" height="26"/>
         <image name="error" width="23.333333969116211" height="23.333333969116211"/>
         <image name="submit_button_dark" width="187" height="92"/>
         <namedColor name="color_background_error_view">
