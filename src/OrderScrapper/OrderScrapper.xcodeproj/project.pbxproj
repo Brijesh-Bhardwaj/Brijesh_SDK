@@ -809,7 +809,7 @@
 		E18B1ED726296C860080035A /* Dev */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BASE_API_ENDPOINT = "https://emailconnect.receiptstarapp.com/orderscrapperdev/";
+				BASE_API_ENDPOINT = "https://dev-order-scraping.blackstrawlab.com/";
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Manual;
@@ -935,7 +935,7 @@
 		E18B1EDA26296C910080035A /* QA */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BASE_API_ENDPOINT = "https://emailconnect.receiptstarapp.com/orderscrapperqa/";
+				BASE_API_ENDPOINT = "https://qa-order-scraping.blackstrawlab.com/";
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Manual;
