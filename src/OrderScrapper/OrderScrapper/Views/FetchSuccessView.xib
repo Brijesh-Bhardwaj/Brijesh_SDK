@@ -27,17 +27,17 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="status_ok" translatesAutoresizingMaskIntoConstraints="NO" id="Led-aZ-txw">
-                    <rect key="frame" x="164" y="320" width="100" height="100"/>
+                    <rect key="frame" x="164" y="322" width="100" height="100"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="100" id="KP5-8k-eLv"/>
                         <constraint firstAttribute="width" constant="100" id="gb2-bD-PXW"/>
                     </constraints>
                 </imageView>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WKm-pC-VSr">
-                    <rect key="frame" x="139" y="531.33333333333337" width="150" height="48"/>
+                    <rect key="frame" x="129" y="529.33333333333337" width="170" height="50"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="48" id="W4k-Mg-dSH"/>
-                        <constraint firstAttribute="width" constant="150" id="mCh-e4-Wa1"/>
+                        <constraint firstAttribute="height" constant="50" id="W4k-Mg-dSH"/>
+                        <constraint firstAttribute="width" constant="170" id="mCh-e4-Wa1"/>
                     </constraints>
                     <fontDescription key="fontDescription" name="SFProRounded-Bold" family="SF Pro Rounded" pointSize="15"/>
                     <state key="normal" title="OK" backgroundImage="image_btn_bg">

@@ -12,8 +12,6 @@ class RegisterAccountViewController: UIViewController {
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var contentView: UIView!
     @IBOutlet weak var authErrorView: UIView!
-    @IBOutlet weak var invalidUserIdView: UILabel!
-    @IBOutlet weak var invalidPasswordView: UILabel!
     @IBOutlet weak var submitButton: UIButton!
     @IBOutlet weak var authErrorLabel: UILabel!
     @IBOutlet weak var showPasswordButton: UIButton!
@@ -59,29 +57,30 @@ class RegisterAccountViewController: UIViewController {
     // MARK: - IBActions
     @IBAction func didSubmit(_ sender: Any) {
         guard let userId = self.userIDTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) else {
-            self.invalidUserIdView.isHidden = false
+            self.authErrorLabel.text = Utils.getString(key: Strings.ValidationPleaseEnterValidEmail)
+            self.authErrorView.isHidden = false
             return
         }
         guard let password = self.passwordTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) else {
-            self.invalidPasswordView.isHidden = false
+            self.authErrorLabel.text = Utils.getString(key: Strings.ValidationPleaseEnterValidPassword)
+            self.authErrorView.isHidden = false
             return
         }
         
-        self.invalidUserIdView.isHidden = true
-        self.invalidPasswordView.isHidden = true
+        self.authErrorView.isHidden = true
 
         if !ValidationUtil.isValidEmail(email: userId) {
-            self.invalidUserIdView.isHidden = false
+            self.authErrorLabel.text = Utils.getString(key: Strings.ValidationPleaseEnterValidEmail)
+            self.authErrorView.isHidden = false
             return
         }
         
         if !ValidationUtil.isValidPassword(password: password) {
-            self.invalidPasswordView.isHidden = false
+            self.authErrorLabel.text = Utils.getString(key: Strings.ValidationPleaseEnterValidPassword)
+            self.authErrorView.isHidden = false
             return
         }
         
-        self.invalidUserIdView.isHidden = true
-        self.invalidPasswordView.isHidden = true
         self.authErrorView.isHidden = true
         
         WebCacheCleaner.clear() { cleared in
@@ -147,7 +146,14 @@ extension RegisterAccountViewController: UITextFieldDelegate {
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         self.authErrorView.isHidden = true
-        self.invalidUserIdView.isHidden = true
-        self.invalidPasswordView.isHidden = true
+        let borderColor = UIColor(hex: "#fec223ff")
+        textField.borderColor = borderColor
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        let borderColor = UIColor(hex: "#ffe9adff")
+        textField.borderColor = borderColor
     }
 }
+
+

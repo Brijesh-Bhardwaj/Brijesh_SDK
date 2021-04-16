@@ -12,7 +12,7 @@
 "label_password" = "Password";
 "btn_submit" = "Submit";
 "no_connection" = "No Connection";
-"no_connection_msg" = "Please check your internet connection and try again";
+"no_connection_msg" = "Service not available or Internet connection is too weak. Please try again later.";
 "btn_try_again" = "Try Again";
 "error_encountered_unexpected_error" = "We encountered an unexpected error, please try again";
 "heading_connecting_amazon_account" = "Connecting Amazon Account";

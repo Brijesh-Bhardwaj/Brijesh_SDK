@@ -36,90 +36,73 @@
                                         <rect key="frame" x="0.0" y="81.333333333333314" width="375" height="730.66666666666674"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="ULU-Ht-frQ">
-                                                <rect key="frame" x="15" y="30" width="345" height="222"/>
+                                                <rect key="frame" x="30" y="30" width="315" height="193.66666666666666"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please sign in with your Amazon credentials" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vDl-Bh-621">
-                                                        <rect key="frame" x="0.0" y="0.0" width="345" height="46.666666666666664"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="315" height="54.666666666666664"/>
                                                         <fontDescription key="fontDescription" name="SFProRounded-Regular" family="SF Pro Rounded" pointSize="20"/>
                                                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <stackView hidden="YES" opaque="NO" contentMode="scaleToFill" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="3th-6K-1bt">
-                                                        <rect key="frame" x="0.0" y="51.666666666666671" width="345" height="30"/>
+                                                        <rect key="frame" x="0.0" y="59.666666666666671" width="315" height="0.0"/>
                                                         <subviews>
-                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="error" translatesAutoresizingMaskIntoConstraints="NO" id="gRA-6b-y9v">
-                                                                <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
-                                                                <constraints>
-                                                                    <constraint firstAttribute="height" constant="30" id="0mH-V7-PIf"/>
-                                                                    <constraint firstAttribute="width" constant="30" id="jS0-WN-3K9"/>
-                                                                </constraints>
-                                                            </imageView>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your email or mobile number and/or password do not match. Please try again" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kgs-oD-wg3">
-                                                                <rect key="frame" x="35" y="0.0" width="310" height="30"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="315" height="0.0"/>
                                                                 <fontDescription key="fontDescription" name="SFProRounded-Regular" family="SF Pro Rounded" pointSize="14"/>
                                                                 <color key="textColor" red="0.92156862750000001" green="0.3411764706" blue="0.3411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                         </subviews>
                                                     </stackView>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Email or mobile number" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ovx-XG-lyy">
-                                                        <rect key="frame" x="0.0" y="56.666666666666664" width="345" height="18.666666666666664"/>
-                                                        <fontDescription key="fontDescription" name="SFProRounded-Regular" family="SF Pro Rounded" pointSize="16"/>
-                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
-                                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="lXm-EU-1TR">
-                                                        <rect key="frame" x="0.0" y="85.333333333333329" width="345" height="34"/>
-                                                        <fontDescription key="fontDescription" name="SFProRounded-Regular" family="SF Pro Rounded" pointSize="17"/>
+                                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email or mobile number" minimumFontSize="14" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="lXm-EU-1TR">
+                                                        <rect key="frame" x="0.0" y="64.666666666666671" width="315" height="40"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="40" id="bCQ-AL-3YF"/>
+                                                        </constraints>
+                                                        <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="emailAddress" returnKeyType="next" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no" textContentType="email"/>
                                                         <userDefinedRuntimeAttributes>
                                                             <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
                                                                 <color key="value" red="0.99607843137254903" green="0.76078431372549016" blue="0.13725490196078433" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                             </userDefinedRuntimeAttribute>
                                                             <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                                                <real key="value" value="8"/>
+                                                                <real key="value" value="5"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                                                <real key="value" value="2"/>
                                                             </userDefinedRuntimeAttribute>
                                                         </userDefinedRuntimeAttributes>
                                                     </textField>
-                                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please enter valid email address or mobile number" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Ifd-A0-7Le">
-                                                        <rect key="frame" x="0.0" y="124.33333333333333" width="345" height="0.0"/>
-                                                        <fontDescription key="fontDescription" name="SFProRounded-Regular" family="SF Pro Rounded" pointSize="15"/>
-                                                        <color key="textColor" red="0.92156862745098034" green="0.3411764705882353" blue="0.3411764705882353" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UWS-wt-fBf">
-                                                        <rect key="frame" x="0.0" y="129.33333333333331" width="345" height="18.666666666666657"/>
-                                                        <fontDescription key="fontDescription" name="SFProRounded-Regular" family="SF Pro Rounded" pointSize="16"/>
-                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
-                                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="QcL-BU-fPG">
-                                                        <rect key="frame" x="0.0" y="158" width="345" height="34"/>
-                                                        <fontDescription key="fontDescription" name="SFProRounded-Regular" family="SF Pro Rounded" pointSize="17"/>
+                                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" minimumFontSize="14" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="QcL-BU-fPG">
+                                                        <rect key="frame" x="0.0" y="114.66666666666669" width="315" height="40"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="40" id="RCh-bX-ifL"/>
+                                                        </constraints>
+                                                        <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="one-time-code"/>
                                                         <userDefinedRuntimeAttributes>
                                                             <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
                                                                 <color key="value" red="0.99607843137254903" green="0.76078431372549016" blue="0.13725490196078433" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                             </userDefinedRuntimeAttribute>
                                                             <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                                                <real key="value" value="8"/>
+                                                                <real key="value" value="5"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                                                <real key="value" value="2"/>
                                                             </userDefinedRuntimeAttribute>
                                                         </userDefinedRuntimeAttributes>
                                                     </textField>
-                                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please enter a valid password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vHG-92-rJG">
-                                                        <rect key="frame" x="0.0" y="197" width="345" height="0.0"/>
-                                                        <fontDescription key="fontDescription" name="SFProRounded-Regular" family="SF Pro Rounded" pointSize="15"/>
-                                                        <color key="textColor" red="0.92156862750000001" green="0.3411764706" blue="0.3411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="JPZ-wI-Yvc">
-                                                        <rect key="frame" x="0.0" y="202" width="345" height="20"/>
+                                                        <rect key="frame" x="0.0" y="164.66666666666669" width="315" height="29"/>
                                                         <subviews>
                                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="jou-dq-vxd">
-                                                                <rect key="frame" x="0.0" y="0.0" width="138" height="20"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="138" height="29"/>
                                                                 <subviews>
                                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EZP-gw-xQe">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="20" height="20"/>
+                                                                        <rect key="frame" x="0.0" y="4.6666666666666856" width="20" height="20"/>
                                                                         <constraints>
                                                                             <constraint firstAttribute="width" constant="20" id="Zk0-Gf-ZjV"/>
                                                                             <constraint firstAttribute="height" constant="20" id="sao-hQ-5Nr"/>
@@ -130,7 +113,7 @@
                                                                         </connections>
                                                                     </button>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Show password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HYH-OJ-IiP">
-                                                                        <rect key="frame" x="30" y="1" width="108" height="17.666666666666668"/>
+                                                                        <rect key="frame" x="30" y="5.6666666666666856" width="108" height="17.666666666666668"/>
                                                                         <fontDescription key="fontDescription" name="SFProRounded-Regular" family="SF Pro Rounded" pointSize="15"/>
                                                                         <nil key="textColor"/>
                                                                         <nil key="highlightedColor"/>
@@ -140,12 +123,26 @@
                                                         </subviews>
                                                     </stackView>
                                                 </subviews>
+                                                <constraints>
+                                                    <constraint firstAttribute="trailing" secondItem="QcL-BU-fPG" secondAttribute="trailing" constant="30" id="4Z7-CD-gA6"/>
+                                                    <constraint firstItem="lXm-EU-1TR" firstAttribute="leading" secondItem="ULU-Ht-frQ" secondAttribute="leading" constant="30" id="OO8-ms-9dt"/>
+                                                    <constraint firstItem="QcL-BU-fPG" firstAttribute="leading" secondItem="ULU-Ht-frQ" secondAttribute="leading" constant="30" id="dji-4l-pOg"/>
+                                                    <constraint firstAttribute="trailing" secondItem="lXm-EU-1TR" secondAttribute="trailing" constant="30" id="qY4-Ln-b93"/>
+                                                </constraints>
+                                                <variation key="default">
+                                                    <mask key="constraints">
+                                                        <exclude reference="OO8-ms-9dt"/>
+                                                        <exclude reference="qY4-Ln-b93"/>
+                                                        <exclude reference="4Z7-CD-gA6"/>
+                                                        <exclude reference="dji-4l-pOg"/>
+                                                    </mask>
+                                                </variation>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="bottom" translatesAutoresizingMaskIntoConstraints="NO" id="RTY-yD-amg">
-                                                <rect key="frame" x="16" y="252" width="349" height="70"/>
+                                                <rect key="frame" x="16" y="223.66666666666669" width="339" height="70"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="w47-wf-S0V">
-                                                        <rect key="frame" x="209" y="0.0" width="140" height="70"/>
+                                                        <rect key="frame" x="199" y="0.0" width="140" height="70"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="140" id="aBT-AY-0GP"/>
                                                             <constraint firstAttribute="height" constant="70" id="qOd-Ep-kFg"/>
@@ -170,10 +167,10 @@
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
-                                            <constraint firstItem="ULU-Ht-frQ" firstAttribute="leading" secondItem="gq0-PW-dZT" secondAttribute="leading" constant="15" id="N8N-vR-0hV"/>
-                                            <constraint firstAttribute="trailing" secondItem="RTY-yD-amg" secondAttribute="trailing" constant="10" id="crz-8f-QqQ"/>
+                                            <constraint firstItem="ULU-Ht-frQ" firstAttribute="leading" secondItem="gq0-PW-dZT" secondAttribute="leading" constant="30" id="N8N-vR-0hV"/>
+                                            <constraint firstAttribute="trailing" secondItem="RTY-yD-amg" secondAttribute="trailing" constant="20" id="crz-8f-QqQ"/>
                                             <constraint firstItem="RTY-yD-amg" firstAttribute="top" secondItem="ULU-Ht-frQ" secondAttribute="bottom" id="d1g-cp-Pp0"/>
-                                            <constraint firstAttribute="trailing" secondItem="ULU-Ht-frQ" secondAttribute="trailing" constant="15" id="g3s-yN-uE5"/>
+                                            <constraint firstAttribute="trailing" secondItem="ULU-Ht-frQ" secondAttribute="trailing" constant="30" id="g3s-yN-uE5"/>
                                             <constraint firstItem="ULU-Ht-frQ" firstAttribute="top" secondItem="gq0-PW-dZT" secondAttribute="top" constant="30" id="uTa-wS-OOV"/>
                                             <constraint firstItem="RTY-yD-amg" firstAttribute="leading" secondItem="gq0-PW-dZT" secondAttribute="leading" constant="16" id="xZ1-Mg-X8l"/>
                                         </constraints>
@@ -246,8 +243,6 @@
                         <outlet property="authErrorLabel" destination="kgs-oD-wg3" id="vQS-6C-PjW"/>
                         <outlet property="authErrorView" destination="3th-6K-1bt" id="bu0-he-lGT"/>
                         <outlet property="contentView" destination="gq0-PW-dZT" id="RH7-N5-TH6"/>
-                        <outlet property="invalidPasswordView" destination="vHG-92-rJG" id="gUs-YP-dLG"/>
-                        <outlet property="invalidUserIdView" destination="Ifd-A0-7Le" id="4mO-1D-bjF"/>
                         <outlet property="passwordTextField" destination="QcL-BU-fPG" id="ycs-BY-4Bf"/>
                         <outlet property="showPasswordButton" destination="EZP-gw-xQe" id="bch-Np-M8C"/>
                         <outlet property="submitButton" destination="w47-wf-S0V" id="EjZ-Sw-Rar"/>
@@ -385,7 +380,6 @@
         <image name="Sungradient_back" width="414" height="736"/>
         <image name="back_button_dark" width="14" height="22"/>
         <image name="checkbox_uncheck_new" width="26" height="26"/>
-        <image name="error" width="23.333333969116211" height="23.333333969116211"/>
         <image name="submit_button_dark" width="187" height="92"/>
         <namedColor name="color_background_error_view">
             <color red="1" green="0.93300002813339233" blue="0.7369999885559082" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
