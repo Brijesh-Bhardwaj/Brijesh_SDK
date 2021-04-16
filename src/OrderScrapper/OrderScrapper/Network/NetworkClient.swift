@@ -20,7 +20,7 @@ class APIError: Error {
 
 class NetworkClient<T: Decodable>: APIClient {
     private let AuthErrorResponseCode = 401
-    private let BaseURL = "https://qa-order-scraping.blackstrawlab.com/"
+    private let BaseURL = Utils.getBaseURL()
     private let HeaderContentType = "Content-Type"
     private let ContentTypeJSON = "application/json"
     

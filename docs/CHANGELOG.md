@@ -12,6 +12,11 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 
 ## [Unreleased]
 
+## [0.2.4] - 2021-04-16
+
+### Added
+- Build configuration for Dev, QA, UAT & Prod environment 
+
 ## [0.2.3] - 2021-04-15
 
 ### Changed

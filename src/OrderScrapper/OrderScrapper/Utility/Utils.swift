@@ -20,4 +20,9 @@ class Utils {
     static func getImage(named imageName: String) -> UIImage? {
         return UIImage(named: imageName, in: AppConstants.bundle, with: nil)
     }
+    
+    static func getBaseURL() -> String {
+        let infoDict = AppConstants.bundle.infoDictionary!
+        return infoDict["BASE_API_ENDPOINT"] as! String
+    }
 }
