@@ -37,4 +37,6 @@ struct AppConstants {
     static let msgDateRangeAPIFailed = "Date-range api failed"
     static let msgDownloadCSVFailed = "Exception while downloading csv file"
     static let msgCSVParsingFailed = "Exception while updating csv file"
+    //Error messages
+    static let msgResetPassword = "Something went wrong. Please check your credentials once in a browser and retry"
 }

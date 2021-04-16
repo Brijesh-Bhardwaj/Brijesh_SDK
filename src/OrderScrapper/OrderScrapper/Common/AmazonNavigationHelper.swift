@@ -14,6 +14,7 @@ struct AmazonURL {
     static let downloadReport   =   "download-report"
     static let reportID         =   "reportId"
     static let generateReport   =   "gp/b2b/reports/"
+    static let resetPassword    =   "ap/forgotpassword/reverification"
 }
 
 private enum Step: Int16 {
@@ -96,6 +97,8 @@ class AmazonNavigationHelper: NavigationHelper {
                 self.getDateRange()
                 self.publishProgrssFor(step: .generateReport)
             }
+        } else if (urlString.contains(AmazonURL.resetPassword)) {
+            self.viewModel.authError.send((isError: true, errorMsg: AppConstants.msgResetPassword))
         } else {
             //Log event for getting other url
             var logOtherUrlEventAttributes:[String:String] = [:]
