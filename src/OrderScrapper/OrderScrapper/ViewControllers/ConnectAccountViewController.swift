@@ -99,6 +99,12 @@ class ConnectAccountViewController: UIViewController {
         self.contentView.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
     }
     
+    // MARK: - IBActions
+    @IBAction func didClickBackButton(_ sender: Any) {
+        self.webContentView.stopLoading()
+        self.dismiss(animated: true, completion: nil)
+    }
+    
     // MARK: - Private Methods
     private func initNetworkMonitor() {
         let monitor = NWPathMonitor()
@@ -223,13 +229,8 @@ class ConnectAccountViewController: UIViewController {
             //Progress
         })
         progressMessageSubscriber = self.viewModel.progressMessage.receive(on: RunLoop.main).sink(receiveValue: { message in
-//            if !self.progressView.headerText.elementsEqual(message) {
-//                self.contentView.bringSubviewToFront(self.progressView)
-//                self.progressView.headerText = message
-//            }
         })
         headingMessageSubscriber = self.viewModel.headingMessage.receive(on: RunLoop.main).sink(receiveValue: { headerMessage in
-//            self.headerLabel.text = headerMessage
         })
         stepMessageSubscriber = self.viewModel.stepMessage.receive(on: RunLoop.main).sink(receiveValue: { stepMessage in
             if !stepMessage.elementsEqual(self.progressView.stepText) {

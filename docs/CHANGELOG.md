@@ -12,10 +12,24 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 
 ## [Unreleased]
 
+## [0.2.5] - 2021-04-17
+
+### Added
+- added back button on ConnectAccount screen. On back button click, user is navigated back to previous screen. No restriction is added even if connection process is in progress. 
+- added handling for `forgotpassword` URL. Displayed the error message to user whenever this URL is encountered. This also solves the issue of user getting stuck on the connection steps when the approval sms is denied.
+
+### Changed
+- changed the No Network message to match the Application's message
+- changed password text field type to `Unspecified` and kept default settings. This is done to test out the iOS 14.2 keyboard bug.
+
 ## [0.2.4] - 2021-04-16
 
 ### Added
 - Build configuration for Dev, QA, UAT & Prod environment 
+
+### Changed
+- Login UI revamped as per the app specs
+- Button background changed for success and failure views
 
 ## [0.2.3] - 2021-04-15
 

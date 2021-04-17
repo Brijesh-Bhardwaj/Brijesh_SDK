@@ -131,9 +131,6 @@ internal class AmazonAuthenticator: Authenticator {
                 debugPrint("Error while updating account state: ", error)
             }
         }
-        if accountState == AccountState.Connected {
-            status = AccountState.Connected.rawValue
-        }
         _ = AmazonService.updateStatus(amazonId: userId, status: status
                                        , message: message, orderStatus: OrderStatus.Initiated.rawValue) { response, error in
             //Todo

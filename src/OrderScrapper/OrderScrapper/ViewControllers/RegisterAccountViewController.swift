@@ -105,9 +105,9 @@ class RegisterAccountViewController: UIViewController {
     
     // MARK: - Private Methods
     private func makeRoundedView(view: UIView) {
-        view.layer.borderWidth = 1.0
-        view.layer.borderColor = UIColor(red: 0.996, green: 0.761, blue: 0.137, alpha: 1).cgColor
-        view.layer.cornerRadius = 8
+        view.layer.borderWidth = 2.0
+        view.layer.borderColor = UIColor(hex: "#FFE9ADFF")?.cgColor
+        view.layer.cornerRadius = 5
     }
     
     private func setupSubscribers() {
