@@ -23,13 +23,14 @@ SDK provides accounts API to:
 #### Amazon
 
 SDK connects to the provided amazon account credentials as below
-- user is presented with an account-connection screen to enter amazon credentials
-- SDK reads the credentials and hits the amazon website to login.  
+- User is presented with an account-connection screen to enter amazon credentials
+- SDK reads the credentials and hits the amazon website to log in.  
  The user is presented with a "Connect Account" screen with a progress bar indication
 - While login, if a captcha, device-authorization, or two-factor authentication screen is detected then the user is presented the amazon webpage with the details to proceed further.
-- On login failure user is redirected to the previous screen
-- On successful login, the account credentials are stored in an encrypted format on the device private to the application
-- SDK then attempts to fetch the order details on successful login.
+- On login failure user is redirected to the previous screen and the failure event is registered in the backend database
+- On successful login, the SDK attempts to fetch the order details.
+- On fetching failure, the SDK shows an error screen and prompts the user to retry the operation
+- On fetching success, the account credentials are stored in an encrypted format on the device private to the application, and the success event is registered in the backend database
 
 ## Orders
 
@@ -52,25 +53,23 @@ SDK fetches orders as a CSV file from Amazon's order-report generation page as b
  - Start-Date: _as received from api_
  - End-Date: _as received from api_
 - SDK hooks to callbacks to identify report generation readiness. Once a report is available it is then downloaded to an app internal storage location.
-- The downloaded report (CSV) is edited to delete any personal/PII-related data from it. The identification of PII data-columns is configurable through `PII` related APIs in the server.  
+- The downloaded report (CSV) is edited to delete any personal/PII-related data from it. The identification of PII data columns is configurable through `PII` related APIs in the server.  
  **Note that the personal data is NOT read or stored on the device. It is deleted from the CSV**
-- the edited CSV is then uploaded to the backend through an upload API.
+- The edited CSV is then uploaded to the backend through an upload API.
 - Post upload irrespective of failure/success, the file is deleted from the internal storage too.
 
 # Notes
+
 - Downloaded order reports are always deleted after upload. 
-- while the order fetch is in progress, it is mandatory for users to keep the app running in the foreground and let it finish the operation.
-- Configurations in the backend determine the frequency of fetch and the start-date for order reports.  
- Hence if the API responses indicate no scraping for a particular request then the SDK would redirect users back to the previous screen with an appropriate toast message.
-- Some dependencies needed by the library will have to be linked into the application. More details in
- ReadMe.app.md
-- Firebase Analytics is integrated with the SDK. If application's need to use firebase analytics too
- then the SDK code to configure analytics be commented to use the application's configuration
+- While the order fetch is in progress, it is mandatory for users to keep the app running in the foreground and let it finish the operation.
+- Configurations in the backend determine the frequency of fetch and the start date for order reports.  
+ Hence if the API responses indicate no scraping for a particular request then the SDK would redirect users back to the previous screen with an appropriate message.
+- Some dependencies needed by the library will have to be linked into the application. More details in ReadMe.app.md
+- For event logging/analytics, the SDK utilizes the application's event logging/analytics mechanism. The application should implement the provided SDK protocol method to log the SDK events.
  
 
 # Usage 
 
 - Refer to ReadMe.SDK.build.md file for SDK build instructions
 - Refer to ReadMe.app.md for instructions on integrating the SDK with an application
- - Refer to sample code under `samples/AmazonOrderScrapper` for a sample application that 
-  integrates the SDK
+- Refer to sample code under `samples/AmazonOrderScrapper` for a sample application that integrates the SDK
