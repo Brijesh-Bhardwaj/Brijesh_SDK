@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="AmazonOrderScrapPoC" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <wkWebView contentMode="scaleToFill" allowsLinkPreview="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5kk-9f-eeg">
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <wkWebViewConfiguration key="configuration" allowsAirPlayForMediaPlayback="NO" allowsPictureInPictureMediaPlayback="NO">
+                                    <dataDetectorTypes key="dataDetectorTypes" none="YES"/>
+                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                    <wkPreferences key="preferences" javaScriptCanOpenWindowsAutomatically="YES"/>
+                                </wkWebViewConfiguration>
+                            </wkWebView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JBJ-r5-l3D">
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <subviews>
+                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="H9Q-LK-e2m">
+                                        <rect key="frame" x="188.5" y="390.5" width="37" height="37"/>
+                                        <color key="color" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </activityIndicatorView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="An approval link is sent to your registered number. Please approve it to continue..." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MtO-6u-XRr">
+                                        <rect key="frame" x="5" y="451.5" width="404" height="41"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4qc-ki-fkO">
+                                        <rect key="frame" x="150.5" y="517" width="113" height="30"/>
+                                        <state key="normal" title="Show Document"/>
+                                        <connections>
+                                            <action selector="showDocument:" destination="BYZ-38-t0r" eventType="touchUpInside" id="wTP-WJ-cC4"/>
+                                        </connections>
+                                    </button>
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="6AB-DL-BPO">
+                                        <rect key="frame" x="15" y="50" width="384" height="34"/>
+                                        <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits" autocorrectionType="no" textContentType="email"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="color" keyPath="layer.borderColor">
+                                                <color key="value" systemColor="systemTealColor"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.borderWidth">
+                                                <integer key="value" value="2"/>
+                                            </userDefinedRuntimeAttribute>
+                                            <userDefinedRuntimeAttribute type="boolean" keyPath="layer. masksToBounds" value="YES"/>
+                                        </userDefinedRuntimeAttributes>
+                                    </textField>
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="FAX-0N-xba">
+                                        <rect key="frame" x="15" y="125" width="384" height="34"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits" autocorrectionType="no" secureTextEntry="YES" textContentType="password"/>
+                                    </textField>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="g5n-Hx-K6S">
+                                        <rect key="frame" x="178.5" y="200" width="57" height="30"/>
+                                        <state key="normal" title="Register"/>
+                                        <connections>
+                                            <action selector="register:" destination="BYZ-38-t0r" eventType="touchUpInside" id="9nt-WY-zaa"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="FAX-0N-xba" secondAttribute="trailing" constant="15" id="0MF-fU-EJs"/>
+                                    <constraint firstItem="4qc-ki-fkO" firstAttribute="top" secondItem="MtO-6u-XRr" secondAttribute="bottom" constant="24.5" id="2jh-H1-NIQ"/>
+                                    <constraint firstAttribute="trailing" secondItem="6AB-DL-BPO" secondAttribute="trailing" constant="15" id="5HQ-Ii-ewk"/>
+                                    <constraint firstItem="FAX-0N-xba" firstAttribute="top" secondItem="6AB-DL-BPO" secondAttribute="bottom" constant="41" id="9Wd-dk-9V2"/>
+                                    <constraint firstItem="4qc-ki-fkO" firstAttribute="centerX" secondItem="MtO-6u-XRr" secondAttribute="centerX" id="BDL-ye-wRQ"/>
+                                    <constraint firstItem="H9Q-LK-e2m" firstAttribute="centerX" secondItem="JBJ-r5-l3D" secondAttribute="centerX" id="BWA-CY-7yv"/>
+                                    <constraint firstItem="MtO-6u-XRr" firstAttribute="leading" secondItem="JBJ-r5-l3D" secondAttribute="leading" constant="5" id="Bog-R7-5vx"/>
+                                    <constraint firstItem="g5n-Hx-K6S" firstAttribute="centerX" secondItem="JBJ-r5-l3D" secondAttribute="centerX" id="M1I-A6-Cs6"/>
+                                    <constraint firstItem="6AB-DL-BPO" firstAttribute="centerX" secondItem="JBJ-r5-l3D" secondAttribute="centerX" id="Srg-wF-rjX"/>
+                                    <constraint firstItem="FAX-0N-xba" firstAttribute="leading" secondItem="JBJ-r5-l3D" secondAttribute="leading" constant="15" id="X6C-22-ren"/>
+                                    <constraint firstItem="6AB-DL-BPO" firstAttribute="leading" secondItem="JBJ-r5-l3D" secondAttribute="leading" constant="15" id="X7T-RO-t7A"/>
+                                    <constraint firstItem="6AB-DL-BPO" firstAttribute="top" secondItem="JBJ-r5-l3D" secondAttribute="top" constant="50" id="Xxg-cl-Mzw"/>
+                                    <constraint firstItem="MtO-6u-XRr" firstAttribute="centerX" secondItem="H9Q-LK-e2m" secondAttribute="centerX" id="ZI5-n5-ASf"/>
+                                    <constraint firstItem="MtO-6u-XRr" firstAttribute="top" secondItem="H9Q-LK-e2m" secondAttribute="bottom" constant="24" id="iZ8-j8-Z2p"/>
+                                    <constraint firstItem="g5n-Hx-K6S" firstAttribute="top" secondItem="FAX-0N-xba" secondAttribute="bottom" constant="41" id="kVM-7s-5za"/>
+                                    <constraint firstItem="FAX-0N-xba" firstAttribute="centerX" secondItem="JBJ-r5-l3D" secondAttribute="centerX" id="kje-yd-awx"/>
+                                    <constraint firstItem="H9Q-LK-e2m" firstAttribute="centerY" secondItem="JBJ-r5-l3D" secondAttribute="centerY" id="o9g-KB-fxB"/>
+                                    <constraint firstAttribute="trailing" secondItem="MtO-6u-XRr" secondAttribute="trailing" constant="5" id="tgY-FB-gFI"/>
+                                    <constraint firstItem="4qc-ki-fkO" firstAttribute="firstBaseline" secondItem="MtO-6u-XRr" secondAttribute="baseline" constant="49.5" id="u0f-K4-pLF"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="JBJ-r5-l3D" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="25H-15-0di"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="5kk-9f-eeg" secondAttribute="trailing" id="Ezv-Qa-qJa"/>
+                            <constraint firstItem="JBJ-r5-l3D" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="HVt-m3-f4q"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="JBJ-r5-l3D" secondAttribute="bottom" id="MYM-dj-MM9"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="JBJ-r5-l3D" secondAttribute="trailing" id="SJw-6c-JcU"/>
+                            <constraint firstItem="5kk-9f-eeg" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="bFL-h6-mTu"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="5kk-9f-eeg" secondAttribute="bottom" id="knv-2p-ms2"/>
+                            <constraint firstItem="5kk-9f-eeg" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="xPs-bN-9xH"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="emailField" destination="6AB-DL-BPO" id="OBg-K3-3fq"/>
+                        <outlet property="progressContainer" destination="JBJ-r5-l3D" id="6wc-HS-Lj7"/>
+                        <outlet property="progressLabel" destination="MtO-6u-XRr" id="w7j-6v-3N5"/>
+                        <outlet property="progressView" destination="H9Q-LK-e2m" id="Vzw-RT-rW8"/>
+                        <outlet property="pwdField" destination="FAX-0N-xba" id="f1n-TA-cIa"/>
+                        <outlet property="registerButton" destination="g5n-Hx-K6S" id="Yyf-6D-qQL"/>
+                        <outlet property="showDocButton" destination="4qc-ki-fkO" id="xGL-Fq-oSv"/>
+                        <outlet property="webView" destination="5kk-9f-eeg" id="pet-pV-7H8"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="140.57971014492756" y="71.651785714285708"/>
+        </scene>
+    </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemTealColor">
+            <color red="0.35294117647058826" green="0.78431372549019607" blue="0.98039215686274506" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>

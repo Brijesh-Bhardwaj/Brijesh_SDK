@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "account_status_ok.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
