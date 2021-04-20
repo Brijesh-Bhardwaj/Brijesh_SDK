@@ -130,6 +130,27 @@ class CoreDataManager {
         }
         
     }
+    
+    public func deleteAccountsByPanelistId(panelistId: String) {
+        let context = persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.entityName)
+        
+        let panelistIdPredicate = NSPredicate(format: "\(AppConstants.userAcccountColumnPanelistId) = %@", panelistId)
+        
+        fetchRequest.predicate = panelistIdPredicate
+        let result = try? context.fetch(fetchRequest)
+        let resultData = result as! [UserAccountMO]
+        
+        for object in resultData {
+            context.delete(object)
+        }
+        do {
+            try context.save()
+        } catch let error as NSError  {
+            print(error.userInfo)
+        }
+        
+    }
     public func createNewAccount() -> UserAccountMO {
         let context = persistentContainer.viewContext
         let entity = NSEntityDescription.entity(forEntityName: AppConstants.entityName, in: context)!
