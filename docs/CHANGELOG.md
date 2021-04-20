@@ -12,6 +12,14 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 
 ## [Unreleased]
 
+## [0.2.6] - 2021-04-20
+
+### Added
+- added logic to remove the account from the local database for a panelist, if get account API returns empty value to ensure the disconnect status is synced across devices
+
+### Changed
+- changed the event logging text for account connected state
+
 ## [0.2.5] - 2021-04-17
 
 ### Added

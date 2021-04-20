@@ -62,12 +62,16 @@ public class OrdersExtractor {
             _ = AmazonService.getAccounts() { response, error in
                 DispatchQueue.global().async {
                     let accountsInDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
+
                     if let response = response  {
                         hasNeverConnected = response.hasNeverConnected
                         guard let accountDetails = response.accounts else {
-                            let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
+                            if !accountsInDB.isEmpty {
+                                CoreDataManager.shared.deleteAccountsByPanelistId(panelistId: panelistId)
+                            }
+                            let accounts = [UserAccountMO]()
                             DispatchQueue.main.async {
-                                completionHandler(accountsFromDB, hasNeverConnected)
+                                completionHandler(accounts, hasNeverConnected)
                             }
                             return
                         }
@@ -83,7 +87,6 @@ public class OrdersExtractor {
                             CoreDataManager.shared.addAccount(userId: account.amazonId, password: "",
                                                               accountStatus:statusToUpdate,
                                                               orderSource: OrderSource.Amazon.rawValue, panelistId: panelistId)
-                            self.updateStatus(amazonId: account.amazonId, status: AccountState.ConnectedButException.rawValue, message: AppConstants.msgDBEmpty, orderStatus: OrderStatus.None.rawValue)
                             let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
                             DispatchQueue.main.async {
                                 completionHandler(accountsFromDB, hasNeverConnected)
