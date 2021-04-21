@@ -104,7 +104,8 @@ class AmazonNavigationHelper: NavigationHelper {
             var logOtherUrlEventAttributes:[String:String] = [:]
             logOtherUrlEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
                                   EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                  EventConstant.Status: EventStatus.Success]
+                                  EventConstant.Status: EventStatus.Success,
+                                  EventConstant.URL: urlString]
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectOtherURL, eventAttributes: logOtherUrlEventAttributes)
         }
     }

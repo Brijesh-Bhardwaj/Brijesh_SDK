@@ -371,6 +371,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="backButton" destination="79K-G3-wjF" id="OkP-2r-Vws"/>
                         <outlet property="containerView" destination="8Le-tL-3tO" id="qJ5-wW-zAD"/>
                         <outlet property="contentView" destination="H1R-Nk-j1B" id="Sz8-7c-Cud"/>
                         <outlet property="errorView" destination="5Jv-2P-8uP" id="tyh-RW-sOv"/>

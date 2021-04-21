@@ -17,6 +17,7 @@ class ConnectAccountViewController: UIViewController {
     private var path: NWPath?
     
     private var viewInit = false
+    private var isFetchSkipped: Bool = false
     
     var account: Account!
     
@@ -44,6 +45,7 @@ class ConnectAccountViewController: UIViewController {
     @IBOutlet weak var fetchSuccessView: FetchSuccessView!
     @IBOutlet weak var progressView: ProgressView!
     @IBOutlet weak var headerLabel: UILabel!
+    @IBOutlet weak var backButton: UIButton!
     
     // MARK: - Public Methods
     
@@ -240,13 +242,15 @@ class ConnectAccountViewController: UIViewController {
         })
         completionSubscriber = self.viewModel.completionPublisher.receive(on: RunLoop.main).sink(receiveValue: { complete in
             if complete {
+                self.backButton.isHidden = true
                 self.contentView.bringSubviewToFront(self.fetchSuccessView)
             }
         })
         stopScrappingSubscriber = self.viewModel.disableScrapping.receive(on: RunLoop.main).sink(receiveValue: { disable in
+            self.isFetchSkipped = disable
             if disable {
-                let result = (true, OrderFetchSuccessType.fetchSkipped)
-                LibContext.shared.scrapeCompletionPublisher.send((result, Strings.ExtractionDisabled))
+                self.backButton.isHidden = true
+                self.contentView.bringSubviewToFront(self.fetchSuccessView)
             }
         })
     }
@@ -267,8 +271,13 @@ class ConnectAccountViewController: UIViewController {
     }
     
     private func successHandler() {
-        let result = (true, OrderFetchSuccessType.fetchCompleted)
-        LibContext.shared.scrapeCompletionPublisher.send((result, nil))
+        if self.isFetchSkipped {
+            let result = (true, OrderFetchSuccessType.fetchSkipped)
+            LibContext.shared.scrapeCompletionPublisher.send((result, Strings.ExtractionDisabled))
+        } else {
+            let result = (true, OrderFetchSuccessType.fetchCompleted)
+            LibContext.shared.scrapeCompletionPublisher.send((result, nil))
+        }
     }
 }
 
