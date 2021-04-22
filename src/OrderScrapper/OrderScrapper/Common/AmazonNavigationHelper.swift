@@ -15,6 +15,7 @@ struct AmazonURL {
     static let reportID         =   "reportId"
     static let generateReport   =   "gp/b2b/reports/"
     static let resetPassword    =   "ap/forgotpassword/reverification"
+    static let reportSuccess    =   "gp/b2b/reports?"
 }
 
 private enum Step: Int16 {
@@ -28,6 +29,8 @@ private enum Step: Int16 {
 
 class AmazonNavigationHelper: NavigationHelper {
     @ObservedObject var viewModel: WebViewModel
+    
+    private var currentStep: Step!
     
     var jsResultSubscriber: AnyCancellable? = nil
     let authenticator: Authenticator
@@ -49,13 +52,14 @@ class AmazonNavigationHelper: NavigationHelper {
         
         if (urlString.contains(AmazonURL.signIn)) {
             self.authenticator.authenticate()
+            self.currentStep = .authentication
             publishProgrssFor(step: .authentication)
             
             //Log event for connect account
             var logConnectAccountEventAttributes:[String:String] = [:]
             logConnectAccountEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                  EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                  EventConstant.Status: EventStatus.Connected]
+                                                EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                                EventConstant.Status: EventStatus.Connected]
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.AccountConnect, eventAttributes: logConnectAccountEventAttributes)
         } else if (urlString.contains(AmazonURL.authApproval)
                     || urlString.contains(AmazonURL.twoFactorAuth)) {
@@ -69,12 +73,13 @@ class AmazonNavigationHelper: NavigationHelper {
                 eventType = EventType.JSDetectedTwoFactorAuth
             }
             logAuthEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                  EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                  EventConstant.Status: EventStatus.Success]
+                                      EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                      EventConstant.Status: EventStatus.Success]
             FirebaseAnalyticsUtil.logEvent(eventType: eventType, eventAttributes: logAuthEventAttributes)
         } else if (urlString.contains(AmazonURL.downloadReport)
                     && urlString.contains(AmazonURL.reportID)) {
             self.injectDownloadReportJS()
+            self.currentStep = .downloadReport
             publishProgrssFor(step: .downloadReport)
         } else if (urlString.contains(AmazonURL.generateReport)) {
             let userAccountState = self.viewModel.userAccount.accountState
@@ -85,6 +90,7 @@ class AmazonNavigationHelper: NavigationHelper {
                         //On authentication add user account details to DB
                         self.viewModel.userAccount.isFirstConnectedAccount = response.firstaccount
                         self.getDateRange()
+                        self.currentStep = .generateReport
                         self.publishProgrssFor(step: .generateReport)
                     } else {
                         self.viewModel.authError.send((isError: true, errorMsg: error!))
@@ -95,19 +101,32 @@ class AmazonNavigationHelper: NavigationHelper {
                 self.updateAccountStatusToConnected(orderStatus: OrderStatus.Initiated.rawValue)
                 self.addUserAccountInDB()
                 self.getDateRange()
+                self.currentStep = .generateReport
                 self.publishProgrssFor(step: .generateReport)
             }
         } else if (urlString.contains(AmazonURL.resetPassword)) {
             self.viewModel.authError.send((isError: true, errorMsg: AppConstants.msgResetPassword))
+        } else if (urlString.contains(AmazonURL.reportSuccess)) {
+            //No handling required
         } else {
+            print(AppConstants.tag, "unknown URL", urlString)
             //Log event for getting other url
             var logOtherUrlEventAttributes:[String:String] = [:]
             logOtherUrlEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                  EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                  EventConstant.Status: EventStatus.Success,
-                                  EventConstant.URL: urlString]
+                                          EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                          EventConstant.Status: EventStatus.Success,
+                                          EventConstant.URL: urlString]
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectOtherURL, eventAttributes: logOtherUrlEventAttributes)
-            print(AppConstants.tag, "navigateWith", urlString)
+            
+            guard let currentStep = self.currentStep else {
+                return
+            }
+            
+            if currentStep == .authentication {
+                self.viewModel.showWebView.send(true)
+            } else {
+                self.viewModel.authError.send((isError: true, errorMsg: AppConstants.msgUnknownURL))
+            }
         }
     }
     
@@ -147,6 +166,29 @@ class AmazonNavigationHelper: NavigationHelper {
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.OrderCSVDownload, eventAttributes: logEventAttributes)
             }
         }
+    }
+    
+    func shouldShowWebViewFor(url: URL?) -> Bool {
+        guard let url = url else { return false }
+        
+        let urlString = url.absoluteString
+        
+        let knownURLs = urlString.contains(AmazonURL.signIn)
+            || urlString.contains(AmazonURL.authApproval)
+            || urlString.contains(AmazonURL.twoFactorAuth)
+            || (urlString.contains(AmazonURL.downloadReport) && urlString.contains(AmazonURL.reportID))
+            || urlString.contains(AmazonURL.generateReport)
+            || urlString.contains(AmazonURL.resetPassword)
+            || urlString.contains(AmazonURL.reportSuccess)
+        
+        // Always hide for known URLs
+        if knownURLs {
+            return false
+        }
+        guard let currentStep = self.currentStep else { return false }
+        
+        // For unknown URL, hide if current step is not authentication step
+        return (currentStep == .authentication)
     }
     
     // MARK:- Private Methods
@@ -206,7 +248,7 @@ class AmazonNavigationHelper: NavigationHelper {
         var progressMessage: String?
         var headerMessage: String?
         var stepMessage: String
-
+        
         switch step {
         case .authentication:
             stepMessage = Utils.getString(key: Strings.Step1)
@@ -314,6 +356,7 @@ class AmazonNavigationHelper: NavigationHelper {
     }
     
     private func removePIIAttributes(fileName: String, fileURL: URL) {
+        self.currentStep = .parseReport
         publishProgrssFor(step: .parseReport)
         var logAPIEventAttributes:[String:String] = [:]
         let tempURL = FileHelper.getReportDownloadPath(fileName: "temp.csv", orderSource: .Amazon)
@@ -333,8 +376,8 @@ class AmazonNavigationHelper: NavigationHelper {
             }
             // Log event for PIIList API success
             logAPIEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                  EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                  EventConstant.Status: EventStatus.Success]
+                                     EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                     EventConstant.Status: EventStatus.Success]
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIPIIList, eventAttributes: logAPIEventAttributes)
             
             let scrapper = PIIScrapper(fileURL: tempURL, fileName: fileName, orderSource: .Amazon)
@@ -367,6 +410,7 @@ class AmazonNavigationHelper: NavigationHelper {
     }
     
     private func uploadCSVFile(fileURL url: URL) {
+        self.currentStep = .uploadReport
         publishProgrssFor(step: .uploadReport)
         
         let reportConfig = self.viewModel.reportConfig!
@@ -377,6 +421,7 @@ class AmazonNavigationHelper: NavigationHelper {
                                      fromDate: fromDate, toDate: toDate) { response, error in
             var logEventAttributes:[String:String] = [:]
             if response != nil {
+                self.currentStep = .complete
                 self.publishProgrssFor(step: .complete)
                 self.addUserAccountInDB()
                 //Log event for successful uploading of csv

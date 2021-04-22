@@ -39,5 +39,6 @@ struct AppConstants {
     static let msgCSVParsingFailed = "Exception while updating csv file"
     //Error messages
     static let msgResetPassword = "Something went wrong. Please check your credentials once in a browser and retry"
+    static let msgUnknownURL = "We encountered an issue while connecting your account. Please try again later."
     static let tag = "OrderScrapper"
 }

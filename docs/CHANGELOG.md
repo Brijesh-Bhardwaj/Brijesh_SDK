@@ -10,7 +10,11 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
 
-## [Unreleased]
+## [0.2.7] - [Unreleased]
+
+### Added
+- added logic to show the webview in case any unknown url is encountered in the authentication step. For any other step, user is navigated back to login screen showing generic error message
+- added logs for error scenarios encountered in the SDK flow
 
 ## [0.2.6] - 2021-04-20
 
