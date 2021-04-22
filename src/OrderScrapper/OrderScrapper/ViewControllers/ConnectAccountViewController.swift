@@ -77,6 +77,8 @@ class ConnectAccountViewController: UIViewController {
             var userAgent = "iPhone;"
             if let agent = agent as? String {
                 userAgent = agent.replacingOccurrences(of: "iPad", with: "iPhone")
+            } else {
+                print(AppConstants.tag, "evaluateJavaScript", error.debugDescription)
             }
             self.webContentView.customUserAgent = userAgent
             if let url = URL(string: self.baseURL) {
@@ -179,6 +181,7 @@ class ConnectAccountViewController: UIViewController {
                     status = EventStatus.Success
                 } else {
                     status = EventStatus.Failure
+                    print(AppConstants.tag, "evaluateJavaScript", error.debugDescription)
                 }
                 switch authState {
                 case .email:
@@ -309,5 +312,17 @@ extension ConnectAccountViewController: WKNavigationDelegate {
                  decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
         preferences.preferredContentMode = .mobile
         decisionHandler(.allow, preferences)
+    }
+    
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        print(AppConstants.tag,"An error occurred during navigation", error.localizedDescription)
+    }
+    
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        print(AppConstants.tag,"An error occurred during the early navigation process", error.localizedDescription)
+    }
+    
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+        print(AppConstants.tag, "webViewWebContentProcessDidTerminate()")
     }
 }

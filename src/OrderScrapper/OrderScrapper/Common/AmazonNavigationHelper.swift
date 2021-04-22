@@ -107,6 +107,7 @@ class AmazonNavigationHelper: NavigationHelper {
                                   EventConstant.Status: EventStatus.Success,
                                   EventConstant.URL: urlString]
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectOtherURL, eventAttributes: logOtherUrlEventAttributes)
+            print(AppConstants.tag, "navigateWith", urlString)
         }
     }
     
@@ -350,6 +351,7 @@ class AmazonNavigationHelper: NavigationHelper {
                                           EventConstant.ErrorReason: error.debugDescription,
                                           EventConstant.Status: EventStatus.Failure]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.OrderCSVPParse, eventAttributes: logEventAttributes)
+                    print(AppConstants.tag, "removePIIAttributes", error.debugDescription)
                     return
                 }
                 self.uploadCSVFile(fileURL: destinationURL)
@@ -384,7 +386,6 @@ class AmazonNavigationHelper: NavigationHelper {
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIUploadReport, eventAttributes: logEventAttributes)
             } else {
                 self.viewModel.webviewError.send(true)
-                
                 _ = AmazonService.updateStatus(amazonId: self.viewModel.userAccount.userID,
                                                status: AccountState.NeverConnected.rawValue, message: AppConstants.msgCSVUploadFailed, orderStatus: OrderStatus.Failed.rawValue) { response, error in
                     //Todo

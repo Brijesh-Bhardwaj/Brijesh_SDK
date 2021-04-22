@@ -23,7 +23,7 @@ public class OrdersExtractor {
                                   viewPresenter: ViewPresenter,
                                   analyticsProvider: AnalyticsProvider?) throws {
         if isInitialized {
-            debugPrint(Strings.ErrorLibAlreadyInitialized)
+            print(AppConstants.tag, "initialize", Strings.ErrorLibAlreadyInitialized)
             return
         }
         

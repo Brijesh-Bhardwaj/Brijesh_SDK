@@ -19,6 +19,7 @@ class FileDownloader {
             }
             else {
                 completion(false, nil)
+                print(AppConstants.tag, "downloadReportFile", error.debugDescription)
             }
         }
         

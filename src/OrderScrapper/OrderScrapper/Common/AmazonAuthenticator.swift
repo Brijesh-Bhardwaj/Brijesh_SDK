@@ -128,7 +128,7 @@ internal class AmazonAuthenticator: Authenticator {
             do {
                 try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: panelistId)
             } catch let error {
-                debugPrint("Error while updating account state: ", error)
+                print(AppConstants.tag, "updateAccountWithExceptionState", error.localizedDescription)
             }
         }
         _ = AmazonService.updateStatus(amazonId: userId, status: status
