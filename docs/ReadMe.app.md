@@ -128,6 +128,6 @@ All protocols needed to be implemented by the application are
    
   This method is called when the account is disconnected successfully
    
- > func onAccountDisconnectionFailed(account : Account)
+ > func onAccountDisconnectionFailed(account : Account, error: ASLException)
    
   This method is called when the account disconnection has failed
