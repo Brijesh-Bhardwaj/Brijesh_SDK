@@ -10,6 +10,10 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
 
+## [0.2.8] - [Unreleased]
+### Added
+- In AccountDisconnectedListener protocol ASLException parameter added as error reason in the onAccountDisconnectionFailed callback method 
+
 ## [0.2.7] - [Unreleased]
 
 ### Added

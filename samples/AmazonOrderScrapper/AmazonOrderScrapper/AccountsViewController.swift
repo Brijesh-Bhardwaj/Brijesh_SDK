@@ -126,8 +126,7 @@ extension AccountsViewController: AccountDisconnectedListener {
             self.loadAccounts()
         }
     }
-    
-    func onAccountDisconnectionFailed(account: Account) {
+    func onAccountDisconnectionFailed(account: Account, error: ASLException) {
         self.loadAccounts()
     }
 }
