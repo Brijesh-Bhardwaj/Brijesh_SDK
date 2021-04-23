@@ -296,6 +296,9 @@ extension ConnectAccountViewController: WKNavigationDelegate {
     }
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
+        let showWebView = self.navigationHelper.shouldShowWebViewFor(url: webView.url)
+        self.viewModel.showWebView.send(showWebView)
+        
         if (self.navigationHelper.shouldIntercept(navigationResponse: navigationResponse.response)) {
             webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { cookies in
                 self.navigationHelper.intercept(navigationResponse: navigationResponse.response, cookies: cookies)

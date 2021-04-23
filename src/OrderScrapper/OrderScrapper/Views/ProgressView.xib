@@ -18,7 +18,7 @@
             <connections>
                 <outlet property="contentView" destination="iN0-l3-epB" id="muG-yU-NOV"/>
                 <outlet property="headerLabel" destination="QZB-3e-Azq" id="bS4-un-Iml"/>
-                <outlet property="progressView" destination="3ce-ha-nkj" id="bV1-TI-0uf"/>
+                <outlet property="progressView" destination="tYM-HJ-dpo" id="8Vc-qC-LHS"/>
                 <outlet property="stepLabel" destination="6o2-rg-nAQ" id="Hm3-zR-CmL"/>
             </connections>
         </placeholder>
@@ -39,21 +39,42 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3ce-ha-nkj" customClass="HorizontalProgressBar" customModule="OrderScrapper" customModuleProvider="target">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3ce-ha-nkj">
                     <rect key="frame" x="61" y="500" width="688.5" height="80"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tYM-HJ-dpo" customClass="HorizontalProgressBar" customModule="OrderScrapper" customModuleProvider="target">
+                            <rect key="frame" x="8" y="8" width="672.5" height="64"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="color" keyPath="color">
+                                    <color key="value" red="0.97254901959999995" green="0.67843137249999996" blue="0.1019607843" alpha="1" colorSpace="calibratedRGB"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                    <real key="value" value="10"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                    <color key="value" red="0.97254901959999995" green="0.67843137249999996" blue="0.1019607843" alpha="1" colorSpace="calibratedRGB"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </view>
+                    </subviews>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     <constraints>
+                        <constraint firstItem="tYM-HJ-dpo" firstAttribute="leading" secondItem="3ce-ha-nkj" secondAttribute="leading" constant="8" id="0MX-pk-zMo"/>
                         <constraint firstAttribute="height" constant="80" id="B7o-cy-gpu"/>
+                        <constraint firstItem="tYM-HJ-dpo" firstAttribute="top" secondItem="3ce-ha-nkj" secondAttribute="top" constant="8" id="KlY-9w-uFT"/>
+                        <constraint firstAttribute="bottom" secondItem="tYM-HJ-dpo" secondAttribute="bottom" constant="8" id="S4C-By-Qfe"/>
+                        <constraint firstAttribute="trailing" secondItem="tYM-HJ-dpo" secondAttribute="trailing" constant="8" id="odO-lc-RWi"/>
                     </constraints>
                     <userDefinedRuntimeAttributes>
-                        <userDefinedRuntimeAttribute type="color" keyPath="color">
-                            <color key="value" red="0.97254901959999995" green="0.67843137249999996" blue="0.1019607843" alpha="1" colorSpace="calibratedRGB"/>
-                        </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                            <real key="value" value="10"/>
+                            <real key="value" value="20"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                            <color key="value" red="0.97254901960784312" green="0.67843137254901964" blue="0.10196078431372549" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="value" red="0.99607843139999996" green="0.76078431369999999" blue="0.13725490200000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                            <real key="value" value="2"/>
                         </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                 </view>
