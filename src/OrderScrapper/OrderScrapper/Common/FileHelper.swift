@@ -72,8 +72,8 @@ class FileHelper {
             for fileURL in fileURLs {
                 do {
                     try FileManager.default.removeItem(at: fileURL)
-                } catch {print(error)}
+                } catch {print(AppConstants.tag, "clearDirectory", error.localizedDescription)}
             }
-        } catch  { print(error) }
+        } catch  { print(AppConstants.tag, "clearDirectory", error.localizedDescription) }
     }
 }

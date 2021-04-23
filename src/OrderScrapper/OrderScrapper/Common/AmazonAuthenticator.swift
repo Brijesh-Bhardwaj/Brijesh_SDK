@@ -44,7 +44,9 @@ internal class AmazonAuthenticator: Authenticator {
                     }
                 case .identification:
                     if let response = response as? String {
-                        if response.contains("emailId") {
+                        if response.contains("other") {
+                            self.viewModel.showWebView.send(true)
+                        } else if response.contains("emailId") {
                             self.injectEmailJS()
                         } else {
                             self.injectPasswordJS()
@@ -98,8 +100,10 @@ internal class AmazonAuthenticator: Authenticator {
     private func injectFieldIdentificationJS() {
         let js = "(function() { var element = document.getElementById('ap_email_login');" +
             "if (element != null && element.innerHTML !== null) " +
-            "{return 'emailId'} else {" +
-            " return null}})()"
+            " { return 'emailId' } else { " +
+            " var element = document.getElementById('ap_password');" +
+            " if (element != null && element.innerHTML !== null) " +
+            " { return 'pwd'} else { return 'other' }}})()"
         
         self.viewModel.jsPublisher.send((.identification, js))
     }
@@ -128,7 +132,7 @@ internal class AmazonAuthenticator: Authenticator {
             do {
                 try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: panelistId)
             } catch let error {
-                debugPrint("Error while updating account state: ", error)
+                print(AppConstants.tag, "updateAccountWithExceptionState", error.localizedDescription)
             }
         }
         _ = AmazonService.updateStatus(amazonId: userId, status: status

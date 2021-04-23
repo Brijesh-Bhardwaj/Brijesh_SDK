@@ -69,7 +69,11 @@ class AmazonOrderScrapper {
                 WebCacheCleaner.clear(completionHandler: nil)
                 accountDisconnectedListener.onAccountDisconnected(account: account)
             } else {
-                accountDisconnectedListener.onAccountDisconnectionFailed(account: account)
+                var errorMsg: String = "Failed while disconnecting account"
+                if let error = error as? APIError{
+                    errorMsg = error.errorMessage
+                }
+                accountDisconnectedListener.onAccountDisconnectionFailed(account: account, error: ASLException(errorMessage: errorMsg))
             }
         }
     }

@@ -12,5 +12,6 @@ public protocol AccountDisconnectedListener {
     
     ///Notifies the app that the account disconnction operation has failed
     /// - Parameter account: the account for which the account disconnect operation was performed
-    func onAccountDisconnectionFailed(account : Account) -> Void
+    /// - Parameter error: the error reason , wrapped in the ASLException object
+    func onAccountDisconnectionFailed(account : Account, error: ASLException) -> Void
 }

@@ -79,11 +79,6 @@ public class UserAccountMO: NSManagedObject, Account {
     /// Use this method to change account state as ConnectedAndDisconnected  and if already connected it returns from the methods.
     /// - Parameter accountDisconnectedListener: It is a listener which gives onAccountDisconnected and onAccountDisconnectionFailed callback
     public func disconnect(accountDisconnectedListener: AccountDisconnectedListener) {
-        if self.accountState == .ConnectedAndDisconnected {
-            //Already disconnected
-            return
-        }
-        
         let orderSource = getOrderSource()
         switch orderSource {
         case .Amazon:

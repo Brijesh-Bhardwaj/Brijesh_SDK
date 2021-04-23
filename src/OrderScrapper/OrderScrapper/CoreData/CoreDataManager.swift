@@ -49,7 +49,7 @@ class CoreDataManager {
                 account = NSEntityDescription.insertNewObject(forEntityName: AppConstants.entityName, into: context) as? UserAccountMO
             }
         } catch let error {
-            debugPrint("Failed to fetch account: \(error.localizedDescription)")
+            print(AppConstants.tag, "addAccount", error.localizedDescription)
         }
         if let account = account {
             account.userId = userId
@@ -60,7 +60,7 @@ class CoreDataManager {
             do {
                 try context.save()
             } catch let error {
-                print("Failed to add account: \(error.localizedDescription)")
+                print(AppConstants.tag, "addAccount", error.localizedDescription)
             }
         }
     }

@@ -126,8 +126,7 @@ extension AccountsViewController: AccountDisconnectedListener {
             self.loadAccounts()
         }
     }
-    
-    func onAccountDisconnectionFailed(account: Account) {
+    func onAccountDisconnectionFailed(account: Account, error: ASLException) {
         self.loadAccounts()
     }
 }
@@ -190,7 +189,9 @@ extension UIViewController {
         //Add OK button to a dialog message
         alert.addAction(ok)
         
-        self.present(alert, animated: true, completion: nil)
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+            self.present(alert, animated: true, completion: nil)
+        }
     }
 }
 

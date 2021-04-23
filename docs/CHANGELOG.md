@@ -12,6 +12,19 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 
 ## [Unreleased]
 
+## [0.2.7] - 2021-04-23
+
+### Added
+- added logic to show the webview in case any unknown url is encountered in the authentication step. For any other step, user is navigated back to login screen showing generic error message
+- added logs for error scenarios encountered in the SDK flow
+- In AccountDisconnectedListener protocol ASLException parameter added as error reason in the onAccountDisconnectionFailed callback method
+
+### Changed
+- the progress view UI element to have a border and padding
+
+### Fixed
+- added fix for stuck at step 1 by checking for the required element in the webpage and if not found then shown the web view to the user to proceed manually
+
 ## [0.2.6] - 2021-04-20
 
 ### Added

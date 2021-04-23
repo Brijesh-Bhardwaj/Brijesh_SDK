@@ -11,4 +11,6 @@ protocol NavigationHelper {
     func shouldIntercept(navigationResponse: URLResponse) -> Bool
     
     func intercept(navigationResponse: URLResponse, cookies: [HTTPCookie])
+    
+    func shouldShowWebViewFor(url: URL?) -> Bool
 }

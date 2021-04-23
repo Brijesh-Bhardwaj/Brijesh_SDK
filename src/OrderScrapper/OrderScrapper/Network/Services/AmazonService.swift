@@ -28,7 +28,8 @@ class AmazonService {
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<DateRange> {
                 if response.isError {
-                    completionHandler(nil, APIError(error: response.message ?? "Error"))
+                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    print(AppConstants.tag, "getDateRange", response.error ?? "Error")
                 } else {
                     completionHandler(response.data, nil)
                 }
@@ -58,7 +59,8 @@ class AmazonService {
         client.executeAPI() { response, error in
             if let response = response as? APIResponse<ReportUpload> {
                 if response.isError {
-                    completionHandler(nil, APIError(error: response.message ?? "Error"))
+                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    print(AppConstants.tag, "uploadFile", response.error ?? "Error")
                 } else {
                     completionHandler(response.data, nil)
                 }
@@ -76,7 +78,8 @@ class AmazonService {
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<[PIIAttribute]> {
                 if response.isError {
-                    completionHandler(nil, APIError(error: response.message ?? "Error"))
+                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    print(AppConstants.tag, "getPIIList", response.error ?? "Error")
                 } else {
                     completionHandler(response.data, nil)
                 }
@@ -97,6 +100,7 @@ class AmazonService {
             if let response = response as? APIResponse<GetAccountsResponse> {
                 if response.isError {
                     completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    print(AppConstants.tag, "getAccounts", response.error ?? "Error")
                 } else {
                     completionHandler(response.data, nil)
                 }
@@ -120,6 +124,7 @@ class AmazonService {
             if let response = response as? APIResponse<AccountDetails> {
                 if response.isError {
                     completionHandler(nil, response.error ?? "Error")
+                    print(AppConstants.tag, "registerConnection", response.error ?? "Error")
                 } else {
                     completionHandler(response.data, nil)
                 }
@@ -141,7 +146,8 @@ class AmazonService {
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<AccountDetails> {
                 if response.isError {
-                    completionHandler(nil, APIError(error: response.message ?? "Error"))
+                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    print(AppConstants.tag, "updateStatus", response.error ?? "Error")
                 } else {
                     completionHandler(response.data, nil)
                 }
