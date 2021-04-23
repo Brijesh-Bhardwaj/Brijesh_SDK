@@ -29,11 +29,9 @@ public class OrdersExtractor {
             throw ASLException(errorMessage: Strings.ErrorAuthProviderNotImplemented)
         }
         
-        if (!AmazonOrderScrapper.isInitialized()) {
-            AmazonOrderScrapper.shared.initialize(authProvider: authProvider,
-                                                  viewPresenter: viewPresenter,
-                                                  analyticsProvider: analyticsProvider)
-        }
+        AmazonOrderScrapper.shared.initialize(authProvider: authProvider,
+                                              viewPresenter: viewPresenter,
+                                              analyticsProvider: analyticsProvider)
         
         //Configure firebase analytics
         if analyticsProvider == nil {
