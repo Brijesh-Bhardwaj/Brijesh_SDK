@@ -22,11 +22,6 @@ public class OrdersExtractor {
     public static func initialize(authProvider: AuthProvider,
                                   viewPresenter: ViewPresenter,
                                   analyticsProvider: AnalyticsProvider?) throws {
-        if isInitialized {
-            print(AppConstants.tag, "initialize", Strings.ErrorLibAlreadyInitialized)
-            return
-        }
-        
         let authToken = authProvider.getAuthToken()
         let panelistId = authProvider.getPanelistID()
         
