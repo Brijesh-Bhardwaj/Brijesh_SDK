@@ -7,4 +7,8 @@ import Foundation
  **/
 public enum OrderSource: Int16 {
     case Amazon
+    
+    var value: String {
+        return String(describing: self)
+    }
 }

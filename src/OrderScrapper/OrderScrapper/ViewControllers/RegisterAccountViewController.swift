@@ -86,6 +86,7 @@ class RegisterAccountViewController: UIViewController {
         WebCacheCleaner.clear() { cleared in
             self.presentConnectVC(userID: userId, password: password)
         }
+        FirebaseAnalyticsUtil.logUserProperty(orderSourceId: userId, orderSource: OrderSource.Amazon)
     }
     
     @IBAction func onBackEvent(_ sender: Any) {

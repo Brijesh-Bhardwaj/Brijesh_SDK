@@ -199,7 +199,21 @@ class ConnectAccountViewController: UIViewController {
                                           EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                           EventConstant.Status: status]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedCaptcha, eventAttributes: logEventAttributes)
-                case .dateRange, .downloadReport, .generateReport, .identification, .error:break
+                case .generateReport:
+                    //Logging event for report generation
+                    var logEventAttributes:[String:String] = [:]
+                    logEventAttributes = [EventConstant.OrderSource:                    String(OrderSource.Amazon.rawValue),
+                                          EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                          EventConstant.Status: status]
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportGeneration, eventAttributes: logEventAttributes)
+                case .downloadReport:
+                    //Logging event for report download
+                    var logEventAttributes:[String:String] = [:]
+                    logEventAttributes = [EventConstant.OrderSource:                    String(OrderSource.Amazon.rawValue),
+                                          EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                          EventConstant.Status: status]
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportDownload, eventAttributes: logEventAttributes)
+                case .dateRange, .identification, .error:break
                 }
             }
         })
