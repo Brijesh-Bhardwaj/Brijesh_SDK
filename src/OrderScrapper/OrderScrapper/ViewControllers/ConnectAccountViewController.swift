@@ -108,7 +108,7 @@ class ConnectAccountViewController: UIViewController {
     @IBAction func didClickBackButton(_ sender: Any) {
         if self.shouldAllowBack {
             self.webContentView.stopLoading()
-            LibContext.shared.scrapeCompletionPublisher.send(((false, nil), ASLException(errorMessage: "", errorType: ErrorType.userAborted)))
+            LibContext.shared.scrapeCompletionPublisher.send(((false, nil), ASLException(errorMessage: Strings.ErrorUserAbortedProcess, errorType: ErrorType.userAborted)))
             self.dismiss(animated: true, completion: nil)
         }
     }

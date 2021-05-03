@@ -37,4 +37,5 @@ struct Strings {
     static let ErrorLibNotInitialized = "OrdersExtractor is not initialized."
     static let ErrorAuthProviderNotImplemented = "AuthProvider implementation is missing."
     static let ExtractionDisabled = "Receipts scrapped already."
+    static let ErrorUserAbortedProcess = "User aborted the process."
 }
