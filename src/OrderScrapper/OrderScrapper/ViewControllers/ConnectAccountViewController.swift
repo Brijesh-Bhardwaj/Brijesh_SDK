@@ -18,6 +18,7 @@ class ConnectAccountViewController: UIViewController {
     
     private var viewInit = false
     private var isFetchSkipped: Bool = false
+    private var shouldAllowBack = false
     
     var account: Account!
     
@@ -72,7 +73,7 @@ class ConnectAccountViewController: UIViewController {
         self.viewModel.userAccount = self.account
         
         self.webContentView.navigationDelegate = self
-        
+               
         self.webContentView.evaluateJavaScript("navigator.userAgent") { (agent, error) in
             var userAgent = "iPhone;"
             if let agent = agent as? String {
@@ -105,8 +106,11 @@ class ConnectAccountViewController: UIViewController {
     
     // MARK: - IBActions
     @IBAction func didClickBackButton(_ sender: Any) {
-        self.webContentView.stopLoading()
-        self.dismiss(animated: true, completion: nil)
+        if self.shouldAllowBack {
+            self.webContentView.stopLoading()
+            LibContext.shared.scrapeCompletionPublisher.send(((false, nil), ASLException(errorMessage: Strings.ErrorUserAbortedProcess, errorType: ErrorType.userAborted)))
+            self.dismiss(animated: true, completion: nil)
+        }
     }
     
     // MARK: - Private Methods
@@ -126,6 +130,7 @@ class ConnectAccountViewController: UIViewController {
                     }
                 } else {
                     self.contentView.bringSubviewToFront(self.networkErrorView)
+                    self.shouldAllowBack = true
                 }
             }
         }
@@ -234,6 +239,7 @@ class ConnectAccountViewController: UIViewController {
         webViewErrorSubscriber = self.viewModel.webviewError.receive(on: RunLoop.main).sink(receiveValue: { isWebError in
             if isWebError {
                 self.contentView.bringSubviewToFront(self.errorView)
+                self.shouldAllowBack = true
             }
         })
         authErrorSubscriber = self.viewModel.authError.receive(on: RunLoop.main).sink(receiveValue: { isError in
@@ -261,6 +267,7 @@ class ConnectAccountViewController: UIViewController {
             if complete {
                 self.backButton.isHidden = true
                 self.contentView.bringSubviewToFront(self.fetchSuccessView)
+                self.shouldAllowBack = true
             }
         })
         stopScrappingSubscriber = self.viewModel.disableScrapping.receive(on: RunLoop.main).sink(receiveValue: { disable in
@@ -268,6 +275,7 @@ class ConnectAccountViewController: UIViewController {
             if disable {
                 self.backButton.isHidden = true
                 self.contentView.bringSubviewToFront(self.fetchSuccessView)
+                self.shouldAllowBack = true
             }
         })
     }
@@ -279,18 +287,20 @@ class ConnectAccountViewController: UIViewController {
         self.contentView.bringSubviewToFront(self.progressView)
         self.progressView.progress = 1/6
         self.progressView.stepText = Utils.getString(key: Strings.Step1)
+        self.shouldAllowBack = false
     }
     
     private func buttonClickHandler() {
         if hasNetwork() {
             loadWebContent()
+            self.shouldAllowBack = false
         }
     }
     
     private func successHandler() {
         if self.isFetchSkipped {
             let result = (true, OrderFetchSuccessType.fetchSkipped)
-            LibContext.shared.scrapeCompletionPublisher.send((result, Strings.ExtractionDisabled))
+            LibContext.shared.scrapeCompletionPublisher.send((result, ASLException(errorMessage: Strings.ExtractionDisabled, errorType: nil) ))
         } else {
             let result = (true, OrderFetchSuccessType.fetchCompleted)
             LibContext.shared.scrapeCompletionPublisher.send((result, nil))

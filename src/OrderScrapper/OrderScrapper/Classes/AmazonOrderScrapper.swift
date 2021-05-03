@@ -48,7 +48,7 @@ class AmazonOrderScrapper {
             if completed {
                 orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
             } else {
-                orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: error ?? ""), account: account)
+                orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: error?.errorMessage ?? "", errorType: error?.errorType), account: account)
             }
             self.viewPresenter.dismissView()
         }
@@ -73,7 +73,7 @@ class AmazonOrderScrapper {
                 if let error = error as? APIError{
                     errorMsg = error.errorMessage
                 }
-                accountDisconnectedListener.onAccountDisconnectionFailed(account: account, error: ASLException(errorMessage: errorMsg))
+                accountDisconnectedListener.onAccountDisconnectionFailed(account: account, error: ASLException(errorMessage: errorMsg, errorType: nil))
             }
         }
     }
@@ -84,7 +84,7 @@ class AmazonOrderScrapper {
             if completed {
                 orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
             } else {
-                orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: error ?? ""), account: account)
+                orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: error?.errorMessage ?? "" , errorType: nil), account: account)
             }
             self.viewPresenter.dismissView()
         }

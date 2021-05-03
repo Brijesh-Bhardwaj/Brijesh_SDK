@@ -26,7 +26,7 @@ public class OrdersExtractor {
         let panelistId = authProvider.getPanelistID()
         
         if (authToken.isEmpty || panelistId.isEmpty) {
-            throw ASLException(errorMessage: Strings.ErrorAuthProviderNotImplemented)
+            throw ASLException(errorMessage: Strings.ErrorAuthProviderNotImplemented, errorType: nil)
         }
         
         AmazonOrderScrapper.shared.initialize(authProvider: authProvider,
@@ -101,7 +101,7 @@ public class OrdersExtractor {
                 
             }
         } else {
-            throw ASLException(errorMessage: Strings.ErrorLibNotInitialized)
+            throw ASLException(errorMessage: Strings.ErrorLibNotInitialized, errorType: nil)
         }
     }
     
@@ -121,7 +121,7 @@ public class OrdersExtractor {
             
             account.connect(orderExtractionListener: orderExtractionListner)
         } else {
-            throw ASLException(errorMessage: Strings.ErrorLibNotInitialized)
+            throw ASLException(errorMessage: Strings.ErrorLibNotInitialized, errorType: nil)
         }
     }
     
