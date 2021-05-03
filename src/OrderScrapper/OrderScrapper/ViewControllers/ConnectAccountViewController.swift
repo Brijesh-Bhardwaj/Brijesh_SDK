@@ -287,6 +287,7 @@ class ConnectAccountViewController: UIViewController {
         self.contentView.bringSubviewToFront(self.progressView)
         self.progressView.progress = 1/6
         self.progressView.stepText = Utils.getString(key: Strings.Step1)
+        self.shouldAllowBack = false
     }
     
     private func buttonClickHandler() {
