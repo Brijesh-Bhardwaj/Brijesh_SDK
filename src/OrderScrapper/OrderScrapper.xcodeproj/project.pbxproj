@@ -21,6 +21,7 @@
 		1CA1EDF1260E16110000C859 /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1EDF0260E16110000C859 /* EventType.swift */; };
 		1CA1EDF4260E16EF0000C859 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1EDF3260E16EF0000C859 /* Event.swift */; };
 		1CA860C8260D03DB00261595 /* FirebaseAnalyticsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA860C7260D03DB00261595 /* FirebaseAnalyticsUtil.swift */; };
+		1CB5FFE9263BEE710072F35C /* ErrorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB5FFE8263BEE710072F35C /* ErrorType.swift */; };
 		1CB9A7A8262427B60085E494 /* OrderStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB9A7A7262427B60085E494 /* OrderStatus.swift */; };
 		1CBF6D4325F5FFBE001A801B /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CBF6D3925F5FFBE001A801B /* OrderScrapper.framework */; };
 		1CBF6D4825F5FFBE001A801B /* OrderScrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D4725F5FFBE001A801B /* OrderScrapperTests.swift */; };
@@ -137,6 +138,7 @@
 		1CA860A5260CEE1400261595 /* GoogleAppMeasurement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAppMeasurement.framework; path = Carthage/Build/iOS/GoogleAppMeasurement.framework; sourceTree = "<group>"; };
 		1CA860A6260CEE1400261595 /* FirebaseCoreDiagnostics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCoreDiagnostics.framework; path = Carthage/Build/iOS/FirebaseCoreDiagnostics.framework; sourceTree = "<group>"; };
 		1CA860C7260D03DB00261595 /* FirebaseAnalyticsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseAnalyticsUtil.swift; sourceTree = "<group>"; };
+		1CB5FFE8263BEE710072F35C /* ErrorType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorType.swift; sourceTree = "<group>"; };
 		1CB9A7A7262427B60085E494 /* OrderStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderStatus.swift; sourceTree = "<group>"; };
 		1CBF6D3925F5FFBE001A801B /* OrderScrapper.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OrderScrapper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CBF6D3C25F5FFBE001A801B /* OrderScrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OrderScrapper.h; sourceTree = "<group>"; };
@@ -399,6 +401,7 @@
 				E148DB4F25FF2BFD001430BE /* OrderSource.swift */,
 				E15343E7261466700074F3ED /* OrderFetchSuccessType.swift */,
 				1CB9A7A7262427B60085E494 /* OrderStatus.swift */,
+				1CB5FFE8263BEE710072F35C /* ErrorType.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -683,6 +686,7 @@
 				E148DB6E25FF2BFD001430BE /* ASLException.swift in Sources */,
 				1C07411A2604F2540013067C /* String.swift in Sources */,
 				E148DB5C25FF2BFD001430BE /* AmazonOrderScrapper.swift in Sources */,
+				1CB5FFE9263BEE710072F35C /* ErrorType.swift in Sources */,
 				1CEDD13B26038CAE00E7BAB4 /* UserAccountMO.swift in Sources */,
 				E148DB9325FF3D8A001430BE /* AmazonAuthenticator.swift in Sources */,
 				1C006FBB2600C02700F9263E /* Colors.swift in Sources */,
