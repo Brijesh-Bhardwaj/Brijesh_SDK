@@ -81,6 +81,7 @@ public class OrdersExtractor {
                                                               accountStatus:statusToUpdate,
                                                               orderSource: OrderSource.Amazon.rawValue, panelistId: panelistId)
                             let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
+                            accountsFromDB.first?.isFirstConnectedAccount = account.firstaccount
                             DispatchQueue.main.async {
                                 completionHandler(accountsFromDB, hasNeverConnected)
                             }
