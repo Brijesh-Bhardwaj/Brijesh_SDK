@@ -54,13 +54,6 @@ class AmazonNavigationHelper: NavigationHelper {
             self.authenticator.authenticate()
             self.currentStep = .authentication
             publishProgrssFor(step: .authentication)
-            
-            //Log event for connect account
-            var logConnectAccountEventAttributes:[String:String] = [:]
-            logConnectAccountEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                                EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                                EventConstant.Status: EventStatus.Connected]
-            FirebaseAnalyticsUtil.logEvent(eventType: EventType.AccountConnect, eventAttributes: logConnectAccountEventAttributes)
         } else if (urlString.contains(AmazonURL.authApproval)
                     || urlString.contains(AmazonURL.twoFactorAuth)) {
             self.viewModel.showWebView.send(true)
@@ -429,6 +422,13 @@ class AmazonNavigationHelper: NavigationHelper {
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIUploadReport, eventAttributes: logEventAttributes)
+                
+                //Log event for connect account
+                var logConnectAccountEventAttributes:[String:String] = [:]
+                logConnectAccountEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                                    EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                                    EventConstant.Status: EventStatus.Connected]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.AccountConnect, eventAttributes: logConnectAccountEventAttributes)
             } else {
                 self.viewModel.webviewError.send(true)
                 _ = AmazonService.updateStatus(amazonId: self.viewModel.userAccount.userID,

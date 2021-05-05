@@ -7,8 +7,10 @@ import Foundation
  **/
 public class ASLException: Error {
     public let errorMessage: String
+    public let errorType: ErrorType?
     
-    init(errorMessage: String) {
+    init(errorMessage: String, errorType: ErrorType?) {
         self.errorMessage = errorMessage
+        self.errorType = errorType
     }
 }

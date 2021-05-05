@@ -176,6 +176,10 @@ extension AccountsViewController: AnalyticsProvider {
     func logEvent(eventType: String, eventAttributes: Dictionary<String, String>) {
         Analytics.logEvent(eventType, parameters: eventAttributes)
     }
+    
+    func setUserProperty(userProperty: String, userPropertyValue: String) {
+        Analytics.setUserProperty(userProperty, forName: userPropertyValue)
+    }
 }
 extension UIViewController {
     func showAlert(title: String, message: String, completionHandler: ((UIAlertAction) -> Void)?) {

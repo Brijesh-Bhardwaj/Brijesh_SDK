@@ -28,4 +28,13 @@ class FirebaseAnalyticsUtil {
         }
     }
     
+    static func logUserProperty(orderSourceId: String, orderSource: OrderSource) {
+        let analyticsProvider = AmazonOrderScrapper.shared.analyticsProvider
+        if let analyticsProvider = analyticsProvider {
+            analyticsProvider.setUserProperty(userProperty: EventConstant.PanelistID, userPropertyValue: LibContext.shared.authProvider.getPanelistID())
+            analyticsProvider.setUserProperty(userProperty: EventConstant.OrderSourceID, userPropertyValue: orderSourceId)
+            analyticsProvider.setUserProperty(userProperty: EventConstant.AppID, userPropertyValue: AppConstants.identifier)
+            analyticsProvider.setUserProperty(userProperty: EventConstant.OrderSource, userPropertyValue: orderSource.value)
+        }
+    }
 }

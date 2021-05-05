@@ -20,6 +20,8 @@ struct EventType {
     static let OrderCSVPParse = "order_csv_parse"
     static let OrderCSVDownload = "order_csv_download"
     static let JSDetectOtherURL = "js_detect_other_url"
+    static let JSDetectReportGeneration = "js_detected_report_generation"
+    static let JSDetectReportDownload = "js_detected_report_download"
 }
 
 struct EventStatus {
