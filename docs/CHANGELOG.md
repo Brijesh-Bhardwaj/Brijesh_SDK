@@ -12,6 +12,20 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 
 ## [Unreleased]
 
+## [0.2.8] - 2021-05-05
+
+### Added
+- On error or network error screen callback added on the back button click with the exception type as userAborted  
+- Back button disable while scrapping is going on and in case of any error or network failure back button enable on the progress screen
+- ASLException updated with the optional ErrorType attribute.
+- Event logs added for the event of the generate report and download report. User properties logging added for some important user values. 
+
+### Changed
+- Account connect event logging added when the csv gets uploaded successfully to the server. 
+
+### Known Issue
+- [Github Issue #64]: User not credited with points/spins When the user turn off internet and press back button in ongoing process in between step4 and step5.
+
 ## [0.2.7] - 2021-04-23
 
 ### Added
