@@ -86,8 +86,32 @@ public class OrdersExtractor {
                                 completionHandler(accountsFromDB, hasNeverConnected)
                             }
                         } else {
-                            DispatchQueue.main.async {
-                                completionHandler(accountsInDB, hasNeverConnected)
+                            if let account = accountDetails.first, let accountInDb = accountsInDB.first {
+                                if account.amazonId.elementsEqual(accountInDb.userID) {
+                                    accountsInDB.first?.isFirstConnectedAccount = account.firstaccount
+                                    DispatchQueue.main.async {
+                                        completionHandler(accountsInDB, hasNeverConnected)
+                                    }
+                                } else {
+                                    CoreDataManager.shared.deleteAccountsByPanelistId(panelistId: panelistId)
+                                    CoreDataManager.shared.addAccount(userId: account.amazonId,
+                                                                      password: "",
+                                                                      accountStatus:AccountState.ConnectedButException.rawValue,
+                                                                      orderSource: OrderSource.Amazon.rawValue,
+                                                                      panelistId: panelistId)
+                                    let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
+                                    accountsFromDB.first?.isFirstConnectedAccount = account.firstaccount
+                                    DispatchQueue.main.async {
+                                        completionHandler(accountsFromDB, hasNeverConnected)
+                                    }
+                                }
+                            } else {
+                                if let account = accountDetails.first {
+                                    accountsInDB.first?.isFirstConnectedAccount = account.firstaccount
+                                }
+                                DispatchQueue.main.async {
+                                    completionHandler(accountsInDB, hasNeverConnected)
+                                }
                             }
                         }
                     } else {
