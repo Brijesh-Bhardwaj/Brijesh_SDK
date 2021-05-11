@@ -12,6 +12,17 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 
 ## [Unreleased]
 
+### Fixed
+- Fixed Issue #71: compared the amazon ID received from the server and local DB and accordingly updated the local DB.
+- ensured correct isFirstConnectedAccount flag is passed to the app
+- disabled back button on success screen and set `shouldAllowBack` flag to false
+
+## [0.2.9] - 2021-05-07
+
+### Changed
+- firstaccount flag coming in get accounts API response updated in DB object and given back in the callback to the app
+- Error message given in the callback if user aborted the scrapping process
+
 ## [0.2.8] - 2021-05-05
 
 ### Added
