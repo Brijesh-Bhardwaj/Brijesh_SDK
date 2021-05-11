@@ -10,7 +10,7 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
 
-## [Unreleased]
+## [0.3.0] - 2021-05-11
 
 ### Fixed
 - Fixed Issue #71: compared the amazon ID received from the server and local DB and accordingly updated the local DB.
