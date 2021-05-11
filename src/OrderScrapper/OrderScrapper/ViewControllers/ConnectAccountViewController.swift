@@ -265,17 +265,17 @@ class ConnectAccountViewController: UIViewController {
         })
         completionSubscriber = self.viewModel.completionPublisher.receive(on: RunLoop.main).sink(receiveValue: { complete in
             if complete {
+                self.backButton.isEnabled = false
                 self.backButton.isHidden = true
                 self.contentView.bringSubviewToFront(self.fetchSuccessView)
-                self.shouldAllowBack = true
             }
         })
         stopScrappingSubscriber = self.viewModel.disableScrapping.receive(on: RunLoop.main).sink(receiveValue: { disable in
             self.isFetchSkipped = disable
             if disable {
+                self.backButton.isEnabled = false
                 self.backButton.isHidden = true
                 self.contentView.bringSubviewToFront(self.fetchSuccessView)
-                self.shouldAllowBack = true
             }
         })
     }
