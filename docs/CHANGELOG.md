@@ -10,6 +10,11 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
 
+## [0.3.1] - 2021-05-14
+
+### Added
+- Network check added before showing error view. If network is not present then no network error view shown instead of error view.
+
 ## [0.3.0] - 2021-05-11
 
 ### Fixed
