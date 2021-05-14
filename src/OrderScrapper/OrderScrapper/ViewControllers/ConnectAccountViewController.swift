@@ -238,7 +238,11 @@ class ConnectAccountViewController: UIViewController {
         })
         webViewErrorSubscriber = self.viewModel.webviewError.receive(on: RunLoop.main).sink(receiveValue: { isWebError in
             if isWebError {
-                self.contentView.bringSubviewToFront(self.errorView)
+                if self.hasNetwork() {
+                    self.contentView.bringSubviewToFront(self.errorView)
+                } else {
+                    self.contentView.bringSubviewToFront(self.networkErrorView)
+                }
                 self.shouldAllowBack = true
             }
         })
