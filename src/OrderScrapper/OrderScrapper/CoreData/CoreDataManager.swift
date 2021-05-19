@@ -157,4 +157,13 @@ class CoreDataManager {
         
         return NSManagedObject(entity: entity, insertInto: nil) as! UserAccountMO
     }
+    
+    public func addJSUrls(urls: [String]) {
+        
+    }
+    
+    public func getJSUrls() -> [String] {
+        
+        return []
+    }
 }

@@ -38,4 +38,18 @@ struct Strings {
     static let ErrorAuthProviderNotImplemented = "AuthProvider implementation is missing."
     static let ExtractionDisabled = "Receipts scrapped already."
     static let ErrorUserAbortedProcess = "User aborted the process."
+    
+    static let ErrorChildClassShouldImplementMethod = "Child class should implement this method"
+    static let ErrorOtherUrlLoaded = "Other url loaded"
+    static let ErrorOccuredWhileInjectingJS = "Error occured"
+    static let ErrorCaptchaPageLoaded = "Captcha page loaded"
+    static let ErrorUserIdIsNil = "userId is nil"
+    static let ErrorPasswordIsNil = "password is nil"
+    static let ErrorEmailJSInjectionFailed = "email JS injection failed"
+    static let ErrorPasswordJSInjectionFailed = "password JS injection failed"
+    static let ErrorDuringNavigation = "An error occurred during navigation"
+    static let ErrorDuringEarlyNavigation = "An error occurred during the early navigation process"
+    static let ErrorWebContentProcessDidTerminate = "webViewWebContentProcessDidTerminate()"
+
+
 }

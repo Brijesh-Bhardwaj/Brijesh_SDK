@@ -138,7 +138,7 @@ class AmazonNavigationHelper: NavigationHelper {
         }
         
         let fileDownloader = FileDownloader()
-        fileDownloader.downloadReportFile(fromURL: url, cookies: cookies) { success, tempURL in
+        fileDownloader.downloadFile(fromURL: url, cookies: cookies) { success, tempURL in
             var logEventAttributes:[String:String] = [:]
             if success, let tempURL = tempURL {
                 let fileName = FileHelper.getReportFileNameFromResponse(response)

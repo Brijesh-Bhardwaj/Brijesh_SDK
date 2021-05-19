@@ -17,6 +17,7 @@ class AmazonService {
     private static let GetAccounts = "amazon-connection/get_accounts"
     private static let CreateConnection = "amazon-connection/register_connection"
     private static let UpdateStatus = "amazon-connection/update_status"
+    private static let FetchScript = "scrapping/fetchAmazonScript"
     
     static func getDateRange(amazonId: String,
                              completionHandler: @escaping (DateRange?, Error?) -> Void) -> APIClient {
@@ -157,4 +158,5 @@ class AmazonService {
         }
         return client
     }
+   
 }
