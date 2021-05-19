@@ -308,7 +308,8 @@ class AmazonNavigationHelper: NavigationHelper {
     
     private func setJSInjectionResultSubscriber() {
         self.jsResultSubscriber = viewModel.jsResultPublisher.receive(on: RunLoop.main)
-            .sink(receiveValue: { (injectValue, result) in
+            .sink(receiveValue: { [weak self] (injectValue, result) in
+                guard let self = self else { return }
                 let (response, _) = result
                 switch injectValue {
                 case .captcha,.downloadReport, .email, .generateReport, .identification, .password, .error: break
