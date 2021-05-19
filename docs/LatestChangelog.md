@@ -1,1 +1,2 @@
-- Network check added before showing error view. If network is not present then no network error view shown instead of error view.
+
+- Fixed Github Issue #80: Fixed the memory leak which restricted the ViewControllers to deinitialize, thereby causing the web view to connect again on network change.

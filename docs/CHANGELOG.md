@@ -10,6 +10,11 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
 
+## [0.3.2] - 2021-05-18
+
+### Fixed
+Fixed Github Issue #80: Fixed the memory leak which restricted the ViewControllers to deinitialize, thereby causing the web view to connect again on network change.
+
 ## [0.3.1] - 2021-05-14
 
 ### Added
