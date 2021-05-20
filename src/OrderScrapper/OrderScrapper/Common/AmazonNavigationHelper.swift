@@ -16,6 +16,7 @@ struct AmazonURL {
     static let generateReport   =   "gp/b2b/reports/"
     static let resetPassword    =   "ap/forgotpassword/reverification"
     static let reportSuccess    =   "gp/b2b/reports?"
+    static let orderHistory     =   "/gp/your-account/order-history"
 }
 
 private enum Step: Int16 {
@@ -138,7 +139,7 @@ class AmazonNavigationHelper: NavigationHelper {
         }
         
         let fileDownloader = FileDownloader()
-        fileDownloader.downloadReportFile(fromURL: url, cookies: cookies) { success, tempURL in
+        fileDownloader.downloadFile(fromURL: url, cookies: cookies) { success, tempURL in
             var logEventAttributes:[String:String] = [:]
             if success, let tempURL = tempURL {
                 let fileName = FileHelper.getReportFileNameFromResponse(response)
