@@ -5,5 +5,5 @@
 import Foundation
 
 protocol BSAuthenticator {
-    func authenticate(url: String, account: Account, listener: BSAuthenticationStatusListener)
+    func authenticate(account: Account,configurations: Configurations)
 }

@@ -50,6 +50,6 @@ struct Strings {
     static let ErrorDuringNavigation = "An error occurred during navigation"
     static let ErrorDuringEarlyNavigation = "An error occurred during the early navigation process"
     static let ErrorWebContentProcessDidTerminate = "webViewWebContentProcessDidTerminate()"
-
+    static let ErrorNoConfigurationsFound = "Configurations not found for the given order source"
 
 }

@@ -8,7 +8,6 @@ class BSScrapper: BSAuthenticationStatusListener {
     var windowManager: BSHeadlessWindowManager = BSHeadlessWindowManager()
     var mWebClient: BSWebClient
     var mAuthenticator: BSAuthenticator?
-    private var baseUrl = "https://www.amazon.com/ap/signin/?_encoding=UTF8&openid.assoc_handle=usflex&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.mode=checkid_setup&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&openid.ns.pape=http%3A%2F%2Fspecs.openid.net%2Fextensions%2Fpape%2F1.0&openid.return_to=https%3A%2F%2Fwww.amazon.com%2Fgp%2Fyour-account%2Forder-history%2F"
     
     init(webClient: BSWebClient) {
         self.mWebClient = webClient
@@ -17,8 +16,24 @@ class BSScrapper: BSAuthenticationStatusListener {
     func startScrapping(account: Account) {
         windowManager.attachHeadlessView(view: mWebClient)
         do {
-            try getAuthenticator().authenticate(url: baseUrl, account: account, listener: self)
+            var orderSource: OrderSource
+            try orderSource = getOrderSource()
+            ConfigManager.shared.getConfigurations(orderSource: orderSource)  { configurations, error in
+                if let configurations = configurations {
+                    do {
+                        try self.getAuthenticator().authenticate(account: account, configurations: configurations)
+                    } catch {
+                        self.onAuthenticationFailure(errorReason: ASLException(
+                                                        errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil))
+                    }
+                } else {
+                    self.onAuthenticationFailure(errorReason: ASLException(
+                                                    errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil))
+                }
+            }
         } catch {
+            self.onAuthenticationFailure(errorReason: ASLException(
+                                            errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil))
         }
     }
     
@@ -29,13 +44,17 @@ class BSScrapper: BSAuthenticationStatusListener {
     func isScrapping() {
     }
     
+    
     func getAuthenticator() throws -> BSAuthenticator {
+        throw ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
+    }
+    
+    func getOrderSource() throws -> OrderSource {
         throw ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
     }
     
     func onAuthenticationSuccess() {
         print("### onAuthenticationSuccess")
-        
     }
     
     func onAuthenticationFailure(errorReason: ASLException) {

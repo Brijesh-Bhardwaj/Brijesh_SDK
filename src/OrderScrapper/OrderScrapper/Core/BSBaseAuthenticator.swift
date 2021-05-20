@@ -9,17 +9,18 @@ class BSBaseAuthenticator: NSObject, BSAuthenticator {
     var listener: BSAuthenticationStatusListener?
     var webClient: BSWebClient
     var account: Account?
-    
-    
-    init(webClient: BSWebClient) {
+    var configurations: Configurations?
+
+    init(webClient: BSWebClient, listener: BSAuthenticationStatusListener) {
         self.webClient = webClient
+        self.listener = listener
     }
     
-    func authenticate(url: String, account: Account, listener: BSAuthenticationStatusListener) {
-        self.listener = listener
+    func authenticate(account: Account, configurations: Configurations) {
         self.webClient.navigationDelegate = self
         self.account = account
-        self.webClient.loadUrl(url: url)
+        self.webClient.loadUrl(url: configurations.login)
+        self.configurations = configurations
     }
     
     func onPageFinish(url: String) throws {
