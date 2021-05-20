@@ -14,21 +14,8 @@
 		1C006FBF2600D75D00F9263E /* ValidationUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FBE2600D75D00F9263E /* ValidationUtil.swift */; };
 		1C07410B2604B5B10013067C /* RNCryptoUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C07410A2604B5B10013067C /* RNCryptoUtil.swift */; };
 		1C07411A2604F2540013067C /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0741192604F2540013067C /* String.swift */; };
-		1C147C42264BA68E0003EDF7 /* JSFileUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C147C41264BA68E0003EDF7 /* JSFileUtils.swift */; };
-		1C2682FD264BE20A004ED054 /* BSScrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2682FC264BE20A004ED054 /* BSScrapper.swift */; };
-		1C268303264BE270004ED054 /* BSWebClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C268302264BE270004ED054 /* BSWebClient.swift */; };
-		1C268307264BE2B0004ED054 /* BSHeadlessWindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C268306264BE2B0004ED054 /* BSHeadlessWindowManager.swift */; };
-		1C26830B264BE2C8004ED054 /* AmazonScrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C26830A264BE2C8004ED054 /* AmazonScrapper.swift */; };
-		1C26830F264BE310004ED054 /* BSAmazonAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C26830E264BE310004ED054 /* BSAmazonAuthenticator.swift */; };
-		1C268319264BE7B4004ED054 /* BSAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C268318264BE7B4004ED054 /* BSAuthenticator.swift */; };
-		1C26831D264BE89D004ED054 /* BSAuthenticationStatusListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C26831C264BE89D004ED054 /* BSAuthenticationStatusListener.swift */; };
 		1C2F8DF4260B25870053E73A /* OrdersExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2F8DF3260B25870053E73A /* OrdersExtractor.swift */; };
 		1C425D1F26109F640009A3FA /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C425D1E26109F640009A3FA /* Dictionary.swift */; };
-		1C4F89A12654E91100925FAB /* ScrapperConfigs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F89A02654E91100925FAB /* ScrapperConfigs.swift */; };
-		1C4F89A52654E98D00925FAB /* AmazonUrls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F89A42654E98D00925FAB /* AmazonUrls.swift */; };
-		1C4F89AB2654EA0C00925FAB /* Configurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F89AA2654EA0C00925FAB /* Configurations.swift */; };
-		1C4F89BA2655502000925FAB /* ConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F89B92655502000925FAB /* ConfigManager.swift */; };
-		1C5DE05F264EA76400275073 /* JSUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5DE05E264EA76400275073 /* JSUtils.swift */; };
 		1C72BFC22629B5D40029255C /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C72BFC12629B5D40029255C /* UIColorExtension.swift */; };
 		1C8C9928261D8BED0023A16D /* AnalyticsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C9927261D8BED0023A16D /* AnalyticsProvider.swift */; };
 		1CA1EDF1260E16110000C859 /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1EDF0260E16110000C859 /* EventType.swift */; };
@@ -43,7 +30,6 @@
 		1CD2B51726031C900016F752 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CD2B51626031C900016F752 /* CoreDataManager.swift */; };
 		1CE22FA6261EDC2A002B9902 /* AccountDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE22FA5261EDC2A002B9902 /* AccountDetails.swift */; };
 		1CEDD13B26038CAE00E7BAB4 /* UserAccountMO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEDD13A26038CAE00E7BAB4 /* UserAccountMO.swift */; };
-		1CFB487B265405A8007F949E /* BSBaseAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFB487A265405A8007F949E /* BSBaseAuthenticator.swift */; };
 		E1155D12261D9B2900739735 /* SF-Pro-Rounded-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E1155D04261D9B2600739735 /* SF-Pro-Rounded-Bold.otf */; };
 		E1155D15261D9B2900739735 /* SF-Pro-Rounded-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = E1155D07261D9B2700739735 /* SF-Pro-Rounded-Regular.otf */; };
 		E1155D28261DC1F200739735 /* GradientButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1155D27261DC1F200739735 /* GradientButton.swift */; };
@@ -134,21 +120,8 @@
 		1C006FBE2600D75D00F9263E /* ValidationUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationUtil.swift; sourceTree = "<group>"; };
 		1C07410A2604B5B10013067C /* RNCryptoUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNCryptoUtil.swift; sourceTree = "<group>"; };
 		1C0741192604F2540013067C /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
-		1C147C41264BA68E0003EDF7 /* JSFileUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSFileUtils.swift; sourceTree = "<group>"; };
-		1C2682FC264BE20A004ED054 /* BSScrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSScrapper.swift; sourceTree = "<group>"; };
-		1C268302264BE270004ED054 /* BSWebClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSWebClient.swift; sourceTree = "<group>"; };
-		1C268306264BE2B0004ED054 /* BSHeadlessWindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSHeadlessWindowManager.swift; sourceTree = "<group>"; };
-		1C26830A264BE2C8004ED054 /* AmazonScrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmazonScrapper.swift; sourceTree = "<group>"; };
-		1C26830E264BE310004ED054 /* BSAmazonAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSAmazonAuthenticator.swift; sourceTree = "<group>"; };
-		1C268318264BE7B4004ED054 /* BSAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSAuthenticator.swift; sourceTree = "<group>"; };
-		1C26831C264BE89D004ED054 /* BSAuthenticationStatusListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSAuthenticationStatusListener.swift; sourceTree = "<group>"; };
 		1C2F8DF3260B25870053E73A /* OrdersExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrdersExtractor.swift; sourceTree = "<group>"; };
 		1C425D1E26109F640009A3FA /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
-		1C4F89A02654E91100925FAB /* ScrapperConfigs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrapperConfigs.swift; sourceTree = "<group>"; };
-		1C4F89A42654E98D00925FAB /* AmazonUrls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmazonUrls.swift; sourceTree = "<group>"; };
-		1C4F89AA2654EA0C00925FAB /* Configurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configurations.swift; sourceTree = "<group>"; };
-		1C4F89B92655502000925FAB /* ConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigManager.swift; sourceTree = "<group>"; };
-		1C5DE05E264EA76400275073 /* JSUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSUtils.swift; sourceTree = "<group>"; };
 		1C72BFC12629B5D40029255C /* UIColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
 		1C8C9927261D8BED0023A16D /* AnalyticsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsProvider.swift; sourceTree = "<group>"; };
 		1CA1EDF0260E16110000C859 /* EventType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
@@ -177,7 +150,6 @@
 		1CD2B51626031C900016F752 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		1CE22FA5261EDC2A002B9902 /* AccountDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDetails.swift; sourceTree = "<group>"; };
 		1CEDD13A26038CAE00E7BAB4 /* UserAccountMO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAccountMO.swift; sourceTree = "<group>"; };
-		1CFB487A265405A8007F949E /* BSBaseAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSBaseAuthenticator.swift; sourceTree = "<group>"; };
 		E1155D04261D9B2600739735 /* SF-Pro-Rounded-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Rounded-Bold.otf"; sourceTree = "<group>"; };
 		E1155D07261D9B2700739735 /* SF-Pro-Rounded-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Rounded-Regular.otf"; sourceTree = "<group>"; };
 		E1155D27261DC1F200739735 /* GradientButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientButton.swift; sourceTree = "<group>"; };
@@ -267,33 +239,8 @@
 				1C07410A2604B5B10013067C /* RNCryptoUtil.swift */,
 				E19D4CB62608FD29002C16A7 /* WebCacheCleaner.swift */,
 				1CA860C7260D03DB00261595 /* FirebaseAnalyticsUtil.swift */,
-				1C147C41264BA68E0003EDF7 /* JSFileUtils.swift */,
-				1C5DE05E264EA76400275073 /* JSUtils.swift */,
 			);
 			path = Utility;
-			sourceTree = "<group>";
-		};
-		1C2682FB264BE1F8004ED054 /* Core */ = {
-			isa = PBXGroup;
-			children = (
-				1C2682FC264BE20A004ED054 /* BSScrapper.swift */,
-				1C268302264BE270004ED054 /* BSWebClient.swift */,
-				1C268306264BE2B0004ED054 /* BSHeadlessWindowManager.swift */,
-				1C26830A264BE2C8004ED054 /* AmazonScrapper.swift */,
-				1C26830E264BE310004ED054 /* BSAmazonAuthenticator.swift */,
-				1CFB487A265405A8007F949E /* BSBaseAuthenticator.swift */,
-			);
-			path = Core;
-			sourceTree = "<group>";
-		};
-		1C4F89AE2654EABF00925FAB /* ScrapperConfigModels */ = {
-			isa = PBXGroup;
-			children = (
-				1C4F89A02654E91100925FAB /* ScrapperConfigs.swift */,
-				1C4F89A42654E98D00925FAB /* AmazonUrls.swift */,
-				1C4F89AA2654EA0C00925FAB /* Configurations.swift */,
-			);
-			path = ScrapperConfigModels;
 			sourceTree = "<group>";
 		};
 		1CA1EDF6260E17020000C859 /* Analytics */ = {
@@ -327,7 +274,6 @@
 		1CBF6D3B25F5FFBE001A801B /* OrderScrapper */ = {
 			isa = PBXGroup;
 			children = (
-				1C2682FB264BE1F8004ED054 /* Core */,
 				E1155D00261D9AEA00739735 /* Fonts */,
 				E11F415E260F3B7000E90848 /* ViewControllers */,
 				1CA1EDF6260E17020000C859 /* Analytics */,
@@ -471,8 +417,6 @@
 				E148DC0A26010D28001430BE /* Authenticator.swift */,
 				E19D4CB92609A4A9002C16A7 /* OrderExtractionListener.swift */,
 				1C8C9927261D8BED0023A16D /* AnalyticsProvider.swift */,
-				1C268318264BE7B4004ED054 /* BSAuthenticator.swift */,
-				1C26831C264BE89D004ED054 /* BSAuthenticationStatusListener.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -537,7 +481,6 @@
 		E148DC4326033500001430BE /* Response */ = {
 			isa = PBXGroup;
 			children = (
-				1C4F89AE2654EABF00925FAB /* ScrapperConfigModels */,
 				E148DC4A2603371C001430BE /* APIResponse.swift */,
 				E148DC4D260338B0001430BE /* DateRange.swift */,
 				E148DC6E26045FE1001430BE /* ReportUpload.swift */,
@@ -566,7 +509,6 @@
 				E148DB9225FF3D8A001430BE /* AmazonAuthenticator.swift */,
 				E148DB7D25FF313A001430BE /* AmazonNavigationHelper.swift */,
 				E148DCC726063BE1001430BE /* NetworkMonitor.swift */,
-				1C4F89B92655502000925FAB /* ConfigManager.swift */,
 			);
 			name = Common;
 			sourceTree = "<group>";
@@ -712,44 +654,34 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1C268319264BE7B4004ED054 /* BSAuthenticator.swift in Sources */,
 				E148DC182601F3AA001430BE /* ReportConfig.swift in Sources */,
 				E148DB8D25FF31B4001430BE /* NavigationHelper.swift in Sources */,
 				E148DC4E260338B0001430BE /* DateRange.swift in Sources */,
 				E148DC7626048299001430BE /* PIIAttribute.swift in Sources */,
 				E148DB7E25FF313A001430BE /* AmazonNavigationHelper.swift in Sources */,
 				E148DB6425FF2BFD001430BE /* OrderSource.swift in Sources */,
-				1CFB487B265405A8007F949E /* BSBaseAuthenticator.swift in Sources */,
 				1C006FBF2600D75D00F9263E /* ValidationUtil.swift in Sources */,
 				E148DCC826063BE1001430BE /* NetworkMonitor.swift in Sources */,
 				1CD2B51326031A710016F752 /* CoreDataModel.xcdatamodeld in Sources */,
-				1C4F89BA2655502000925FAB /* ConfigManager.swift in Sources */,
-				1C26830F264BE310004ED054 /* BSAmazonAuthenticator.swift in Sources */,
-				1C26830B264BE2C8004ED054 /* AmazonScrapper.swift in Sources */,
 				1C006FB12600B7DA00F9263E /* Utils.swift in Sources */,
 				E148DC9A2605CB1E001430BE /* FileHelper.swift in Sources */,
 				1CE22FA6261EDC2A002B9902 /* AccountDetails.swift in Sources */,
 				1CA1EDF1260E16110000C859 /* EventType.swift in Sources */,
 				E148DB6225FF2BFD001430BE /* IconNames.swift in Sources */,
 				1C07410B2604B5B10013067C /* RNCryptoUtil.swift in Sources */,
-				1C26831D264BE89D004ED054 /* BSAuthenticationStatusListener.swift in Sources */,
 				E148CA41261040B400155B96 /* ProgressView.swift in Sources */,
 				E148DB6C25FF2BFD001430BE /* Account.swift in Sources */,
 				1C72BFC22629B5D40029255C /* UIColorExtension.swift in Sources */,
-				1C5DE05F264EA76400275073 /* JSUtils.swift in Sources */,
 				E11F4160260F3BBF00E90848 /* RegisterAccountViewController.swift in Sources */,
 				E11F4166260F3DE000E90848 /* ConnectAccountViewController.swift in Sources */,
 				E148DC9B2605CB1E001430BE /* LibContext.swift in Sources */,
 				1C006FB72600BDA800F9263E /* Strings.swift in Sources */,
 				E19D4CB72608FD29002C16A7 /* WebCacheCleaner.swift in Sources */,
-				1C268307264BE2B0004ED054 /* BSHeadlessWindowManager.swift in Sources */,
 				E148DC6126038537001430BE /* DateUtils.swift in Sources */,
 				1CA1EDF4260E16EF0000C859 /* Event.swift in Sources */,
 				E148DB6D25FF2BFD001430BE /* AccountDisconnectedListener.swift in Sources */,
-				1C147C42264BA68E0003EDF7 /* JSFileUtils.swift in Sources */,
 				E15343E8261466700074F3ED /* OrderFetchSuccessType.swift in Sources */,
 				E148DC9C2605CB1E001430BE /* FileDownloader.swift in Sources */,
-				1C4F89AB2654EA0C00925FAB /* Configurations.swift in Sources */,
 				E1155D28261DC1F200739735 /* GradientButton.swift in Sources */,
 				E148DB6E25FF2BFD001430BE /* ASLException.swift in Sources */,
 				1C07411A2604F2540013067C /* String.swift in Sources */,
@@ -764,21 +696,17 @@
 				E148DC5B26034D7F001430BE /* APIClient.swift in Sources */,
 				E148DB8325FF317B001430BE /* WebViewModel.swift in Sources */,
 				E148DB6B25FF2BFD001430BE /* ViewPresenter.swift in Sources */,
-				1C4F89A12654E91100925FAB /* ScrapperConfigs.swift in Sources */,
 				E148CA702610AF2000155B96 /* UIViewExtensions.swift in Sources */,
 				1CB9A7A8262427B60085E494 /* OrderStatus.swift in Sources */,
 				E1AAFF4F26274808000F5CD2 /* GetAccountsResponse.swift in Sources */,
 				E148DC402603306E001430BE /* NetworkClient.swift in Sources */,
-				1C268303264BE270004ED054 /* BSWebClient.swift in Sources */,
 				E148DC6F26045FE1001430BE /* ReportUpload.swift in Sources */,
 				1C8C9928261D8BED0023A16D /* AnalyticsProvider.swift in Sources */,
-				1C2682FD264BE20A004ED054 /* BSScrapper.swift in Sources */,
 				E148DC992605CB1E001430BE /* PIIScrapper.swift in Sources */,
 				E11F4178260F7AF800E90848 /* NetworkErrorView.swift in Sources */,
 				E1155D34261DDC9100739735 /* UIFontExtensions.swift in Sources */,
 				E148DC0B26010D28001430BE /* Authenticator.swift in Sources */,
 				1C006FAA26009BE500F9263E /* AppConstants.swift in Sources */,
-				1C4F89A52654E98D00925FAB /* AmazonUrls.swift in Sources */,
 				1C2F8DF4260B25870053E73A /* OrdersExtractor.swift in Sources */,
 				E148CA492610481100155B96 /* HorizontalProgressBar.swift in Sources */,
 				E19D4CBA2609A4A9002C16A7 /* OrderExtractionListener.swift in Sources */,

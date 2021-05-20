@@ -6,10 +6,8 @@
 import Foundation
 
 class FileDownloader {
-    
-    //TODO same method should be used for downloading
-    func downloadFile(fromURL url: URL,
-                     cookies: [HTTPCookie]?,
+    func downloadReportFile(fromURL url: URL,
+                            cookies: [HTTPCookie]?,
                             completion: @escaping (Bool, URL?) -> Void) {
         let session = URLSession.shared
         if let cookies = cookies {

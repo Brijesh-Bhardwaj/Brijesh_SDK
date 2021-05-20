@@ -39,10 +39,6 @@ public class OrdersExtractor {
         }
         registerFonts()
         
-        //get Scrapper config details
-        ConfigManager.shared.loadConfigs(orderSource: .Amazon) { configurations, error in
-        }
-        
         isInitialized = true
     }
     

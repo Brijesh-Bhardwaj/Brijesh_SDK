@@ -6,7 +6,6 @@
 import Foundation
 import SwiftUI
 import Combine
-import WebKit
 
 class AmazonOrderScrapper {
     private var authProvider: AuthProvider!
@@ -90,7 +89,11 @@ class AmazonOrderScrapper {
             self.viewPresenter.dismissView()
         }
         
-        //Start scrapping in the background
-        AmazonScrapper.init(webClient: BSWebClient(frame: .zero, configuration: WKWebViewConfiguration())).startScrapping(account: account)
+        let storyboard = UIStoryboard(name: "OSLibUI", bundle: AppConstants.bundle)
+        let viewController = storyboard.instantiateViewController(identifier: "ConnectAccountVC") as! ConnectAccountViewController
+        viewController.account = account
+        viewController.modalPresentationStyle = .fullScreen
+    
+        self.viewPresenter.presentView(view: viewController)
     }
 }

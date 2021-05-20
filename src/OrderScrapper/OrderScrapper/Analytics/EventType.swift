@@ -22,13 +22,6 @@ struct EventType {
     static let JSDetectOtherURL = "js_detect_other_url"
     static let JSDetectReportGeneration = "js_detected_report_generation"
     static let JSDetectReportDownload = "js_detected_report_download"
-    
-    //Event types in background
-    static let BgAccountConnect = "bg_account_connect"
-    static let BgJSInjectUserName = "bg_js_inject_user_name"
-    static let BgJSInjectPassword = "bg_js_inject_password"
-    static let BgJSDetectedCaptcha = "bg_js_detected_captcha"
-    static let BgJSDetectOtherURL = "bg_js_detect_other_url"
 }
 
 struct EventStatus {
