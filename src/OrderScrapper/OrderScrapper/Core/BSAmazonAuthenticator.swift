@@ -107,6 +107,10 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
         }
         
         private func injectPasswordJS() {
+            guard let email = self.account?.userID else {
+                self.listener?.onAuthenticationFailure(errorReason: ASLException(errorMessage: Strings.ErrorUserIdIsNil, errorType: nil))
+                return
+            }
             guard let password = self.account?.userPassword else {
                 self.listener?.onAuthenticationFailure(errorReason: ASLException(errorMessage: Strings.ErrorPasswordIsNil,errorType: nil))
                 return
@@ -119,13 +123,13 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
                     self.listener?.onAuthenticationFailure(errorReason: ASLException(errorMessage: Strings.ErrorPasswordJSInjectionFailed,errorType: nil))
                     
                     logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                          EventConstant.OrderSourceID: password,
+                                          EventConstant.OrderSourceID: email,
                                           EventConstant.Status: EventStatus.Failure]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSInjectPassword, eventAttributes: logEventAttributes)
                 } else {
                     print("### injectPasswordJS")
                     logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                          EventConstant.OrderSourceID: password,
+                                          EventConstant.OrderSourceID: email,
                                           EventConstant.Status: EventStatus.Success]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSInjectPassword, eventAttributes: logEventAttributes)
                 }

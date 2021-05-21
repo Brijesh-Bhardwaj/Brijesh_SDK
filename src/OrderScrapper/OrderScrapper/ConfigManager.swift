@@ -19,11 +19,21 @@ class ConfigManager {
     func loadConfigs(orderSource: OrderSource, completion: @escaping (Configurations?, Error?) -> Void) {
         //get Scrapper config details
         _ = AmazonService.getScrapperConfig() { response, error in
+            var logEventAttributes:[String:String] = [:]
             if let response = response {
                 self.configs[OrderSource.Amazon] = response.amazon.urls
                 completion(self.configs[orderSource], nil)
+                
+                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                      EventConstant.Status: EventStatus.Success]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAPIScrapperConfig, eventAttributes: logEventAttributes)
             } else {
                 completion(nil, APIError(error: Strings.ErrorNoConfigurationsFound))
+                
+                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                      EventConstant.ErrorReason: Strings.ErrorInScrapperConfigAPI,
+                                      EventConstant.Status: EventStatus.Failure]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAPIScrapperConfig, eventAttributes: logEventAttributes)
             }
         }
     }

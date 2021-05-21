@@ -29,6 +29,12 @@ struct EventType {
     static let BgJSInjectPassword = "bg_js_inject_password"
     static let BgJSDetectedCaptcha = "bg_js_detected_captcha"
     static let BgJSDetectOtherURL = "bg_js_detect_other_url"
+    static let BgScrappingStarted = "bg_scrapping_started"
+    
+    static let BgAPIScrapperConfig = "bg_api_scraper_config"
+    static let BgAuthentication = "bg_authentication"
+    static let BgNavigatedToOrderListing = "bg_navigated_to_order_listing"
+
 }
 
 struct EventStatus {

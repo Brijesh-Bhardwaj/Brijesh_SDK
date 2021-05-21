@@ -51,5 +51,7 @@ struct Strings {
     static let ErrorDuringEarlyNavigation = "An error occurred during the early navigation process"
     static let ErrorWebContentProcessDidTerminate = "webViewWebContentProcessDidTerminate()"
     static let ErrorNoConfigurationsFound = "Configurations not found for the given order source"
+    static let ErrorInScrapperConfigAPI = "scrapper_config_api_failed"
+    static let ErrorOrderListingNavigationFailed = "order_listing_navigation_failed"
 
 }
