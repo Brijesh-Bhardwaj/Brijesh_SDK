@@ -55,10 +55,51 @@ class BSScrapper: BSAuthenticationStatusListener {
     
     func onAuthenticationSuccess() {
         print("### onAuthenticationSuccess")
+        do {
+            var orderSource: OrderSource
+            try orderSource = getOrderSource()
+            var logEventAttributes:[String:String] = [:]
+            logEventAttributes = [EventConstant.OrderSource: String(orderSource.rawValue),
+                                  EventConstant.Status: EventStatus.Success]
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAuthentication, eventAttributes: logEventAttributes)
+            
+            var logEventorderListingAttributes:[String:String] = [:]
+            logEventorderListingAttributes = [EventConstant.OrderSource: String(orderSource.rawValue),
+                                              EventConstant.Status: EventStatus.Success]
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgNavigatedToOrderListing, eventAttributes: logEventorderListingAttributes)
+            
+            //Load Order Listing page
+            ConfigManager.shared.getConfigurations(orderSource: orderSource)  { configurations, error in
+                if let configurations = configurations {
+                    let orderListingUrl = configurations.listing
+                    self.mWebClient.loadUrl(url: orderListingUrl)
+                }
+            }
+        } catch {
+            self.onAuthenticationFailure(errorReason: ASLException(
+                                            errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil))
+        }
     }
     
     func onAuthenticationFailure(errorReason: ASLException) {
         print("### onAuthenticationFailure", errorReason.errorMessage)
+        do {
+            var orderSource: OrderSource
+            try orderSource = getOrderSource()
+        var logEventAttributes:[String:String] = [:]
+        logEventAttributes = [EventConstant.OrderSource: String(orderSource.rawValue),
+                              EventConstant.ErrorReason: errorReason.errorMessage,
+                              EventConstant.Status: EventStatus.Failure]
+        FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAuthentication, eventAttributes: logEventAttributes)
         
+        var logEventOrderListingAttributes:[String:String] = [:]
+        logEventOrderListingAttributes = [EventConstant.OrderSource: String(orderSource.rawValue),
+                                          EventConstant.ErrorReason: Strings.ErrorOrderListingNavigationFailed,
+                                          EventConstant.Status: EventStatus.Failure]
+        FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgNavigatedToOrderListing, eventAttributes: logEventOrderListingAttributes)
+        } catch {
+            self.onAuthenticationFailure(errorReason: ASLException(
+                                            errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil))
+        }
     }
 }
