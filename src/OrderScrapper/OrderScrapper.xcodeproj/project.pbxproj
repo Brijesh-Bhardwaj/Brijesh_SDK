@@ -14,6 +14,8 @@
 		1C006FBF2600D75D00F9263E /* ValidationUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FBE2600D75D00F9263E /* ValidationUtil.swift */; };
 		1C07410B2604B5B10013067C /* RNCryptoUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C07410A2604B5B10013067C /* RNCryptoUtil.swift */; };
 		1C07411A2604F2540013067C /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0741192604F2540013067C /* String.swift */; };
+		1C0EC3C126568F8D000F278D /* BSScriptFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0EC3C026568F8D000F278D /* BSScriptFileManager.swift */; };
+		1C0EC3C526569252000F278D /* FetchScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0EC3C426569252000F278D /* FetchScript.swift */; };
 		1C147C42264BA68E0003EDF7 /* JSFileUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C147C41264BA68E0003EDF7 /* JSFileUtils.swift */; };
 		1C2682FD264BE20A004ED054 /* BSScrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2682FC264BE20A004ED054 /* BSScrapper.swift */; };
 		1C268303264BE270004ED054 /* BSWebClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C268302264BE270004ED054 /* BSWebClient.swift */; };
@@ -134,6 +136,8 @@
 		1C006FBE2600D75D00F9263E /* ValidationUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationUtil.swift; sourceTree = "<group>"; };
 		1C07410A2604B5B10013067C /* RNCryptoUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNCryptoUtil.swift; sourceTree = "<group>"; };
 		1C0741192604F2540013067C /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
+		1C0EC3C026568F8D000F278D /* BSScriptFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSScriptFileManager.swift; sourceTree = "<group>"; };
+		1C0EC3C426569252000F278D /* FetchScript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchScript.swift; sourceTree = "<group>"; };
 		1C147C41264BA68E0003EDF7 /* JSFileUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSFileUtils.swift; sourceTree = "<group>"; };
 		1C2682FC264BE20A004ED054 /* BSScrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSScrapper.swift; sourceTree = "<group>"; };
 		1C268302264BE270004ED054 /* BSWebClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSWebClient.swift; sourceTree = "<group>"; };
@@ -544,6 +548,7 @@
 				E148DC7526048299001430BE /* PIIAttribute.swift */,
 				1CE22FA5261EDC2A002B9902 /* AccountDetails.swift */,
 				E1AAFF4E26274808000F5CD2 /* GetAccountsResponse.swift */,
+				1C0EC3C426569252000F278D /* FetchScript.swift */,
 			);
 			path = Response;
 			sourceTree = "<group>";
@@ -567,6 +572,7 @@
 				E148DB7D25FF313A001430BE /* AmazonNavigationHelper.swift */,
 				E148DCC726063BE1001430BE /* NetworkMonitor.swift */,
 				1C4F89B92655502000925FAB /* ConfigManager.swift */,
+				1C0EC3C026568F8D000F278D /* BSScriptFileManager.swift */,
 			);
 			name = Common;
 			sourceTree = "<group>";
@@ -752,6 +758,7 @@
 				1C4F89AB2654EA0C00925FAB /* Configurations.swift in Sources */,
 				E1155D28261DC1F200739735 /* GradientButton.swift in Sources */,
 				E148DB6E25FF2BFD001430BE /* ASLException.swift in Sources */,
+				1C0EC3C126568F8D000F278D /* BSScriptFileManager.swift in Sources */,
 				1C07411A2604F2540013067C /* String.swift in Sources */,
 				E148DB5C25FF2BFD001430BE /* AmazonOrderScrapper.swift in Sources */,
 				1CB5FFE9263BEE710072F35C /* ErrorType.swift in Sources */,
@@ -785,6 +792,7 @@
 				1C425D1F26109F640009A3FA /* Dictionary.swift in Sources */,
 				E148DC4B2603371C001430BE /* APIResponse.swift in Sources */,
 				E148CA3126103F4100155B96 /* ErrorView.swift in Sources */,
+				1C0EC3C526569252000F278D /* FetchScript.swift in Sources */,
 				E11F4182260F88C800E90848 /* FetchSuccessView.swift in Sources */,
 				1CA860C8260D03DB00261595 /* FirebaseAnalyticsUtil.swift in Sources */,
 				1CD2B51726031C900016F752 /* CoreDataManager.swift in Sources */,

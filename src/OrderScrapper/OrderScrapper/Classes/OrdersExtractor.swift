@@ -43,6 +43,8 @@ public class OrdersExtractor {
         ConfigManager.shared.loadConfigs(orderSource: .Amazon) { configurations, error in
             
         }
+        //get scripts for the order sources
+        BSScriptFileManager.shared.loadScriptFile()
         
         isInitialized = true
     }
