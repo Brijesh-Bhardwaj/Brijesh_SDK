@@ -2,43 +2,41 @@
 //  OrderScrapper
 
 import Foundation
-import WebKit
 
-class BSScrapper: BSAuthenticationStatusListener {
-    var windowManager: BSHeadlessWindowManager = BSHeadlessWindowManager()
-    var mWebClient: BSWebClient
-    var mAuthenticator: BSAuthenticator?
+class BSScrapper: NSObject, BSAuthenticationStatusListener {
+    private let webClientDelegate = BSWebNavigationDelegate()
+    private let windowManager = BSHeadlessWindowManager()
     
-    init(webClient: BSWebClient) {
-        self.mWebClient = webClient
+    let webClient: BSWebClient
+    var authenticator: BSAuthenticator!
+    var completionHandler: ((Bool, OrderFetchSuccessType?), ASLException?) -> Void
+    var configuration: Configurations!
+    
+    init(webClient: BSWebClient,
+         completionHandler: @escaping ((Bool, OrderFetchSuccessType?), ASLException?) -> Void) {
+        self.webClient = webClient
+        self.completionHandler = completionHandler
     }
     
     func startScrapping(account: Account) {
-        windowManager.attachHeadlessView(view: mWebClient)
-        do {
-            var orderSource: OrderSource
-            try orderSource = getOrderSource()
-            ConfigManager.shared.getConfigurations(orderSource: orderSource)  { configurations, error in
-                if let configurations = configurations {
-                    do {
-                        try self.getAuthenticator().authenticate(account: account, configurations: configurations)
-                    } catch {
-                        self.onAuthenticationFailure(errorReason: ASLException(
-                                                        errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil))
-                    }
-                } else {
-                    self.onAuthenticationFailure(errorReason: ASLException(
-                                                    errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil))
-                }
+        windowManager.attachHeadlessView(view: webClient)
+        
+        let orderSource = try! getOrderSource()
+        ConfigManager.shared.getConfigurations(orderSource: orderSource)  { configurations, error in
+            if let configurations = configurations {
+                self.configuration = configurations
+                let authentiacator = try! self.getAuthenticator()
+                self.webClientDelegate.setObserver(observer: authentiacator as! BSWebNavigationObserver)
+                authentiacator.authenticate(account: account, configurations: configurations)
+            } else {
+                self.onAuthenticationFailure(errorReason: ASLException(
+                                                errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil))
             }
-        } catch {
-            self.onAuthenticationFailure(errorReason: ASLException(
-                                            errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil))
         }
     }
     
     func stopScrapping() {
-        windowManager.detachHeadlessView(view: mWebClient)
+        windowManager.detachHeadlessView(view: webClient)
     }
     
     func isScrapping() {
@@ -55,37 +53,30 @@ class BSScrapper: BSAuthenticationStatusListener {
     
     func onAuthenticationSuccess() {
         print("### onAuthenticationSuccess")
-        do {
-            var orderSource: OrderSource
-            try orderSource = getOrderSource()
-            var logEventAttributes:[String:String] = [:]
-            logEventAttributes = [EventConstant.OrderSource: String(orderSource.rawValue),
-                                  EventConstant.Status: EventStatus.Success]
-            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAuthentication, eventAttributes: logEventAttributes)
-            
-            var logEventorderListingAttributes:[String:String] = [:]
-            logEventorderListingAttributes = [EventConstant.OrderSource: String(orderSource.rawValue),
-                                              EventConstant.Status: EventStatus.Success]
-            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgNavigatedToOrderListing, eventAttributes: logEventorderListingAttributes)
-            
-            //Load Order Listing page
-            ConfigManager.shared.getConfigurations(orderSource: orderSource)  { configurations, error in
-                if let configurations = configurations {
-                    let orderListingUrl = configurations.listing
-                    self.mWebClient.loadUrl(url: orderListingUrl)
-                }
+        let orderSource = try! getOrderSource()
+        var logEventAttributes:[String:String] = [:]
+        logEventAttributes = [EventConstant.OrderSource: String(orderSource.rawValue),
+                              EventConstant.Status: EventStatus.Success]
+        FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAuthentication, eventAttributes: logEventAttributes)
+        
+        var logEventorderListingAttributes:[String:String] = [:]
+        logEventorderListingAttributes = [EventConstant.OrderSource: String(orderSource.rawValue),
+                                          EventConstant.Status: EventStatus.Success]
+        FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgNavigatedToOrderListing, eventAttributes: logEventorderListingAttributes)
+        
+        //Load Order Listing page
+        ConfigManager.shared.getConfigurations(orderSource: orderSource)  { configurations, error in
+            if let configurations = configurations {
+                let orderListingUrl = configurations.listing
+                self.webClient.loadUrl(url: orderListingUrl)
             }
-        } catch {
-            self.onAuthenticationFailure(errorReason: ASLException(
-                                            errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil))
         }
+        self.completionHandler((true, .fetchCompleted), nil)
     }
     
     func onAuthenticationFailure(errorReason: ASLException) {
         print("### onAuthenticationFailure", errorReason.errorMessage)
-        do {
-            var orderSource: OrderSource
-            try orderSource = getOrderSource()
+        let orderSource = try! getOrderSource()
         var logEventAttributes:[String:String] = [:]
         logEventAttributes = [EventConstant.OrderSource: String(orderSource.rawValue),
                               EventConstant.ErrorReason: errorReason.errorMessage,
@@ -97,9 +88,20 @@ class BSScrapper: BSAuthenticationStatusListener {
                                           EventConstant.ErrorReason: Strings.ErrorOrderListingNavigationFailed,
                                           EventConstant.Status: EventStatus.Failure]
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgNavigatedToOrderListing, eventAttributes: logEventOrderListingAttributes)
-        } catch {
-            self.onAuthenticationFailure(errorReason: ASLException(
-                                            errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil))
-        }
+        self.completionHandler((false, nil), errorReason)
+    }
+}
+
+extension BSScrapper: BSWebNavigationObserver {
+    func didFinishPageNavigation(url: URL?) {
+        
+    }
+    
+    func didStartPageNavigation(url: URL?) {
+        
+    }
+    
+    func didFailPageNavigation(for url: URL?, withError error: Error) {
+        
     }
 }

@@ -13,6 +13,7 @@ class AmazonOrderScrapper {
     private var viewPresenter: ViewPresenter!
     public var analyticsProvider: AnalyticsProvider?
     private var completionSubscriber: AnyCancellable?
+    private var backgroundScrapper: BSScrapper!
     
     private static var instance: AmazonOrderScrapper!
     
@@ -80,17 +81,23 @@ class AmazonOrderScrapper {
     }
     
     func startOrderExtraction(account: Account, orderExtractionListener: OrderExtractionListener) {
-        self.completionSubscriber = LibContext.shared.scrapeCompletionPublisher.receive(on: RunLoop.main).sink() { result, error in
-            let (completed, successType) = result
-            if completed {
-                orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
-            } else {
-                orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: error?.errorMessage ?? "" , errorType: nil), account: account)
+        if backgroundScrapper == nil {
+            //Start scrapping in the background
+            let webClient = BSWebClient(frame: .zero,
+                                        configuration: WKWebViewConfiguration())
+            backgroundScrapper = AmazonScrapper(webClient: webClient) { [weak self] result, error in
+                guard let self = self else {return}
+                
+                let (completed, successType) = result
+                if completed {
+                    orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
+                } else {
+                    orderExtractionListener.onOrderExtractionFailure(error: error!, account: account)
+                }
+                
+                self.backgroundScrapper = nil
             }
-            self.viewPresenter.dismissView()
+            backgroundScrapper.startScrapping(account: account)
         }
-        
-        //Start scrapping in the background
-        AmazonScrapper.init(webClient: BSWebClient(frame: .zero, configuration: WKWebViewConfiguration())).startScrapping(account: account)
     }
 }

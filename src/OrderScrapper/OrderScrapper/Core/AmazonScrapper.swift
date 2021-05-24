@@ -6,15 +6,13 @@ import Foundation
 class AmazonScrapper: BSScrapper {
    
     override func getAuthenticator() throws -> BSAuthenticator {
-        if mAuthenticator == nil {
-            mAuthenticator = BSAmazonAuthenticator(webClient: mWebClient, listener: self)
+        if authenticator == nil {
+            authenticator = BSAmazonAuthenticator(webClient: webClient, listener: self)
         }
-        return mAuthenticator!
+        return authenticator!
     }
  
     override func getOrderSource() throws -> OrderSource {
         return .Amazon
     }
-    
-    
 }
