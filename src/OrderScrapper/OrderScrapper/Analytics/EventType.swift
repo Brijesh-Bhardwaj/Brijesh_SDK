@@ -34,7 +34,8 @@ struct EventType {
     static let BgAPIScrapperConfig = "bg_api_scraper_config"
     static let BgAuthentication = "bg_authentication"
     static let BgNavigatedToOrderListing = "bg_navigated_to_order_listing"
-
+    static let BgDownloadScrapperScriptFile = "bg_download_scrapper_script_file"
+    static let BgRetrieveScrapperScript = "bg_retrieve_scrapper_script"
 }
 
 struct EventStatus {

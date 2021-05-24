@@ -38,15 +38,32 @@ class BSScriptFileManager {
                 //download script file
                 let downloader = FileDownloader()
                 downloader.downloadFile(urlRequest: urlRequest, destinationFilePath: filePath) { filePath, error in
+                    var logEventAttributes:[String:String] = [EventConstant.OrderSource: String(orderSource.rawValue),
+                    EventConstant.PanelistID: LibContext.shared.authProvider.getPanelistID()]
+                    
                     if let filePath = filePath {
+                        logEventAttributes = [EventConstant.Status: EventStatus.Success]
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgDownloadScrapperScriptFile, eventAttributes: logEventAttributes)
+                        
+                        var logEventRetrieveScriptAttributes:[String:String] = [EventConstant.OrderSource: String(orderSource.rawValue),EventConstant.PanelistID: LibContext.shared.authProvider.getPanelistID()]
+                        
                         let script = FileHelper.getDataFromFile(fileUrl: filePath)
                         if let script = script {
                             completion(script)
+                            
+                            logEventRetrieveScriptAttributes = [EventConstant.Status: EventStatus.Success]
+                            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrapperScript, eventAttributes: logEventRetrieveScriptAttributes)
                         } else {
                             completion(nil)
+                            
+                            logEventRetrieveScriptAttributes = [EventConstant.Status: EventStatus.Failure]
+                            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrapperScript, eventAttributes: logEventRetrieveScriptAttributes)
                         }
                     } else {
                         completion(nil)
+                        
+                        logEventAttributes = [EventConstant.Status: EventStatus.Failure]
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgDownloadScrapperScriptFile, eventAttributes: logEventAttributes)
                     }
                 }
             } else {
@@ -64,10 +81,18 @@ class BSScriptFileManager {
             completion(script)
         } else {
             self.getScript(orderSource: orderSource) { script in
+                var logEventRetrieveScriptAttributes:[String:String] = [EventConstant.OrderSource: String(orderSource.rawValue),EventConstant.PanelistID: LibContext.shared.authProvider.getPanelistID()]
+                
                 if let script = script {
                     completion(script)
+                    
+                    logEventRetrieveScriptAttributes = [EventConstant.Status: EventStatus.Success]
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrapperScript, eventAttributes: logEventRetrieveScriptAttributes)
                 } else {
                     completion(nil)
+                    
+                    logEventRetrieveScriptAttributes = [EventConstant.Status: EventStatus.Failure]
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrapperScript, eventAttributes: logEventRetrieveScriptAttributes)
                 }
             }
         }
@@ -83,5 +108,4 @@ class BSScriptFileManager {
             }
         }
     }
-    
 }
