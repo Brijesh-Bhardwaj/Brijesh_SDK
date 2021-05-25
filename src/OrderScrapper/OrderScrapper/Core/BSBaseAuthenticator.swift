@@ -10,14 +10,18 @@ class BSBaseAuthenticator: NSObject, BSAuthenticator {
     var webClient: BSWebClient
     var account: Account?
     var configurations: Configurations?
+    var webClientDelegate: BSWebNavigationDelegate
 
-    init(webClient: BSWebClient, listener: BSAuthenticationStatusListener) {
+    init(webClient: BSWebClient, delegate: BSWebNavigationDelegate, listener: BSAuthenticationStatusListener) {
         self.webClient = webClient
         self.listener = listener
+        self.webClientDelegate = delegate
     }
     
     func authenticate(account: Account, configurations: Configurations) {
         self.account = account
+        self.webClientDelegate.setObserver(observer: self)
+        self.webClient.navigationDelegate = webClientDelegate
         self.webClient.loadUrl(url: configurations.login)
         self.configurations = configurations
     }

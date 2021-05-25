@@ -97,7 +97,8 @@ class AmazonOrderScrapper {
                 
                 self.backgroundScrapper = nil
             }
-            backgroundScrapper.startScrapping(account: account)
+            
+            self.backgroundScrapper.startScrapping(account: account)
         }
     }
 }

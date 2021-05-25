@@ -4,7 +4,7 @@
 import Foundation
 
 class BSScrapper: NSObject, BSAuthenticationStatusListener {
-    private let webClientDelegate = BSWebNavigationDelegate()
+    let webClientDelegate = BSWebNavigationDelegate()
     private let windowManager = BSHeadlessWindowManager()
     
     let webClient: BSWebClient
