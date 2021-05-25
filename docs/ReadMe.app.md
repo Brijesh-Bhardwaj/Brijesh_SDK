@@ -131,3 +131,5 @@ All protocols needed to be implemented by the application are
  > func onAccountDisconnectionFailed(account : Account, error: ASLException)
    
   This method is called when the account disconnection has failed
+
+- 'fetchOrders' method is use to do background scrapping for already connected account without any user interaction.  

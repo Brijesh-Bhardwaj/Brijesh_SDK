@@ -39,6 +39,7 @@ Currently supported order sources are
 
 SDK provides order fetch feature through :
 - Order report generation page by downloading the order items in a CSV format
+- Order history extraction by background scrapping in which order data extracted from html pages 
 
 ### Orders fetching mechanism
 
@@ -66,6 +67,7 @@ SDK fetches orders as a CSV file from Amazon's order-report generation page as b
  Hence if the API responses indicate no scraping for a particular request then the SDK would redirect users back to the previous screen with an appropriate message.
 - Some dependencies needed by the library will have to be linked into the application. More details in ReadMe.app.md
 - For event logging/analytics, the SDK utilizes the application's event logging/analytics mechanism. The application should implement the provided SDK protocol method to log the SDK events.
+- Background order scrapping done only for already connected accounts and no user interaction needed in this type of scrapping
  
 
 # Usage 
