@@ -1,6 +1,3 @@
-
-- Added provision to pass base URL for SDK as a config from the application
-- Used the base URL received from the app in OrderExtractorConfig for backend communication
-- Removed the build configurations from the SDK project
-- Updated the update_status API: passed panelistId and amazonId in the body parameter
-
+- Added `OrdersExtractorConfig` class to pass configurations to the SDK from the app. It includes base URL, app name and app version.
+- Modified the update_status API
+- Removed build configurations from the SDK project.
