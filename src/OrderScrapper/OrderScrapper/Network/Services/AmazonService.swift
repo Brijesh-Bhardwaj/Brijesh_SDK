@@ -140,10 +140,11 @@ class AmazonService {
     
     static func updateStatus(amazonId: String, status: String, message: String, orderStatus: String,
                                  completionHandler: @escaping (AccountDetails?, Error?) -> Void) -> APIClient {
-        let relativeUrl = UpdateStatus + "/" + amazonId
+        let relativeUrl = UpdateStatus
         let client = NetworkClient<APIResponse<AccountDetails>>(relativeURL: relativeUrl, requestMethod: .put)
+        let panelistId = LibContext.shared.authProvider.getPanelistID()
         
-        client.body = [JSONKeys.status.rawValue: status, JSONKeys.message.rawValue: message, JSONKeys.orderStatus.rawValue: orderStatus]
+        client.body = [JSONKeys.status.rawValue: status, JSONKeys.message.rawValue: message, JSONKeys.orderStatus.rawValue: orderStatus,JSONKeys.amazonId.rawValue: amazonId, JSONKeys.panelistId.rawValue: panelistId]
         
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<AccountDetails> {

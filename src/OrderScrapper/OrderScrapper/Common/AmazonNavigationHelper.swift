@@ -309,7 +309,8 @@ class AmazonNavigationHelper: NavigationHelper {
     
     private func setJSInjectionResultSubscriber() {
         self.jsResultSubscriber = viewModel.jsResultPublisher.receive(on: RunLoop.main)
-            .sink(receiveValue: { (injectValue, result) in
+            .sink(receiveValue: { [weak self] (injectValue, result) in
+                guard let self = self else { return }
                 let (response, _) = result
                 switch injectValue {
                 case .captcha,.downloadReport, .email, .generateReport, .identification, .password, .error: break
@@ -342,11 +343,11 @@ class AmazonNavigationHelper: NavigationHelper {
     
     private func getOldestPossibleYear() -> String {
         return "(function() {var listOfYears = document.getElementById('report-year-start');" +
-                "var oldestYear = 0;" +
-                "for (i = 0; i < listOfYears.options.length; i++) {" +
-                "if(!isNaN(listOfYears.options[i].value) && (listOfYears.options[i].value < oldestYear || oldestYear ==0))" +
-                "{ oldestYear = listOfYears.options[i].value;}" +
-                "} return oldestYear })()"
+            "var oldestYear = 0;" +
+            "for (i = 0; i < listOfYears.options.length; i++) {" +
+            "if(!isNaN(listOfYears.options[i].value) && (listOfYears.options[i].value < oldestYear || oldestYear ==0))" +
+            "{ oldestYear = listOfYears.options[i].value;}" +
+            "} return oldestYear })()"
     }
     
     private func removePIIAttributes(fileName: String, fileURL: URL) {

@@ -30,6 +30,8 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>SDK_BASE_ENDPOINT</key>
+	<string>$(SDK_BASE_ENDPOINT)</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

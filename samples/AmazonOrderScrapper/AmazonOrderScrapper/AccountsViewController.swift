@@ -27,7 +27,11 @@ class AccountsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         do {
-            try OrdersExtractor.initialize(authProvider: self, viewPresenter: self, analyticsProvider: self)
+            let configValue = OrderExtractorConfig()
+            configValue.baseURL = Util.getBaseUrl()
+            configValue.appName = "ReceiptStraw-Dev"
+            configValue.appVersion = (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String)!
+            try OrdersExtractor.initialize(authProvider: self, viewPresenter: self, analyticsProvider: self, orderExtractionConfig: configValue)
         } catch let error {
             debugPrint(error.localizedDescription)
         }
@@ -163,7 +167,7 @@ extension AccountsViewController: OrderExtractionListener {
         }
         
         if account.isFirstConnectedAccount {
-           showAlert(title: "Alert", message: "You've received 1000 points for connecting your first Amazon account!", completionHandler: nil)
+            showAlert(title: "Alert", message: "You've received 1000 points for connecting your first Amazon account!", completionHandler: nil)
         }
     }
     

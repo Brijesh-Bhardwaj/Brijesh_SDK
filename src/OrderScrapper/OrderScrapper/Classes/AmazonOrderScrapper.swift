@@ -45,7 +45,8 @@ class AmazonOrderScrapper {
     }
     
     func connectAccount(account: Account, orderExtractionListener: OrderExtractionListener) {
-        self.completionSubscriber = LibContext.shared.scrapeCompletionPublisher.receive(on: RunLoop.main).sink() { result, error in
+        self.completionSubscriber = LibContext.shared.scrapeCompletionPublisher.receive(on: RunLoop.main).sink() { [weak self] result, error in
+            guard let self = self else { return }
             let (completed, successType) = result
             if completed {
                 orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)

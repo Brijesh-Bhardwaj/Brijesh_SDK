@@ -10,6 +10,25 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
 
+## [0.3.3] - 2021-05-26
+
+### Added
+- Added `OrderExtractorConfig` class to pass configurations to the SDK from the app. It includes base URL, app name and app version.
+
+### Changed
+- Modified the update_status API
+- Removed build configurations from the SDK project.
+
+## [0.3.2] - 2021-05-18
+
+### Fixed
+Fixed Github Issue #80: Fixed the memory leak which restricted the ViewControllers to deinitialize, thereby causing the web view to connect again on network change.
+
+## [0.3.1] - 2021-05-14
+
+### Added
+- Network check added before showing error view. If network is not present then no network error view shown instead of error view.
+
 ## [0.3.0] - 2021-05-11
 
 ### Fixed

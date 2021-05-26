@@ -19,7 +19,7 @@ class ConnectAccountViewController: UIViewController {
     private var viewInit = false
     private var isFetchSkipped: Bool = false
     private var shouldAllowBack = false
-    
+    let monitor = NWPathMonitor()
     var account: Account!
     
     // MARK: - Subscribers
@@ -63,6 +63,9 @@ class ConnectAccountViewController: UIViewController {
         self.stepMessageSubscriber?.cancel()
         self.completionSubscriber?.cancel()
         self.stopScrappingSubscriber?.cancel()
+        self.removeNavigationDelegate()
+        self.monitor.pathUpdateHandler = nil
+        self.monitor.cancel()
     }
     
     override func viewDidLoad() {
@@ -74,7 +77,9 @@ class ConnectAccountViewController: UIViewController {
         
         self.webContentView.navigationDelegate = self
                
-        self.webContentView.evaluateJavaScript("navigator.userAgent") { (agent, error) in
+        self.webContentView.evaluateJavaScript("navigator.userAgent") { [weak self] (agent, error) in
+            guard let self = self else { return }
+
             var userAgent = "iPhone;"
             if let agent = agent as? String {
                 userAgent = agent.replacingOccurrences(of: "iPad", with: "iPhone")
@@ -115,7 +120,6 @@ class ConnectAccountViewController: UIViewController {
     
     // MARK: - Private Methods
     private func initNetworkMonitor() {
-        let monitor = NWPathMonitor()
         let queue = DispatchQueue(label: "Monitor")
         
         monitor.pathUpdateHandler = { [weak self] path in
@@ -147,9 +151,18 @@ class ConnectAccountViewController: UIViewController {
     }
     
     private func initViews() {
-        self.errorView.buttonClickHandler = buttonClickHandler
-        self.networkErrorView.buttonClickHandler = buttonClickHandler
-        self.fetchSuccessView.buttonClickHandler = successHandler
+        self.errorView.buttonClickHandler = { [weak self] in
+            guard let self = self else { return }
+            self.buttonClickHandler()
+        }
+        self.networkErrorView.buttonClickHandler = { [weak self] in
+            guard let self = self else { return }
+            self.buttonClickHandler()
+        }
+        self.fetchSuccessView.buttonClickHandler = { [weak self] in
+            guard let self = self else { return }
+            self.successHandler()
+        }
     }
     
     private func hideWebContents(hide: Bool) {
@@ -174,9 +187,11 @@ class ConnectAccountViewController: UIViewController {
         /* An observer that observes 'viewModel.jsPublisher' to get javascript value and
          pass that value to web app by calling JavaScript function */
         jsSubscriber = viewModel.jsPublisher.receive(on: RunLoop.main).sink(receiveValue: {
-            (authState, javascript) in
+            [weak self] (authState, javascript) in
+            guard let self = self else { return }
             self.webContentView.evaluateJavaScript(javascript) {
-                (response, error) in
+                [weak self] (response, error) in
+                guard let self = self else { return }
                 self.viewModel.jsResultPublisher.send((authState, (response, error)))
                 
                 //Log events for JS injection
@@ -224,7 +239,8 @@ class ConnectAccountViewController: UIViewController {
         })
         
         navigationSubscriber = self.viewModel.navigationPublisher.receive(on: RunLoop.main).sink(receiveValue: {
-            navigation in
+            [weak self] navigation in
+            guard let self = self else { return }
             switch navigation {
             case .reload:
                 if let url = URL(string: self.baseURL) {
@@ -233,22 +249,30 @@ class ConnectAccountViewController: UIViewController {
             }
         })
         
-        showWebViewSubscriber = self.viewModel.showWebView.receive(on: RunLoop.main).sink(receiveValue: { showWeb in
+        showWebViewSubscriber = self.viewModel.showWebView.receive(on: RunLoop.main).sink(receiveValue: { [weak self] showWeb in
+            guard let self = self else { return }
             self.hideWebContents(hide: !showWeb)
         })
-        webViewErrorSubscriber = self.viewModel.webviewError.receive(on: RunLoop.main).sink(receiveValue: { isWebError in
+        webViewErrorSubscriber = self.viewModel.webviewError.receive(on: RunLoop.main).sink(receiveValue: { [weak self] isWebError in
+            guard let self = self else { return }
             if isWebError {
-                self.contentView.bringSubviewToFront(self.errorView)
+                if self.hasNetwork() {
+                    self.contentView.bringSubviewToFront(self.errorView)
+                } else {
+                    self.contentView.bringSubviewToFront(self.networkErrorView)
+                }
                 self.shouldAllowBack = true
             }
         })
-        authErrorSubscriber = self.viewModel.authError.receive(on: RunLoop.main).sink(receiveValue: { isError in
+        authErrorSubscriber = self.viewModel.authError.receive(on: RunLoop.main).sink(receiveValue: { [weak self] isError in
+            guard let self = self else { return }
             if isError.0 {
                 LibContext.shared.webAuthErrorPublisher.send((isError.0, isError.1))
                 self.dismiss(animated: true, completion: nil)
             }
         })
-        progressValueSubscriber = self.viewModel.progressValue.receive(on: RunLoop.main).sink(receiveValue: { progress in
+        progressValueSubscriber = self.viewModel.progressValue.receive(on: RunLoop.main).sink(receiveValue: { [weak self] progress in
+            guard let self = self else { return }
             self.contentView.bringSubviewToFront(self.progressView)
             self.progressView.progress = CGFloat(progress)
             //Progress
@@ -257,20 +281,23 @@ class ConnectAccountViewController: UIViewController {
         })
         headingMessageSubscriber = self.viewModel.headingMessage.receive(on: RunLoop.main).sink(receiveValue: { headerMessage in
         })
-        stepMessageSubscriber = self.viewModel.stepMessage.receive(on: RunLoop.main).sink(receiveValue: { stepMessage in
+        stepMessageSubscriber = self.viewModel.stepMessage.receive(on: RunLoop.main).sink(receiveValue: { [weak self] stepMessage in
+            guard let self = self else { return }
             if !stepMessage.elementsEqual(self.progressView.stepText) {
                 self.contentView.bringSubviewToFront(self.progressView)
                 self.progressView.stepText = stepMessage
             }
         })
-        completionSubscriber = self.viewModel.completionPublisher.receive(on: RunLoop.main).sink(receiveValue: { complete in
+        completionSubscriber = self.viewModel.completionPublisher.receive(on: RunLoop.main).sink(receiveValue: { [weak self] complete in
+            guard let self = self else { return }
             if complete {
                 self.backButton.isEnabled = false
                 self.backButton.isHidden = true
                 self.contentView.bringSubviewToFront(self.fetchSuccessView)
             }
         })
-        stopScrappingSubscriber = self.viewModel.disableScrapping.receive(on: RunLoop.main).sink(receiveValue: { disable in
+        stopScrappingSubscriber = self.viewModel.disableScrapping.receive(on: RunLoop.main).sink(receiveValue: { [weak self] disable in
+            guard let self = self else { return }
             self.isFetchSkipped = disable
             if disable {
                 self.backButton.isEnabled = false
@@ -298,6 +325,7 @@ class ConnectAccountViewController: UIViewController {
     }
     
     private func successHandler() {
+        self.removeNavigationDelegate()
         if self.isFetchSkipped {
             let result = (true, OrderFetchSuccessType.fetchSkipped)
             LibContext.shared.scrapeCompletionPublisher.send((result, ASLException(errorMessage: Strings.ExtractionDisabled, errorType: nil) ))
@@ -305,6 +333,10 @@ class ConnectAccountViewController: UIViewController {
             let result = (true, OrderFetchSuccessType.fetchCompleted)
             LibContext.shared.scrapeCompletionPublisher.send((result, nil))
         }
+    }
+    
+    func removeNavigationDelegate() {
+        self.webContentView.navigationDelegate = nil
     }
 }
 
@@ -324,7 +356,8 @@ extension ConnectAccountViewController: WKNavigationDelegate {
         self.viewModel.showWebView.send(showWebView)
         
         if (self.navigationHelper.shouldIntercept(navigationResponse: navigationResponse.response)) {
-            webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { cookies in
+            webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { [weak self] cookies in
+                guard let self = self else { return }
                 self.navigationHelper.intercept(navigationResponse: navigationResponse.response, cookies: cookies)
             }
             decisionHandler(.cancel)

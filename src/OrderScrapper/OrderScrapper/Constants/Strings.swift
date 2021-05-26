@@ -31,7 +31,6 @@ struct Strings {
     static let SuccessMsgReceiptsFechedSuccessfully = "success_msg_receipts_fetched_successfully"
     static let HeadingFetchingReceipts = "heading_fetching_receipts"
     
-    
     // Mark:- Non-Localized strings
     static let ErrorLibAlreadyInitialized = "OrdersExtractor is already initialized."
     static let ErrorLibNotInitialized = "OrdersExtractor is not initialized."
@@ -54,4 +53,5 @@ struct Strings {
     static let ErrorInScrapperConfigAPI = "scrapper_config_api_failed"
     static let ErrorOrderListingNavigationFailed = "order_listing_navigation_failed"
 
+    static let ErrorConfigsMissing = "Configs missing"
 }
