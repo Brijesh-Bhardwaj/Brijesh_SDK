@@ -23,5 +23,10 @@ class Util {
         let encryptedData = RNCryptor.encrypt(data: data, withPassword: AppConstant.tokenKey)
         return encryptedData.base64EncodedString()
     }
-    
+    static func getBaseUrl() -> String
+    {
+        let infoDict = Bundle.main.infoDictionary
+        let baseUrl = (infoDict?["SDK_BASE_ENDPOINT"] as? String)!
+        return  baseUrl
+    }
 }
