@@ -4,6 +4,6 @@
 import Foundation
 
 class FetchScript: Decodable {
-    let jsVersion: Float
+    let jsVersion: String
     let jsUrl: String
 }

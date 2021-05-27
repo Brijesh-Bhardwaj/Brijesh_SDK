@@ -4,5 +4,5 @@
 import Foundation
 
 class ScrapperConfigs: Decodable {
-    let amazon: AmazonUrls
+    let platformSourceConfig: [PlatformSourceConfig]
 }

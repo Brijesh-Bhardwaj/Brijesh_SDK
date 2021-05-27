@@ -21,9 +21,14 @@ class ConfigManager {
         _ = AmazonService.getScrapperConfig() { response, error in
             var logEventAttributes:[String:String] = [:]
             if let response = response {
-                self.configs[OrderSource.Amazon] = response.amazon.urls
-                completion(self.configs[orderSource], nil)
-                
+                let platformSourceConfigs = response.platformSourceConfig
+                for obj in platformSourceConfigs {
+                    if obj.platformSource == orderSource.value {
+                        self.configs[OrderSource.Amazon] = obj.urls
+                        completion(self.configs[orderSource], nil)
+                        break
+                    }
+                }
                 logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAPIScrapperConfig, eventAttributes: logEventAttributes)

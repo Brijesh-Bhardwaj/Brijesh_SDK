@@ -4,6 +4,7 @@
 
 import Foundation
 
-class AmazonUrls: Decodable {
+class PlatformSourceConfig: Decodable {
+    let platformSource: String
     let urls: Configurations
 }
