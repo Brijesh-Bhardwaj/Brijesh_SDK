@@ -25,7 +25,7 @@ class BSScriptFileManager {
     private func getScript(orderSource: OrderSource, completion: @escaping (String?) -> Void) {
         self.getScriptFetchUrl(orderSource: orderSource) { jsUrl, error in
             if let jsUrl = jsUrl {
-                let url = Utils.getBaseURL() + jsUrl
+                let url = LibContext.shared.orderExtractorConfig.baseURL + jsUrl
                 let scriptFileUrl = URL(string: url)
                 
                 var urlRequest = URLRequest(url: scriptFileUrl!)
@@ -34,7 +34,6 @@ class BSScriptFileManager {
                 urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
                 
                 let filePath = FileHelper.getScriptFilePath(orderSource: orderSource)
-                
                 //download script file
                 let downloader = FileDownloader()
                 downloader.downloadFile(urlRequest: urlRequest, destinationFilePath: filePath) { filePath, error in
