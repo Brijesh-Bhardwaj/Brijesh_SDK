@@ -366,15 +366,6 @@ extension ConnectAccountViewController: WKNavigationDelegate {
         decisionHandler(.allow)
     }
     
-    // This function is essential for intercepting every navigation in the webview
-    func webView(_ webView: WKWebView,
-                 decidePolicyFor navigationAction: WKNavigationAction,
-                 preferences: WKWebpagePreferences,
-                 decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
-        preferences.preferredContentMode = .mobile
-        decisionHandler(.allow, preferences)
-    }
-    
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         print(AppConstants.tag,"An error occurred during navigation", error.localizedDescription)
     }
