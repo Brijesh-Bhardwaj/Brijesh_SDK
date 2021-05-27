@@ -55,12 +55,12 @@ class BSScrapper: NSObject, BSAuthenticationStatusListener {
         print("### onAuthenticationSuccess")
         let orderSource = try! getOrderSource()
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource: String(orderSource.rawValue),
+        logEventAttributes = [EventConstant.OrderSource: orderSource.value,
                               EventConstant.Status: EventStatus.Success]
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAuthentication, eventAttributes: logEventAttributes)
         
         var logEventorderListingAttributes:[String:String] = [:]
-        logEventorderListingAttributes = [EventConstant.OrderSource: String(orderSource.rawValue),
+        logEventorderListingAttributes = [EventConstant.OrderSource: orderSource.value,
                                           EventConstant.Status: EventStatus.Success]
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgNavigatedToOrderListing, eventAttributes: logEventorderListingAttributes)
         
@@ -78,13 +78,13 @@ class BSScrapper: NSObject, BSAuthenticationStatusListener {
         print("### onAuthenticationFailure", errorReason.errorMessage)
         let orderSource = try! getOrderSource()
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource: String(orderSource.rawValue),
+        logEventAttributes = [EventConstant.OrderSource: orderSource.value,
                               EventConstant.ErrorReason: errorReason.errorMessage,
                               EventConstant.Status: EventStatus.Failure]
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAuthentication, eventAttributes: logEventAttributes)
         
         var logEventOrderListingAttributes:[String:String] = [:]
-        logEventOrderListingAttributes = [EventConstant.OrderSource: String(orderSource.rawValue),
+        logEventOrderListingAttributes = [EventConstant.OrderSource: orderSource.value,
                                           EventConstant.ErrorReason: Strings.ErrorOrderListingNavigationFailed,
                                           EventConstant.Status: EventStatus.Failure]
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgNavigatedToOrderListing, eventAttributes: logEventOrderListingAttributes)
