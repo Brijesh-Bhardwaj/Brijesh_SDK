@@ -1,3 +1,2 @@
-- Added `OrdersExtractorConfig` class to pass configurations to the SDK from the app. It includes base URL, app name and app version.
-- Modified the update_status API
-- Removed build configurations from the SDK project.
+- Modified the shouldShowWebView method to return true on approval and OTP urls
+- Removed the extra call for shouldShowWebView from the decidePolicy delegate method (In some edge cases, this delegate method was called incorrectly after didFinish method)
