@@ -3,13 +3,14 @@
 
 import Foundation
 
-class BSScrapper: NSObject, BSAuthenticationStatusListener {
-    let webClientDelegate = BSWebNavigationDelegate()
+class BSScrapper: NSObject {
     private let windowManager = BSHeadlessWindowManager()
-    
+    private var dateRange: DateRange?
+    private var account: Account?
+    let webClientDelegate = BSWebNavigationDelegate()
     let webClient: BSWebClient
-    var authenticator: BSAuthenticator!
     var completionHandler: ((Bool, OrderFetchSuccessType?), ASLException?) -> Void
+    var authenticator: BSAuthenticator!
     var configuration: Configurations!
     
     init(webClient: BSWebClient,
@@ -20,17 +21,31 @@ class BSScrapper: NSObject, BSAuthenticationStatusListener {
     
     func startScrapping(account: Account) {
         windowManager.attachHeadlessView(view: webClient)
-        
         let orderSource = try! getOrderSource()
-        ConfigManager.shared.getConfigurations(orderSource: orderSource)  { configurations, error in
-            if let configurations = configurations {
-                self.configuration = configurations
-                let authentiacator = try! self.getAuthenticator()
-                self.webClientDelegate.setObserver(observer: authentiacator as! BSWebNavigationObserver)
-                authentiacator.authenticate(account: account, configurations: configurations)
+        
+        _ = AmazonService.getDateRange(amazonId: account.userID){ response, error in
+            if let dateRange = response {
+                self.dateRange = dateRange
+                if dateRange.enableScraping {
+                    //Scrapping in the background
+                    ConfigManager.shared.getConfigurations(orderSource: orderSource)  { configurations, error in
+                        if let configurations = configurations {
+                            self.configuration = configurations
+                            let authentiacator = try! self.getAuthenticator()
+                            self.webClientDelegate.setObserver(observer: authentiacator as! BSWebNavigationObserver)
+                            authentiacator.authenticate(account: account, configurations: configurations)
+                        } else {
+                            self.completionHandler((false, nil), ASLException(
+                                                    errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil))
+                        }
+                    }
+                } else {
+                    self.completionHandler((false, .fetchSkipped), ASLException(
+                                            errorMessage: Strings.ErrorFetchSkipped, errorType: nil))
+                }
             } else {
-                self.onAuthenticationFailure(errorReason: ASLException(
-                                                errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil))
+                self.completionHandler((false, nil), ASLException(
+                                        errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
             }
         }
     }
@@ -42,7 +57,6 @@ class BSScrapper: NSObject, BSAuthenticationStatusListener {
     func isScrapping() {
     }
     
-    
     func getAuthenticator() throws -> BSAuthenticator {
         throw ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
     }
@@ -50,7 +64,9 @@ class BSScrapper: NSObject, BSAuthenticationStatusListener {
     func getOrderSource() throws -> OrderSource {
         throw ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
     }
-    
+}
+
+extension BSScrapper: BSAuthenticationStatusListener {
     func onAuthenticationSuccess() {
         print("### onAuthenticationSuccess")
         let orderSource = try! getOrderSource()
@@ -64,14 +80,32 @@ class BSScrapper: NSObject, BSAuthenticationStatusListener {
                                           EventConstant.Status: EventStatus.Success]
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgNavigatedToOrderListing, eventAttributes: logEventorderListingAttributes)
         
-        //Load Order Listing page
-        ConfigManager.shared.getConfigurations(orderSource: orderSource)  { configurations, error in
-            if let configurations = configurations {
-                let orderListingUrl = configurations.listing
-                self.webClient.loadUrl(url: orderListingUrl)
+        //On authentication success load order listing page and inject JS script to get order Ids
+        if let dateRange = self.dateRange {
+            ConfigManager.shared.getConfigurations(orderSource: orderSource)  { configurations, error in
+                if let configurations = configurations {
+                    BSScriptFileManager.shared.getScriptForScrapping(orderSource: orderSource){ script in
+                        if let script = script {
+                            let scriptBuilder = ScriptParam(script: script, dateRange: dateRange
+                                                              , url: configurations.listing, scrappingPage: .listing)
+                            let executableScript = ExecutableScriptBuilder().getExecutableScript(param: scriptBuilder)
+                            
+                            BSHtmlScrapper(webClient: self.webClient, delegate: self.webClientDelegate, listener: self)
+                                .extractOrders(script: executableScript, url: configurations.listing)
+                        } else {
+                            self.completionHandler((false, nil), ASLException(
+                                                    errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil))
+                        }
+                    }
+                } else {
+                    self.completionHandler((false, nil), ASLException(
+                                            errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil))
+                }
             }
+        } else {
+            self.completionHandler((false, nil), ASLException(
+                                    errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil))
         }
-        self.completionHandler((true, .fetchCompleted), nil)
     }
     
     func onAuthenticationFailure(errorReason: ASLException) {
@@ -88,7 +122,18 @@ class BSScrapper: NSObject, BSAuthenticationStatusListener {
                                           EventConstant.ErrorReason: Strings.ErrorOrderListingNavigationFailed,
                                           EventConstant.Status: EventStatus.Failure]
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgNavigatedToOrderListing, eventAttributes: logEventOrderListingAttributes)
+        
         self.completionHandler((false, nil), errorReason)
+    }
+}
+
+extension BSScrapper: BSHtmlScrappingStatusListener {
+    func onHtmlScrappingSucess(response: String) {
+        self.completionHandler((true, .fetchCompleted), nil)
+    }
+    
+    func onHtmlScrappingFailure(error: ASLException) {
+        self.completionHandler((false, nil), error)
     }
 }
 

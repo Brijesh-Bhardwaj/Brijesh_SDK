@@ -60,7 +60,7 @@ class AmazonOrderScrapper {
         let viewController = storyboard.instantiateViewController(identifier: "RegisterAccountVC") as! RegisterAccountViewController
         viewController.account = account as? UserAccountMO
         viewController.modalPresentationStyle = .fullScreen
-    
+        
         self.viewPresenter.presentView(view: viewController)
     }
     
@@ -84,8 +84,13 @@ class AmazonOrderScrapper {
     func startOrderExtraction(account: Account, orderExtractionListener: OrderExtractionListener) {
         if backgroundScrapper == nil {
             //Start scrapping in the background
-            let webClient = BSWebClient(frame: .zero,
-                                        configuration: WKWebViewConfiguration())
+            let scriptMessageHandler = BSScriptMessageHandler()
+            let contentController = WKUserContentController()
+            contentController.add(scriptMessageHandler, name: "iOS")
+            let config = WKWebViewConfiguration()
+            config.userContentController = contentController
+            let webClient = BSWebClient(frame: .zero, configuration: config, scriptMessageHandler: scriptMessageHandler)
+            
             backgroundScrapper = AmazonScrapper(webClient: webClient) { [weak self] result, error in
                 guard let self = self else {return}
                 
@@ -99,7 +104,9 @@ class AmazonOrderScrapper {
                 self.backgroundScrapper = nil
             }
             
+            //Start scrapping in the background
             self.backgroundScrapper.startScrapping(account: account)
         }
     }
 }
+

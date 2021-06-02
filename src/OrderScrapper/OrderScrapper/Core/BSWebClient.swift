@@ -5,9 +5,13 @@ import Foundation
 import WebKit
 
 class BSWebClient: WKWebView {
+    var scriptMessageHandler: BSScriptMessageHandler?
     
-    override init(frame: CGRect, configuration: WKWebViewConfiguration) {
+    init(frame: CGRect, configuration: WKWebViewConfiguration, scriptMessageHandler: BSScriptMessageHandler) {
         super.init(frame: frame, configuration: configuration)
+        
+        self.scriptMessageHandler = scriptMessageHandler
+        
         self.evaluateJavaScript("navigator.userAgent") { (agent, error) in
             var userAgent = "iPhone;"
             if let agent = agent as? String {
@@ -25,7 +29,16 @@ class BSWebClient: WKWebView {
     
     func loadUrl(url: String) {
         if let url = URL(string: url) {
-            self.load(URLRequest(url: url))
+            let urlRequest = URLRequest(url: url)
+            self.load(urlRequest)
+        }
+    }
+    
+    func loadListingUrl(url: String) {
+        let encodedStr = url.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
+        if let url = URL(string: encodedStr) {
+            let urlRequest = URLRequest(url:url)
+            self.load(urlRequest)
         }
     }
 }

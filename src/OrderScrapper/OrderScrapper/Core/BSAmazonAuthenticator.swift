@@ -5,14 +5,15 @@ import Foundation
 import WebKit
 
 class BSAmazonAuthenticator: BSBaseAuthenticator {
-    private static let URLDelimiter = "?"
+    private let LoginURLDelimiter = "/?"
+    private let URLDelimiter = "?"
     
     override func onPageFinish(url: String) throws {
         print("### didFinish", url)
-        let loginSubURL = getSubURL(from: configurations!.login)
+        let loginSubURL = getSubURL(from: configurations!.login, delimeter: LoginURLDelimiter)
         if (url.contains(loginSubURL) || loginSubURL.contains(url)) {
             self.injectAuthErrorVerificationJS()
-        } else if (url.contains(getSubURL(from: configurations!.listing))) {
+        } else if (url.contains(getSubURL(from: configurations!.listing, delimeter: URLDelimiter))) {
             self.listener?.onAuthenticationSuccess()
         } else {
             self.listener?.onAuthenticationFailure(errorReason: ASLException(errorMessage: Strings.ErrorOtherUrlLoaded,errorType: nil))
@@ -27,9 +28,9 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
         }
     }
     
-    private func getSubURL(from url: String) -> String {
-        if url.contains(BSAmazonAuthenticator.URLDelimiter) {
-            return Utils.getSubUrl(url: url, delimeter: BSAmazonAuthenticator.URLDelimiter)
+    private func getSubURL(from url: String, delimeter: String) -> String {
+        if url.contains(delimeter) {
+            return Utils.getSubUrl(url: url, delimeter: delimeter)
         }
         return url
     }

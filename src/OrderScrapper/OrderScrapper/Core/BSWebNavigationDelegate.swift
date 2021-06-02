@@ -1,9 +1,5 @@
-//
 //  BSWebDelegate.swift
 //  OrderScrapper
-//
-//  Created by Avinash on 21/05/21.
-//
 
 import Foundation
 import WebKit

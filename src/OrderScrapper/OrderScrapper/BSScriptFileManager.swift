@@ -3,8 +3,6 @@
 
 import Foundation
 
-
-
 class BSScriptFileManager {
     private static var instance: BSScriptFileManager!
     private init() {
@@ -38,7 +36,7 @@ class BSScriptFileManager {
                 let downloader = FileDownloader()
                 downloader.downloadFile(urlRequest: urlRequest, destinationFilePath: filePath) { filePath, error in
                     var logEventAttributes:[String:String] = [EventConstant.OrderSource: orderSource.value,
-                    EventConstant.PanelistID: LibContext.shared.authProvider.getPanelistID()]
+                                                              EventConstant.PanelistID: LibContext.shared.authProvider.getPanelistID()]
                     
                     if let filePath = filePath {
                         logEventAttributes[EventConstant.Status] = EventStatus.Success

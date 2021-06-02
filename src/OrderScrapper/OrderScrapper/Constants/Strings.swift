@@ -52,6 +52,8 @@ struct Strings {
     static let ErrorNoConfigurationsFound = "Configurations not found for the given order source"
     static let ErrorInScrapperConfigAPI = "scrapper_config_api_failed"
     static let ErrorOrderListingNavigationFailed = "order_listing_navigation_failed"
-
+    static let ErrorOrderExtractionFailed = "Order extraction failed"
     static let ErrorConfigsMissing = "Configs missing"
+    static let ErrorPageNotloaded = "Error while loading web page"
+    static let ErrorFetchSkipped = "Fetch skipped"
 }
