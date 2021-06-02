@@ -47,6 +47,8 @@
 		1CEDD13B26038CAE00E7BAB4 /* UserAccountMO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEDD13A26038CAE00E7BAB4 /* UserAccountMO.swift */; };
 		1CFB487B265405A8007F949E /* BSBaseAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFB487A265405A8007F949E /* BSBaseAuthenticator.swift */; };
 		9D638A3C265BD2B200C412AC /* OrdersExtractorConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D638A3B265BD2B200C412AC /* OrdersExtractorConfig.swift */; };
+		9D78852E26662E2600A11029 /* OrderDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D78852D26662E2600A11029 /* OrderDetails.swift */; };
+		9D812DA3265F7EC800629376 /* OrderDetailsMO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D812DA2265F7EC800629376 /* OrderDetailsMO.swift */; };
 		9DA4FD132656A85C0091EE77 /* Alamofire.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF1092615A20400752507 /* Alamofire.xcframework */; };
 		9DA4FD172656A88E0091EE77 /* CSV.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF1082615A20400752507 /* CSV.xcframework */; };
 		9DA4FD1A2656A8B50091EE77 /* RNCryptor.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF10A2615A20400752507 /* RNCryptor.xcframework */; };
@@ -185,6 +187,9 @@
 		1CEDD13A26038CAE00E7BAB4 /* UserAccountMO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAccountMO.swift; sourceTree = "<group>"; };
 		1CFB487A265405A8007F949E /* BSBaseAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSBaseAuthenticator.swift; sourceTree = "<group>"; };
 		9D638A3B265BD2B200C412AC /* OrdersExtractorConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrdersExtractorConfig.swift; sourceTree = "<group>"; };
+		9D78852D26662E2600A11029 /* OrderDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetails.swift; sourceTree = "<group>"; };
+		9D812DA1265F791D00629376 /* CoreDataModel v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CoreDataModel v2.xcdatamodel"; sourceTree = "<group>"; };
+		9D812DA2265F7EC800629376 /* OrderDetailsMO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailsMO.swift; sourceTree = "<group>"; };
 		E1155D04261D9B2600739735 /* SF-Pro-Rounded-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Rounded-Bold.otf"; sourceTree = "<group>"; };
 		E1155D07261D9B2700739735 /* SF-Pro-Rounded-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Rounded-Regular.otf"; sourceTree = "<group>"; };
 		E1155D27261DC1F200739735 /* GradientButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientButton.swift; sourceTree = "<group>"; };
@@ -508,6 +513,8 @@
 			children = (
 				E148DC172601F3AA001430BE /* ReportConfig.swift */,
 				1CEDD13A26038CAE00E7BAB4 /* UserAccountMO.swift */,
+				9D812DA2265F7EC800629376 /* OrderDetailsMO.swift */,
+				9D78852D26662E2600A11029 /* OrderDetails.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -748,6 +755,7 @@
 				E148CA41261040B400155B96 /* ProgressView.swift in Sources */,
 				E148DB6C25FF2BFD001430BE /* Account.swift in Sources */,
 				1C72BFC22629B5D40029255C /* UIColorExtension.swift in Sources */,
+				9D78852E26662E2600A11029 /* OrderDetails.swift in Sources */,
 				1C5DE05F264EA76400275073 /* JSUtils.swift in Sources */,
 				E11F4160260F3BBF00E90848 /* RegisterAccountViewController.swift in Sources */,
 				E11F4166260F3DE000E90848 /* ConnectAccountViewController.swift in Sources */,
@@ -755,6 +763,7 @@
 				1C006FB72600BDA800F9263E /* Strings.swift in Sources */,
 				E19D4CB72608FD29002C16A7 /* WebCacheCleaner.swift in Sources */,
 				1C268307264BE2B0004ED054 /* BSHeadlessWindowManager.swift in Sources */,
+				9D812DA3265F7EC800629376 /* OrderDetailsMO.swift in Sources */,
 				E148DC6126038537001430BE /* DateUtils.swift in Sources */,
 				1CA1EDF4260E16EF0000C859 /* Event.swift in Sources */,
 				E148DB6D25FF2BFD001430BE /* AccountDisconnectedListener.swift in Sources */,
@@ -1126,9 +1135,10 @@
 		1CD2B51126031A710016F752 /* CoreDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				9D812DA1265F791D00629376 /* CoreDataModel v2.xcdatamodel */,
 				1CD2B51226031A710016F752 /* CoreDataModel.xcdatamodel */,
 			);
-			currentVersion = 1CD2B51226031A710016F752 /* CoreDataModel.xcdatamodel */;
+			currentVersion = 9D812DA1265F791D00629376 /* CoreDataModel v2.xcdatamodel */;
 			path = CoreDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

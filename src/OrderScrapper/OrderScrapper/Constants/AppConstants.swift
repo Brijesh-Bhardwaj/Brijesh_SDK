@@ -10,6 +10,7 @@ struct AppConstants {
     static let identifier: String  = "ai.blackstraw.orderscrapper"
     static let numberOfSteps: Float = 6
     static let entityName = "UserAccount"
+    static let orderDetailEntity = "OrderDetails"
     static let resource = "CoreDataModel"
     static let extensionName = "momd"
     //UserAccount Entity columns
@@ -18,6 +19,13 @@ struct AppConstants {
     static let userAccountColumnAccountStatus = "accountStatus"
     static let userAccountColumnPassword = "password"
     static let userAcccountColumnPanelistId = "panelistId"
+    //OrderDetails Entity columns
+    static let orderDetailsColumnOrderID = "orderID"
+    static let orderDetailsColumnOrderDate = "orderDate"
+    static let orderDetailsColumnOrderSource = "orderSource"
+    static let orderDetailsColumnOrderUserID = "userID"
+    static let orderDetailsColumnPanelistID = "panelistID"
+    static let orderDetailsColumnOrderDeatilsURL = "orderDeatilsURL"
     //Firebase Analytics
     static let resourceName = "GoogleService-Info"
     static let resourceOfType = "plist"
