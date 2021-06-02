@@ -21,10 +21,19 @@ public class OrdersExtractor {
     /// - Throws ASLException: If the rauth provider does not provide the required auth token and panelist ID values
     public static func initialize(authProvider: AuthProvider,
                                   viewPresenter: ViewPresenter,
-                                  analyticsProvider: AnalyticsProvider?) throws {
+                                  analyticsProvider: AnalyticsProvider?,
+                                  orderExtractionConfig: OrderExtractorConfig) throws {
         let authToken = authProvider.getAuthToken()
         let panelistId = authProvider.getPanelistID()
+        let baseUrl = orderExtractionConfig.baseURL
+        let appName = orderExtractionConfig.appName
         
+        if (!baseUrl.isEmpty && !appName.isEmpty)
+        {
+            LibContext.shared.orderExtractorConfig = orderExtractionConfig
+        } else {
+            throw ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
+        }
         if (authToken.isEmpty || panelistId.isEmpty) {
             throw ASLException(errorMessage: Strings.ErrorAuthProviderNotImplemented, errorType: nil)
         }
@@ -55,7 +64,7 @@ public class OrdersExtractor {
             _ = AmazonService.getAccounts() { response, error in
                 DispatchQueue.global().async {
                     let accountsInDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
-
+                    
                     if let response = response  {
                         hasNeverConnected = response.hasNeverConnected
                         guard let accountDetails = response.accounts else {

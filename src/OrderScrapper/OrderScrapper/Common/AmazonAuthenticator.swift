@@ -149,7 +149,7 @@ internal class AmazonAuthenticator: Authenticator {
             _ = AmazonService.registerConnection(amazonId: userId,
                                                  status: AccountState.NeverConnected.rawValue,
                                                  message: errorMessage, orderStatus: OrderStatus.None.rawValue) { response, error in
-               //TODO
+                //TODO
             }
         } else {
             self.updateAccountWithExceptionState(message: AppConstants.msgAuthError)
