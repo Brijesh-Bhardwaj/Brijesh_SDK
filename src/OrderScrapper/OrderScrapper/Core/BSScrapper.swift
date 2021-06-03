@@ -21,6 +21,7 @@ class BSScrapper: NSObject {
     
     func startScrapping(account: Account) {
         windowManager.attachHeadlessView(view: webClient)
+        self.account = account
         let orderSource = try! getOrderSource()
         
         _ = AmazonService.getDateRange(amazonId: account.userID){ response, error in
@@ -87,7 +88,7 @@ extension BSScrapper: BSAuthenticationStatusListener {
                     BSScriptFileManager.shared.getScriptForScrapping(orderSource: orderSource){ script in
                         if let script = script {
                             let scriptBuilder = ScriptParam(script: script, dateRange: dateRange
-                                                              , url: configurations.listing, scrappingPage: .listing)
+                                                            , url: configurations.listing, scrappingPage: .listing)
                             let executableScript = ExecutableScriptBuilder().getExecutableScript(param: scriptBuilder)
                             
                             BSHtmlScrapper(webClient: self.webClient, delegate: self.webClientDelegate, listener: self)
@@ -125,15 +126,53 @@ extension BSScrapper: BSAuthenticationStatusListener {
         
         self.completionHandler((false, nil), errorReason)
     }
+    
 }
 
 extension BSScrapper: BSHtmlScrappingStatusListener {
     func onHtmlScrappingSucess(response: String) {
-        self.completionHandler((true, .fetchCompleted), nil)
+        insertOrderDetailsToDB(response: response) { dataInserted in
+            if dataInserted {
+                self.getOrderDetails()
+            }
+        }
     }
     
     func onHtmlScrappingFailure(error: ASLException) {
         self.completionHandler((false, nil), error)
+    }
+    
+    func insertOrderDetailsToDB(response: String, completion: @escaping (Bool) -> Void) {
+        if !response.isEmpty {
+            DispatchQueue.global().async {
+                let jsonData = response.data(using: .utf8)!
+                let scrapeResponse = try! JSONDecoder().decode(ScrapeResponse.self, from: jsonData)
+                let orderScrapeData = scrapeResponse.data
+                if let orderScrapeData = orderScrapeData, !orderScrapeData.isEmpty {
+                    
+                    for orderDetail in orderScrapeData {
+                        orderDetail.userID = self.account!.userID
+                        orderDetail.panelistID = self.account!.panelistID
+                        orderDetail.orderSource = try! self.getOrderSource().value
+                        orderDetail.date = DateUtils.getDate(dateStr: orderDetail.orderDate)
+                    }
+                    CoreDataManager.shared.insertOrderDetails(orderDetails: orderScrapeData)
+                    DispatchQueue.main.async {
+                        completion(true)
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        completion(false)
+                    }
+                }
+            }
+        } else {
+            completion(true)
+        }
+    }
+    
+    func getOrderDetails() {
+        _ = CoreDataManager.shared.fetchOrderDetails(orderSource: try! self.getOrderSource().value, panelistID: self.account!.panelistID, userID: self.account!.userID)
     }
 }
 

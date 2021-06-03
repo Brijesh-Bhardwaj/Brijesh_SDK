@@ -163,12 +163,12 @@ class CoreDataManager {
         
         for orderData in orderDetails {
             let orderDetail = NSEntityDescription.insertNewObject(forEntityName: AppConstants.orderDetailEntity, into: context) as! OrderDetailsMO
-            orderDetail.orderID = orderData.orderID
-            orderDetail.orderDate = orderData.orderDate
-            orderDetail.orderSource = orderData.orderSource
-            orderDetail.userID = orderData.userID
-            orderDetail.panelistID = orderData.panelistID
-            orderDetail.orderDetailsURL = orderData.orderDeatilsURL
+            orderDetail.orderID = orderData.orderId
+            orderDetail.orderDate = orderData.date!
+            orderDetail.orderSource = orderData.orderSource!
+            orderDetail.userID = orderData.userID!
+            orderDetail.panelistID = orderData.panelistID!
+            orderDetail.orderDetailsURL = orderData.detailsUrl
             do {
                 try context.save()
             } catch let error {

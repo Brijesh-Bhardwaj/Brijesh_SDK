@@ -29,7 +29,7 @@ extension BSHtmlScrapper: ScriptMessageListener {
         print("### onScriptMessageReceive")
         if message.name == "iOS" {
             print("### JSCallback Result \(message.body)")
-            //TODO response handling
+            listener.onHtmlScrappingSucess(response: message.body as! String)
         }
     }
 }
@@ -54,4 +54,5 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
     func didFailPageNavigation(for url: URL?, withError error: Error) {
         listener.onHtmlScrappingFailure(error: ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
     }
+
 }
