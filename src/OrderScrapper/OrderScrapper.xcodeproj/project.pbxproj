@@ -26,6 +26,8 @@
 		1C268319264BE7B4004ED054 /* BSAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C268318264BE7B4004ED054 /* BSAuthenticator.swift */; };
 		1C26831D264BE89D004ED054 /* BSAuthenticationStatusListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C26831C264BE89D004ED054 /* BSAuthenticationStatusListener.swift */; };
 		1C2F8DF4260B25870053E73A /* OrdersExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2F8DF3260B25870053E73A /* OrdersExtractor.swift */; };
+		1C414C532668DFA0009126E0 /* BSOrderDetailsScrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C414C522668DFA0009126E0 /* BSOrderDetailsScrapper.swift */; };
+		1C414C572668E07B009126E0 /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C414C562668E07B009126E0 /* Queue.swift */; };
 		1C41772126676ED6007D4EE4 /* ScriptParam.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C41772026676ED6007D4EE4 /* ScriptParam.swift */; };
 		1C4177422667998B007D4EE4 /* OrderDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C4177412667998B007D4EE4 /* OrderDetails.swift */; };
 		1C425D1F26109F640009A3FA /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C425D1E26109F640009A3FA /* Dictionary.swift */; };
@@ -160,6 +162,8 @@
 		1C268318264BE7B4004ED054 /* BSAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSAuthenticator.swift; sourceTree = "<group>"; };
 		1C26831C264BE89D004ED054 /* BSAuthenticationStatusListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSAuthenticationStatusListener.swift; sourceTree = "<group>"; };
 		1C2F8DF3260B25870053E73A /* OrdersExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrdersExtractor.swift; sourceTree = "<group>"; };
+		1C414C522668DFA0009126E0 /* BSOrderDetailsScrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSOrderDetailsScrapper.swift; sourceTree = "<group>"; };
+		1C414C562668E07B009126E0 /* Queue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
 		1C41772026676ED6007D4EE4 /* ScriptParam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptParam.swift; sourceTree = "<group>"; };
 		1C4177412667998B007D4EE4 /* OrderDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetails.swift; sourceTree = "<group>"; };
 		1C425D1E26109F640009A3FA /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
@@ -314,6 +318,8 @@
 				E19A5AFF2657DE2D00591A1A /* BSWebNavigationDelegate.swift */,
 				1C5133D5265D03FD00BCAC2C /* BSHtmlScrapper.swift */,
 				1C0ADB272664BED600989EDE /* BSScriptMessageHandler.swift */,
+				1C414C522668DFA0009126E0 /* BSOrderDetailsScrapper.swift */,
+				1C414C562668E07B009126E0 /* Queue.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -784,7 +790,9 @@
 				1CD2B51326031A710016F752 /* CoreDataModel.xcdatamodeld in Sources */,
 				1C4F89BA2655502000925FAB /* ConfigManager.swift in Sources */,
 				1C26830F264BE310004ED054 /* BSAmazonAuthenticator.swift in Sources */,
+				1C414C572668E07B009126E0 /* Queue.swift in Sources */,
 				1C26830B264BE2C8004ED054 /* AmazonScrapper.swift in Sources */,
+				1C414C532668DFA0009126E0 /* BSOrderDetailsScrapper.swift in Sources */,
 				1C006FB12600B7DA00F9263E /* Utils.swift in Sources */,
 				E148DC9A2605CB1E001430BE /* FileHelper.swift in Sources */,
 				1C65D32C26669DC200548A84 /* ScrapeResponse.swift in Sources */,

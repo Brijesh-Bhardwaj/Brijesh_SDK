@@ -93,6 +93,13 @@ extension BSScrapper: BSAuthenticationStatusListener {
                             
                             BSHtmlScrapper(webClient: self.webClient, delegate: self.webClientDelegate, listener: self)
                                 .extractOrders(script: executableScript, url: configurations.listing)
+                            
+                            var logEventAttributes:[String:String] = [:]
+                            logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
+                                                  EventConstant.PanelistID: self.account!.panelistID,
+                                                  EventConstant.OrderSourceID: self.account!.userID,
+                                                  EventConstant.Status: EventStatus.Success]
+                            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgInjectJSForOrderListing, eventAttributes: logEventAttributes)
                         } else {
                             self.completionHandler((false, nil), ASLException(
                                                     errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil))
@@ -131,9 +138,37 @@ extension BSScrapper: BSAuthenticationStatusListener {
 
 extension BSScrapper: BSHtmlScrappingStatusListener {
     func onHtmlScrappingSucess(response: String) {
+        
+        var logEventAttributes:[String:String] = [:]
+        logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
+                              EventConstant.PanelistID: self.account!.panelistID,
+                              EventConstant.OrderSourceID: self.account!.userID,
+                              EventConstant.Status: EventStatus.Success]
+        FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderListResult, eventAttributes: logEventAttributes)
+        
         insertOrderDetailsToDB(response: response) { dataInserted in
             if dataInserted {
-                self.getOrderDetails()
+                let orderSource = try! self.getOrderSource()
+                BSScriptFileManager.shared.getScriptForScrapping(orderSource: orderSource) { script in
+                    if let script = script, let dateRange = self.dateRange {
+                        let orderDetails = self.getOrderDetails()
+                        
+                        var logEventAttributes:[String:String] = [:]
+                        logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
+                                              EventConstant.PanelistID: self.account!.panelistID,
+                                              EventConstant.OrderSourceID: self.account!.userID,
+                                              EventConstant.Status: EventStatus.Success]
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgInjectJSForOrderDetail, eventAttributes: logEventAttributes)
+                        
+                        BSOrderDetailsScrapper(webClient: self.webClient, delegate: self.webClientDelegate,
+                                               listener: self).scrapeOrderDetailPage(script: script, dateRange: dateRange, orderDetails: orderDetails)
+                        print("### BSScrapper started scrapeOrderDetailPage")
+                    } else {
+                        self.completionHandler((false, nil), nil)
+                    }
+                }
+            } else {
+                //TODO
             }
         }
     }
@@ -159,6 +194,13 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     CoreDataManager.shared.insertOrderDetails(orderDetails: orderScrapeData)
                     DispatchQueue.main.async {
                         completion(true)
+                        
+                        var logEventAttributes:[String:String] = [:]
+                        logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
+                                              EventConstant.PanelistID: self.account!.panelistID,
+                                              EventConstant.OrderSourceID: self.account!.userID,
+                                              EventConstant.Status: EventStatus.Success]
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgInsertScrappedOrderDetailsInDB, eventAttributes: logEventAttributes)
                     }
                 } else {
                     DispatchQueue.main.async {
@@ -171,8 +213,17 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
         }
     }
     
-    func getOrderDetails() {
-        _ = CoreDataManager.shared.fetchOrderDetails(orderSource: try! self.getOrderSource().value, panelistID: self.account!.panelistID, userID: self.account!.userID)
+    func getOrderDetails() -> [OrderDetailsMO]{
+       let orderDetails = CoreDataManager.shared.fetchOrderDetails(orderSource: try! self.getOrderSource().value, panelistID: self.account!.panelistID, userID: self.account!.userID)
+        
+        var logEventAttributes:[String:String] = [:]
+        logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
+                              EventConstant.PanelistID: account!.panelistID,
+                              EventConstant.OrderSourceID: account!.userID,
+                              EventConstant.Status: EventStatus.Success]
+        FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrappedOrderDetailsFromDB, eventAttributes: logEventAttributes)
+
+        return orderDetails
     }
 }
 

@@ -36,6 +36,15 @@ struct EventType {
     static let BgNavigatedToOrderListing = "bg_navigated_to_order_listing"
     static let BgDownloadScrapperScriptFile = "bg_download_scrapper_script_file"
     static let BgRetrieveScrapperScript = "bg_retrieve_scrapper_script"
+    
+    static let BgInjectJSForOrderDetail = "bg_inject_js_against_order_details_page"
+    static let BgScrappingOrderDetailResult = "bg_scrapping_order_details_result"
+    static let BgInsertScrappedOrderDetailsInDB = "bg_insert_scrapped_order_details_into_db"
+    static let BgRetrieveScrappedOrderDetailsFromDB = "bg_retrieve_scrapped_order_details_from_db"
+    
+    static let BgInjectJSForOrderListing = "bg_inject_js_against_order_listing_page"
+    static let BgScrappingOrderListResult = "bg_scrapping_order_list_result"
+   
 }
 
 struct EventStatus {
