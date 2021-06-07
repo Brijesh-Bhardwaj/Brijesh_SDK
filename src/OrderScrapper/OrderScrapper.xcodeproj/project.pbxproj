@@ -58,10 +58,12 @@
 		1CEDD13B26038CAE00E7BAB4 /* UserAccountMO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEDD13A26038CAE00E7BAB4 /* UserAccountMO.swift */; };
 		1CFB487B265405A8007F949E /* BSBaseAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFB487A265405A8007F949E /* BSBaseAuthenticator.swift */; };
 		9D638A3C265BD2B200C412AC /* OrdersExtractorConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D638A3B265BD2B200C412AC /* OrdersExtractorConfig.swift */; };
+		9D830BF526692A3C0081D4BD /* OrderData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D830BF426692A3C0081D4BD /* OrderData.swift */; };
 		9D812DA3265F7EC800629376 /* OrderDetailsMO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D812DA2265F7EC800629376 /* OrderDetailsMO.swift */; };
 		9DA4FD132656A85C0091EE77 /* Alamofire.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF1092615A20400752507 /* Alamofire.xcframework */; };
 		9DA4FD172656A88E0091EE77 /* CSV.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF1082615A20400752507 /* CSV.xcframework */; };
 		9DA4FD1A2656A8B50091EE77 /* RNCryptor.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF10A2615A20400752507 /* RNCryptor.xcframework */; };
+		9DF81DEC266A3A0F001CFCCF /* OrderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF81DEB266A3A0F001CFCCF /* OrderRequest.swift */; };
 		E1155D12261D9B2900739735 /* SF-Pro-Rounded-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E1155D04261D9B2600739735 /* SF-Pro-Rounded-Bold.otf */; };
 		E1155D15261D9B2900739735 /* SF-Pro-Rounded-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = E1155D07261D9B2700739735 /* SF-Pro-Rounded-Regular.otf */; };
 		E1155D28261DC1F200739735 /* GradientButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1155D27261DC1F200739735 /* GradientButton.swift */; };
@@ -208,6 +210,8 @@
 		1CEDD13A26038CAE00E7BAB4 /* UserAccountMO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAccountMO.swift; sourceTree = "<group>"; };
 		1CFB487A265405A8007F949E /* BSBaseAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSBaseAuthenticator.swift; sourceTree = "<group>"; };
 		9D638A3B265BD2B200C412AC /* OrdersExtractorConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrdersExtractorConfig.swift; sourceTree = "<group>"; };
+		9D830BF426692A3C0081D4BD /* OrderData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderData.swift; sourceTree = "<group>"; };
+		9DF81DEB266A3A0F001CFCCF /* OrderRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderRequest.swift; sourceTree = "<group>"; };
 		9D812DA1265F791D00629376 /* CoreDataModel v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CoreDataModel v2.xcdatamodel"; sourceTree = "<group>"; };
 		9D812DA2265F7EC800629376 /* OrderDetailsMO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailsMO.swift; sourceTree = "<group>"; };
 		E1155D04261D9B2600739735 /* SF-Pro-Rounded-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Rounded-Bold.otf"; sourceTree = "<group>"; };
@@ -608,6 +612,8 @@
 				1CE22FA5261EDC2A002B9902 /* AccountDetails.swift */,
 				E1AAFF4E26274808000F5CD2 /* GetAccountsResponse.swift */,
 				1C0EC3C426569252000F278D /* FetchScript.swift */,
+				9D830BF426692A3C0081D4BD /* OrderData.swift */,
+				9DF81DEB266A3A0F001CFCCF /* OrderRequest.swift */,
 			);
 			path = Response;
 			sourceTree = "<group>";
@@ -801,6 +807,7 @@
 				1CA1EDF1260E16110000C859 /* EventType.swift in Sources */,
 				E148DB6225FF2BFD001430BE /* IconNames.swift in Sources */,
 				1C07410B2604B5B10013067C /* RNCryptoUtil.swift in Sources */,
+				9D830BF526692A3C0081D4BD /* OrderData.swift in Sources */,
 				1C0ADB282664BED600989EDE /* BSScriptMessageHandler.swift in Sources */,
 				1C26831D264BE89D004ED054 /* BSAuthenticationStatusListener.swift in Sources */,
 				E148CA41261040B400155B96 /* ProgressView.swift in Sources */,
@@ -855,6 +862,7 @@
 				1C4177422667998B007D4EE4 /* OrderDetails.swift in Sources */,
 				E1155D34261DDC9100739735 /* UIFontExtensions.swift in Sources */,
 				E148DC0B26010D28001430BE /* Authenticator.swift in Sources */,
+				9DF81DEC266A3A0F001CFCCF /* OrderRequest.swift in Sources */,
 				1C006FAA26009BE500F9263E /* AppConstants.swift in Sources */,
 				1C4F89A52654E98D00925FAB /* PlatformSourceConfig.swift in Sources */,
 				1C2F8DF4260B25870053E73A /* OrdersExtractor.swift in Sources */,
