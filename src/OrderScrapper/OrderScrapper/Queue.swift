@@ -4,19 +4,19 @@
 import Foundation
 
 class Queue<T> {
-    var orderDetailsQueue: [T]
+    var dataQueue: [T]
     
-    init(orderDetails: [T]) {
-        self.orderDetailsQueue = orderDetails
+    init(queue: [T]) {
+        self.dataQueue = queue
     }
     
     func isEmpty() -> Bool {
-        return orderDetailsQueue.isEmpty
+        return dataQueue.isEmpty
     }
     
     func peek() -> T? {
         if (!isEmpty())  {
-            return orderDetailsQueue.removeFirst()
+            return dataQueue.removeFirst()
         }
         return nil
     }

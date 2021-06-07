@@ -40,8 +40,8 @@ struct EventType {
     static let BgInjectJSForOrderDetail = "bg_inject_js_against_order_details_page"
     static let BgScrappingOrderDetailResult = "bg_scrapping_order_details_result"
     static let BgInsertScrappedOrderDetailsInDB = "bg_insert_scrapped_order_details_into_db"
-    static let BgRetrieveScrappedOrderDetailsFromDB = "bg_retrieve_scrapped_order_details_from_db"
-    
+    static let BgRetrieveScrappedOrderDetailsFromDB = "bg_get_scrapped_order_details_db"
+    static let BgAPIUploadOrderDetails = "bg_api_upload_order_details"
     static let BgInjectJSForOrderListing = "bg_inject_js_against_order_listing_page"
     static let BgScrappingOrderListResult = "bg_scrapping_order_list_result"
    

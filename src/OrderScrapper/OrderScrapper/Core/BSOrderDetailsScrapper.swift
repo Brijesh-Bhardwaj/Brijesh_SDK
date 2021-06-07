@@ -10,6 +10,8 @@ class BSOrderDetailsScrapper {
     var script: String?
     var dateRange: DateRange?
     var queue: Queue<OrderDetailsMO>?
+    var dataUploader: BSDataUploader?
+    var orderDetail: OrderDetailsMO?
     
     init(webClient: BSWebClient, delegate: BSWebNavigationDelegate, listener: BSHtmlScrappingStatusListener) {
         self.webClient = webClient
@@ -20,14 +22,12 @@ class BSOrderDetailsScrapper {
     func scrapeOrderDetailPage(script: String, dateRange: DateRange, orderDetails: [OrderDetailsMO]) {
         self.script = script
         self.dateRange = dateRange
-        self.queue = Queue(orderDetails: orderDetails)
+        self.queue = Queue(queue: orderDetails)
         scrapeOrder()
-        
-        
     }
     
     func scrapeOrder() {
-        let orderDetail = queue?.peek()
+        orderDetail = queue?.peek()
         if orderDetail != nil {
             if queue!.isEmpty() {
                 var logEventAttributes:[String:String] = [:]
@@ -50,16 +50,40 @@ class BSOrderDetailsScrapper {
             //TODO handling of success
         }
     }
+    
+    func uploadScrapeData(data: String) {
+        if dataUploader == nil {
+            dataUploader = BSDataUploader(dateRange: dateRange!, orderDetail: orderDetail!, listener: self)
+        }
+        dataUploader?.addData(data: data)
+    }
 }
 
 extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
+    func onScrapeDataUploadCompleted(complete: Bool) {
+        
+    }
+    
     func onHtmlScrappingSucess(response: String) {
-        print("### onHtmlScrappingSucess ", response)
+        print("### onHtmlScrappingSucess ->> ", response)
+        if !response.isEmpty {
+            self.uploadScrapeData(data: response)
+        }
         self.scrapeOrder()
     }
     
     func onHtmlScrappingFailure(error: ASLException) {
         print("### onHtmlScrappingFailure ")
         self.scrapeOrder()
+    }
+}
+
+extension BSOrderDetailsScrapper: DataUploadListener {
+    func onDataUploadComplete() {
+        if ((queue?.isEmpty()) != nil) {
+            listener.onScrapeDataUploadCompleted(complete: true)
+        } else {
+            listener.onScrapeDataUploadCompleted(complete: false)
+        }
     }
 }

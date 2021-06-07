@@ -137,6 +137,29 @@ extension BSScrapper: BSAuthenticationStatusListener {
 }
 
 extension BSScrapper: BSHtmlScrappingStatusListener {
+    func onScrapeDataUploadCompleted(complete: Bool) {
+        print("### onScrapeDataUploadCompleted ", complete)
+        let orderSource = try! getOrderSource()
+        
+        var logEventAttributes:[String:String] = [:]
+        logEventAttributes = [EventConstant.OrderSource:  orderSource.value,
+                              EventConstant.PanelistID: self.account!.panelistID,
+                              EventConstant.OrderSourceID: self.account!.userID]
+        
+        if complete {
+            self.completionHandler((true, .fetchCompleted), nil)
+            logEventAttributes[EventConstant.Status] = EventStatus.Success
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAPIUploadOrderDetails, eventAttributes: logEventAttributes)
+
+        } else {
+            self.completionHandler((false, nil), ASLException(
+                                    errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
+            logEventAttributes[EventConstant.Status] = EventStatus.Failure
+            logEventAttributes[EventConstant.Reason] = Strings.ErrorOrderExtractionFailed
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAPIUploadOrderDetails, eventAttributes: logEventAttributes)
+        }
+    }
+    
     func onHtmlScrappingSucess(response: String) {
         
         var logEventAttributes:[String:String] = [:]

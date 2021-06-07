@@ -10,6 +10,16 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
 
+## [0.3.4] - 2021-06-07
+
+### Added
+- Implementation of user authentication in background using zero size webview
+- Downloading of JS file and reading script from the file
+- Scrapping of order listing page using JS script and inserted scrape details into DB
+- Retrieve order details from DB and scrapping of order detail page one after another
+- Uploading of scrape order detail page data to backend through API
+- Completion/failure callback given to the caller after uploading of scrape order details data     
+
 ## [0.3.3] - 2021-05-26
 
 ### Added

@@ -28,8 +28,9 @@ extension BSHtmlScrapper: ScriptMessageListener {
     func onScriptMessageReceive(message: WKScriptMessage) {
         print("### onScriptMessageReceive")
         if message.name == "iOS" {
-            print("### JSCallback Result \(message.body)")
-            listener.onHtmlScrappingSucess(response: message.body as! String)
+            let data = message.body as! String
+            print("### JSCallback Result \(data)")
+            listener.onHtmlScrappingSucess(response: data)
         }
     }
 }

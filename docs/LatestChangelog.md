@@ -1,3 +1,3 @@
-- Added `OrdersExtractorConfig` class to pass configurations to the SDK from the app. It includes base URL, app name and app version.
-- Modified the update_status API
-- Removed build configurations from the SDK project.
+- Uploading of scrape order detail page data to backend through API
+- Completion/failure callback given to the caller after uploading of scrape order details data     
+
