@@ -18,13 +18,12 @@ class ConfigManager {
     
     func loadConfigs(orderSource: OrderSource, completion: @escaping (Configurations?, Error?) -> Void) {
         //get Scrapper config details
-        _ = AmazonService.getScrapperConfig() { response, error in
+        _ = AmazonService.getScrapperConfig(orderSource: [orderSource.value]) { response, error in
             var logEventAttributes:[String:String] = [:]
-            if let response = response {
-                let platformSourceConfigs = response.platformSourceConfig
-                for obj in platformSourceConfigs {
-                    if obj.platformSource == orderSource.value {
-                        self.configs[OrderSource.Amazon] = obj.urls
+            if let platformSourceConfigs = response {
+                for scrapperConfig in platformSourceConfigs {
+                    if scrapperConfig.platformSource == orderSource.value {
+                        self.configs[OrderSource.Amazon] = scrapperConfig.urls
                         completion(self.configs[orderSource], nil)
                         break
                     }

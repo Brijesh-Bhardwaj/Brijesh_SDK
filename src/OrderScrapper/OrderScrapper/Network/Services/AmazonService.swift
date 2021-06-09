@@ -7,7 +7,7 @@ import Foundation
 import Alamofire
 
 private enum JSONKeys: String, CodingKey {
-    case panelistId, panelist_id, amazonId, file, fromDate, toDate, status, message, orderStatus, data
+    case panelistId, panelist_id, amazonId, file, fromDate, toDate, status, message, orderStatus, data, configDetails
 }
 
 class AmazonService {
@@ -18,7 +18,7 @@ class AmazonService {
     private static let CreateConnection = "amazon-connection/register_connection"
     private static let UpdateStatus = "amazon-connection/update_status"
     private static let FetchScript = "scrapping/fetchScript"
-    private static let ScrapperConfig = "scraper_config"
+    private static let ScrapperConfigURL = "scraper_config/get_config"
     private static let orderUpload = "order_history​/upload_orders/"
     
     static func getDateRange(amazonId: String,
@@ -159,13 +159,13 @@ class AmazonService {
         return client
     }
     
-    static func getScrapperConfig(completionHandler: @escaping (ScrapperConfigs?, Error?) -> Void) -> APIClient {
-        //let panelistId = LibContext.shared.authProvider.getPanelistID()
-        let relativeUrl = ScrapperConfig
-        let client = NetworkClient<APIResponse<ScrapperConfigs>>(relativeURL: relativeUrl, requestMethod: .get)
+    static func getScrapperConfig(orderSource: [String], completionHandler: @escaping ([PlatformSourceConfig]?, Error?) -> Void) -> APIClient {
+        
+        let client = NetworkClient<APIResponse<[PlatformSourceConfig]>>(relativeURL: ScrapperConfigURL, requestMethod: .post)
+        client.body = [JSONKeys.configDetails.rawValue: orderSource]
         
         client.executeAPI() { (response, error) in
-            if let response = response as? APIResponse<ScrapperConfigs> {
+            if let response = response as? APIResponse<[PlatformSourceConfig]> {
                 if response.isError {
                     completionHandler(nil, APIError(error: response.error ?? "Error"))
                     print(AppConstants.tag, "getScrapperConfig", response.error ?? "Error")
