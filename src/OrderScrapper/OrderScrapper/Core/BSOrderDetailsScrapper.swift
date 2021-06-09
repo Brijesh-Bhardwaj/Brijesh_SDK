@@ -39,7 +39,8 @@ class BSOrderDetailsScrapper {
             }
             
             if let script = script, let dateRange = dateRange, let detailUrl = orderDetail?.orderDetailsURL {
-                let scriptParam = ScriptParam(script: script, dateRange: dateRange, url: detailUrl, scrappingPage: .details)
+                //Param for order detail page scrapping
+                let scriptParam = ScriptParam(script: script, dateRange: nil, url: detailUrl, scrappingPage: .details, urls: nil, orderId: orderDetail?.orderID)
                 let executableScript = ExecutableScriptBuilder().getExecutableScript(param: scriptParam)
                 
                 BSHtmlScrapper(webClient: webClient, delegate: webClientDelegate, listener: self)
@@ -66,6 +67,11 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
     
     func onHtmlScrappingSucess(response: String) {
         print("### onHtmlScrappingSucess ->> ", response)
+        
+        let jsonData = response.data(using: .utf8)!
+        let scrapeResponse = try! JSONDecoder().decode(JSCallback<Dictionary<String,String>>.self, from: jsonData)
+        
+        
         if !response.isEmpty {
             self.uploadScrapeData(data: response)
         }
