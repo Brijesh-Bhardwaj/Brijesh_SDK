@@ -64,10 +64,11 @@ class AmazonOrderScrapper {
         self.viewPresenter.presentView(view: viewController)
     }
     
-    func disconnectAccount(account: Account, accountDisconnectedListener: AccountDisconnectedListener) {
+    func disconnectAccount(account: Account, accountDisconnectedListener: AccountDisconnectedListener, orderSource: String) {
         _ = AmazonService.updateStatus(amazonId: account.userID, status: AccountState.ConnectedAndDisconnected.rawValue, message: AppConstants.msgDisconnected, orderStatus: OrderStatus.None.rawValue) { response, error in
             if response != nil {
                 let panelistId = LibContext.shared.authProvider.getPanelistID()
+                CoreDataManager.shared.deleteOrderDetails(userID: account.userID, panelistID: panelistId, orderSource: orderSource)
                 CoreDataManager.shared.deleteAccounts(userId: account.userID, panelistId: panelistId)
                 WebCacheCleaner.clear(completionHandler: nil)
                 accountDisconnectedListener.onAccountDisconnected(account: account)

@@ -200,11 +200,11 @@ class CoreDataManager {
         let context = persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.orderDetailEntity)
         
-        let orderSourceIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderUserID) = %@", userID)
+        let userIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderUserID) = %@", userID)
         let panelistIdPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnPanelistID) = %@", panelistID)
         let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) = %@", orderSource)
         
-        fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderSourceIDPredicate, panelistIdPredicate, orderSourcePredicate])
+        fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [userIDPredicate, panelistIdPredicate, orderSourcePredicate])
         let results = try? context.fetch(fetchRequest)
         let resultData = results as! [OrderDetailsMO]
         
@@ -221,10 +221,10 @@ class CoreDataManager {
     public func deleteOrderDetailsByOrderID(orderID: String, orderSource: String) {
         let context = persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.orderDetailEntity)
-            
+        
         let orderIDPredicate =  NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderID) = %@", orderID)
         let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) = %@", orderSource)
-            
+        
         fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderIDPredicate,  orderSourcePredicate])
         let result = try? context.fetch(fetchRequest)
         let resultData = result as! [OrderDetailsMO]
