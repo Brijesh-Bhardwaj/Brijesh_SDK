@@ -122,6 +122,11 @@ extension BSScrapper: BSAuthenticationStatusListener {
     func onAuthenticationFailure(errorReason: ASLException) {
         print("### onAuthenticationFailure", errorReason.errorMessage)
         let orderSource = try! getOrderSource()
+        do {
+            try CoreDataManager.shared.updateUserAccount(userId: account!.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: account!.panelistID)
+            } catch {
+                print("updateAccountWithExceptionState")
+            }
         var logEventAttributes:[String:String] = [:]
         logEventAttributes = [EventConstant.OrderSource: orderSource.value,
                               EventConstant.ErrorReason: errorReason.errorMessage,
