@@ -20,7 +20,7 @@ class BSScrapper: NSObject {
     }
     
     func startScrapping(account: Account) {
-        windowManager.attachHeadlessView(view: webClient)
+         windowManager.attachHeadlessView(view: webClient)
         self.account = account
         let orderSource = try! getOrderSource()
         
@@ -171,7 +171,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     func onHtmlScrappingSucess(response: String) {
         let jsonData = response.data(using: .utf8)!
         let scrapeResponse = try! JSONDecoder().decode(JSCallback<[OrderDetails]>.self, from: jsonData)
-        
+        print("#### onHtmlScrappingSucess BSCrapper ", response)
         if scrapeResponse.status == "success" {
             let orderDetails = scrapeResponse.data
             if let orderDetails = orderDetails, !orderDetails.isEmpty {
@@ -204,7 +204,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                 self.completionHandler((true, .fetchCompleted), nil)
             }
         } else {
-            self.completionHandler((false, nil), ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
+            //self.completionHandler((false, nil), ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
         }
         
         var logEventAttributes:[String:String] = [:]

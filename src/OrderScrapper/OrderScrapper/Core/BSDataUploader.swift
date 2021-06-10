@@ -7,10 +7,11 @@ protocol DataUploadListener {
     func onDataUploadComplete()
 }
 class BSDataUploader {
+    let OrderID = "orderId"
     let dateRange: DateRange
     let orderDetail: OrderDetailsMO
-    var orderData:[String] = []
     let listener: DataUploadListener
+    var orderData = [String: Dictionary<String,Any>]()
     
     init(dateRange: DateRange, orderDetail: OrderDetailsMO, listener: DataUploadListener) {
         self.dateRange = dateRange
@@ -18,54 +19,40 @@ class BSDataUploader {
         self.listener = listener
     }
     
-    func addData(data: String) {
-        self.orderData.append(data)
-        uploadData(data: data)
+    func addData(data: Dictionary<String, Any>) {
+        if let orderId = data[OrderID] as? String {
+            orderData[orderId] = data
+            uploadData(data: data)
+        }
     }
     
-    func uploadData(data: String) {
-        let dataDictionary = convertToDictionary(text: data)
-        if let dataDictionary = dataDictionary {
-            let orderRequest = OrderRequest(panelistId: orderDetail.panelistID, amazonId: orderDetail.userID, fromDate: dateRange.fromDate!, toDate: dateRange.toDate!, data: [dataDictionary])
-            
-            _ = AmazonService.uploadOrderHistory(orderRequest: orderRequest) { [self] response, error in
-                if let response = response {
-                    print("### uploadData() Response ", response)
-                    
-                    self.removeDataFromArray(data: data)
-                    
-                    //Delete order details from DB
-                    CoreDataManager.shared.deleteOrderDetailsByOrderID(orderID: orderDetail.orderID, orderSource: orderDetail.orderSource)
-                } else {
-                    self.removeDataFromArray(data: data)
+    func uploadData(data: Dictionary<String, Any>) {
+        let orderRequest = OrderRequest(panelistId: orderDetail.panelistID, amazonId: orderDetail.userID, fromDate: dateRange.fromDate!, toDate: dateRange.toDate!, data: [data])
+        _ = AmazonService.uploadOrderHistory(orderRequest: orderRequest) { [self] response, error in
+            if let response = response {
+                print("### uploadData() Response ", response)
+                let orderIds = response.orderData
+                if !orderIds.isEmpty {
+                    for orderId in orderIds {
+                        let removeOrderId = orderId.orderId
+                        self.removeDataFromArray(orderId: removeOrderId)
+                        
+                        //Delete order details from DB
+                        CoreDataManager.shared.deleteOrderDetailsByOrderID(orderID: removeOrderId, orderSource: orderDetail.orderSource)
+                    }
                 }
-                
-                if !orderData.isEmpty {
-                    self.uploadData(data: orderData.first!)
-                } else {
-                    self.listener.onDataUploadComplete()
-                }
+            } else {
+                print("### uploadData() Error ")
+                let orderId = data[OrderID]
+                self.removeDataFromArray(orderId: orderId as! String)
             }
         }
     }
     
-    func removeDataFromArray(data: String) {
-        //Remove from the array
-        if !data.isEmpty, data.contains(data) {
-            print("### Array contains. ",orderData.count)
-            self.orderData = self.orderData.filter() {$0 != data}
-            print("### After removing",orderData.count)
+    func removeDataFromArray(orderId: String) {
+        if !orderData.isEmpty {
+            orderData.removeValue(forKey: orderId)
+            print("### Remove from the dictionary ", orderId)
         }
-    }
-    
-    func convertToDictionary(text: String) -> [String: Any]? {
-        if let data = text.data(using: .utf8) {
-            do {
-                return try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-            } catch {
-                print(error.localizedDescription)
-            }
-        }
-        return nil
     }
 }

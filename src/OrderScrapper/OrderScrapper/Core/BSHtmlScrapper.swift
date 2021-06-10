@@ -29,7 +29,6 @@ extension BSHtmlScrapper: ScriptMessageListener {
         print("### onScriptMessageReceive")
         if message.name == "iOS" {
             let data = message.body as! String
-            print("### JSCallback Result \(data)")
             listener.onHtmlScrappingSucess(response: data)
         }
     }

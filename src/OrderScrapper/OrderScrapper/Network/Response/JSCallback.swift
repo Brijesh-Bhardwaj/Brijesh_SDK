@@ -11,3 +11,4 @@ struct JSCallback<T: Decodable>: Decodable {
     let errorMessage: String?
     let data: T?
 }
+

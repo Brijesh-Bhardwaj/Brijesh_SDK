@@ -5,7 +5,11 @@
 import Foundation
 
 struct OrderData: Decodable {
-    let amazondID: String
-    let panelistID: String
-    let orderID: String
+    let amazonId: String
+    let panelistId: String
+    let orderData: [OrderId]
+}
+
+struct OrderId: Decodable {
+    let orderId: String
 }

@@ -90,7 +90,8 @@ class AmazonOrderScrapper {
             contentController.add(scriptMessageHandler, name: "iOS")
             let config = WKWebViewConfiguration()
             config.userContentController = contentController
-            let webClient = BSWebClient(frame: .zero, configuration: config, scriptMessageHandler: scriptMessageHandler)
+            let frame = CGRect(x: 0, y: 0, width: 250, height: 400)
+            let webClient = BSWebClient(frame: frame, configuration: config, scriptMessageHandler: scriptMessageHandler)
             
             backgroundScrapper = AmazonScrapper(webClient: webClient) { [weak self] result, error in
                 guard let self = self else {return}

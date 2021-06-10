@@ -19,7 +19,7 @@ class AmazonService {
     private static let UpdateStatus = "amazon-connection/update_status"
     private static let FetchScript = "scrapping/fetchScript"
     private static let ScrapperConfigURL = "scraper_config/get_config"
-    private static let orderUpload = "order_history​/upload_orders/"
+    private static let orderUpload = "order_history/upload_orders"
     
     static func getDateRange(amazonId: String,
                              completionHandler: @escaping (DateRange?, Error?) -> Void) -> APIClient {
@@ -198,7 +198,8 @@ class AmazonService {
         return client
     }
     
-    static func uploadOrderHistory(orderRequest: OrderRequest, completionHandler: @escaping (OrderData?, Error?) -> Void) -> APIClient {
+    static func uploadOrderHistory(orderRequest: OrderRequest, completionHandler:
+                                    @escaping (OrderData?, Error?) -> Void) -> APIClient {
         let client = NetworkClient<APIResponse<OrderData>>(relativeURL: orderUpload, requestMethod: .post)
         client.body = orderRequest.toDictionary()
         

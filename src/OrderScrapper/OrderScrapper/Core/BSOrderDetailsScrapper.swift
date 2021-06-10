@@ -52,7 +52,7 @@ class BSOrderDetailsScrapper {
         }
     }
     
-    func uploadScrapeData(data: String) {
+    func uploadScrapeData(data: Dictionary<String,Any>) {
         if dataUploader == nil {
             dataUploader = BSDataUploader(dateRange: dateRange!, orderDetail: orderDetail!, listener: self)
         }
@@ -62,18 +62,22 @@ class BSOrderDetailsScrapper {
 
 extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
     func onScrapeDataUploadCompleted(complete: Bool) {
-        
+        //NA
     }
     
     func onHtmlScrappingSucess(response: String) {
-        print("### onHtmlScrappingSucess ->> ", response)
-        
         let jsonData = response.data(using: .utf8)!
-        let scrapeResponse = try! JSONDecoder().decode(JSCallback<Dictionary<String,String>>.self, from: jsonData)
+        let object = try? JSONSerialization.jsonObject(with: jsonData, options: [])
         
-        
-        if !response.isEmpty {
-            self.uploadScrapeData(data: response)
+        if let jsCallBackResult = object as? Dictionary<String,Any?> {
+            if let status = jsCallBackResult["status"] as? String {
+                if status == "success" {
+                    print("### onHtmlScrappingSucess for OrderDetail", response)
+                    if let orderDetails = jsCallBackResult["data"] as? Dictionary<String,Any> {
+                        self.uploadScrapeData(data: orderDetails)
+                    }
+                }
+            }
         }
         self.scrapeOrder()
     }
