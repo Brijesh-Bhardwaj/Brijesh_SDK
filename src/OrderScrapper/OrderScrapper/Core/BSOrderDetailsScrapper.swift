@@ -8,11 +8,11 @@ class BSOrderDetailsScrapper {
     let webClientDelegate: BSWebNavigationDelegate
     let listener: BSHtmlScrappingStatusListener
     var htmlScrapper: BSHtmlScrapper!
-    var script: String?
+    var script: String!
     var dateRange: DateRange?
-    var queue: Queue<OrderDetailsMO>?
-    var dataUploader: BSDataUploader?
-    var orderDetail: OrderDetailsMO?
+    var queue: Queue<OrderDetailsMO>!
+    var dataUploader: BSDataUploader!
+    var orderDetail: OrderDetailsMO!
     
     init(webClient: BSWebClient, delegate: BSWebNavigationDelegate, listener: BSHtmlScrappingStatusListener) {
         self.webClient = webClient
@@ -29,7 +29,7 @@ class BSOrderDetailsScrapper {
     }
     
     func scrapeOrder() {
-        orderDetail = queue?.peek()
+        orderDetail = queue.peek()
         if orderDetail != nil {
             if queue!.isEmpty() {
                 var logEventAttributes:[String:String] = [:]
@@ -49,7 +49,7 @@ class BSOrderDetailsScrapper {
             }
         } else {
             print("### Queue empty")
-            //TODO handling of success
+            onDataUploadComplete()
         }
     }
     
@@ -78,6 +78,8 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                         self.uploadScrapeData(data: orderDetails)
                     }
                     self.scrapeOrder()
+                } else if status == "failed" {
+                    self.scrapeOrder()
                 }
             }
         }
@@ -91,10 +93,16 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
 
 extension BSOrderDetailsScrapper: DataUploadListener {
     func onDataUploadComplete() {
-        if ((queue?.isEmpty()) != nil) {
+        guard let queue = self.queue else {
+            return
+        }
+        var completed = queue.isEmpty()
+        if self.dataUploader != nil {
+            completed = completed && !self.dataUploader.hasDataForUpload()
+        }
+        
+        if completed {
             listener.onScrapeDataUploadCompleted(complete: true)
-        } else {
-            listener.onScrapeDataUploadCompleted(complete: false)
         }
     }
 }

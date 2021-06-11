@@ -7,7 +7,7 @@ import Foundation
 struct OrderData: Decodable {
     let amazonId: String
     let panelistId: String
-    let orderData: [OrderId]
+    let orderData: [OrderId]?
 }
 
 struct OrderId: Decodable {

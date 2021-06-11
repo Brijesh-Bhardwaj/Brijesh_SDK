@@ -169,10 +169,14 @@ extension AccountsViewController: OrderExtractionListener {
         if account.isFirstConnectedAccount {
             showAlert(title: "Alert", message: "You've received 1000 points for connecting your first Amazon account!", completionHandler: nil)
         }
+        
+        showAlert(title: "Alert", message: "Extraction process completed", completionHandler: nil)
+        loadAccounts()
     }
     
     func onOrderExtractionFailure(error: ASLException, account: Account) {
         showAlert(title: "Alert", message: error.errorMessage, completionHandler: nil)
+        loadAccounts()
     }
 }
 

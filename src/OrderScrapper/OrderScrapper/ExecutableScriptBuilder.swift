@@ -13,7 +13,6 @@ class ExecutableScriptBuilder {
             inputData = getInputDataForListingPage(scrappingPage: param.scrappingPage, dateRange: param.dateRange!, urls: param.urls!)
         }
         let executableScript = "const inputData =" + inputData + ";" + param.script
-        print("### executableScript", executableScript)
         return executableScript
     }
     

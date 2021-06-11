@@ -20,7 +20,7 @@ class BSScrapper: NSObject {
     }
     
     func startScrapping(account: Account) {
-         windowManager.attachHeadlessView(view: webClient)
+        windowManager.attachHeadlessView(view: webClient)
         self.account = account
         let orderSource = try! getOrderSource()
         
@@ -36,15 +36,18 @@ class BSScrapper: NSObject {
                             self.webClientDelegate.setObserver(observer: authentiacator as! BSWebNavigationObserver)
                             authentiacator.authenticate(account: account, configurations: configurations)
                         } else {
+                            self.cleanUp()
                             self.completionHandler((false, nil), ASLException(
                                                     errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil))
                         }
                     }
                 } else {
+                    self.cleanUp()
                     self.completionHandler((false, .fetchSkipped), ASLException(
                                             errorMessage: Strings.ErrorFetchSkipped, errorType: nil))
                 }
             } else {
+                self.cleanUp()
                 self.completionHandler((false, nil), ASLException(
                                         errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
             }
@@ -52,7 +55,7 @@ class BSScrapper: NSObject {
     }
     
     func stopScrapping() {
-        windowManager.detachHeadlessView(view: webClient)
+
     }
     
     func isScrapping() {
@@ -64,6 +67,10 @@ class BSScrapper: NSObject {
     
     func getOrderSource() throws -> OrderSource {
         throw ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
+    }
+    
+    private func cleanUp() {
+        windowManager.detachHeadlessView(view: webClient)
     }
 }
 
@@ -82,38 +89,33 @@ extension BSScrapper: BSAuthenticationStatusListener {
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgNavigatedToOrderListing, eventAttributes: logEventorderListingAttributes)
         
         //On authentication success load order listing page and inject JS script to get order Ids
-        if let dateRange = self.dateRange {
-            ConfigManager.shared.getConfigurations(orderSource: orderSource)  { configurations, error in
-                if let configurations = configurations {
-                    BSScriptFileManager.shared.getScriptForScrapping(orderSource: orderSource){ script in
-                        if let script = script {
-                            
-                            let urls = Urls(login: self.configuration.login, listing: self.configuration.listing, details: self.configuration.details)
-                            let scriptBuilder = ScriptParam(script: script, dateRange: dateRange
-                                                            , url: configurations.listing, scrappingPage: .listing, urls: urls,
-                                                            orderId: nil)
-                            let executableScript = ExecutableScriptBuilder().getExecutableScript(param: scriptBuilder)
-                            
-                            BSHtmlScrapper(webClient: self.webClient, delegate: self.webClientDelegate, listener: self)
-                                .extractOrders(script: executableScript, url: configurations.listing)
-                            
-                            var logEventAttributes:[String:String] = [:]
-                            logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
-                                                  EventConstant.PanelistID: self.account!.panelistID,
-                                                  EventConstant.OrderSourceID: self.account!.userID,
-                                                  EventConstant.Status: EventStatus.Success]
-                            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgInjectJSForOrderListing, eventAttributes: logEventAttributes)
-                        } else {
-                            self.completionHandler((false, nil), ASLException(
-                                                    errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil))
-                        }
-                    }
+        if let dateRange = self.dateRange, let configurations = self.configuration {
+            BSScriptFileManager.shared.getScriptForScrapping(orderSource: orderSource){ script in
+                if let script = script {
+                    
+                    let urls = Urls(login: self.configuration.login, listing: self.configuration.listing, details: self.configuration.details)
+                    let scriptBuilder = ScriptParam(script: script, dateRange: dateRange
+                                                    , url: configurations.listing, scrappingPage: .listing, urls: urls,
+                                                    orderId: nil)
+                    let executableScript = ExecutableScriptBuilder().getExecutableScript(param: scriptBuilder)
+                    
+                    BSHtmlScrapper(webClient: self.webClient, delegate: self.webClientDelegate, listener: self)
+                        .extractOrders(script: executableScript, url: configurations.listing)
+                    
+                    var logEventAttributes:[String:String] = [:]
+                    logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
+                                          EventConstant.PanelistID: self.account!.panelistID,
+                                          EventConstant.OrderSourceID: self.account!.userID,
+                                          EventConstant.Status: EventStatus.Success]
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgInjectJSForOrderListing, eventAttributes: logEventAttributes)
                 } else {
+                    self.cleanUp()
                     self.completionHandler((false, nil), ASLException(
                                             errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil))
                 }
             }
         } else {
+            self.cleanUp()
             self.completionHandler((false, nil), ASLException(
                                     errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil))
         }
@@ -124,9 +126,9 @@ extension BSScrapper: BSAuthenticationStatusListener {
         let orderSource = try! getOrderSource()
         do {
             try CoreDataManager.shared.updateUserAccount(userId: account!.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: account!.panelistID)
-            } catch {
-                print("updateAccountWithExceptionState")
-            }
+        } catch {
+            print("updateAccountWithExceptionState")
+        }
         var logEventAttributes:[String:String] = [:]
         logEventAttributes = [EventConstant.OrderSource: orderSource.value,
                               EventConstant.ErrorReason: errorReason.errorMessage,
@@ -139,6 +141,7 @@ extension BSScrapper: BSAuthenticationStatusListener {
                                           EventConstant.Status: EventStatus.Failure]
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgNavigatedToOrderListing, eventAttributes: logEventOrderListingAttributes)
         
+        self.cleanUp()
         self.completionHandler((false, nil), errorReason)
     }
     
@@ -158,7 +161,6 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
             self.completionHandler((true, .fetchCompleted), nil)
             logEventAttributes[EventConstant.Status] = EventStatus.Success
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAPIUploadOrderDetails, eventAttributes: logEventAttributes)
-
         } else {
             self.completionHandler((false, nil), ASLException(
                                     errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
@@ -166,6 +168,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
             logEventAttributes[EventConstant.Reason] = Strings.ErrorOrderExtractionFailed
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAPIUploadOrderDetails, eventAttributes: logEventAttributes)
         }
+        self.cleanUp()
     }
     
     func onHtmlScrappingSucess(response: String) {
@@ -173,8 +176,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
         let scrapeResponse = try! JSONDecoder().decode(JSCallback<[OrderDetails]>.self, from: jsonData)
         print("#### onHtmlScrappingSucess BSCrapper ", response)
         if scrapeResponse.status == "success" {
-            let orderDetails = scrapeResponse.data
-            if let orderDetails = orderDetails, !orderDetails.isEmpty {
+            if let orderDetails = scrapeResponse.data, !orderDetails.isEmpty {
                 insertOrderDetailsToDB(orderDetails: orderDetails) { dataInserted in
                     if dataInserted {
                         let orderSource = try! self.getOrderSource()
@@ -193,29 +195,34 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                                                        listener: self).scrapeOrderDetailPage(script: script, dateRange: dateRange, orderDetails: orderDetails)
                                 print("### BSScrapper started scrapeOrderDetailPage")
                             } else {
+                                self.cleanUp()
                                 self.completionHandler((false, nil), nil)
                             }
                         }
                     } else {
+                        self.cleanUp()
                         self.completionHandler((false, nil), ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
                     }
                 }
             } else {
+                self.cleanUp()
                 self.completionHandler((true, .fetchCompleted), nil)
             }
-        } else {
-            //self.completionHandler((false, nil), ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
+            
+            var logEventAttributes:[String:String] = [:]
+            logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
+                                  EventConstant.PanelistID: self.account!.panelistID,
+                                  EventConstant.OrderSourceID: self.account!.userID,
+                                  EventConstant.Status: EventStatus.Success]
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderListResult, eventAttributes: logEventAttributes)
+        } else if scrapeResponse.status == "failed" {
+            self.cleanUp()
+            self.completionHandler((false, nil), ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
         }
-        
-        var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
-                              EventConstant.PanelistID: self.account!.panelistID,
-                              EventConstant.OrderSourceID: self.account!.userID,
-                              EventConstant.Status: EventStatus.Success]
-        FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderListResult, eventAttributes: logEventAttributes)
     }
     
     func onHtmlScrappingFailure(error: ASLException) {
+        self.cleanUp()
         self.completionHandler((false, nil), error)
     }
     
@@ -242,7 +249,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     }
     
     func getOrderDetails() -> [OrderDetailsMO]{
-       let orderDetails = CoreDataManager.shared.fetchOrderDetails(orderSource: try! self.getOrderSource().value, panelistID: self.account!.panelistID, userID: self.account!.userID)
+        let orderDetails = CoreDataManager.shared.fetchOrderDetails(orderSource: try! self.getOrderSource().value, panelistID: self.account!.panelistID, userID: self.account!.userID)
         
         var logEventAttributes:[String:String] = [:]
         logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
@@ -250,7 +257,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                               EventConstant.OrderSourceID: account!.userID,
                               EventConstant.Status: EventStatus.Success]
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrappedOrderDetailsFromDB, eventAttributes: logEventAttributes)
-
+        
         return orderDetails
     }
 }
