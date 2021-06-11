@@ -556,7 +556,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 33;
+				CURRENT_PROJECT_VERSION = 40;
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_BITCODE = NO;
 				EXCLUDED_ARCHS = "";
@@ -574,7 +574,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACH_O_TYPE = mh_execute;
-				MARKETING_VERSION = 0.3.3;
+				MARKETING_VERSION = 0.3.4;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.receiptstraw.dev;
@@ -698,7 +698,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 33;
+				CURRENT_PROJECT_VERSION = 40;
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_BITCODE = NO;
 				EXCLUDED_ARCHS = "";
@@ -716,7 +716,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACH_O_TYPE = mh_execute;
-				MARKETING_VERSION = 0.3.3;
+				MARKETING_VERSION = 0.3.4;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.receiptstraw.dev;
@@ -840,7 +840,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 33;
+				CURRENT_PROJECT_VERSION = 40;
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_BITCODE = NO;
 				EXCLUDED_ARCHS = "";
@@ -858,7 +858,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACH_O_TYPE = mh_execute;
-				MARKETING_VERSION = 0.3.3;
+				MARKETING_VERSION = 0.3.4;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.receiptstraw.dev;
@@ -982,7 +982,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 33;
+				CURRENT_PROJECT_VERSION = 40;
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_BITCODE = NO;
 				EXCLUDED_ARCHS = "";
@@ -1000,7 +1000,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACH_O_TYPE = mh_execute;
-				MARKETING_VERSION = 0.3.3;
+				MARKETING_VERSION = 0.3.4;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.receiptstraw.dev;

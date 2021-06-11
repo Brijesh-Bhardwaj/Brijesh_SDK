@@ -7,6 +7,7 @@ class BSOrderDetailsScrapper {
     let webClient: BSWebClient
     let webClientDelegate: BSWebNavigationDelegate
     let listener: BSHtmlScrappingStatusListener
+    var htmlScrapper: BSHtmlScrapper!
     var script: String?
     var dateRange: DateRange?
     var queue: Queue<OrderDetailsMO>?
@@ -23,6 +24,7 @@ class BSOrderDetailsScrapper {
         self.script = script
         self.dateRange = dateRange
         self.queue = Queue(queue: orderDetails)
+        self.htmlScrapper = BSHtmlScrapper(webClient: webClient, delegate: webClientDelegate, listener: self)
         scrapeOrder()
     }
     
@@ -38,13 +40,12 @@ class BSOrderDetailsScrapper {
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResult, eventAttributes: logEventAttributes)
             }
             
-            if let script = script, let dateRange = dateRange, let detailUrl = orderDetail?.orderDetailsURL {
+            if let script = script, let detailUrl = orderDetail?.orderDetailsURL {
                 //Param for order detail page scrapping
                 let scriptParam = ScriptParam(script: script, dateRange: nil, url: detailUrl, scrappingPage: .details, urls: nil, orderId: orderDetail?.orderID)
                 let executableScript = ExecutableScriptBuilder().getExecutableScript(param: scriptParam)
                 
-                BSHtmlScrapper(webClient: webClient, delegate: webClientDelegate, listener: self)
-                    .extractOrders(script: executableScript, url: detailUrl)
+                self.htmlScrapper.extractOrders(script: executableScript, url: detailUrl)
             }
         } else {
             print("### Queue empty")
@@ -76,10 +77,10 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                     if let orderDetails = jsCallBackResult["data"] as? Dictionary<String,Any> {
                         self.uploadScrapeData(data: orderDetails)
                     }
+                    self.scrapeOrder()
                 }
             }
         }
-        self.scrapeOrder()
     }
     
     func onHtmlScrappingFailure(error: ASLException) {

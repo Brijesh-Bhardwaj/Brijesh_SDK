@@ -182,7 +182,7 @@ extension AccountsViewController: AnalyticsProvider {
     }
     
     func setUserProperty(userProperty: String, userPropertyValue: String) {
-        Analytics.setUserProperty(userProperty, forName: userPropertyValue)
+        Analytics.setUserProperty(userPropertyValue, forName: userProperty)
     }
 }
 extension UIViewController {
