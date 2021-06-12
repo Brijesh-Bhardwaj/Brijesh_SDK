@@ -8,4 +8,5 @@ import Foundation
 
 public enum ErrorType {
     case userAborted  // The operation is aborted while fetching the receipts
+    case authError
 }

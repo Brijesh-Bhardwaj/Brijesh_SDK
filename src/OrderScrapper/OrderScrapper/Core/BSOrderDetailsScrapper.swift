@@ -4,9 +4,7 @@
 import Foundation
 
 class BSOrderDetailsScrapper {
-    let webClient: BSWebClient
-    let webClientDelegate: BSWebNavigationDelegate
-    let listener: BSHtmlScrappingStatusListener
+    let params: BSHtmlScrapperParams
     var script: String!
     var dateRange: DateRange?
     var queue: Queue<OrderDetails>!
@@ -17,13 +15,15 @@ class BSOrderDetailsScrapper {
     }()
     
     lazy var htmlScrapper: BSHtmlScrapper = {
-        return BSHtmlScrapper(webClient: self.webClient, delegate: self.webClientDelegate, listener: self)
+        return BSHtmlScrapper(params: self.scrapperParams)
     }()
     
-    init(webClient: BSWebClient, delegate: BSWebNavigationDelegate, listener: BSHtmlScrappingStatusListener) {
-        self.webClient = webClient
-        self.webClientDelegate = delegate
-        self.listener = listener
+    lazy var scrapperParams: BSHtmlScrapperParams = {
+        return BSHtmlScrapperParams(webClient: self.params.webClient, webNavigationDelegate: self.params.webNavigationDelegate, listener: self, authenticator: self.params.authenticator, configuration: self.params.configuration, account: self.params.account)
+    }()
+    
+    init(scrapperParams: BSHtmlScrapperParams) {
+        self.params = scrapperParams
     }
     
     func scrapeOrderDetailPage(script: String, dateRange: DateRange, orderDetails: [OrderDetails]) {
@@ -65,7 +65,7 @@ class BSOrderDetailsScrapper {
 }
 
 extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
-    func onScrapeDataUploadCompleted(complete: Bool) {
+    func onScrapeDataUploadCompleted(complete: Bool, error: ASLException?) {
         //NA
     }
     
@@ -90,7 +90,11 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
     
     func onHtmlScrappingFailure(error: ASLException) {
         print("### onHtmlScrappingFailure ")
-        self.scrapeOrder()
+        if error.errorType == ErrorType.authError {
+            self.params.listener.onScrapeDataUploadCompleted(complete: false, error: error)
+        } else {
+            self.scrapeOrder()
+        }
     }
 }
 
@@ -102,7 +106,7 @@ extension BSOrderDetailsScrapper: DataUploadListener {
         
         let completed = queue.isEmpty() && !self.dataUploader.hasDataForUpload()
         if completed {
-            listener.onScrapeDataUploadCompleted(complete: true)
+            self.params.listener.onScrapeDataUploadCompleted(complete: true, error: nil)
         } 
     }
 }

@@ -9,5 +9,5 @@ protocol BSHtmlScrappingStatusListener {
     
     func onHtmlScrappingFailure(error: ASLException)
     
-    func onScrapeDataUploadCompleted(complete: Bool)
+    func onScrapeDataUploadCompleted(complete: Bool, error: ASLException?)
 }

@@ -6,20 +6,22 @@ import Foundation
 import WebKit
 
 class BSBaseAuthenticator: NSObject, BSAuthenticator {
-    var listener: BSAuthenticationStatusListener?
     var webClient: BSWebClient
     var account: Account?
     var configurations: Configurations?
     var webClientDelegate: BSWebNavigationDelegate
-
-    init(webClient: BSWebClient, delegate: BSWebNavigationDelegate, listener: BSAuthenticationStatusListener) {
+    var completionHandler: ((Bool, ASLException?) -> Void)?
+    
+    init(webClient: BSWebClient, delegate: BSWebNavigationDelegate) {
         self.webClient = webClient
-        self.listener = listener
         self.webClientDelegate = delegate
     }
     
-    func authenticate(account: Account, configurations: Configurations) {
+    func authenticate(account: Account,
+                      configurations: Configurations,
+                      completionHandler: @escaping ((Bool, ASLException?) -> Void)) {
         self.account = account
+        self.completionHandler = completionHandler
         self.webClientDelegate.setObserver(observer: self)
         self.webClient.navigationDelegate = webClientDelegate
         self.webClient.loadUrl(url: configurations.login)

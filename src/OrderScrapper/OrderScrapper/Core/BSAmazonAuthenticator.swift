@@ -14,9 +14,13 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
         if (url.contains(loginSubURL) || loginSubURL.contains(url)) {
             self.injectAuthErrorVerificationJS()
         } else if (url.contains(getSubURL(from: configurations!.listing, delimeter: URLDelimiter))) {
-            self.listener?.onAuthenticationSuccess()
+            if let completionHandler = self.completionHandler {
+                completionHandler(true, nil)
+            }
         } else {
-            self.listener?.onAuthenticationFailure(errorReason: ASLException(errorMessage: Strings.ErrorOtherUrlLoaded,errorType: nil))
+            if let completionHandler = self.completionHandler {
+                completionHandler(false, ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError))
+            }
             
             var logOtherUrlEventAttributes:[String:String] = [:]
             guard let userId = self.account?.userID else {return}
@@ -43,10 +47,10 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
                 if (response.isEmpty) {
                     self.injectCaptchaIdentificationJS()
                 } else {
-                    self.listener?.onAuthenticationFailure(errorReason: ASLException(errorMessage: Strings.ErrorOccuredWhileInjectingJS, errorType: nil))
+                    self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorOccuredWhileInjectingJS, errorType: .authError))
                 }
             } else {
-                self.listener?.onAuthenticationFailure(errorReason: ASLException(errorMessage: Strings.ErrorOccuredWhileInjectingJS, errorType: nil))
+                self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorOccuredWhileInjectingJS, errorType: .authError))
             }
         }
     }
@@ -57,7 +61,7 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
         self.webClient.evaluateJavaScript(js) { (response, error) in
             if let response = response as? String {
                 if response.contains("captcha") {
-                    self.listener?.onAuthenticationFailure(errorReason: ASLException(errorMessage: Strings.ErrorCaptchaPageLoaded, errorType: nil))
+                    self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorCaptchaPageLoaded, errorType: .authError))
                     
                     guard let userId = self.account?.userID else {return}
                     var logEventAttributes:[String:String] = [:]
@@ -80,7 +84,7 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
         self.webClient.evaluateJavaScript(js) { (response, error) in
             if let response = response as? String {
                 if response.contains("other") {
-                    self.listener?.onAuthenticationFailure(errorReason: ASLException(errorMessage: Strings.ErrorOtherUrlLoaded,errorType: nil))
+                    self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError))
                 } else if response.contains("emailId") {
                     self.injectEmailJS()
                 } else {
@@ -92,7 +96,7 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
     
     private func injectEmailJS() {
         guard let email = self.account?.userID else {
-            self.listener?.onAuthenticationFailure(errorReason: ASLException(errorMessage: Strings.ErrorUserIdIsNil, errorType: nil))
+            self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorUserIdIsNil, errorType: .authError))
             return
         }
         let js = JSUtils.getEmailInjectJS(email: email)
@@ -101,7 +105,7 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
             var logEventAttributes:[String:String] = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
                                                       EventConstant.OrderSourceID: email]
             if error != nil {
-                self.listener?.onAuthenticationFailure(errorReason: ASLException(errorMessage: Strings.ErrorEmailJSInjectionFailed, errorType: nil))
+                self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorEmailJSInjectionFailed, errorType: .authError))
 
                 logEventAttributes[EventConstant.Status] = EventStatus.Failure
             } else {
@@ -114,11 +118,11 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
     
     private func injectPasswordJS() {
         guard let email = self.account?.userID else {
-            self.listener?.onAuthenticationFailure(errorReason: ASLException(errorMessage: Strings.ErrorUserIdIsNil, errorType: nil))
+            self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorUserIdIsNil, errorType: .authError))
             return
         }
         guard let password = self.account?.userPassword else {
-            self.listener?.onAuthenticationFailure(errorReason: ASLException(errorMessage: Strings.ErrorPasswordIsNil,errorType: nil))
+            self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorPasswordIsNil,errorType: .authError))
             return
         }
         let js = JSUtils.getPasswordInjectJS(password: password)
@@ -126,7 +130,7 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
         self.webClient.evaluateJavaScript(js) { (response, error) in
             var logEventAttributes:[String:String] = [:]
             if error != nil {
-                self.listener?.onAuthenticationFailure(errorReason: ASLException(errorMessage: Strings.ErrorPasswordJSInjectionFailed,errorType: nil))
+                self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorPasswordJSInjectionFailed,errorType: .authError))
                 
                 logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
                                       EventConstant.OrderSourceID: email,
