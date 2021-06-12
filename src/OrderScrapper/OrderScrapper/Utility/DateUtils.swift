@@ -42,4 +42,11 @@ class DateUtils {
         print("Date ", dateStr, date)
         return date
     }
+    
+    static func getDateStringFrom(date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd-MM-yyyy"
+        
+        return dateFormatter.string(from: date)
+    }
 }

@@ -14,12 +14,12 @@ class BSHtmlScrapper {
         self.webClient = webClient
         self.webNavigationDelegate = delegate
         self.listener = listener
+        self.webNavigationDelegate.setObserver(observer: self)
+        self.webClient.scriptMessageHandler?.addScriptMessageListener(listener: self)
     }
     
     func extractOrders(script: String, url: String) {
         self.script = script
-        self.webNavigationDelegate.setObserver(observer: self)
-        self.webClient.scriptMessageHandler?.addScriptMessageListener(listener: self)
         self.webClient.loadListingUrl(url: url)
     }
 }
@@ -36,7 +36,8 @@ extension BSHtmlScrapper: ScriptMessageListener {
 
 extension BSHtmlScrapper: BSWebNavigationObserver {
     func didFinishPageNavigation(url: URL?) {
-        if let _ = url, let script = script {
+        if let url = url, let script = script {
+            print("### Injecting script for URL: ", url)
             webClient.evaluateJavaScript(script) { response, error in
                 print("#### evaluateJavaScript")
             }

@@ -13,6 +13,10 @@ class BSScrapper: NSObject {
     var authenticator: BSAuthenticator!
     var configuration: Configurations!
     
+    lazy var orderDetailsScrapper: BSOrderDetailsScrapper = {
+        return BSOrderDetailsScrapper(webClient: self.webClient, delegate: self.webClientDelegate, listener: self)
+    }()
+    
     init(webClient: BSWebClient,
          completionHandler: @escaping ((Bool, OrderFetchSuccessType?), ASLException?) -> Void) {
         self.webClient = webClient
@@ -70,7 +74,9 @@ class BSScrapper: NSObject {
     }
     
     private func cleanUp() {
-        windowManager.detachHeadlessView(view: webClient)
+        DispatchQueue.main.async {
+            self.windowManager.detachHeadlessView(view: self.webClient)
+        }
     }
 }
 
@@ -182,7 +188,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                         let orderSource = try! self.getOrderSource()
                         BSScriptFileManager.shared.getScriptForScrapping(orderSource: orderSource) { script in
                             if let script = script, let dateRange = self.dateRange {
-                                let orderDetails = self.getOrderDetails()
+                                let orderDetails = OrderDetailsMapper.mapFromDBObject(dbOrderDetails: self.getOrderDetails())
                                 
                                 var logEventAttributes:[String:String] = [:]
                                 logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
@@ -191,8 +197,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                                                       EventConstant.Status: EventStatus.Success]
                                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgInjectJSForOrderDetail, eventAttributes: logEventAttributes)
                                 
-                                BSOrderDetailsScrapper(webClient: self.webClient, delegate: self.webClientDelegate,
-                                                       listener: self).scrapeOrderDetailPage(script: script, dateRange: dateRange, orderDetails: orderDetails)
+                                self.orderDetailsScrapper.scrapeOrderDetailPage(script: script, dateRange: dateRange, orderDetails: orderDetails)
                                 print("### BSScrapper started scrapeOrderDetailPage")
                             } else {
                                 self.cleanUp()

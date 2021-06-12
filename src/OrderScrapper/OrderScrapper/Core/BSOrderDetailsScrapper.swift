@@ -7,12 +7,18 @@ class BSOrderDetailsScrapper {
     let webClient: BSWebClient
     let webClientDelegate: BSWebNavigationDelegate
     let listener: BSHtmlScrappingStatusListener
-    var htmlScrapper: BSHtmlScrapper!
     var script: String!
     var dateRange: DateRange?
-    var queue: Queue<OrderDetailsMO>!
-    var dataUploader: BSDataUploader!
-    var orderDetail: OrderDetailsMO!
+    var queue: Queue<OrderDetails>!
+    var orderDetail: OrderDetails!
+    
+    lazy var dataUploader: BSDataUploader = {
+        return BSDataUploader(dateRange: self.dateRange!, listener: self)
+    }()
+    
+    lazy var htmlScrapper: BSHtmlScrapper = {
+        return BSHtmlScrapper(webClient: self.webClient, delegate: self.webClientDelegate, listener: self)
+    }()
     
     init(webClient: BSWebClient, delegate: BSWebNavigationDelegate, listener: BSHtmlScrappingStatusListener) {
         self.webClient = webClient
@@ -20,11 +26,11 @@ class BSOrderDetailsScrapper {
         self.listener = listener
     }
     
-    func scrapeOrderDetailPage(script: String, dateRange: DateRange, orderDetails: [OrderDetailsMO]) {
+    func scrapeOrderDetailPage(script: String, dateRange: DateRange, orderDetails: [OrderDetails]) {
         self.script = script
         self.dateRange = dateRange
         self.queue = Queue(queue: orderDetails)
-        self.htmlScrapper = BSHtmlScrapper(webClient: webClient, delegate: webClientDelegate, listener: self)
+        
         scrapeOrder()
     }
     
@@ -33,16 +39,16 @@ class BSOrderDetailsScrapper {
         if orderDetail != nil {
             if queue!.isEmpty() {
                 var logEventAttributes:[String:String] = [:]
-                logEventAttributes = [EventConstant.OrderSource: orderDetail!.orderSource,
-                                      EventConstant.PanelistID: orderDetail!.panelistID,
-                                      EventConstant.OrderSourceID: orderDetail!.userID,
+                logEventAttributes = [EventConstant.OrderSource: orderDetail.orderSource ?? "",
+                                      EventConstant.PanelistID: orderDetail.panelistID ?? "",
+                                      EventConstant.OrderSourceID: orderDetail.userID ?? "",
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResult, eventAttributes: logEventAttributes)
             }
             
-            if let script = script, let detailUrl = orderDetail?.orderDetailsURL {
+            if let script = script, let detailUrl = orderDetail?.detailsUrl {
                 //Param for order detail page scrapping
-                let scriptParam = ScriptParam(script: script, dateRange: nil, url: detailUrl, scrappingPage: .details, urls: nil, orderId: orderDetail?.orderID)
+                let scriptParam = ScriptParam(script: script, dateRange: nil, url: detailUrl, scrappingPage: .details, urls: nil, orderId: orderDetail.orderId)
                 let executableScript = ExecutableScriptBuilder().getExecutableScript(param: scriptParam)
                 
                 self.htmlScrapper.extractOrders(script: executableScript, url: detailUrl)
@@ -53,11 +59,8 @@ class BSOrderDetailsScrapper {
         }
     }
     
-    func uploadScrapeData(data: Dictionary<String,Any>) {
-        if dataUploader == nil {
-            dataUploader = BSDataUploader(dateRange: dateRange!, orderDetail: orderDetail!, listener: self)
-        }
-        dataUploader?.addData(data: data)
+    func uploadScrapeData(data: Dictionary<String, Any>) {
+        self.dataUploader.addData(data: data, orderDetail: orderDetail!)
     }
 }
 
@@ -96,13 +99,10 @@ extension BSOrderDetailsScrapper: DataUploadListener {
         guard let queue = self.queue else {
             return
         }
-        var completed = queue.isEmpty()
-        if self.dataUploader != nil {
-            completed = completed && !self.dataUploader.hasDataForUpload()
-        }
         
+        let completed = queue.isEmpty() && !self.dataUploader.hasDataForUpload()
         if completed {
             listener.onScrapeDataUploadCompleted(complete: true)
-        }
+        } 
     }
 }

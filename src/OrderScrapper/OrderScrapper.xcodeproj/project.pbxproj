@@ -119,6 +119,7 @@
 		E19D4CB72608FD29002C16A7 /* WebCacheCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D4CB62608FD29002C16A7 /* WebCacheCleaner.swift */; };
 		E19D4CBA2609A4A9002C16A7 /* OrderExtractionListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D4CB92609A4A9002C16A7 /* OrderExtractionListener.swift */; };
 		E19D4E08260DF055002C16A7 /* OSLibUI.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E19D4E07260DF055002C16A7 /* OSLibUI.storyboard */; };
+		E1A058CC2674A26500BC6687 /* OrderDetailsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A058CB2674A26500BC6687 /* OrderDetailsMapper.swift */; };
 		E1AAFF4F26274808000F5CD2 /* GetAccountsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AAFF4E26274808000F5CD2 /* GetAccountsResponse.swift */; };
 /* End PBXBuildFile section */
 
@@ -271,6 +272,7 @@
 		E19D4CB62608FD29002C16A7 /* WebCacheCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebCacheCleaner.swift; sourceTree = "<group>"; };
 		E19D4CB92609A4A9002C16A7 /* OrderExtractionListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderExtractionListener.swift; sourceTree = "<group>"; };
 		E19D4E07260DF055002C16A7 /* OSLibUI.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = OSLibUI.storyboard; sourceTree = "<group>"; };
+		E1A058CB2674A26500BC6687 /* OrderDetailsMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailsMapper.swift; sourceTree = "<group>"; };
 		E1AAFF4E26274808000F5CD2 /* GetAccountsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetAccountsResponse.swift; sourceTree = "<group>"; };
 		E1EDF1082615A20400752507 /* CSV.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = CSV.xcframework; path = Carthage/Build/CSV.xcframework; sourceTree = "<group>"; };
 		E1EDF1092615A20400752507 /* Alamofire.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Alamofire.xcframework; path = Carthage/Build/Alamofire.xcframework; sourceTree = "<group>"; };
@@ -461,6 +463,7 @@
 				E148DB4125FF2BFD001430BE /* AmazonOrderScrapper.swift */,
 				1C2F8DF3260B25870053E73A /* OrdersExtractor.swift */,
 				9D638A3B265BD2B200C412AC /* OrdersExtractorConfig.swift */,
+				E1A058CB2674A26500BC6687 /* OrderDetailsMapper.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -831,6 +834,7 @@
 				9D812DA3265F7EC800629376 /* OrderDetailsMO.swift in Sources */,
 				E148DC6126038537001430BE /* DateUtils.swift in Sources */,
 				1CA1EDF4260E16EF0000C859 /* Event.swift in Sources */,
+				E1A058CC2674A26500BC6687 /* OrderDetailsMapper.swift in Sources */,
 				E148DB6D25FF2BFD001430BE /* AccountDisconnectedListener.swift in Sources */,
 				1C147C42264BA68E0003EDF7 /* JSFileUtils.swift in Sources */,
 				E15343E8261466700074F3ED /* OrderFetchSuccessType.swift in Sources */,

@@ -7,68 +7,140 @@ protocol DataUploadListener {
     func onDataUploadComplete()
 }
 class BSDataUploader {
-    private let OrderID = "orderId"
     private let dateRange: DateRange
     private let listener: DataUploadListener
-    private var orderData = [String: Dictionary<String,Any>]()
-    private let panelistId: String
-    private let userId: String
-    private let orderSource: String
     
-    init(dateRange: DateRange, orderDetail: OrderDetailsMO, listener: DataUploadListener) {
+    private lazy var operationQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.maxConcurrentOperationCount = 2
+        
+        return operationQueue
+    }()
+    
+    init(dateRange: DateRange, listener: DataUploadListener) {
         self.dateRange = dateRange
         self.listener = listener
-        self.panelistId = String(orderDetail.panelistID)
-        self.userId = String(orderDetail.userID)
-        self.orderSource = String(orderDetail.orderSource)
     }
     
-    func addData(data: Dictionary<String, Any>) {
-        if let orderId = data[OrderID] as? String {
-            orderData[orderId] = data
-            uploadData(data: data)
+    func addData(data: Dictionary<String, Any>, orderDetail: OrderDetails) {
+        if !data.isEmpty {
+            let uploadOperation = DataUploadOperation()
+            uploadOperation.panelistId = String(orderDetail.panelistID!)
+            uploadOperation.userId = String(orderDetail.userID!)
+            uploadOperation.orderSource = String(orderDetail.orderSource!)
+            uploadOperation.data = data
+            uploadOperation.dateRange = self.dateRange
+            uploadOperation.completionBlock = { [weak self] in
+                guard let self = self else {
+                    return
+                }
+                self.listener.onDataUploadComplete()
+            }
+            
+            operationQueue.addOperation(uploadOperation)
         }
     }
     
     func hasDataForUpload() -> Bool {
-        return !orderData.isEmpty
+        let operationCount = operationQueue.operationCount
+        return operationCount > 0
+    }
+}
+
+class DataUploadOperation: Operation {
+    private let OrderID = "orderId"
+    var panelistId: String!
+    var userId: String!
+    var orderSource: String!
+    var data: [String: Any]!
+    var dateRange: DateRange!
+    
+    public override var isAsynchronous: Bool {
+        return true
     }
     
-    func uploadData(data: Dictionary<String, Any>) {
-        let orderRequest = OrderRequest(panelistId: self.panelistId, amazonId: self.userId, fromDate: dateRange.fromDate!, toDate: dateRange.toDate!, data: [data])
-        _ = AmazonService.uploadOrderHistory(orderRequest: orderRequest) { [self] response, error in
-            if let response = response {
-                print("### uploadData() Response ", response)
-                let orderData = response.orderData
-                if let orderIds = orderData, !orderIds.isEmpty {
-                    for orderId in orderIds {
-                        let removeOrderId = orderId.orderId
-                        self.removeDataFromArray(orderId: removeOrderId)
-                        
-                        //Delete order details from DB
-                        CoreDataManager.shared.deleteOrderDetailsByOrderID(orderID: removeOrderId, orderSource: self.orderSource)
+    public override var isExecuting: Bool {
+        return state == .executing
+    }
+    
+    public override var isFinished: Bool {
+        return state == .finished
+    }
+    
+    public override func start() {
+        if self.isCancelled {
+            state = .finished
+        } else {
+            state = .ready
+            main()
+        }
+    }
+    
+    open override func main() {
+        if self.isCancelled {
+            state = .finished
+        } else {
+            state = .executing
+            let orderRequest = OrderRequest(panelistId: self.panelistId, amazonId: self.userId, fromDate: dateRange.fromDate!, toDate: dateRange.toDate!, data: [data])
+            _ = AmazonService.uploadOrderHistory(orderRequest: orderRequest) { [self] response, error in
+                DispatchQueue.global().async {
+                    if let response = response {
+                        print("### uploadData() Response ", response)
+                        let orderData = response.orderData
+                        if let orderIds = orderData, !orderIds.isEmpty {
+                            for orderId in orderIds {
+                                let removeOrderId = orderId.orderId
+                                CoreDataManager.shared.deleteOrderDetailsByOrderID(orderID: removeOrderId,
+                                                                                   orderSource: self.orderSource)
+                            }
+                        } else {
+                            if let orderId = data[OrderID] as? String {
+                                CoreDataManager.shared.deleteOrderDetailsByOrderID(orderID: orderId,
+                                                                                   orderSource: self.orderSource)
+                            }
+                        }
                     }
-                } else {
-                    if let orderId = data[OrderID] as? String {
-                        self.removeDataFromArray(orderId: orderId)
-                        
-                        //Delete order details from DB
-                        CoreDataManager.shared.deleteOrderDetailsByOrderID(orderID: orderId, orderSource: self.orderSource)
-                    }
+                    
+                    finish()
                 }
-            } else {
-                print("### uploadData() Error ")
-                let orderId = data[OrderID]
-                self.removeDataFromArray(orderId: orderId as! String)
             }
-            self.listener.onDataUploadComplete()
         }
     }
     
-    func removeDataFromArray(orderId: String) {
-        if !orderData.isEmpty {
-            orderData.removeValue(forKey: orderId)
-            print("### Remove from the dictionary ", orderId)
+    public func finish() {
+        state = .finished
+    }
+    
+    // MARK: - State management
+    
+    public enum State: String {
+        case ready = "Ready"
+        case executing = "Executing"
+        case finished = "Finished"
+        fileprivate var keyPath: String { return "is" + self.rawValue }
+    }
+    
+    /// Thread-safe computed state value
+    public var state: State {
+        get {
+            stateQueue.sync {
+                return stateStore
+            }
+        }
+        set {
+            let oldValue = state
+            willChangeValue(forKey: state.keyPath)
+            willChangeValue(forKey: newValue.keyPath)
+            stateQueue.sync(flags: .barrier) {
+                stateStore = newValue
+            }
+            didChangeValue(forKey: state.keyPath)
+            didChangeValue(forKey: oldValue.keyPath)
         }
     }
+    
+    private let stateQueue = DispatchQueue(label: "AsynchronousOperation State Queue", attributes: .concurrent)
+    
+    /// Non thread-safe state storage, use only with locks
+    private var stateStore: State = .ready
 }

@@ -97,10 +97,12 @@ class AmazonOrderScrapper {
                 guard let self = self else {return}
                 
                 let (completed, successType) = result
-                if completed {
-                    orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
-                } else {
-                    orderExtractionListener.onOrderExtractionFailure(error: error!, account: account)
+                DispatchQueue.main.async {
+                    if completed {
+                        orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
+                    } else {
+                        orderExtractionListener.onOrderExtractionFailure(error: error!, account: account)
+                    }
                 }
                 
                 self.backgroundScrapper = nil
