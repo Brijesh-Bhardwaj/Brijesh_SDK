@@ -170,7 +170,7 @@ class CoreDataManager {
             orderDetail.panelistID = orderData.panelistID!
             orderDetail.orderDetailsURL = orderData.detailsUrl
             orderDetail.startDate = orderData.startDate!
-            orderData.endDate = orderData.endDate!
+            orderDetail.endDate = orderData.endDate!
             
             do {
                 try context.save()
