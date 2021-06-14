@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20E241" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="19H1030" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="OrderDetails" representedClassName=".OrderDetailsMO" syncable="YES">
-        <attribute name="orderDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="endDate" attributeType="String"/>
+        <attribute name="orderDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="orderDetailsURL" attributeType="String"/>
         <attribute name="orderID" attributeType="String"/>
         <attribute name="orderSource" attributeType="String"/>
         <attribute name="panelistID" attributeType="String"/>
+        <attribute name="startDate" attributeType="String"/>
         <attribute name="userID" attributeType="String"/>
     </entity>
     <entity name="UserAccount" representedClassName=".UserAccountMO" syncable="YES">
@@ -17,7 +19,7 @@
         <attribute name="userId" optional="YES" attributeType="String"/>
     </entity>
     <elements>
-        <element name="OrderDetails" positionX="-63" positionY="63" width="128" height="119"/>
+        <element name="OrderDetails" positionX="-63" positionY="63" width="128" height="163"/>
         <element name="UserAccount" positionX="-63" positionY="9" width="128" height="133"/>
     </elements>
 </model>

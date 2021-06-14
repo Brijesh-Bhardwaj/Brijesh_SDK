@@ -6,12 +6,11 @@ import Foundation
 class BSOrderDetailsScrapper {
     let params: BSHtmlScrapperParams
     var script: String!
-    var dateRange: DateRange?
     var queue: Queue<OrderDetails>!
     var orderDetail: OrderDetails!
     
     lazy var dataUploader: BSDataUploader = {
-        return BSDataUploader(dateRange: self.dateRange!, listener: self)
+        return BSDataUploader(listener: self)
     }()
     
     lazy var htmlScrapper: BSHtmlScrapper = {
@@ -26,9 +25,8 @@ class BSOrderDetailsScrapper {
         self.params = scrapperParams
     }
     
-    func scrapeOrderDetailPage(script: String, dateRange: DateRange, orderDetails: [OrderDetails]) {
+    func scrapeOrderDetailPage(script: String, orderDetails: [OrderDetails]) {
         self.script = script
-        self.dateRange = dateRange
         self.queue = Queue(queue: orderDetails)
         
         scrapeOrder()

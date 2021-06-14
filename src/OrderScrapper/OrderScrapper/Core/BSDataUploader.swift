@@ -7,7 +7,6 @@ protocol DataUploadListener {
     func onDataUploadComplete()
 }
 class BSDataUploader {
-    private let dateRange: DateRange
     private let listener: DataUploadListener
     
     private lazy var operationQueue: OperationQueue = {
@@ -17,8 +16,7 @@ class BSDataUploader {
         return operationQueue
     }()
     
-    init(dateRange: DateRange, listener: DataUploadListener) {
-        self.dateRange = dateRange
+    init(listener: DataUploadListener) {
         self.listener = listener
     }
     
@@ -29,7 +27,8 @@ class BSDataUploader {
             uploadOperation.userId = String(orderDetail.userID!)
             uploadOperation.orderSource = String(orderDetail.orderSource!)
             uploadOperation.data = data
-            uploadOperation.dateRange = self.dateRange
+            uploadOperation.dateRange = DateRange(fromDate: orderDetail.startDate, toDate: orderDetail.endDate, enableScraping: true, lastOrderId: nil)
+            
             uploadOperation.completionBlock = { [weak self] in
                 guard let self = self else {
                     return

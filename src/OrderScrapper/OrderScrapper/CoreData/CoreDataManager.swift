@@ -169,6 +169,9 @@ class CoreDataManager {
             orderDetail.userID = orderData.userID!
             orderDetail.panelistID = orderData.panelistID!
             orderDetail.orderDetailsURL = orderData.detailsUrl
+            orderDetail.startDate = orderData.startDate!
+            orderData.endDate = orderData.endDate!
+            
             do {
                 try context.save()
             } catch let error {

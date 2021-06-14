@@ -15,7 +15,7 @@ class OrderDetailsMapper {
         if !dbOrderDetails.isEmpty {
             for dbOrderDetail in dbOrderDetails {
                 let orderDate = DateUtils.getDateStringFrom(date: dbOrderDetail.orderDate)
-                let orderDetail = OrderDetails(orderID: dbOrderDetail.orderID, orderDate: orderDate, orderSource: dbOrderDetail.orderSource, userID: dbOrderDetail.userID, panelistID: dbOrderDetail.panelistID, orderDeatilsURL: dbOrderDetail.orderDetailsURL)
+                let orderDetail = OrderDetails(orderID: dbOrderDetail.orderID, orderDate: orderDate, orderSource: dbOrderDetail.orderSource, userID: dbOrderDetail.userID, panelistID: dbOrderDetail.panelistID, orderDeatilsURL: dbOrderDetail.orderDetailsURL, startDate: dbOrderDetail.startDate, endDate: dbOrderDetail.endDate)
                 orderDetails.append(orderDetail)
             }
         }
