@@ -34,18 +34,22 @@ class DateUtils {
         return formattedDate
     }
     
-    static func getDate(dateStr: String) -> Date? {
+    static func getDate(dateStr: String?) -> Date? {
+        guard let dateStr = dateStr else { return nil }
+        
         let dateFormatter = DateFormatter()
         dateFormatter.timeZone = TimeZone(identifier: "UTC")
-        dateFormatter.dateFormat = "dd-MM-yyyy"
+        dateFormatter.dateFormat = "MM/dd/yyyy"
+
         let date = dateFormatter.date(from: dateStr)
-        print("Date ", dateStr, date)
         return date
     }
     
-    static func getDateStringFrom(date: Date) -> String {
+    static func getDateStringFrom(date: Date?) -> String? {
+        guard let date = date else { return nil }
+        
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd-MM-yyyy"
+        dateFormatter.dateFormat = "MM/dd/yyyy"
         
         return dateFormatter.string(from: date)
     }

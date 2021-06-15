@@ -164,7 +164,7 @@ class CoreDataManager {
         for orderData in orderDetails {
             let orderDetail = NSEntityDescription.insertNewObject(forEntityName: AppConstants.orderDetailEntity, into: context) as! OrderDetailsMO
             orderDetail.orderID = orderData.orderId
-            orderDetail.orderDate = orderData.date!
+            orderDetail.orderDate = orderData.date
             orderDetail.orderSource = orderData.orderSource!
             orderDetail.userID = orderData.userID!
             orderDetail.panelistID = orderData.panelistID!

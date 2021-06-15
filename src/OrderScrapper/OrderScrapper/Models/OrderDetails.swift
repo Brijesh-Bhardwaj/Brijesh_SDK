@@ -6,7 +6,7 @@ import Foundation
 public class OrderDetails: Decodable {
     
     var orderId: String
-    var orderDate: String
+    var orderDate: String?
     var detailsUrl: String
     var orderSource: String?
     var userID: String?
@@ -15,7 +15,7 @@ public class OrderDetails: Decodable {
     var startDate: String?
     var endDate: String?
     
-    init(orderID: String, orderDate: String, orderSource: String, userID: String, panelistID: String, orderDeatilsURL: String, startDate: String, endDate: String) {
+    init(orderID: String, orderDate: String?, orderSource: String, userID: String, panelistID: String, orderDeatilsURL: String, startDate: String, endDate: String) {
         self.orderId = orderID
         self.orderDate = orderDate
         self.orderSource = orderSource

@@ -13,10 +13,6 @@ class BSScrapper: NSObject {
     var configuration: Configurations!
     var extractingOldOrders = false;
     
-    lazy var orderDetailsScrapper: BSOrderDetailsScrapper = {
-        return BSOrderDetailsScrapper(scrapperParams: self.scrapperParams)
-    }()
-    
     lazy var scrapperParams: BSHtmlScrapperParams = {
         let authenticator = try! self.getAuthenticator()
         
@@ -175,10 +171,13 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     
     func onHtmlScrappingSucess(response: String) {
         let jsonData = response.data(using: .utf8)!
-        let scrapeResponse = try! JSONDecoder().decode(JSCallback<[OrderDetails]>.self, from: jsonData)
+        let scrapeResponse = try? JSONDecoder().decode(JSCallback<[OrderDetails]>.self, from: jsonData)
         print("#### onHtmlScrappingSucess BSCrapper ", response)
-        if scrapeResponse.status == "success" {
-            if let orderDetails = scrapeResponse.data, !orderDetails.isEmpty {
+        if scrapeResponse?.type == "order\(ScrappingPage.details.rawValue)" {
+            return
+        }
+        if scrapeResponse?.status == "success" {
+            if let orderDetails = scrapeResponse?.data, !orderDetails.isEmpty {
                 insertOrderDetailsToDB(orderDetails: orderDetails) { dataInserted in
                     if dataInserted {
                         self.didInsertToDB()
@@ -198,7 +197,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                                   EventConstant.OrderSourceID: self.account!.userID,
                                   EventConstant.Status: EventStatus.Success]
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderListResult, eventAttributes: logEventAttributes)
-        } else if scrapeResponse.status == "failed" {
+        } else if scrapeResponse?.status == "failed" {
             self.cleanUp()
             self.completionHandler((false, nil), ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
         }
@@ -258,7 +257,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgInjectJSForOrderDetail, eventAttributes: logEventAttributes)
                 
-                self.orderDetailsScrapper.scrapeOrderDetailPage(script: script, orderDetails: orderDetails)
+                BSOrderDetailsScrapper(scrapperParams: self.scrapperParams).scrapeOrderDetailPage(script: script, orderDetails: orderDetails)
                 print("### BSScrapper started scrapeOrderDetailPage")
             } else {
                 self.cleanUp()

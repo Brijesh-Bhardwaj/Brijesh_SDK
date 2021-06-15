@@ -10,25 +10,29 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
     
     override func onPageFinish(url: String) throws {
         print("### didFinish", url)
-        let loginSubURL = getSubURL(from: configurations!.login, delimeter: LoginURLDelimiter)
-        if (url.contains(loginSubURL) || loginSubURL.contains(url)) {
-            self.injectAuthErrorVerificationJS()
-        } else if (url.contains(getSubURL(from: configurations!.listing, delimeter: URLDelimiter))) {
-            if let completionHandler = self.completionHandler {
-                completionHandler(true, nil)
-            }
-        } else {
-            if let completionHandler = self.completionHandler {
-                completionHandler(false, ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError))
-            }
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
+            guard let self = self else {return}
             
-            var logOtherUrlEventAttributes:[String:String] = [:]
-            guard let userId = self.account?.userID else {return}
-            logOtherUrlEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                          EventConstant.OrderSourceID: userId,
-                                          EventConstant.Status: EventStatus.Success,
-                                          EventConstant.URL: url]
-            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSDetectOtherURL, eventAttributes: logOtherUrlEventAttributes)
+            let loginSubURL = self.getSubURL(from: self.configurations!.login, delimeter: self.LoginURLDelimiter)
+            if (url.contains(loginSubURL) || loginSubURL.contains(url)) {
+                self.injectAuthErrorVerificationJS()
+            } else if (url.contains(self.getSubURL(from: self.configurations!.listing, delimeter: self.URLDelimiter))) {
+                if let completionHandler = self.completionHandler {
+                    completionHandler(true, nil)
+                }
+            } else {
+                if let completionHandler = self.completionHandler {
+                    completionHandler(false, ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError))
+                }
+                
+                var logOtherUrlEventAttributes:[String:String] = [:]
+                guard let userId = self.account?.userID else {return}
+                logOtherUrlEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                              EventConstant.OrderSourceID: userId,
+                                              EventConstant.Status: EventStatus.Success,
+                                              EventConstant.URL: url]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSDetectOtherURL, eventAttributes: logOtherUrlEventAttributes)
+            }
         }
     }
     
