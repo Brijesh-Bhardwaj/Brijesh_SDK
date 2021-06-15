@@ -201,43 +201,47 @@ class CoreDataManager {
     
     public func deleteOrderDetails(userID: String, panelistID: String, orderSource: String) {
         let context = persistentContainer.viewContext
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.orderDetailEntity)
-        
-        let userIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderUserID) = %@", userID)
-        let panelistIdPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnPanelistID) = %@", panelistID)
-        let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) = %@", orderSource)
-        
-        fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [userIDPredicate, panelistIdPredicate, orderSourcePredicate])
-        let results = try? context.fetch(fetchRequest)
-        let resultData = results as! [OrderDetailsMO]
-        
-        for orderData in resultData {
-            context.delete(orderData)
-        }
-        do {
-            try context.save()
-        } catch let error {
-            print("Failed to save orderDetails",error)
+        context.perform {
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.orderDetailEntity)
+            
+            let userIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderUserID) = %@", userID)
+            let panelistIdPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnPanelistID) = %@", panelistID)
+            let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) = %@", orderSource)
+            
+            fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [userIDPredicate, panelistIdPredicate, orderSourcePredicate])
+            let results = try? context.fetch(fetchRequest)
+            let resultData = results as! [OrderDetailsMO]
+            
+            for orderData in resultData {
+                context.delete(orderData)
+            }
+            do {
+                try context.save()
+            } catch let error {
+                print("Failed to save orderDetails",error)
+            }
         }
     }
     
     public func deleteOrderDetailsByOrderID(orderID: String, orderSource: String) {
         let context = persistentContainer.viewContext
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.orderDetailEntity)
-        
-        let orderIDPredicate =  NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderID) = %@", orderID)
-        let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) = %@", orderSource)
-        
-        fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderIDPredicate,  orderSourcePredicate])
-        let result = try? context.fetch(fetchRequest)
-        let resultData = result as! [OrderDetailsMO]
-        for orderDetails in resultData {
-            context.delete(orderDetails)
-        }
-        do {
-            try context.save()
-        } catch let error as NSError  {
-            print(error.userInfo)
+        context.perform {
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.orderDetailEntity)
+            
+            let orderIDPredicate =  NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderID) = %@", orderID)
+            let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) = %@", orderSource)
+            
+            fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderIDPredicate,  orderSourcePredicate])
+            let result = try? context.fetch(fetchRequest)
+            let resultData = result as! [OrderDetailsMO]
+            for orderDetails in resultData {
+                context.delete(orderDetails)
+            }
+            do {
+                try context.save()
+            } catch let error as NSError  {
+                print(error.userInfo)
+            }
         }
     }
     

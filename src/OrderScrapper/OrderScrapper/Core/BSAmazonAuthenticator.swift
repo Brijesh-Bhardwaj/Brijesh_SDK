@@ -47,14 +47,16 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
         let js = JSUtils.getAuthErrorVerificationJS()
         
         self.webClient.evaluateJavaScript(js) { (response, error) in
-            if let response = response as? String {
-                if (response.isEmpty) {
-                    self.injectCaptchaIdentificationJS()
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                if let response = response as? String {
+                    if (response.isEmpty) {
+                        self.injectCaptchaIdentificationJS()
+                    } else {
+                        self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorOccuredWhileInjectingJS, errorType: .authError))
+                    }
                 } else {
                     self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorOccuredWhileInjectingJS, errorType: .authError))
                 }
-            } else {
-                self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorOccuredWhileInjectingJS, errorType: .authError))
             }
         }
     }
@@ -63,21 +65,23 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
         let js = JSUtils.getCaptchaIdentificationJS()
         
         self.webClient.evaluateJavaScript(js) { (response, error) in
-            if let response = response as? String {
-                if response.contains("captcha") {
-                    self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorCaptchaPageLoaded, errorType: .authError))
-                    
-                    guard let userId = self.account?.userID else {return}
-                    var logEventAttributes:[String:String] = [:]
-                    logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                          EventConstant.OrderSourceID: userId,
-                                          EventConstant.Status: EventStatus.Success]
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSDetectedCaptcha, eventAttributes: logEventAttributes)
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                if let response = response as? String {
+                    if response.contains("captcha") {
+                        self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorCaptchaPageLoaded, errorType: .authError))
+                        
+                        guard let userId = self.account?.userID else {return}
+                        var logEventAttributes:[String:String] = [:]
+                        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                              EventConstant.OrderSourceID: userId,
+                                              EventConstant.Status: EventStatus.Success]
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSDetectedCaptcha, eventAttributes: logEventAttributes)
+                    } else {
+                        self.injectFieldIdentificationJS()
+                    }
                 } else {
                     self.injectFieldIdentificationJS()
                 }
-            } else {
-                self.injectFieldIdentificationJS()
             }
         }
     }
