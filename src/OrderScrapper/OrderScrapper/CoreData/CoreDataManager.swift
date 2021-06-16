@@ -158,25 +158,27 @@ class CoreDataManager {
         return NSManagedObject(entity: entity, insertInto: nil) as! UserAccountMO
     }
     
-    public func insertOrderDetails(orderDetails: [OrderDetails]) {
+    public func insertOrderDetails(orderDetails: [OrderDetails], completionHandler: @escaping (Bool) -> Void) {
         let context = persistentContainer.viewContext
-        
-        for orderData in orderDetails {
-            let orderDetail = NSEntityDescription.insertNewObject(forEntityName: AppConstants.orderDetailEntity, into: context) as! OrderDetailsMO
-            orderDetail.orderID = orderData.orderId
-            orderDetail.orderDate = orderData.date
-            orderDetail.orderSource = orderData.orderSource!
-            orderDetail.userID = orderData.userID!
-            orderDetail.panelistID = orderData.panelistID!
-            orderDetail.orderDetailsURL = orderData.detailsUrl
-            orderDetail.startDate = orderData.startDate!
-            orderDetail.endDate = orderData.endDate!
-            
-            do {
-                try context.save()
-            } catch let error {
-                print(AppConstants.tag, "addOrderDetails", error.localizedDescription)
+        context.perform {
+            for orderData in orderDetails {
+                let orderDetail = NSEntityDescription.insertNewObject(forEntityName: AppConstants.orderDetailEntity, into: context) as! OrderDetailsMO
+                orderDetail.orderID = orderData.orderId
+                orderDetail.orderDate = orderData.date
+                orderDetail.orderSource = orderData.orderSource!
+                orderDetail.userID = orderData.userID!
+                orderDetail.panelistID = orderData.panelistID!
+                orderDetail.orderDetailsURL = orderData.detailsUrl
+                orderDetail.startDate = orderData.startDate!
+                orderDetail.endDate = orderData.endDate!
+                
+                do {
+                    try context.save()
+                } catch let error {
+                    print(AppConstants.tag, "addOrderDetails", error.localizedDescription)
+                }
             }
+            completionHandler(true)
         }
     }
     

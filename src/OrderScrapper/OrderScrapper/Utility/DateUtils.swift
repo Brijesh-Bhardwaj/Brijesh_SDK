@@ -39,17 +39,19 @@ class DateUtils {
         
         let dateFormatter = DateFormatter()
         dateFormatter.timeZone = TimeZone(identifier: "UTC")
-        dateFormatter.dateFormat = "MM/dd/yyyy"
-
-        let date = dateFormatter.date(from: dateStr)
-        return date
+        dateFormatter.dateFormat = "M/d/yyyy"
+        
+        if let date = dateFormatter.date(from: dateStr) {
+            return date
+        }
+        return nil
     }
     
     static func getDateStringFrom(date: Date?) -> String? {
         guard let date = date else { return nil }
         
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MM/dd/yyyy"
+        dateFormatter.dateFormat = "M/d/yyyy"
         
         return dateFormatter.string(from: date)
     }

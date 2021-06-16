@@ -36,7 +36,7 @@ class BSOrderDetailsScrapper {
         scrapeOrder()
     }
     
-    func scrapeOrder() {
+    private func scrapeOrder() {
         orderDetail = queue.peek()
         if orderDetail != nil {
             if queue!.isEmpty() {
@@ -61,8 +61,16 @@ class BSOrderDetailsScrapper {
         }
     }
     
-    func uploadScrapeData(data: Dictionary<String, Any>) {
+    private func uploadScrapeData(data: Dictionary<String, Any>) {
         self.dataUploader.addData(data: data, orderDetail: orderDetail!)
+    }
+    
+    private func scrapeNextOrder() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) { [weak self] in
+            guard let self = self else { return }
+            self.scrapeQueue.remove(at: 0)
+            self.scrapeOrder()
+        }
     }
 }
 
@@ -82,11 +90,9 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                     if let orderDetails = jsCallBackResult["data"] as? Dictionary<String,Any> {
                         self.uploadScrapeData(data: orderDetails)
                     }
-                    self.scrapeQueue.remove(at: 0)
-                    self.scrapeOrder()
+                    self.scrapeNextOrder()
                 } else if status == "failed" {
-                    self.scrapeQueue.remove(at: 0)
-                    self.scrapeOrder()
+                    self.scrapeNextOrder()
                 }
             }
         }
@@ -97,15 +103,18 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
         if error.errorType == ErrorType.authError {
             self.params.listener.onScrapeDataUploadCompleted(complete: false, error: error)
         } else {
-            self.scrapeQueue.remove(at: 0)
-            self.scrapeOrder()
+            self.scrapeNextOrder()
         }
     }
 }
 
 extension BSOrderDetailsScrapper: DataUploadListener {
     func onDataUploadComplete() {
-        let completed = self.scrapeQueue.count == 0
+        guard let queue = self.queue else {
+            return
+        }
+        
+        let completed = queue.isEmpty() && self.scrapeQueue.count == 0
             && !self.dataUploader.hasDataForUpload()
         if completed {
             self.params.listener.onScrapeDataUploadCompleted(complete: true, error: nil)

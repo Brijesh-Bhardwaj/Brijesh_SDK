@@ -211,23 +211,24 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     func insertOrderDetailsToDB(orderDetails: [OrderDetails], completion: @escaping (Bool) -> Void) {
         DispatchQueue.global().async {
             for orderDetail in orderDetails {
-                orderDetail.userID = self.account!.userID
-                orderDetail.panelistID = self.account!.panelistID
-                orderDetail.orderSource = try! self.getOrderSource().value
+                orderDetail.userID = String(self.account!.userID)
+                orderDetail.panelistID = String(self.account!.panelistID)
+                orderDetail.orderSource = String(self.orderSource.value)
                 orderDetail.startDate = self.dateRange?.fromDate
                 orderDetail.endDate = self.dateRange?.toDate
                 orderDetail.date = DateUtils.getDate(dateStr: orderDetail.orderDate)
             }
-            CoreDataManager.shared.insertOrderDetails(orderDetails: orderDetails)
-            DispatchQueue.main.async {
-                completion(true)
-                
-                var logEventAttributes:[String:String] = [:]
-                logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
-                                      EventConstant.PanelistID: self.account!.panelistID,
-                                      EventConstant.OrderSourceID: self.account!.userID,
-                                      EventConstant.Status: EventStatus.Success]
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgInsertScrappedOrderDetailsInDB, eventAttributes: logEventAttributes)
+            CoreDataManager.shared.insertOrderDetails(orderDetails: orderDetails) { status in
+                DispatchQueue.main.async {
+                    completion(true)
+                    
+                    var logEventAttributes:[String:String] = [:]
+                    logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
+                                          EventConstant.PanelistID: self.account!.panelistID,
+                                          EventConstant.OrderSourceID: self.account!.userID,
+                                          EventConstant.Status: EventStatus.Success]
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgInsertScrappedOrderDetailsInDB, eventAttributes: logEventAttributes)
+                }
             }
         }
     }

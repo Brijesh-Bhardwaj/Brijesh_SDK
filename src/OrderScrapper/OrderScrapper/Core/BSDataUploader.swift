@@ -23,6 +23,7 @@ class BSDataUploader {
     func addData(data: Dictionary<String, Any>, orderDetail: OrderDetails) {
         if !data.isEmpty {
             let uploadOperation = DataUploadOperation()
+            uploadOperation.orderId = String(orderDetail.orderId)
             uploadOperation.panelistId = String(orderDetail.panelistID!)
             uploadOperation.userId = String(orderDetail.userID!)
             uploadOperation.orderSource = String(orderDetail.orderSource!)
@@ -47,7 +48,7 @@ class BSDataUploader {
 }
 
 class DataUploadOperation: Operation {
-    private let OrderID = "orderId"
+    var orderId: String!
     var panelistId: String!
     var userId: String!
     var orderSource: String!
@@ -85,19 +86,8 @@ class DataUploadOperation: Operation {
                 DispatchQueue.global().async {
                     if let response = response {
                         print("### uploadData() Response ", response)
-                        let orderData = response.orderData
-                        if let orderIds = orderData, !orderIds.isEmpty {
-                            for orderId in orderIds {
-                                let removeOrderId = orderId.orderId
-                                CoreDataManager.shared.deleteOrderDetailsByOrderID(orderID: removeOrderId,
-                                                                                   orderSource: self.orderSource)
-                            }
-                        } else {
-                            if let orderId = data[OrderID] as? String {
-                                CoreDataManager.shared.deleteOrderDetailsByOrderID(orderID: orderId,
-                                                                                   orderSource: self.orderSource)
-                            }
-                        }
+                        CoreDataManager.shared.deleteOrderDetailsByOrderID(orderID: self.orderId,
+                                                                           orderSource: self.orderSource)
                     }
                     
                     finish()

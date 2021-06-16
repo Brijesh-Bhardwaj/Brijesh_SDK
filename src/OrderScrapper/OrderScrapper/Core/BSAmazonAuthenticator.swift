@@ -14,9 +14,10 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
             guard let self = self else {return}
             
             let loginSubURL = self.getSubURL(from: self.configurations!.login, delimeter: self.LoginURLDelimiter)
+            let configSubURL = self.getSubURL(from: self.configurations!.listing, delimeter: self.URLDelimiter)
             if (url.contains(loginSubURL) || loginSubURL.contains(url)) {
                 self.injectAuthErrorVerificationJS()
-            } else if (url.contains(self.getSubURL(from: self.configurations!.listing, delimeter: self.URLDelimiter))) {
+            } else if (url.contains(configSubURL) || configSubURL.contains(url)) {
                 if let completionHandler = self.completionHandler {
                     completionHandler(true, nil)
                 }
@@ -47,7 +48,9 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
         let js = JSUtils.getAuthErrorVerificationJS()
         
         self.webClient.evaluateJavaScript(js) { (response, error) in
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
+                guard let self = self else {return}
+                
                 if let response = response as? String {
                     if (response.isEmpty) {
                         self.injectCaptchaIdentificationJS()
@@ -65,7 +68,9 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
         let js = JSUtils.getCaptchaIdentificationJS()
         
         self.webClient.evaluateJavaScript(js) { (response, error) in
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
+                guard let self = self else {return}
+                
                 if let response = response as? String {
                     if response.contains("captcha") {
                         self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorCaptchaPageLoaded, errorType: .authError))
@@ -90,13 +95,17 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
         let js = JSUtils.getFieldIdentificationJS()
         
         self.webClient.evaluateJavaScript(js) { (response, error) in
-            if let response = response as? String {
-                if response.contains("other") {
-                    self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError))
-                } else if response.contains("emailId") {
-                    self.injectEmailJS()
-                } else {
-                    self.injectPasswordJS()
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
+                guard let self = self else { return }
+                
+                if let response = response as? String {
+                    if response.contains("other") {
+                        self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError))
+                    } else if response.contains("emailId") {
+                        self.injectEmailJS()
+                    } else {
+                        self.injectPasswordJS()
+                    }
                 }
             }
         }
