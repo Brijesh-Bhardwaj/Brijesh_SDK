@@ -9,6 +9,11 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Added : This section to enlist the additions/implementations 
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
+  
+## [1.0.1] - 2021-06-17
+  
+### Changed
+- Modified the error message for AuthProvider
 
 ## [0.3.4] - 2021-06-01
 
