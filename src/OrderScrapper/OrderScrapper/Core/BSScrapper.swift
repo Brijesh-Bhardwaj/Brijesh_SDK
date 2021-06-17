@@ -49,7 +49,11 @@ class BSScrapper: NSObject {
     }
     
     func stopScrapping() {
-
+        DispatchQueue.main.async {
+            self.webClient.navigationDelegate = nil
+            self.webClient.stopLoading()
+            self.cleanUp()
+        }
     }
     
     func isScrapping() {
@@ -64,9 +68,7 @@ class BSScrapper: NSObject {
     }
     
     private func cleanUp() {
-        DispatchQueue.main.async {
-            self.windowManager.detachHeadlessView(view: self.webClient)
-        }
+        self.windowManager.detachHeadlessView(view: self.webClient)
     }
     
     private func uploadPreviousOrders() {
@@ -76,7 +78,7 @@ class BSScrapper: NSObject {
                 self.configuration = configuration
                 self.didInsertToDB()
             } else {
-                self.cleanUp()
+                self.stopScrapping()
                 self.completionHandler((false, nil), ASLException(
                                         errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil))
             }
@@ -89,7 +91,7 @@ class BSScrapper: NSObject {
             if let dateRange = response {
                 self.didReceive(dateRange: dateRange)
             } else {
-                self.cleanUp()
+                self.stopScrapping()
                 self.completionHandler((false, nil), ASLException(
                                         errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
             }
@@ -104,13 +106,13 @@ class BSScrapper: NSObject {
                 if let configurations = configurations {
                     self.didReceive(configuration: configurations)
                 } else {
-                    self.cleanUp()
+                    self.stopScrapping()
                     self.completionHandler((false, nil), ASLException(
                                             errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil))
                 }
             }
         } else {
-            self.cleanUp()
+            self.stopScrapping()
             self.completionHandler((false, .fetchSkipped), ASLException(
                                     errorMessage: Strings.ErrorFetchSkipped, errorType: nil))
         }
@@ -136,7 +138,7 @@ class BSScrapper: NSObject {
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgInjectJSForOrderListing, eventAttributes: logEventAttributes)
             } else {
-                self.cleanUp()
+                self.stopScrapping()
                 self.completionHandler((false, nil), ASLException(
                                         errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil))
             }
@@ -165,7 +167,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                 logEventAttributes[EventConstant.Reason] = Strings.ErrorOrderExtractionFailed
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAPIUploadOrderDetails, eventAttributes: logEventAttributes)
             }
-            self.cleanUp()
+            self.stopScrapping()
         }
     }
     
@@ -182,12 +184,12 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     if dataInserted {
                         self.didInsertToDB()
                     } else {
-                        self.cleanUp()
+                        self.stopScrapping()
                         self.completionHandler((false, nil), ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
                     }
                 }
             } else {
-                self.cleanUp()
+                self.stopScrapping()
                 self.completionHandler((true, .fetchCompleted), nil)
             }
             
@@ -198,13 +200,13 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                                   EventConstant.Status: EventStatus.Success]
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderListResult, eventAttributes: logEventAttributes)
         } else if scrapeResponse?.status == "failed" {
-            self.cleanUp()
+            self.stopScrapping()
             self.completionHandler((false, nil), ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
         }
     }
     
     func onHtmlScrappingFailure(error: ASLException) {
-        self.cleanUp()
+        self.stopScrapping()
         self.completionHandler((false, nil), error)
     }
     
@@ -261,7 +263,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                 BSOrderDetailsScrapper(scrapperParams: self.scrapperParams).scrapeOrderDetailPage(script: script, orderDetails: orderDetails)
                 print("### BSScrapper started scrapeOrderDetailPage")
             } else {
-                self.cleanUp()
+                self.stopScrapping()
                 self.completionHandler((false, nil), nil)
             }
         }
