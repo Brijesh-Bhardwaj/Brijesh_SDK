@@ -20,6 +20,12 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 - Modified the shouldShowWebView method to return true on approval and OTP urls
 - Removed the extra call for shouldShowWebView from the decidePolicy delegate method (In some edge cases, this delegate method was called incorrectly after didFinish method)
 
+## [0.3.4] - 2021-06-01
+
+### Changed
+- Modified the shouldShowWebView method to return true on approval and OTP urls
+- Removed the extra call for shouldShowWebView from the decidePolicy delegate method (In some edge cases, this delegate method was called incorrectly after didFinish method)
+
 ## [0.3.3] - 2021-05-26
 
 ### Added
