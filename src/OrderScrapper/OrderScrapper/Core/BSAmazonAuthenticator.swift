@@ -14,25 +14,12 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
             guard let self = self else {return}
             
             let loginSubURL = self.getSubURL(from: self.configurations!.login, delimeter: self.LoginURLDelimiter)
-            let configSubURL = self.getSubURL(from: self.configurations!.listing, delimeter: self.URLDelimiter)
             if (url.contains(loginSubURL) || loginSubURL.contains(url)) {
                 self.injectAuthErrorVerificationJS()
-            } else if (url.contains(configSubURL) || configSubURL.contains(url)) {
+            } else {
                 if let completionHandler = self.completionHandler {
                     completionHandler(true, nil)
                 }
-            } else {
-                if let completionHandler = self.completionHandler {
-                    completionHandler(false, ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError))
-                }
-                
-                var logOtherUrlEventAttributes:[String:String] = [:]
-                guard let userId = self.account?.userID else {return}
-                logOtherUrlEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                              EventConstant.OrderSourceID: userId,
-                                              EventConstant.Status: EventStatus.Success,
-                                              EventConstant.URL: url]
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSDetectOtherURL, eventAttributes: logOtherUrlEventAttributes)
             }
         }
     }

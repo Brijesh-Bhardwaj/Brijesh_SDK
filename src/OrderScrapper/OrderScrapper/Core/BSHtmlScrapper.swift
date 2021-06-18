@@ -29,9 +29,11 @@ class BSHtmlScrapperParams {
 
 class BSHtmlScrapper {
     private let LoginURLDelimiter = "/?"
+    private let URLQueryDelimiter = "?"
     private let params: BSHtmlScrapperParams
     private var script: String?
     private var url: String!
+    private var loginDetected = false
     
     init(params: BSHtmlScrapperParams) {
         self.params = params
@@ -42,6 +44,7 @@ class BSHtmlScrapper {
     func extractOrders(script: String, url: String) {
         self.script = script
         self.url = url
+        self.loginDetected = false
         self.params.webClient.loadListingUrl(url: url)
     }
     
@@ -50,6 +53,16 @@ class BSHtmlScrapper {
             return Utils.getSubUrl(url: url, delimeter: delimeter)
         }
         return url
+    }
+    
+    private func didFinishWith(error: ASLException) {
+        do {
+            try CoreDataManager.shared.updateUserAccount(userId: self.params.account.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: self.params.account.panelistID)
+        } catch {
+            print("updateAccountWithExceptionState")
+        }
+        
+        self.params.listener.onHtmlScrappingFailure(error: error)
     }
 }
 
@@ -67,7 +80,9 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
     func didFinishPageNavigation(url: URL?) {
         if let url = url?.absoluteString, let script = script {
             let loginSubURL = getSubURL(from: self.params.configuration.login, delimeter: LoginURLDelimiter)
-            if (url.contains(loginSubURL) || loginSubURL.contains(url)) {
+            let subURL = getSubURL(from: self.url, delimeter: URLQueryDelimiter)
+            if ((url.contains(loginSubURL) || loginSubURL.contains(url)) && !loginDetected) {
+                self.loginDetected = true
                 self.params.authenticator.authenticate(account: self.params.account,
                                                        configurations: self.params.configuration) { [weak self] authenticated, error in
                     guard let self = self else { return }
@@ -81,13 +96,7 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                         logEventAttributes = [EventConstant.Status: EventStatus.Success]
                         FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAuthentication, eventAttributes: logEventAttributes)
                     } else {
-                        do {
-                            try CoreDataManager.shared.updateUserAccount(userId: self.params.account.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: self.params.account.panelistID)
-                        } catch {
-                            print("updateAccountWithExceptionState")
-                        }
-                        
-                        self.params.listener.onHtmlScrappingFailure(error: error!)
+                        self.didFinishWith(error: error!)
                         
                         var logEventAttributes:[String:String] = [:]
                         logEventAttributes = [EventConstant.ErrorReason: error!.errorMessage,
@@ -95,11 +104,22 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                         FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAuthentication, eventAttributes: logEventAttributes)
                     }
                 }
-            } else {
+            } else if(url.contains(subURL) || subURL.contains(url)) {
                 print("### Injecting script for URL: ", url)
                 self.params.webClient.evaluateJavaScript(script) { response, error in
                     print("#### evaluateJavaScript")
                 }
+            } else {
+                let error = ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError)
+                self.didFinishWith(error: error)
+                
+                var logOtherUrlEventAttributes:[String:String] = [:]
+                let userId = params.account.userID
+                logOtherUrlEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                              EventConstant.OrderSourceID: userId,
+                                              EventConstant.Status: EventStatus.Success,
+                                              EventConstant.URL: url]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSDetectOtherURL, eventAttributes: logOtherUrlEventAttributes)
             }
         } else {
             self.params.listener.onHtmlScrappingFailure(error: ASLException(errorMessage: Strings.ErrorPageNotloaded, errorType: nil))
