@@ -93,6 +93,20 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                     self.scrapeNextOrder()
                 } else if status == "failed" {
                     self.scrapeNextOrder()
+                    
+                    var error: String
+                    if let errorReason = jsCallBackResult["errorMessage"] as? String {
+                        error = errorReason
+                    } else {
+                        error = Strings.ErrorOrderExtractionFailed
+                    }
+                    var logEventAttributes:[String:String] = [:]
+                    logEventAttributes = [EventConstant.OrderSource: orderDetail.orderSource ?? "",
+                                          EventConstant.PanelistID: orderDetail.panelistID ?? "",
+                                          EventConstant.OrderSourceID: orderDetail.userID ?? "",
+                                          EventConstant.Reason: error,
+                                          EventConstant.Status: EventStatus.Failure]
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResult, eventAttributes: logEventAttributes)
                 }
             }
         }
@@ -102,6 +116,14 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
         print("### onHtmlScrappingFailure ")
         if error.errorType == ErrorType.authError {
             self.params.listener.onScrapeDataUploadCompleted(complete: false, error: error)
+            
+            var logEventAttributes:[String:String] = [:]
+            logEventAttributes = [EventConstant.OrderSource: orderDetail.orderSource ?? "",
+                                  EventConstant.PanelistID: orderDetail.panelistID ?? "",
+                                  EventConstant.OrderSourceID: orderDetail.userID ?? "",
+                                  EventConstant.Reason: error.errorMessage,
+                                  EventConstant.Status: EventStatus.Failure]
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResult, eventAttributes: logEventAttributes)
         } else {
             self.scrapeNextOrder()
         }

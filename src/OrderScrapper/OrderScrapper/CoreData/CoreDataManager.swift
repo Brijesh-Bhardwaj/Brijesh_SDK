@@ -190,6 +190,9 @@ class CoreDataManager {
         let panelistIdPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnPanelistID) == %@", panelistID)
         let orderSourceIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderUserID) == %@", userID)
         
+        let sortedOrderDate = NSSortDescriptor(key: "orderDate", ascending: true)
+        fetchRequest.sortDescriptors = [sortedOrderDate]
+        
         fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderSourcePredicate, panelistIdPredicate, orderSourceIDPredicate])
         
         var orderDetails = [OrderDetailsMO]()
