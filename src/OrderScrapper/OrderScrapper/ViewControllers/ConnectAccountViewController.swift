@@ -114,6 +114,7 @@ class ConnectAccountViewController: UIViewController {
         if self.shouldAllowBack {
             self.webContentView.stopLoading()
             LibContext.shared.scrapeCompletionPublisher.send(((false, nil), ASLException(errorMessage: Strings.ErrorUserAbortedProcess, errorType: ErrorType.userAborted)))
+            WebCacheCleaner.clear(completionHandler: nil)
             self.dismiss(animated: true, completion: nil)
         }
     }
@@ -268,6 +269,7 @@ class ConnectAccountViewController: UIViewController {
             guard let self = self else { return }
             if isError.0 {
                 LibContext.shared.webAuthErrorPublisher.send((isError.0, isError.1))
+                WebCacheCleaner.clear(completionHandler: nil)
                 self.dismiss(animated: true, completion: nil)
             }
         })
