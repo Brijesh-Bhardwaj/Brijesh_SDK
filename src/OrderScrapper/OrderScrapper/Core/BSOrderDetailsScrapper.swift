@@ -104,7 +104,7 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                     logEventAttributes = [EventConstant.OrderSource: orderDetail.orderSource ?? "",
                                           EventConstant.PanelistID: orderDetail.panelistID ?? "",
                                           EventConstant.OrderSourceID: orderDetail.userID ?? "",
-                                          EventConstant.Reason: error,
+                                          EventConstant.ErrorReason: error,
                                           EventConstant.Status: EventStatus.Failure]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResult, eventAttributes: logEventAttributes)
                 }
@@ -121,7 +121,7 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
             logEventAttributes = [EventConstant.OrderSource: orderDetail.orderSource ?? "",
                                   EventConstant.PanelistID: orderDetail.panelistID ?? "",
                                   EventConstant.OrderSourceID: orderDetail.userID ?? "",
-                                  EventConstant.Reason: error.errorMessage,
+                                  EventConstant.ErrorReason: error.errorMessage,
                                   EventConstant.Status: EventStatus.Failure]
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResult, eventAttributes: logEventAttributes)
         } else {

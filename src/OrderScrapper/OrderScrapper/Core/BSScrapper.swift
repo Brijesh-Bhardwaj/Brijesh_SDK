@@ -210,7 +210,8 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
             } else {
                 error = Strings.ErrorOrderExtractionFailed
             }
-            logEventAttributes[EventConstant.Reason] =  error
+            
+            logEventAttributes[EventConstant.ErrorReason] =  error
             logEventAttributes[EventConstant.Status] =  EventStatus.Failure
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderListResult, eventAttributes: logEventAttributes)
         }
