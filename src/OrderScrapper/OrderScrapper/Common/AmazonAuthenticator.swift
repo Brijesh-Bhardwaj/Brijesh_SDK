@@ -27,7 +27,8 @@ internal class AmazonAuthenticator: Authenticator {
     
     func authenticate() {
         self.jsResultSubscriber = viewModel.jsResultPublisher.receive(on: RunLoop.main)
-            .sink(receiveValue: { (injectValue, result) in
+            .sink(receiveValue: { [weak self] (injectValue, result) in
+                guard let self = self else { return }
                 let (response, _) = result
                 switch injectValue {
                 case .email, .password, .generateReport, .downloadReport, .dateRange: break
@@ -148,7 +149,7 @@ internal class AmazonAuthenticator: Authenticator {
             _ = AmazonService.registerConnection(amazonId: userId,
                                                  status: AccountState.NeverConnected.rawValue,
                                                  message: errorMessage, orderStatus: OrderStatus.None.rawValue) { response, error in
-               //TODO
+                //TODO
             }
         } else {
             self.updateAccountWithExceptionState(message: AppConstants.msgAuthError)

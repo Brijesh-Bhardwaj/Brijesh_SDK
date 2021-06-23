@@ -57,7 +57,12 @@ All protocols needed to be implemented by the application are
  class to provide functionalities related to View presentation that the SDK would internally call
  whenever needed to present a new screen to users during the account-registration and 
  order-fetching operations
-  
+
+- Create an instance of `OrderExtractorConfig` class and set these properties:
+ - baseURL: The base URL for the SDK to communicate with the backend. The app must ensure that this URL is correct and is for the same environment as the app. This property is mandatory.
+ - appName: The name of the application integrating the SDK. This property is utilized for analytics and logging purpose. This property is mandatory.
+ - appVersion: The version of the current application. Also used for analytics and logging purpose. This property is optional.
+ 
  - Note: The application ViewController must present the SDK ViewControllers using 
  ```
  viewController.present(sdkViewController, animated: true, completion: nil)
@@ -71,12 +76,12 @@ All protocols needed to be implemented by the application are
    
 - Initialize the library before calling its method as below
  ```
- OrdersExtractor.initialize(authProvider, viewPresenter, analyticsProvider?)
+ OrdersExtractor.initialize(authProvider, viewPresenter, analyticsProvider?, orderExtractorConfig)
  ```
  parameters *authProvider*, *viewPresenter* and *analyticsProvider* are the references implementing `AuthProvider`,
- `ViewPresenter` and `AnalyticsProvider` protocols. 
+ `ViewPresenter` and `AnalyticsProvider` protocols and orderExtractorConfig is the instance created above for passing the config information to the SDK.
  - Note: This method throws a runtime error in case the authProvider interface doesn't return a valid value
- in the implementation
+ in the implementation or in case the config is missing
 
 - Once initialized you can use the static methods to invoke the functionalities provided by the SDK
 

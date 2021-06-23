@@ -167,8 +167,6 @@ class AmazonNavigationHelper: NavigationHelper {
         let urlString = url.absoluteString
         
         let knownURLs = urlString.contains(AmazonURL.signIn)
-            || urlString.contains(AmazonURL.authApproval)
-            || urlString.contains(AmazonURL.twoFactorAuth)
             || (urlString.contains(AmazonURL.downloadReport) && urlString.contains(AmazonURL.reportID))
             || urlString.contains(AmazonURL.generateReport)
             || urlString.contains(AmazonURL.resetPassword)
@@ -178,6 +176,12 @@ class AmazonNavigationHelper: NavigationHelper {
         if knownURLs {
             return false
         }
+        
+        if urlString.contains(AmazonURL.authApproval)
+            || urlString.contains(AmazonURL.twoFactorAuth) {
+            return true
+        }
+        
         guard let currentStep = self.currentStep else { return false }
         
         // For unknown URL, hide if current step is not authentication step
@@ -281,8 +285,8 @@ class AmazonNavigationHelper: NavigationHelper {
                 if response.enableScraping {
                     let reportConfig = self.parseReportConfig(dateRange: response)
                     self.viewModel.reportConfig = reportConfig
-                    self.viewModel.jsPublisher.send((.dateRange, self.getOldestPossibleYear()))
                     self.setJSInjectionResultSubscriber()
+                    self.viewModel.jsPublisher.send((.dateRange, self.getOldestPossibleYear()))
                 } else {
                     self.updateAccountStatusToConnected(orderStatus: OrderStatus.None.rawValue)
                     self.addUserAccountInDB()
@@ -308,7 +312,8 @@ class AmazonNavigationHelper: NavigationHelper {
     
     private func setJSInjectionResultSubscriber() {
         self.jsResultSubscriber = viewModel.jsResultPublisher.receive(on: RunLoop.main)
-            .sink(receiveValue: { (injectValue, result) in
+            .sink(receiveValue: { [weak self] (injectValue, result) in
+                guard let self = self else { return }
                 let (response, _) = result
                 switch injectValue {
                 case .captcha,.downloadReport, .email, .generateReport, .identification, .password, .error: break
@@ -341,11 +346,11 @@ class AmazonNavigationHelper: NavigationHelper {
     
     private func getOldestPossibleYear() -> String {
         return "(function() {var listOfYears = document.getElementById('report-year-start');" +
-                "var oldestYear = 0;" +
-                "for (i = 0; i < listOfYears.options.length; i++) {" +
-                "if(!isNaN(listOfYears.options[i].value) && (listOfYears.options[i].value < oldestYear || oldestYear ==0))" +
-                "{ oldestYear = listOfYears.options[i].value;}" +
-                "} return oldestYear })()"
+            "var oldestYear = 0;" +
+            "for (i = 0; i < listOfYears.options.length; i++) {" +
+            "if(!isNaN(listOfYears.options[i].value) && (listOfYears.options[i].value < oldestYear || oldestYear ==0))" +
+            "{ oldestYear = listOfYears.options[i].value;}" +
+            "} return oldestYear })()"
     }
     
     private func removePIIAttributes(fileName: String, fileURL: URL) {

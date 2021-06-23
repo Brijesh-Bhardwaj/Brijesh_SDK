@@ -83,7 +83,8 @@ class RegisterAccountViewController: UIViewController {
         
         self.authErrorView.isHidden = true
         
-        WebCacheCleaner.clear() { cleared in
+        WebCacheCleaner.clear() { [weak self] cleared in
+            guard let self = self else { return }
             self.presentConnectVC(userID: userId, password: password)
         }
         FirebaseAnalyticsUtil.logUserProperty(orderSourceId: userId, orderSource: OrderSource.Amazon)
@@ -112,7 +113,9 @@ class RegisterAccountViewController: UIViewController {
     }
     
     private func setupSubscribers() {
-        authErrorSubscriber = LibContext.shared.webAuthErrorPublisher.receive(on: RunLoop.main).sink { authError in
+        authErrorSubscriber = LibContext.shared.webAuthErrorPublisher.receive(on: RunLoop.main).sink { [weak self] authError in
+            guard let self = self else { return }
+            
             self.authErrorView.isHidden = false
             var message = authError.1
             if message.isEmpty {
