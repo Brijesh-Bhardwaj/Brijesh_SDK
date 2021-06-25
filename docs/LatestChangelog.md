@@ -1,2 +1,2 @@
-- Modified the shouldShowWebView method to return true on approval and OTP urls
-- Removed the extra call for shouldShowWebView from the decidePolicy delegate method (In some edge cases, this delegate method was called incorrectly after didFinish method)
+- Redirecting to order report page in case sign in URL is intercepted after authentication
+
