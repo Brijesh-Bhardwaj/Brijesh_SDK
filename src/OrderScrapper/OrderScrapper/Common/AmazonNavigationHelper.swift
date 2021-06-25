@@ -31,7 +31,6 @@ class AmazonNavigationHelper: NavigationHelper {
     @ObservedObject var viewModel: WebViewModel
     
     private var currentStep: Step!
-    
     var jsResultSubscriber: AnyCancellable? = nil
     let authenticator: Authenticator
     
@@ -51,9 +50,14 @@ class AmazonNavigationHelper: NavigationHelper {
         let urlString = url.absoluteString
         
         if (urlString.contains(AmazonURL.signIn)) {
-            self.authenticator.authenticate()
-            self.currentStep = .authentication
-            publishProgrssFor(step: .authentication)
+            if self.authenticator.isUserAuthenticated() {
+                self.viewModel.authenticationComplete.send(true)
+                self.authenticator.resetAuthenticatedFlag()
+            } else {
+                self.authenticator.authenticate()
+                self.currentStep = .authentication
+                publishProgrssFor(step: .authentication)
+            }
         } else if (urlString.contains(AmazonURL.authApproval)
                     || urlString.contains(AmazonURL.twoFactorAuth)) {
             self.viewModel.showWebView.send(true)
