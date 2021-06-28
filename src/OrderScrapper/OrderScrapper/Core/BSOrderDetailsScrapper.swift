@@ -84,29 +84,33 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
         let object = try? JSONSerialization.jsonObject(with: jsonData, options: [])
         
         if let jsCallBackResult = object as? Dictionary<String,Any?> {
-            if let status = jsCallBackResult["status"] as? String {
-                if status == "success" {
-                    print("### onHtmlScrappingSucess for OrderDetail", response)
-                    if let orderDetails = jsCallBackResult["data"] as? Dictionary<String,Any> {
-                        self.uploadScrapeData(data: orderDetails)
+            if let type  = jsCallBackResult["type"] as? String {
+                if type == "orderdetails" {
+                    if let status = jsCallBackResult["status"] as? String {
+                        if status == "success" {
+                            print("### onHtmlScrappingSucess for OrderDetail", response)
+                            if let orderDetails = jsCallBackResult["data"] as? Dictionary<String,Any> {
+                                self.uploadScrapeData(data: orderDetails)
+                            }
+                            self.scrapeNextOrder()
+                        } else if status == "failed" {
+                            self.scrapeNextOrder()
+                            
+                            var error: String
+                            if let errorReason = jsCallBackResult["errorMessage"] as? String {
+                                error = errorReason
+                            } else {
+                                error = Strings.ErrorOrderExtractionFailed
+                            }
+                            var logEventAttributes:[String:String] = [:]
+                            logEventAttributes = [EventConstant.OrderSource: orderDetail.orderSource ?? "",
+                                                  EventConstant.PanelistID: orderDetail.panelistID ?? "",
+                                                  EventConstant.OrderSourceID: orderDetail.userID ?? "",
+                                                  EventConstant.ErrorReason: error,
+                                                  EventConstant.Status: EventStatus.Failure]
+                            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResult, eventAttributes: logEventAttributes)
+                        }
                     }
-                    self.scrapeNextOrder()
-                } else if status == "failed" {
-                    self.scrapeNextOrder()
-                    
-                    var error: String
-                    if let errorReason = jsCallBackResult["errorMessage"] as? String {
-                        error = errorReason
-                    } else {
-                        error = Strings.ErrorOrderExtractionFailed
-                    }
-                    var logEventAttributes:[String:String] = [:]
-                    logEventAttributes = [EventConstant.OrderSource: orderDetail.orderSource ?? "",
-                                          EventConstant.PanelistID: orderDetail.panelistID ?? "",
-                                          EventConstant.OrderSourceID: orderDetail.userID ?? "",
-                                          EventConstant.ErrorReason: error,
-                                          EventConstant.Status: EventStatus.Failure]
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResult, eventAttributes: logEventAttributes)
                 }
             }
         }

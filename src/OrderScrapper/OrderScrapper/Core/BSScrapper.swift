@@ -182,38 +182,39 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
         var logEventAttributes:[String:String] = [EventConstant.OrderSource: self.orderSource.value,
                                                   EventConstant.PanelistID: self.account!.panelistID,
                                                   EventConstant.OrderSourceID: self.account!.userID]
-        
-        if scrapeResponse?.status == "success" {
-            if let orderDetails = scrapeResponse?.data, !orderDetails.isEmpty {
-                insertOrderDetailsToDB(orderDetails: orderDetails) { dataInserted in
-                    if dataInserted {
-                        self.didInsertToDB()
-                    } else {
-                        self.stopScrapping()
-                        self.completionHandler((false, nil), ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
+        if scrapeResponse?.type == "orderlist" {
+            if scrapeResponse?.status == "success" {
+                if let orderDetails = scrapeResponse?.data, !orderDetails.isEmpty {
+                    insertOrderDetailsToDB(orderDetails: orderDetails) { dataInserted in
+                        if dataInserted {
+                            self.didInsertToDB()
+                        } else {
+                            self.stopScrapping()
+                            self.completionHandler((false, nil), ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
+                        }
                     }
+                } else {
+                    self.stopScrapping()
+                    self.completionHandler((true, .fetchCompleted), nil)
                 }
-            } else {
+                
+                logEventAttributes[EventConstant.Status] =  EventStatus.Success
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderListResult, eventAttributes: logEventAttributes)
+            } else if scrapeResponse?.status == "failed" {
                 self.stopScrapping()
-                self.completionHandler((true, .fetchCompleted), nil)
+                self.completionHandler((false, nil), ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
+                
+                var error: String
+                if let errorReason = scrapeResponse?.errorMessage {
+                    error = errorReason
+                } else {
+                    error = Strings.ErrorOrderExtractionFailed
+                }
+                
+                logEventAttributes[EventConstant.ErrorReason] =  error
+                logEventAttributes[EventConstant.Status] =  EventStatus.Failure
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderListResult, eventAttributes: logEventAttributes)
             }
-            
-            logEventAttributes[EventConstant.Status] =  EventStatus.Success
-            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderListResult, eventAttributes: logEventAttributes)
-        } else if scrapeResponse?.status == "failed" {
-            self.stopScrapping()
-            self.completionHandler((false, nil), ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
-            
-            var error: String
-            if let errorReason = scrapeResponse?.errorMessage {
-                error = errorReason
-            } else {
-                error = Strings.ErrorOrderExtractionFailed
-            }
-            
-            logEventAttributes[EventConstant.ErrorReason] =  error
-            logEventAttributes[EventConstant.Status] =  EventStatus.Failure
-            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderListResult, eventAttributes: logEventAttributes)
         }
     }
     
