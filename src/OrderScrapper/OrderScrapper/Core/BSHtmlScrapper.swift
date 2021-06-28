@@ -61,7 +61,10 @@ class BSHtmlScrapper {
         } catch {
             print("updateAccountWithExceptionState")
         }
-        
+        _ = AmazonService.updateStatus(amazonId: self.params.account.userID, status: AccountState.ConnectedButException.rawValue, message: AppConstants.msgAuthError, orderStatus: OrderStatus.Failed.rawValue) { response, error in
+            
+            //TODO
+        }
         self.params.listener.onHtmlScrappingFailure(error: error)
     }
 }
