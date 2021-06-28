@@ -56,4 +56,6 @@ struct Strings {
     static let ErrorConfigsMissing = "Configs missing"
     static let ErrorPageNotloaded = "Error while loading web page"
     static let ErrorFetchSkipped = "Fetch skipped"
+    static let ErrorScriptNotFound = "Could not read the script from the file"
+    static let ErrorScriptFileNotFound = "Script file not found"
 }

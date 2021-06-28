@@ -53,12 +53,14 @@ class BSScriptFileManager {
                         } else {
                             completion(nil)
                             
+                            logEventRetrieveScriptAttributes[EventConstant.ErrorReason] = Strings.ErrorScriptNotFound
                             logEventRetrieveScriptAttributes[EventConstant.Status] = EventStatus.Failure
                             FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrapperScript, eventAttributes: logEventRetrieveScriptAttributes)
                         }
                     } else {
                         completion(nil)
                         
+                        logEventAttributes[EventConstant.ErrorReason] = Strings.ErrorScriptFileNotFound
                         logEventAttributes[EventConstant.Status] = EventStatus.Failure
                         FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgDownloadScrapperScriptFile, eventAttributes: logEventAttributes)
                     }

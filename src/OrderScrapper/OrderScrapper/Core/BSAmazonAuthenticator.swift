@@ -110,7 +110,8 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
                                                       EventConstant.OrderSourceID: email]
             if error != nil {
                 self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorEmailJSInjectionFailed, errorType: .authError))
-
+                
+                logEventAttributes[EventConstant.ErrorReason] = error.debugDescription
                 logEventAttributes[EventConstant.Status] = EventStatus.Failure
             } else {
                 print("### injectEmailJS")
@@ -138,6 +139,7 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
                 
                 logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
                                       EventConstant.OrderSourceID: email,
+                                      EventConstant.ErrorReason: error.debugDescription,
                                       EventConstant.Status: EventStatus.Failure]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSInjectPassword, eventAttributes: logEventAttributes)
             } else {
