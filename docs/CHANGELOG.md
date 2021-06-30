@@ -10,6 +10,11 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
   
+## [1.0.2] - 2021-06-25
+
+### Changed
+- Redirecting to order report page in case sign in URL is intercepted after authentication
+
 ## [1.0.1] - 2021-06-17
   
 ### Changed
