@@ -16,6 +16,7 @@
 		1C07411A2604F2540013067C /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0741192604F2540013067C /* String.swift */; };
 		1C2F8DF4260B25870053E73A /* OrdersExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2F8DF3260B25870053E73A /* OrdersExtractor.swift */; };
 		1C425D1F26109F640009A3FA /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C425D1E26109F640009A3FA /* Dictionary.swift */; };
+		1C6D440B268EDDF2004A3165 /* Configs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6D440A268EDDF2004A3165 /* Configs.swift */; };
 		1C72BFC22629B5D40029255C /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C72BFC12629B5D40029255C /* UIColorExtension.swift */; };
 		1C8C9928261D8BED0023A16D /* AnalyticsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C9927261D8BED0023A16D /* AnalyticsProvider.swift */; };
 		1CA1EDF1260E16110000C859 /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1EDF0260E16110000C859 /* EventType.swift */; };
@@ -123,6 +124,7 @@
 		1C0741192604F2540013067C /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		1C2F8DF3260B25870053E73A /* OrdersExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrdersExtractor.swift; sourceTree = "<group>"; };
 		1C425D1E26109F640009A3FA /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
+		1C6D440A268EDDF2004A3165 /* Configs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configs.swift; sourceTree = "<group>"; };
 		1C72BFC12629B5D40029255C /* UIColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
 		1C8C9927261D8BED0023A16D /* AnalyticsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsProvider.swift; sourceTree = "<group>"; };
 		1CA1EDF0260E16110000C859 /* EventType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
@@ -490,6 +492,7 @@
 				E148DC7526048299001430BE /* PIIAttribute.swift */,
 				1CE22FA5261EDC2A002B9902 /* AccountDetails.swift */,
 				E1AAFF4E26274808000F5CD2 /* GetAccountsResponse.swift */,
+				1C6D440A268EDDF2004A3165 /* Configs.swift */,
 			);
 			path = Response;
 			sourceTree = "<group>";
@@ -697,6 +700,7 @@
 				E148DC52260339EF001430BE /* AmazonService.swift in Sources */,
 				E148DB6325FF2BFD001430BE /* AccountState.swift in Sources */,
 				E148DC5B26034D7F001430BE /* APIClient.swift in Sources */,
+				1C6D440B268EDDF2004A3165 /* Configs.swift in Sources */,
 				E148DB8325FF317B001430BE /* WebViewModel.swift in Sources */,
 				E148DB6B25FF2BFD001430BE /* ViewPresenter.swift in Sources */,
 				E148CA702610AF2000155B96 /* UIViewExtensions.swift in Sources */,
@@ -847,7 +851,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.3;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.orderscrapper;
@@ -973,7 +977,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.3;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.orderscrapper;
