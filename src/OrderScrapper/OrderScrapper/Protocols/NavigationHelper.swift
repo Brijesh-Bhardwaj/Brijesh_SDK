@@ -13,4 +13,8 @@ protocol NavigationHelper {
     func intercept(navigationResponse: URLResponse, cookies: [HTTPCookie])
     
     func shouldShowWebViewFor(url: URL?) -> Bool
+    
+    func startTimer()
+    
+    func stopTimer()
 }
