@@ -23,6 +23,7 @@ class WebViewModel: ObservableObject {
     var navigationPublisher = PassthroughSubject<WebViewNavigation, Never>()
     var completionPublisher = PassthroughSubject<Bool, Never>()
     var disableScrapping = PassthroughSubject<Bool, Never>()
+    var authenticationComplete = PassthroughSubject<Bool, Never>()
 }
 
 enum WebViewNavigation {

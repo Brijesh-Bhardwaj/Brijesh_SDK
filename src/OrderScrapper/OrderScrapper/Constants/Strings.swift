@@ -34,7 +34,7 @@ struct Strings {
     // Mark:- Non-Localized strings
     static let ErrorLibAlreadyInitialized = "OrdersExtractor is already initialized."
     static let ErrorLibNotInitialized = "OrdersExtractor is not initialized."
-    static let ErrorAuthProviderNotImplemented = "AuthProvider implementation is missing."
+    static let ErrorAuthProviderNotImplemented = "authToken or panelistId is missing in AuthProvider."
     static let ExtractionDisabled = "Receipts scrapped already."
     static let ErrorUserAbortedProcess = "User aborted the process."
     

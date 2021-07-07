@@ -30,9 +30,8 @@ private enum Step: Int16 {
 
 class AmazonNavigationHelper: NavigationHelper {
     @ObservedObject var viewModel: WebViewModel
-    
     private var currentStep: Step!
-    
+    private var timer: Timer?
     var jsResultSubscriber: AnyCancellable? = nil
     let authenticator: Authenticator
     
@@ -52,9 +51,14 @@ class AmazonNavigationHelper: NavigationHelper {
         let urlString = url.absoluteString
         
         if (urlString.contains(AmazonURL.signIn)) {
-            self.authenticator.authenticate()
-            self.currentStep = .authentication
-            publishProgrssFor(step: .authentication)
+            if self.authenticator.isUserAuthenticated() {
+                self.viewModel.authenticationComplete.send(true)
+                self.authenticator.resetAuthenticatedFlag()
+            } else {
+                self.authenticator.authenticate()
+                self.currentStep = .authentication
+                publishProgrssFor(step: .authentication)
+            }
         } else if (urlString.contains(AmazonURL.authApproval)
                     || urlString.contains(AmazonURL.twoFactorAuth)) {
             self.viewModel.showWebView.send(true)
@@ -100,6 +104,7 @@ class AmazonNavigationHelper: NavigationHelper {
             }
         } else if (urlString.contains(AmazonURL.resetPassword)) {
             self.viewModel.authError.send((isError: true, errorMsg: AppConstants.msgResetPassword))
+            stopTimer()
         } else if (urlString.contains(AmazonURL.reportSuccess)) {
             //No handling required
         } else {
@@ -121,6 +126,22 @@ class AmazonNavigationHelper: NavigationHelper {
             } else {
                 self.viewModel.authError.send((isError: true, errorMsg: AppConstants.msgUnknownURL))
             }
+            stopTimer()
+        }
+        
+        //Timer handling for each step
+        switch currentStep {
+        case .authentication:
+            if (urlString.contains(AmazonURL.authApproval) &&
+                    urlString.contains(AmazonURL.twoFactorAuth)) {
+                stopTimer()
+            } else {
+                startTimer()
+            }
+        case .downloadReport:
+            startTimer()
+        case .generateReport, .parseReport, .uploadReport, .complete, .none:
+            print("### Do nothing")
         }
     }
     
@@ -137,7 +158,6 @@ class AmazonNavigationHelper: NavigationHelper {
             self.viewModel.webviewError.send(true)
             return
         }
-        
         let fileDownloader = FileDownloader()
         fileDownloader.downloadFile(fromURL: url, cookies: cookies) { success, tempURL in
             var logEventAttributes:[String:String] = [:]
@@ -150,6 +170,7 @@ class AmazonNavigationHelper: NavigationHelper {
                                       EventConstant.Status: EventStatus.Success,
                                       EventConstant.FileName: fileName]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.OrderCSVDownload, eventAttributes: logEventAttributes)
+                self.stopTimer()
             } else {
                 self.updateOrderStatusFor(error: AppConstants.msgDownloadCSVFailed, accountStatus: self.viewModel.userAccount.accountState.rawValue)
                 self.viewModel.webviewError.send(true)
@@ -320,6 +341,7 @@ class AmazonNavigationHelper: NavigationHelper {
                 case .captcha,.downloadReport, .email, .generateReport, .identification, .password, .error: break
                 case .dateRange:
                     if let response = response {
+                        self.startTimer()
                         let strResult = response as! String
                         if (!strResult.isEmpty) {
                             let year = Int(strResult) ?? 0
@@ -411,7 +433,6 @@ class AmazonNavigationHelper: NavigationHelper {
     private func uploadCSVFile(fileURL url: URL) {
         self.currentStep = .uploadReport
         publishProgrssFor(step: .uploadReport)
-        
         let reportConfig = self.viewModel.reportConfig!
         let fromDate = reportConfig.fullStartDate!
         let toDate = reportConfig.fullEndDate!
@@ -478,6 +499,27 @@ class AmazonNavigationHelper: NavigationHelper {
                                        status: AccountState.Connected.rawValue,
                                        message: AppConstants.msgConnected,
                                        orderStatus: orderStatus) { response, error in
+        }
+    }
+    
+    public func startTimer() {
+        if let timer = timer {
+            timer.invalidate()
+            self.timer = nil
+        }
+        print("### Timer Started")
+        timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(LibContext.shared.timeoutValue), repeats: false) { timer in
+            WebCacheCleaner.clear(completionHandler: nil)
+            self.viewModel.authError.send((isError: true, errorMsg: AppConstants.msgTimeout))
+            print("### Timer triggered")
+        }
+    }
+    
+    public func stopTimer() {
+        if let timer = timer {
+            timer.invalidate()
+            self.timer = nil
+            print("### Stopeed Timer ")
         }
     }
 }

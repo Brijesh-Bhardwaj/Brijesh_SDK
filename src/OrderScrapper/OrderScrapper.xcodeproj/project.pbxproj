@@ -43,6 +43,7 @@
 		1C5DE05F264EA76400275073 /* JSUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5DE05E264EA76400275073 /* JSUtils.swift */; };
 		1C65D32C26669DC200548A84 /* ScrapeResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C65D32B26669DC200548A84 /* ScrapeResponse.swift */; };
 		1C66CE30265EB0E700A5C7C1 /* ListingPageScriptInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C66CE2F265EB0E700A5C7C1 /* ListingPageScriptInput.swift */; };
+		1C6D440B268EDDF2004A3165 /* Configs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6D440A268EDDF2004A3165 /* Configs.swift */; };
 		1C72BFC22629B5D40029255C /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C72BFC12629B5D40029255C /* UIColorExtension.swift */; };
 		1C8C9928261D8BED0023A16D /* AnalyticsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C9927261D8BED0023A16D /* AnalyticsProvider.swift */; };
 		1CA1EDF1260E16110000C859 /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1EDF0260E16110000C859 /* EventType.swift */; };
@@ -184,6 +185,7 @@
 		1C5DE05E264EA76400275073 /* JSUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSUtils.swift; sourceTree = "<group>"; };
 		1C65D32B26669DC200548A84 /* ScrapeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrapeResponse.swift; sourceTree = "<group>"; };
 		1C66CE2F265EB0E700A5C7C1 /* ListingPageScriptInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ListingPageScriptInput.swift; path = ../Models/ListingPageScriptInput.swift; sourceTree = "<group>"; };
+		1C6D440A268EDDF2004A3165 /* Configs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configs.swift; sourceTree = "<group>"; };
 		1C72BFC12629B5D40029255C /* UIColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
 		1C8C9927261D8BED0023A16D /* AnalyticsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsProvider.swift; sourceTree = "<group>"; };
 		1CA1EDF0260E16110000C859 /* EventType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
@@ -622,6 +624,7 @@
 				9D830BF426692A3C0081D4BD /* OrderData.swift */,
 				9DF81DEB266A3A0F001CFCCF /* OrderRequest.swift */,
 				1CEBA4CB266F580500F331C7 /* JSCallback.swift */,
+				1C6D440A268EDDF2004A3165 /* Configs.swift */,
 			);
 			path = Response;
 			sourceTree = "<group>";
@@ -857,6 +860,7 @@
 				E19A5B002657DE2D00591A1A /* BSWebNavigationDelegate.swift in Sources */,
 				E148DB6325FF2BFD001430BE /* AccountState.swift in Sources */,
 				E148DC5B26034D7F001430BE /* APIClient.swift in Sources */,
+				1C6D440B268EDDF2004A3165 /* Configs.swift in Sources */,
 				E148DB8325FF317B001430BE /* WebViewModel.swift in Sources */,
 				E148DB6B25FF2BFD001430BE /* ViewPresenter.swift in Sources */,
 				1C4F89A12654E91100925FAB /* ScrapperConfigs.swift in Sources */,

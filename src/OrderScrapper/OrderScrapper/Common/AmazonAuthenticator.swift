@@ -15,6 +15,9 @@ enum JSInjectValue {
 internal class AmazonAuthenticator: Authenticator {
     @ObservedObject var viewModel: WebViewModel
     
+    private var isPasswordInjected: Bool = false
+    private var isAuthenticated: Bool = false
+
     var jsResultSubscriber: AnyCancellable? = nil
     
     required init(_ viewModel: WebViewModel) {
@@ -29,9 +32,19 @@ internal class AmazonAuthenticator: Authenticator {
         self.jsResultSubscriber = viewModel.jsResultPublisher.receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] (injectValue, result) in
                 guard let self = self else { return }
-                let (response, _) = result
+                let (response, error) = result
                 switch injectValue {
-                case .email, .password, .generateReport, .downloadReport, .dateRange: break
+                case .email:
+                    if error != nil {
+                        self.notifyAuthError(errorMessage: AppConstants.msgUnknownURL)
+                    }
+                case .password:
+                    if error != nil {
+                        self.notifyAuthError(errorMessage: AppConstants.msgUnknownURL)
+                    } else {
+                        self.isPasswordInjected = true
+                    }
+                case .generateReport, .downloadReport, .dateRange: break
                 case .error:
                     if let response = response {
                         let strResult = response as! String
@@ -61,6 +74,10 @@ internal class AmazonAuthenticator: Authenticator {
                             self.updateAccountWithExceptionState(message: AppConstants.msgCapchaEncountered)
                             self.viewModel.showWebView.send(true)
                         } else {
+                            if self.isPasswordInjected {
+                                self.isPasswordInjected = false
+                                self.isAuthenticated = true
+                            }
                             self.injectFieldIdentificationJS()
                         }
                     } else {
@@ -116,6 +133,7 @@ internal class AmazonAuthenticator: Authenticator {
             " return null}})()"
         
         self.viewModel.jsPublisher.send((.captcha, js))
+        
     }
     
     private func updateAccountWithExceptionState(message: String) {
@@ -156,5 +174,13 @@ internal class AmazonAuthenticator: Authenticator {
         }
         self.viewModel.authError.send((true, ""))
         WebCacheCleaner.clear(completionHandler: nil)
+    }
+    
+    func resetAuthenticatedFlag() {
+        isAuthenticated = false
+    }
+    
+    func isUserAuthenticated() -> Bool {
+        return isAuthenticated
     }
 }

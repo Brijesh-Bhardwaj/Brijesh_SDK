@@ -9,6 +9,7 @@ struct AppConstants {
     static let bundle: Bundle! = Bundle(identifier: "ai.blackstraw.orderscrapper")
     static let identifier: String  = "ai.blackstraw.orderscrapper"
     static let numberOfSteps: Float = 6
+    static let timeoutCounter: Double = 15
     static let entityName = "UserAccount"
     static let orderDetailEntity = "OrderDetails"
     static let resource = "CoreDataModel"
@@ -49,4 +50,5 @@ struct AppConstants {
     static let msgResetPassword = "Something went wrong. Please check your credentials once in a browser and retry"
     static let msgUnknownURL = "We encountered an issue while connecting your account. Please try again later."
     static let tag = "OrderScrapper"
+    static let msgTimeout = "Something went wrong. Try again after sometime."
 }

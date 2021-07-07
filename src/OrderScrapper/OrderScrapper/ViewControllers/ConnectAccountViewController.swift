@@ -10,7 +10,7 @@ import Network
 
 class ConnectAccountViewController: UIViewController {
     private let baseURL = "https://www.amazon.com/ap/signin?_encoding=UTF8&openid.assoc_handle=usflex&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.mode=checkid_setup&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&openid.ns.pape=http%3A%2F%2Fspecs.openid.net%2Fextensions%2Fpape%2F1.0&openid.pape.max_auth_age=900&openid.return_to=https%3A%2F%2Fwww.amazon.com%2Fgp%2Fb2b%2Freports%2F"
-    
+    private let reportUrl = "https://www.amazon.com/gp/b2b/reports/"
     private let viewModel = WebViewModel()
     
     private var navigationHelper: NavigationHelper!
@@ -34,7 +34,8 @@ class ConnectAccountViewController: UIViewController {
     private var stepMessageSubscriber: AnyCancellable? = nil
     private var completionSubscriber: AnyCancellable? = nil
     private var stopScrappingSubscriber: AnyCancellable? = nil
-    
+    private var authenticationCompleteSubscriber: AnyCancellable? = nil
+
     // MARK: - View References
     
     // MARK: - IBOutlets
@@ -66,6 +67,7 @@ class ConnectAccountViewController: UIViewController {
         self.removeNavigationDelegate()
         self.monitor.pathUpdateHandler = nil
         self.monitor.cancel()
+        self.authenticationCompleteSubscriber?.cancel()
     }
     
     override func viewDidLoad() {
@@ -77,6 +79,8 @@ class ConnectAccountViewController: UIViewController {
         
         self.webContentView.navigationDelegate = self
                
+        self.navigationHelper = AmazonNavigationHelper(self.viewModel)
+        
         self.webContentView.evaluateJavaScript("navigator.userAgent") { [weak self] (agent, error) in
             guard let self = self else { return }
 
@@ -88,10 +92,11 @@ class ConnectAccountViewController: UIViewController {
             }
             self.webContentView.customUserAgent = userAgent
             if let url = URL(string: self.baseURL) {
+                self.navigationHelper.startTimer()
                 self.webContentView.load(URLRequest(url: url))
             }
         }
-        self.navigationHelper = AmazonNavigationHelper(self.viewModel)
+        
         self.registerSubscribers()
     }
     
@@ -221,6 +226,7 @@ class ConnectAccountViewController: UIViewController {
                                           EventConstant.Status: status]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedCaptcha, eventAttributes: logEventAttributes)
                 case .generateReport:
+                    self.navigationHelper.stopTimer()
                     //Logging event for report generation
                     var logEventAttributes:[String:String] = [:]
                     logEventAttributes = [EventConstant.OrderSource:                    String(OrderSource.Amazon.rawValue),
@@ -228,6 +234,7 @@ class ConnectAccountViewController: UIViewController {
                                           EventConstant.Status: status]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportGeneration, eventAttributes: logEventAttributes)
                 case .downloadReport:
+                    self.navigationHelper.stopTimer()
                     //Logging event for report download
                     var logEventAttributes:[String:String] = [:]
                     logEventAttributes = [EventConstant.OrderSource:                    String(OrderSource.Amazon.rawValue),
@@ -253,6 +260,9 @@ class ConnectAccountViewController: UIViewController {
         showWebViewSubscriber = self.viewModel.showWebView.receive(on: RunLoop.main).sink(receiveValue: { [weak self] showWeb in
             guard let self = self else { return }
             self.hideWebContents(hide: !showWeb)
+            if showWeb {
+                self.navigationHelper.stopTimer()
+            }
         })
         webViewErrorSubscriber = self.viewModel.webviewError.receive(on: RunLoop.main).sink(receiveValue: { [weak self] isWebError in
             guard let self = self else { return }
@@ -268,6 +278,7 @@ class ConnectAccountViewController: UIViewController {
         authErrorSubscriber = self.viewModel.authError.receive(on: RunLoop.main).sink(receiveValue: { [weak self] isError in
             guard let self = self else { return }
             if isError.0 {
+                self.navigationHelper.stopTimer()
                 LibContext.shared.webAuthErrorPublisher.send((isError.0, isError.1))
                 WebCacheCleaner.clear(completionHandler: nil)
                 self.dismiss(animated: true, completion: nil)
@@ -305,6 +316,14 @@ class ConnectAccountViewController: UIViewController {
                 self.backButton.isEnabled = false
                 self.backButton.isHidden = true
                 self.contentView.bringSubviewToFront(self.fetchSuccessView)
+            }
+        })
+        authenticationCompleteSubscriber = self.viewModel.authenticationComplete.receive(on: RunLoop.main).sink(receiveValue: { [weak self] authenticated in
+            guard let self = self else { return }
+            if authenticated {
+                if let url = URL(string: self.reportUrl) {
+                    self.webContentView.load(URLRequest(url: url))
+                }
             }
         })
     }
@@ -351,6 +370,7 @@ extension ConnectAccountViewController: WKNavigationDelegate {
         // Shows loader
         let showWebView = self.navigationHelper.shouldShowWebViewFor(url: webView.url)
         self.viewModel.showWebView.send(showWebView)
+        self.navigationHelper.startTimer()
     }
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {        

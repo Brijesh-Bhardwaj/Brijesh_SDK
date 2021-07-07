@@ -9,6 +9,22 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Added : This section to enlist the additions/implementations 
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
+  
+  ## [1.0.3] - 2021-07-05
+  - SDK version updated to 1.0.3
+  - Configuration api integrated to make SDK timeout time configurable.
+  - Implemented timeout functionality  in sdk, added timeout in between steps of sdk when trying to scrape the orders.
+  - Shown an error message to user in case timeout exceeds the configured timeout time.
+  
+## [1.0.2] - 2021-06-25
+
+### Changed
+- Redirecting to order report page in case sign in URL is intercepted after authentication
+
+## [1.0.1] - 2021-06-17
+  
+### Changed
+- Modified the error message for AuthProvider
 
 ## [0.3.5] - 2021-06-07
 

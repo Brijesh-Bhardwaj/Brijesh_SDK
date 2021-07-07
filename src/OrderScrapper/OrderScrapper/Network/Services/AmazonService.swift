@@ -20,6 +20,7 @@ class AmazonService {
     private static let FetchScript = "scrapping/fetchScript"
     private static let ScrapperConfigURL = "scraper_config/get_config"
     private static let orderUpload = "order_history/upload_orders"
+    private static let GetConfigs = "scraper_config"
     
     static func getDateRange(amazonId: String,
                              completionHandler: @escaping (DateRange?, Error?) -> Void) -> APIClient {
@@ -159,7 +160,7 @@ class AmazonService {
         return client
     }
     
-    static func getScrapperConfig(orderSource: [String], completionHandler: @escaping ([PlatformSourceConfig]?, Error?) -> Void) -> APIClient {
+   static func getScrapperConfig(orderSource: [String], completionHandler: @escaping ([PlatformSourceConfig]?, Error?) -> Void) -> APIClient {
         
         let client = NetworkClient<APIResponse<[PlatformSourceConfig]>>(relativeURL: ScrapperConfigURL, requestMethod: .post)
         client.body = [JSONKeys.configDetails.rawValue: orderSource]
@@ -198,7 +199,7 @@ class AmazonService {
         return client
     }
     
-    static func uploadOrderHistory(orderRequest: OrderRequest, completionHandler:
+   static func uploadOrderHistory(orderRequest: OrderRequest, completionHandler:
                                     @escaping (OrderData?, Error?) -> Void) -> APIClient {
         let client = NetworkClient<APIResponse<OrderData>>(relativeURL: orderUpload, requestMethod: .post)
         client.body = orderRequest.toDictionary()
@@ -210,6 +211,24 @@ class AmazonService {
                     print("uploadOrderHistory error",response.error ?? "Error")
                 } else {
                     completionHandler(response.data!, nil)
+                }
+            } else {
+                completionHandler(nil, nil)
+            }
+        }
+        return client
+    }
+
+   static func getConfigs(completionHandler: @escaping (Configs?, Error?) -> Void) -> APIClient {
+        let client = NetworkClient<APIResponse<Configs>>(relativeURL: GetConfigs, requestMethod: .get)
+        
+        client.executeAPI() { (response, error) in
+            if let response = response as? APIResponse<Configs> {
+                if response.isError {
+                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    print(AppConstants.tag, "getConfigs", response.error ?? "Error")
+                } else {
+                    completionHandler(response.data, nil)
                 }
             } else {
                 completionHandler(nil, nil)
