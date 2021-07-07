@@ -79,6 +79,8 @@ class ConnectAccountViewController: UIViewController {
         
         self.webContentView.navigationDelegate = self
                
+        self.navigationHelper = AmazonNavigationHelper(self.viewModel)
+        
         self.webContentView.evaluateJavaScript("navigator.userAgent") { [weak self] (agent, error) in
             guard let self = self else { return }
 
@@ -90,10 +92,11 @@ class ConnectAccountViewController: UIViewController {
             }
             self.webContentView.customUserAgent = userAgent
             if let url = URL(string: self.baseURL) {
+                self.navigationHelper.startTimer()
                 self.webContentView.load(URLRequest(url: url))
             }
         }
-        self.navigationHelper = AmazonNavigationHelper(self.viewModel)
+        
         self.registerSubscribers()
     }
     
@@ -222,6 +225,7 @@ class ConnectAccountViewController: UIViewController {
                                           EventConstant.Status: status]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedCaptcha, eventAttributes: logEventAttributes)
                 case .generateReport:
+                    self.navigationHelper.stopTimer()
                     //Logging event for report generation
                     var logEventAttributes:[String:String] = [:]
                     logEventAttributes = [EventConstant.OrderSource:                    String(OrderSource.Amazon.rawValue),
@@ -229,6 +233,7 @@ class ConnectAccountViewController: UIViewController {
                                           EventConstant.Status: status]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportGeneration, eventAttributes: logEventAttributes)
                 case .downloadReport:
+                    self.navigationHelper.stopTimer()
                     //Logging event for report download
                     var logEventAttributes:[String:String] = [:]
                     logEventAttributes = [EventConstant.OrderSource:                    String(OrderSource.Amazon.rawValue),
@@ -254,6 +259,9 @@ class ConnectAccountViewController: UIViewController {
         showWebViewSubscriber = self.viewModel.showWebView.receive(on: RunLoop.main).sink(receiveValue: { [weak self] showWeb in
             guard let self = self else { return }
             self.hideWebContents(hide: !showWeb)
+            if showWeb {
+                self.navigationHelper.stopTimer()
+            }
         })
         webViewErrorSubscriber = self.viewModel.webviewError.receive(on: RunLoop.main).sink(receiveValue: { [weak self] isWebError in
             guard let self = self else { return }
@@ -269,6 +277,7 @@ class ConnectAccountViewController: UIViewController {
         authErrorSubscriber = self.viewModel.authError.receive(on: RunLoop.main).sink(receiveValue: { [weak self] isError in
             guard let self = self else { return }
             if isError.0 {
+                self.navigationHelper.stopTimer()
                 LibContext.shared.webAuthErrorPublisher.send((isError.0, isError.1))
                 self.dismiss(animated: true, completion: nil)
             }
@@ -359,6 +368,7 @@ extension ConnectAccountViewController: WKNavigationDelegate {
         // Shows loader
         let showWebView = self.navigationHelper.shouldShowWebViewFor(url: webView.url)
         self.viewModel.showWebView.send(showWebView)
+        self.navigationHelper.startTimer()
     }
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {        

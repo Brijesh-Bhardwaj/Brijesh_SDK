@@ -23,6 +23,7 @@ class LibContext {
     var authProvider: AuthProvider!
     var viewPresenter: ViewPresenter!
     var orderExtractorConfig : OrderExtractorConfig!
+    var timeoutValue: Double!
     
     var scrapeCompletionPublisher = PassthroughSubject<((Bool, OrderFetchSuccessType?), ASLException?), Never>()
     var webAuthErrorPublisher = PassthroughSubject<(Bool, String), Never>()
