@@ -17,6 +17,7 @@ class AmazonService {
     private static let GetAccounts = "amazon-connection/get_accounts"
     private static let CreateConnection = "amazon-connection/register_connection"
     private static let UpdateStatus = "amazon-connection/update_status"
+    private static let GetConfigs = "scraper_config"
     
     static func getDateRange(amazonId: String,
                              completionHandler: @escaping (DateRange?, Error?) -> Void) -> APIClient {
@@ -149,6 +150,24 @@ class AmazonService {
                 if response.isError {
                     completionHandler(nil, APIError(error: response.error ?? "Error"))
                     print(AppConstants.tag, "updateStatus", response.error ?? "Error")
+                } else {
+                    completionHandler(response.data, nil)
+                }
+            } else {
+                completionHandler(nil, nil)
+            }
+        }
+        return client
+    }
+    
+    static func getConfigs(completionHandler: @escaping (Configs?, Error?) -> Void) -> APIClient {
+        let client = NetworkClient<APIResponse<Configs>>(relativeURL: GetConfigs, requestMethod: .get)
+        
+        client.executeAPI() { (response, error) in
+            if let response = response as? APIResponse<Configs> {
+                if response.isError {
+                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    print(AppConstants.tag, "getConfigs", response.error ?? "Error")
                 } else {
                     completionHandler(response.data, nil)
                 }

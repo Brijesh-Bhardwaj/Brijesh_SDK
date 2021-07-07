@@ -133,6 +133,7 @@ internal class AmazonAuthenticator: Authenticator {
             " return null}})()"
         
         self.viewModel.jsPublisher.send((.captcha, js))
+        
     }
     
     private func updateAccountWithExceptionState(message: String) {
