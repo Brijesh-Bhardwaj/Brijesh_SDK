@@ -1,4 +1,1 @@
-- SDK version updated to 1.0.3
-- Configuration api integrated to make SDK timeout time configurable.
-- Implemented timeout functionality  in sdk, added timeout in between steps of sdk when trying to scrape the orders.
-- Shown an error message to user in case timeout exceeds the configured timeout time.
+- SDK updated with the Sentry integration to log the events, errors and crashes  

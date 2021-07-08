@@ -9,12 +9,19 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Added : This section to enlist the additions/implementations 
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
+
+## [1.0.4] - 2021-07-08
+
+### Added
+- SDK updated with the Sentry integration to log the events, errors and crashes  
   
-  ## [1.0.3] - 2021-07-05
-  - SDK version updated to 1.0.3
-  - Configuration api integrated to make SDK timeout time configurable.
-  - Implemented timeout functionality  in sdk, added timeout in between steps of sdk when trying to scrape the orders.
-  - Shown an error message to user in case timeout exceeds the configured timeout time.
+## [1.0.3] - 2021-07-05
+- SDK version updated to 1.0.3
+
+### Added
+- Configuration api integrated to make SDK timeout time configurable.
+- Implemented timeout functionality  in sdk, added timeout in between steps of sdk when trying to scrape the orders.
+- Shown an error message to user in case timeout exceeds the configured timeout time.
   
 ## [1.0.2] - 2021-06-25
 

@@ -5,6 +5,7 @@
 
 import Foundation
 import Alamofire
+import Sentry
 
 enum RequestMethod {
     case get, post, put, delete, multipart
@@ -121,6 +122,9 @@ class NetworkClient<T: Decodable>: APIClient {
                     self.executeAPI(completionHandler: completionHandler)
                 } else {
                     completionHandler(nil, error)
+                    if let error = error {
+                        SentrySDK.capture(error: error)
+                    }
                 }
             }
         } else {
@@ -129,6 +133,7 @@ class NetworkClient<T: Decodable>: APIClient {
                 completionHandler(result, nil)
             case let .failure(error):
                 completionHandler(nil, error)
+                SentrySDK.capture(error: error)
             }
         }
     }
