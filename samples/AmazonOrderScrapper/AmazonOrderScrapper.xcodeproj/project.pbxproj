@@ -102,6 +102,7 @@
 		1CBF6D1E25F5FE71001A801B /* AmazonOrderScrapperUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmazonOrderScrapperUITests.swift; sourceTree = "<group>"; };
 		1CBF6D2025F5FE71001A801B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1CE8506F25F7B646000A7158 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		9DC2081626916EC000F79807 /* Sentry.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Sentry.xcframework; path = ../../src/OrderScrapper/Carthage/Build/Sentry.xcframework; sourceTree = "<group>"; };
 		E15343B2261386ED0074F3ED /* OrderScrapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OrderScrapper.framework; path = ../../bin/OrderScrapper.framework; sourceTree = "<group>"; };
 		E1793945261F355C001E4E39 /* FIRAnalyticsConnector.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FIRAnalyticsConnector.framework; path = ../../src/OrderScrapper/Carthage/Build/iOS/FIRAnalyticsConnector.framework; sourceTree = "<group>"; };
 		E1793946261F355C001E4E39 /* GoogleUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleUtilities.framework; path = ../../src/OrderScrapper/Carthage/Build/iOS/GoogleUtilities.framework; sourceTree = "<group>"; };
@@ -268,6 +269,7 @@
 		E1052A2D25F7A22500B67F90 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9DC2081626916EC000F79807 /* Sentry.xcframework */,
 				E1793945261F355C001E4E39 /* FIRAnalyticsConnector.framework */,
 				E179394A261F355C001E4E39 /* Firebase.framework */,
 				E179394B261F355C001E4E39 /* FirebaseAnalytics.framework */,

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import Sentry
 
 class FileDownloader {
     
@@ -22,6 +23,9 @@ class FileDownloader {
             else {
                 completion(false, nil)
                 print(AppConstants.tag, "downloadReportFile", error.debugDescription)
+                if let error = error {
+                    SentrySDK.capture(error: error)
+                }
             }
         }
         

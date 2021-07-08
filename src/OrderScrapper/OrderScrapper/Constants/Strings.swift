@@ -58,4 +58,12 @@ struct Strings {
     static let ErrorFetchSkipped = "Fetch skipped"
     static let ErrorScriptNotFound = "Could not read the script from the file"
     static let ErrorScriptFileNotFound = "Script file not found"
+    
+    //Sentry error message
+    static let ErrorAPIReponseDateRange = "Error while getting date range"
+    static let ErrorAPIReposneUplodFile = "Error while uploading file"
+    static let ErrorAPIReposnePIIList = "Error while getting PIIList"
+    static let ErrorAPIReposneGetAccount = "Error while fetching accounts"
+    static let ErrorAPIReposneRegisterConnection = "Error while registering connection"
+    static let ErrorAPIResponseUpdateStatus = "Error while updating account status "
 }

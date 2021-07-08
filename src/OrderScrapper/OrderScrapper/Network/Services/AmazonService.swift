@@ -5,6 +5,7 @@
 
 import Foundation
 import Alamofire
+import Sentry
 
 private enum JSONKeys: String, CodingKey {
     case panelistId, panelist_id, amazonId, file, fromDate, toDate, status, message, orderStatus, data, configDetails
@@ -34,6 +35,7 @@ class AmazonService {
                 if response.isError {
                     completionHandler(nil, APIError(error: response.error ?? "Error"))
                     print(AppConstants.tag, "getDateRange", response.error ?? "Error")
+                    SentrySDK.capture(error: APIError(error: response.error ?? Strings.ErrorAPIReponseDateRange))
                 } else {
                     completionHandler(response.data, nil)
                 }
@@ -64,6 +66,7 @@ class AmazonService {
                 if response.isError {
                     completionHandler(nil, APIError(error: response.error ?? "Error"))
                     print(AppConstants.tag, "uploadFile", response.error ?? "Error")
+                    SentrySDK.capture(error: APIError(error: response.error ?? Strings.ErrorAPIReposneUplodFile))
                 } else {
                     completionHandler(response.data, nil)
                 }
@@ -83,6 +86,7 @@ class AmazonService {
                 if response.isError {
                     completionHandler(nil, APIError(error: response.error ?? "Error"))
                     print(AppConstants.tag, "getPIIList", response.error ?? "Error")
+                    SentrySDK.capture(error: APIError(error: response.error ?? Strings.ErrorAPIReposnePIIList))
                 } else {
                     completionHandler(response.data, nil)
                 }
@@ -103,6 +107,7 @@ class AmazonService {
                 if response.isError {
                     completionHandler(nil, APIError(error: response.error ?? "Error"))
                     print(AppConstants.tag, "getAccounts", response.error ?? "Error")
+                    SentrySDK.capture(error: APIError(error: response.error ?? Strings.ErrorAPIReposneGetAccount))
                 } else {
                     completionHandler(response.data, nil)
                 }
@@ -126,6 +131,7 @@ class AmazonService {
                 if response.isError {
                     completionHandler(nil, response.error ?? "Error")
                     print(AppConstants.tag, "registerConnection", response.error ?? "Error")
+                    SentrySDK.capture(error: APIError(error: response.error ?? Strings.ErrorAPIReposneRegisterConnection))
                 } else {
                     completionHandler(response.data, nil)
                 }
@@ -150,6 +156,7 @@ class AmazonService {
                 if response.isError {
                     completionHandler(nil, APIError(error: response.error ?? "Error"))
                     print(AppConstants.tag, "updateStatus", response.error ?? "Error")
+                    SentrySDK.capture(error: APIError(error: response.error ?? Strings.ErrorAPIResponseUpdateStatus))
                 } else {
                     completionHandler(response.data, nil)
                 }

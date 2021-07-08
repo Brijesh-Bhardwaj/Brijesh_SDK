@@ -7,6 +7,7 @@ import UIKit
 import WebKit
 import Combine
 import Network
+import Sentry
 
 class ConnectAccountViewController: UIViewController {
     private let baseURL = "https://www.amazon.com/ap/signin?_encoding=UTF8&openid.assoc_handle=usflex&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.mode=checkid_setup&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&openid.ns.pape=http%3A%2F%2Fspecs.openid.net%2Fextensions%2Fpape%2F1.0&openid.pape.max_auth_age=900&openid.return_to=https%3A%2F%2Fwww.amazon.com%2Fgp%2Fb2b%2Freports%2F"
@@ -89,6 +90,10 @@ class ConnectAccountViewController: UIViewController {
                 userAgent = agent.replacingOccurrences(of: "iPad", with: "iPhone")
             } else {
                 print(AppConstants.tag, "evaluateJavaScript", error.debugDescription)
+                if let error = error {
+                    SentrySDK.capture(error: error)
+                }
+                
             }
             self.webContentView.customUserAgent = userAgent
             if let url = URL(string: self.baseURL) {
@@ -208,6 +213,9 @@ class ConnectAccountViewController: UIViewController {
                 } else {
                     status = EventStatus.Failure
                     print(AppConstants.tag, "evaluateJavaScript", error.debugDescription)
+                    if let error = error {
+                        SentrySDK.capture(error: error)
+                    }
                 }
                 switch authState {
                 case .email:
@@ -387,10 +395,12 @@ extension ConnectAccountViewController: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         print(AppConstants.tag,"An error occurred during navigation", error.localizedDescription)
+        SentrySDK.capture(error: error)
     }
     
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         print(AppConstants.tag,"An error occurred during the early navigation process", error.localizedDescription)
+        SentrySDK.capture(error: error)
     }
     
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
