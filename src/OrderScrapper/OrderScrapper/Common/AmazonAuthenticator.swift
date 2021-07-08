@@ -7,6 +7,7 @@ import Foundation
 import WebKit
 import SwiftUI
 import Combine
+import Sentry
 
 enum JSInjectValue {
     case email, password, captcha, error, identification, generateReport, downloadReport, dateRange
@@ -152,6 +153,7 @@ internal class AmazonAuthenticator: Authenticator {
                 try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: panelistId)
             } catch let error {
                 print(AppConstants.tag, "updateAccountWithExceptionState", error.localizedDescription)
+                SentrySDK.capture(error: error.localizedDescription as! Error)
             }
         }
         _ = AmazonService.updateStatus(amazonId: userId, status: status

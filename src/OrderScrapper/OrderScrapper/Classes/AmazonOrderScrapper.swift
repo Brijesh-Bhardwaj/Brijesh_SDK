@@ -6,6 +6,7 @@
 import Foundation
 import SwiftUI
 import Combine
+import Sentry
 
 class AmazonOrderScrapper {
     private var authProvider: AuthProvider!
@@ -49,7 +50,10 @@ class AmazonOrderScrapper {
             if completed {
                 orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
             } else {
-                orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: error?.errorMessage ?? "", errorType: error?.errorType), account: account)
+                let error = ASLException(errorMessage: error?.errorMessage ?? "", errorType: error?.errorType)
+                orderExtractionListener.onOrderExtractionFailure(error: error, account: account)
+                SentrySDK.capture(error: error)
+                
             }
             self.viewPresenter.dismissView()
         }
@@ -74,7 +78,9 @@ class AmazonOrderScrapper {
                 if let error = error as? APIError{
                     errorMsg = error.errorMessage
                 }
-                accountDisconnectedListener.onAccountDisconnectionFailed(account: account, error: ASLException(errorMessage: errorMsg, errorType: nil))
+                let error = ASLException(errorMessage: errorMsg, errorType: nil)
+                accountDisconnectedListener.onAccountDisconnectionFailed(account: account, error: error)
+                SentrySDK.capture(error: error)
             }
         }
     }
@@ -86,7 +92,9 @@ class AmazonOrderScrapper {
             if completed {
                 orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
             } else {
-                orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: error?.errorMessage ?? "" , errorType: nil), account: account)
+                let error = ASLException(errorMessage: error?.errorMessage ?? "" , errorType: nil)
+                orderExtractionListener.onOrderExtractionFailure(error: error, account: account)
+                SentrySDK.capture(error: error)
             }
             self.viewPresenter.dismissView()
         }

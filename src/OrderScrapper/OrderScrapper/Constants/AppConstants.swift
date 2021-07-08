@@ -43,4 +43,8 @@ struct AppConstants {
     static let msgUnknownURL = "We encountered an issue while connecting your account. Please try again later."
     static let tag = "OrderScrapper"
     static let msgTimeout = "Something went wrong. Try again after sometime."
+  
+    //Sentry Variables
+    static let dsnURL = "https://6ad6390802f44f3fa71739de94424310@o915046.ingest.sentry.io/5854887"
+    static let tracesSampleRate: NSNumber = 1.0
 }
