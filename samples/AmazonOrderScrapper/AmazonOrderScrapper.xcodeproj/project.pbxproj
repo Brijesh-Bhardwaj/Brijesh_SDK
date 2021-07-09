@@ -12,6 +12,7 @@
 		1C1B209026122BB700214946 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1B208F26122BB700214946 /* Util.swift */; };
 		1C1B209526122C4200214946 /* AppConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1B209426122C4200214946 /* AppConstant.swift */; };
 		1C1B209E26122DBD00214946 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1B209D26122DBD00214946 /* String.swift */; };
+		1C5208F5269822AC002AC6BA /* Sentry.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C5208F4269822AC002AC6BA /* Sentry.xcframework */; };
 		1C59ED0226135731004ACE38 /* ValidationUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C59ED0126135731004ACE38 /* ValidationUtil.swift */; };
 		1CBF6CFA25F5FE6F001A801B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6CF925F5FE6F001A801B /* AppDelegate.swift */; };
 		1CBF6CFC25F5FE6F001A801B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6CFB25F5FE6F001A801B /* SceneDelegate.swift */; };
@@ -86,6 +87,7 @@
 		1C1B208F26122BB700214946 /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 		1C1B209426122C4200214946 /* AppConstant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstant.swift; sourceTree = "<group>"; };
 		1C1B209D26122DBD00214946 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
+		1C5208F4269822AC002AC6BA /* Sentry.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Sentry.xcframework; path = ../../bin/Sentry.xcframework; sourceTree = "<group>"; };
 		1C59ED0126135731004ACE38 /* ValidationUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationUtil.swift; sourceTree = "<group>"; };
 		1CBF6CF625F5FE6F001A801B /* ReceiptStraw-Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ReceiptStraw-Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CBF6CF925F5FE6F001A801B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -142,6 +144,7 @@
 				E1EDF12D2615A65000752507 /* Alamofire.xcframework in Frameworks */,
 				E15343BB26138B270074F3ED /* OrderScrapper.framework in Frameworks */,
 				E1EDF12F2615A65000752507 /* CSV.xcframework in Frameworks */,
+				1C5208F5269822AC002AC6BA /* Sentry.xcframework in Frameworks */,
 				E1EDF1312615A65000752507 /* RNCryptor.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -270,6 +273,7 @@
 			isa = PBXGroup;
 			children = (
 				9DC2081626916EC000F79807 /* Sentry.xcframework */,
+				1C5208F4269822AC002AC6BA /* Sentry.xcframework */,
 				E1793945261F355C001E4E39 /* FIRAnalyticsConnector.framework */,
 				E179394A261F355C001E4E39 /* Firebase.framework */,
 				E179394B261F355C001E4E39 /* FirebaseAnalytics.framework */,
