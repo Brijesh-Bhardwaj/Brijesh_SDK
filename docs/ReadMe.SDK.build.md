@@ -39,8 +39,8 @@ This version introduces Sentry library integration with the SDK. The following s
 
 - Using the 'Terminal', navigate to '<amazon_order_scraping_ios>/src/OrderScrapper/'
 - Run this command to update the carthage dependencies
-  > carthage update sentry-cocoa__
-  > carthage build --use-xcframeworks --no-use-binaries__  
+  > carthage update sentry-cocoa. 
+  > carthage build --use-xcframeworks --no-use-binaries 
 - Install the sentry-cli: This step enables Sentry to upload dSYM file to symbolicate the crash logs.
      https://docs.sentry.io/product/cli/installation/
 - Add the Sentry.xcframework dependency to the application at
