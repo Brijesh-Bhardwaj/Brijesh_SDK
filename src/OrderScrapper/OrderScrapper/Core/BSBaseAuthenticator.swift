@@ -4,6 +4,7 @@
 
 import Foundation
 import WebKit
+import Sentry
 
 class BSBaseAuthenticator: NSObject, BSAuthenticator {
     var webClient: BSWebClient
@@ -29,7 +30,9 @@ class BSBaseAuthenticator: NSObject, BSAuthenticator {
     }
     
     func onPageFinish(url: String) throws {
-        throw ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
+        let error = ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
+        SentrySDK.capture(error: error)
+        throw error
     }
 }
 
@@ -46,6 +49,7 @@ extension BSBaseAuthenticator: BSWebNavigationObserver {
     }
     
     func didFailPageNavigation(for url: URL?, withError error: Error) {
+        SentrySDK.capture(error: error)
         print(AppConstants.tag, Strings.ErrorDuringNavigation, error.localizedDescription)
     }
 }

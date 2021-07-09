@@ -3,6 +3,7 @@
 
 import Foundation
 import WebKit
+import Sentry
 
 internal protocol BSWebNavigationObserver {
     func didFinishPageNavigation(url: URL?)
@@ -36,15 +37,18 @@ internal class BSWebNavigationDelegate: NSObject, WKNavigationDelegate {
     }
     
     internal func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        SentrySDK.capture(error: error)
         self.didFailNavigation(for: webView.url, withError: error)
     }
     
     internal func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        SentrySDK.capture(error: error)
         self.didFailNavigation(for: webView.url, withError: error)
     }
     
     private func didFailNavigation(for url: URL?, withError error: Error) {
         if let observer = self.observer {
+            SentrySDK.capture(error: error)
             observer.didFailPageNavigation(for: url, withError: error)
         }
     }

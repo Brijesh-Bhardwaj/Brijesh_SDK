@@ -29,6 +29,7 @@ public class OrdersExtractor {
             options.debug = true // Enabled debug when first installing is always helpful
             options.attachStacktrace = true
             options.tracesSampleRate = AppConstants.tracesSampleRate
+            options.enableAutoSessionTracking = true
 
         }
         

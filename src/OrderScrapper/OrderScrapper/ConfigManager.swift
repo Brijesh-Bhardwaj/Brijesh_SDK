@@ -2,6 +2,7 @@
 //  OrderScrapper
 
 import Foundation
+import Sentry
 
 class ConfigManager {
     private static var instance: ConfigManager!
@@ -49,7 +50,9 @@ class ConfigManager {
                 if let configs = configs[orderSource] {
                     completion(configs, nil)
                 } else {
-                    completion(nil, APIError(error: Strings.ErrorNoConfigurationsFound))
+                    let error = APIError(error: Strings.ErrorNoConfigurationsFound)
+                    SentrySDK.capture(error: error)
+                    completion(nil, error)
                 }
             }
         } else {

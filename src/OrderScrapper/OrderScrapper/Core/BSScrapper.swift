@@ -2,6 +2,7 @@
 //  OrderScrapper
 
 import Foundation
+import Sentry
 
 class BSScrapper: NSObject {
     private let windowManager = BSHeadlessWindowManager()
@@ -60,11 +61,15 @@ class BSScrapper: NSObject {
     }
     
     func getAuthenticator() throws -> BSAuthenticator {
-        throw ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
+        let error = ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
+        SentrySDK.capture(error: error)
+        throw error
     }
     
     func getOrderSource() throws -> OrderSource {
-        throw ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
+        let error = ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
+        SentrySDK.capture(error: error)
+        throw error
     }
     
     private func cleanUp() {
@@ -79,8 +84,12 @@ class BSScrapper: NSObject {
                 self.didInsertToDB()
             } else {
                 self.stopScrapping()
-                self.completionHandler((false, nil), ASLException(
-                                        errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil))
+                let error = ASLException(
+                    errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil)
+                self.completionHandler((false, nil), error)
+                SentrySDK.capture(error: error)
+                
+                
             }
         }
     }
@@ -92,8 +101,11 @@ class BSScrapper: NSObject {
                 self.didReceive(dateRange: dateRange)
             } else {
                 self.stopScrapping()
-                self.completionHandler((false, nil), ASLException(
-                                        errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
+                let error = ASLException(
+                    errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil)
+                SentrySDK.capture(error: error)
+                self.completionHandler((false, nil),error )
+                
             }
         }
     }
@@ -107,14 +119,18 @@ class BSScrapper: NSObject {
                     self.didReceive(configuration: configurations)
                 } else {
                     self.stopScrapping()
-                    self.completionHandler((false, nil), ASLException(
-                                            errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil))
+                    let error = ASLException(
+                        errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil)
+                    SentrySDK.capture(error: error)
+                    self.completionHandler((false, nil), error)
                 }
             }
         } else {
             self.stopScrapping()
-            self.completionHandler((false, .fetchSkipped), ASLException(
-                                    errorMessage: Strings.ErrorFetchSkipped, errorType: nil))
+            let error =  ASLException(
+                errorMessage: Strings.ErrorFetchSkipped, errorType: nil)
+            SentrySDK.capture(error: error)
+            self.completionHandler((false, .fetchSkipped), error)
         }
     }
     
@@ -139,8 +155,10 @@ class BSScrapper: NSObject {
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgInjectJSForOrderListing, eventAttributes: logEventAttributes)
             } else {
                 self.stopScrapping()
-                self.completionHandler((false, nil), ASLException(
-                                        errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil))
+                let error = ASLException(
+                    errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil)
+                SentrySDK.capture(error: error)
+                self.completionHandler((false, nil), error)
             }
         }
     }
@@ -190,7 +208,9 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                             self.didInsertToDB()
                         } else {
                             self.stopScrapping()
-                            self.completionHandler((false, nil), ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
+                            let error = ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil)
+                            SentrySDK.capture(error: error)
+                            self.completionHandler((false, nil), error)
                         }
                     }
                 } else {
@@ -220,6 +240,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     
     func onHtmlScrappingFailure(error: ASLException) {
         self.stopScrapping()
+        SentrySDK.capture(error: error)
         self.completionHandler((false, nil), error)
     }
     

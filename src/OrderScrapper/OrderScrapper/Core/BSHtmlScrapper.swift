@@ -3,6 +3,7 @@
 
 import Foundation
 import WebKit
+import Sentry
 
 class BSHtmlScrapperParams {
     let webClient: BSWebClient
@@ -65,6 +66,9 @@ class BSHtmlScrapper {
             
             //TODO
         }
+        SentrySDK.capture(error: error)
+        let exception = NSException(name: AppConstants.bsOrderFailed, reason: error.errorMessage)
+        SentrySDK.capture(exception: exception)
         self.params.listener.onHtmlScrappingFailure(error: error)
     }
 }
@@ -100,7 +104,7 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                         FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAuthentication, eventAttributes: logEventAttributes)
                     } else {
                         self.didFinishWith(error: error!)
-                        
+                        SentrySDK.capture(message: url)
                         var logEventAttributes:[String:String] = [:]
                         logEventAttributes = [EventConstant.ErrorReason: error!.errorMessage,
                                               EventConstant.Status: EventStatus.Failure]
@@ -111,9 +115,13 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                 print("### Injecting script for URL: ", url)
                 self.params.webClient.evaluateJavaScript(script) { response, error in
                     print("#### evaluateJavaScript")
+//                    SentrySDK.capture(message: url)
                 }
             } else {
                 let error = ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError)
+                let exception = NSException(name: AppConstants.bsOrderFailed, reason: url)
+                SentrySDK.capture(exception: exception)
+                SentrySDK.capture(error: error)
                 self.didFinishWith(error: error)
                 
                 var logOtherUrlEventAttributes:[String:String] = [:]
@@ -125,17 +133,23 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSDetectOtherURL, eventAttributes: logOtherUrlEventAttributes)
             }
         } else {
-            self.params.listener.onHtmlScrappingFailure(error: ASLException(errorMessage: Strings.ErrorPageNotloaded, errorType: nil))
+            let error = ASLException(errorMessage: Strings.ErrorPageNotloaded, errorType: nil)
+            SentrySDK.capture(error: error)
+            self.params.listener.onHtmlScrappingFailure(error: error)
         }
     }
     
     func didStartPageNavigation(url: URL?) {
         if url == nil {
-            self.params.listener.onHtmlScrappingFailure(error: ASLException(errorMessage: Strings.ErrorPageNotloaded, errorType: nil))
+            let error = ASLException(errorMessage: Strings.ErrorPageNotloaded, errorType: nil)
+            SentrySDK.capture(error: error)
+            self.params.listener.onHtmlScrappingFailure(error: error)
         }
     }
     
     func didFailPageNavigation(for url: URL?, withError error: Error) {
-        self.params.listener.onHtmlScrappingFailure(error: ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
+        let error = ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil)
+        SentrySDK.capture(error: error)
+        self.params.listener.onHtmlScrappingFailure(error: error)
     }
 }

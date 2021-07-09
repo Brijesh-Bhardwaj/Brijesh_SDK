@@ -3,6 +3,7 @@
 
 import Foundation
 import WebKit
+import Sentry
 
 class BSAmazonAuthenticator: BSBaseAuthenticator {
     private let LoginURLDelimiter = "/?"
@@ -42,10 +43,14 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
                     if (response.isEmpty) {
                         self.injectCaptchaIdentificationJS()
                     } else {
-                        self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorOccuredWhileInjectingJS, errorType: .authError))
+                        let error = ASLException(errorMessage: Strings.ErrorOccuredWhileInjectingJS, errorType: .authError)
+                        SentrySDK.capture(error: error)
+                        self.completionHandler?(false,error)
                     }
                 } else {
-                    self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorOccuredWhileInjectingJS, errorType: .authError))
+                    let error = ASLException(errorMessage: Strings.ErrorOccuredWhileInjectingJS, errorType: .authError)
+                    SentrySDK.capture(error: error)
+                    self.completionHandler?(false, error)
                 }
             }
         }
@@ -60,7 +65,9 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
                 
                 if let response = response as? String {
                     if response.contains("captcha") {
-                        self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorCaptchaPageLoaded, errorType: .authError))
+                        let error = ASLException(errorMessage: Strings.ErrorCaptchaPageLoaded, errorType: .authError)
+                        SentrySDK.capture(error: error)
+                        self.completionHandler?(false, error)
                         
                         guard let userId = self.account?.userID else {return}
                         var logEventAttributes:[String:String] = [:]
@@ -87,7 +94,11 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
                 
                 if let response = response as? String {
                     if response.contains("other") {
-                        self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError))
+                        let error = ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError)
+                        let exception = NSException(name: AppConstants.bsOrderFailed, reason: Strings.ErrorOtherUrlLoaded)
+                        SentrySDK.capture(exception: exception)
+                        SentrySDK.capture(error: error)
+                        self.completionHandler?(false, error)
                     } else if response.contains("emailId") {
                         self.injectEmailJS()
                     } else {
@@ -123,11 +134,15 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
     
     private func injectPasswordJS() {
         guard let email = self.account?.userID else {
-            self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorUserIdIsNil, errorType: .authError))
+            let error = ASLException(errorMessage: Strings.ErrorUserIdIsNil, errorType: .authError)
+            SentrySDK.capture(error: error)
+            self.completionHandler?(false, error)
             return
         }
         guard let password = self.account?.userPassword else {
-            self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorPasswordIsNil,errorType: .authError))
+            let error = ASLException(errorMessage: Strings.ErrorPasswordIsNil,errorType: .authError)
+            SentrySDK.capture(error: error)
+            self.completionHandler?(false,error)
             return
         }
         let js = JSUtils.getPasswordInjectJS(password: password)

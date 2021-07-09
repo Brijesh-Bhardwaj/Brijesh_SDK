@@ -88,6 +88,7 @@ class CoreDataManager {
             accounts = try context.fetch(fetchRequest)
         } catch let fetchErr {
             print("Failed to fetch Account:",fetchErr)
+            SentrySDK.capture(message:AppConstants.fetchAccounts)
             SentrySDK.capture(error: fetchErr)
         }
         return accounts
@@ -182,6 +183,7 @@ class CoreDataManager {
                     try context.save()
                 } catch let error {
                     print(AppConstants.tag, "addOrderDetails", error.localizedDescription)
+                    SentrySDK.capture(error: error)
                 }
             }
             completionHandler(true)
@@ -206,6 +208,8 @@ class CoreDataManager {
             orderDetails = try context.fetch(fetchRequest)
         } catch let error {
             print("Failed to fetch orderDetails",error)
+            SentrySDK.capture(message: AppConstants.fetchOrderDetails)
+            SentrySDK.capture(error: error)
         }
         return orderDetails
     }
@@ -230,6 +234,7 @@ class CoreDataManager {
                 try context.save()
             } catch let error {
                 print("Failed to save orderDetails",error)
+                SentrySDK.capture(error: error)
             }
         }
     }
@@ -252,6 +257,7 @@ class CoreDataManager {
                 try context.save()
             } catch let error as NSError  {
                 print(error.userInfo)
+                SentrySDK.capture(error: error)
             }
         }
     }

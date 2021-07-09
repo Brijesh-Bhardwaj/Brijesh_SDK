@@ -2,6 +2,7 @@
 //  OrderScrapper
 
 import Foundation
+import Sentry
 
 protocol DataUploadListener {
     func onDataUploadComplete()
@@ -88,6 +89,9 @@ class DataUploadOperation: Operation {
                         print("### uploadData() Response ", response)
                         CoreDataManager.shared.deleteOrderDetailsByOrderID(orderID: self.orderId,
                                                                            orderSource: self.orderSource)
+                    }
+                    if let error = error {
+                        SentrySDK.capture(error: error)
                     }
                     
                     finish()
