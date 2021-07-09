@@ -126,7 +126,7 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                 
                 var logOtherUrlEventAttributes:[String:String] = [:]
                 let userId = params.account.userID
-                logOtherUrlEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logOtherUrlEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                               EventConstant.OrderSourceID: userId,
                                               EventConstant.Status: EventStatus.Success,
                                               EventConstant.URL: url]

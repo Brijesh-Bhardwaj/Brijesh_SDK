@@ -71,7 +71,7 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
                         
                         guard let userId = self.account?.userID else {return}
                         var logEventAttributes:[String:String] = [:]
-                        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                        logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                               EventConstant.OrderSourceID: userId,
                                               EventConstant.Status: EventStatus.Success]
                         FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSDetectedCaptcha, eventAttributes: logEventAttributes)
@@ -117,7 +117,7 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
         let js = JSUtils.getEmailInjectJS(email: email)
         
         self.webClient.evaluateJavaScript(js) { (response, error) in
-            var logEventAttributes:[String:String] = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+            var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                                       EventConstant.OrderSourceID: email]
             if error != nil {
                 self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorEmailJSInjectionFailed, errorType: .authError))
@@ -152,14 +152,14 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
             if error != nil {
                 self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorPasswordJSInjectionFailed,errorType: .authError))
                 
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.OrderSourceID: email,
                                       EventConstant.ErrorReason: error.debugDescription,
                                       EventConstant.Status: EventStatus.Failure]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSInjectPassword, eventAttributes: logEventAttributes)
             } else {
                 print("### injectPasswordJS")
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.OrderSourceID: email,
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSInjectPassword, eventAttributes: logEventAttributes)

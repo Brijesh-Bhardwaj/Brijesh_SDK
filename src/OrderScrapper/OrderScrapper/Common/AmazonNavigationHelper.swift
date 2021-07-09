@@ -71,7 +71,7 @@ class AmazonNavigationHelper: NavigationHelper {
             } else {
                 eventType = EventType.JSDetectedTwoFactorAuth
             }
-            logAuthEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+            logAuthEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                       EventConstant.Status: EventStatus.Success]
             FirebaseAnalyticsUtil.logEvent(eventType: eventType, eventAttributes: logAuthEventAttributes)
@@ -113,7 +113,7 @@ class AmazonNavigationHelper: NavigationHelper {
             print(AppConstants.tag, "unknown URL", urlString)
             //Log event for getting other url
             var logOtherUrlEventAttributes:[String:String] = [:]
-            logOtherUrlEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+            logOtherUrlEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                           EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                           EventConstant.Status: EventStatus.Success,
                                           EventConstant.URL: urlString]
@@ -167,7 +167,7 @@ class AmazonNavigationHelper: NavigationHelper {
                 let fileName = FileHelper.getReportFileNameFromResponse(response)
                 self.removePIIAttributes(fileName: fileName, fileURL: tempURL)
                 
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                       EventConstant.Status: EventStatus.Success,
                                       EventConstant.FileName: fileName]
@@ -177,7 +177,7 @@ class AmazonNavigationHelper: NavigationHelper {
                 self.updateOrderStatusFor(error: AppConstants.msgDownloadCSVFailed, accountStatus: self.viewModel.userAccount.accountState.rawValue)
                 self.viewModel.webviewError.send(true)
                 
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                       EventConstant.Status: EventStatus.Failure]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.OrderCSVDownload, eventAttributes: logEventAttributes)
@@ -317,7 +317,7 @@ class AmazonNavigationHelper: NavigationHelper {
                     self.viewModel.disableScrapping.send(true)
                 }
                 //Logging event for successful date range API call
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIDateRange, eventAttributes: logEventAttributes)
@@ -325,7 +325,7 @@ class AmazonNavigationHelper: NavigationHelper {
                 self.updateOrderStatusFor(error: AppConstants.msgDateRangeAPIFailed, accountStatus: self.viewModel.userAccount.accountState.rawValue)
                 self.viewModel.webviewError.send(true)
                 //Log event for failure of date range API call
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                       EventConstant.ErrorReason: error.debugDescription,
                                       EventConstant.Status: EventStatus.Failure]
@@ -390,7 +390,7 @@ class AmazonNavigationHelper: NavigationHelper {
                 self.updateOrderStatusFor(error: AppConstants.msgPIIAPIFailed, accountStatus: self.viewModel.userAccount.accountState.rawValue)
                 self.viewModel.webviewError.send(true)
                 // Log event for PIIList API failure
-                logAPIEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logAPIEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                          EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                          EventConstant.ErrorReason: error.debugDescription,
                                          EventConstant.Status: EventStatus.Failure]
@@ -398,7 +398,7 @@ class AmazonNavigationHelper: NavigationHelper {
                 return
             }
             // Log event for PIIList API success
-            logAPIEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+            logAPIEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                      EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                      EventConstant.Status: EventStatus.Success]
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIPIIList, eventAttributes: logAPIEventAttributes)
@@ -411,7 +411,7 @@ class AmazonNavigationHelper: NavigationHelper {
                     self.viewModel.webviewError.send(true)
                     
                     //Log event for error in parsing
-                    logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                           EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                           EventConstant.FileName: fileName,
                                           EventConstant.ErrorReason: error.debugDescription,
@@ -423,7 +423,7 @@ class AmazonNavigationHelper: NavigationHelper {
                 self.uploadCSVFile(fileURL: destinationURL)
                 
                 //Log event for successful parsing
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.value),
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                       EventConstant.FileName: fileName,
                                       EventConstant.Status: EventStatus.Success]
@@ -447,14 +447,14 @@ class AmazonNavigationHelper: NavigationHelper {
                 self.publishProgrssFor(step: .complete)
                 self.addUserAccountInDB()
                 //Log event for successful uploading of csv
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIUploadReport, eventAttributes: logEventAttributes)
                 
                 //Log event for connect account
                 var logConnectAccountEventAttributes:[String:String] = [:]
-                logConnectAccountEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logConnectAccountEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                                     EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                                     EventConstant.Status: EventStatus.Connected]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.AccountConnect, eventAttributes: logConnectAccountEventAttributes)
@@ -466,7 +466,7 @@ class AmazonNavigationHelper: NavigationHelper {
                 }
                 
                 //Log event for failure in csv upload
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.value),
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                       EventConstant.ErrorReason: error.debugDescription,
                                       EventConstant.Status: EventStatus.Failure]

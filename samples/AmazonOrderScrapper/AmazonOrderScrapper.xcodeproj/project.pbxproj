@@ -12,7 +12,6 @@
 		1C1B209026122BB700214946 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1B208F26122BB700214946 /* Util.swift */; };
 		1C1B209526122C4200214946 /* AppConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1B209426122C4200214946 /* AppConstant.swift */; };
 		1C1B209E26122DBD00214946 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1B209D26122DBD00214946 /* String.swift */; };
-		1C5208F5269822AC002AC6BA /* Sentry.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C5208F4269822AC002AC6BA /* Sentry.xcframework */; };
 		1C59ED0226135731004ACE38 /* ValidationUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C59ED0126135731004ACE38 /* ValidationUtil.swift */; };
 		1CBF6CFA25F5FE6F001A801B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6CF925F5FE6F001A801B /* AppDelegate.swift */; };
 		1CBF6CFC25F5FE6F001A801B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6CFB25F5FE6F001A801B /* SceneDelegate.swift */; };
@@ -23,6 +22,7 @@
 		1CBF6D1425F5FE71001A801B /* AmazonOrderScrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D1325F5FE71001A801B /* AmazonOrderScrapperTests.swift */; };
 		1CBF6D1F25F5FE71001A801B /* AmazonOrderScrapperUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D1E25F5FE71001A801B /* AmazonOrderScrapperUITests.swift */; };
 		1CE8507025F7B646000A7158 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE8506F25F7B646000A7158 /* ContentView.swift */; };
+		9D9BC23426989A4C0083C61C /* Sentry.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C5208F4269822AC002AC6BA /* Sentry.xcframework */; };
 		E15343BB26138B270074F3ED /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15343B2261386ED0074F3ED /* OrderScrapper.framework */; };
 		E15343BC26138B270074F3ED /* OrderScrapper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E15343B2261386ED0074F3ED /* OrderScrapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E1793950261F355D001E4E39 /* FIRAnalyticsConnector.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1793945261F355C001E4E39 /* FIRAnalyticsConnector.framework */; };
@@ -144,7 +144,7 @@
 				E1EDF12D2615A65000752507 /* Alamofire.xcframework in Frameworks */,
 				E15343BB26138B270074F3ED /* OrderScrapper.framework in Frameworks */,
 				E1EDF12F2615A65000752507 /* CSV.xcframework in Frameworks */,
-				1C5208F5269822AC002AC6BA /* Sentry.xcframework in Frameworks */,
+				9D9BC23426989A4C0083C61C /* Sentry.xcframework in Frameworks */,
 				E1EDF1312615A65000752507 /* RNCryptor.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

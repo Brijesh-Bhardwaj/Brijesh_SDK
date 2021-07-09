@@ -29,13 +29,13 @@ class ConfigManager {
                         break
                     }
                 }
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAPIScrapperConfig, eventAttributes: logEventAttributes)
             } else {
                 completion(nil, APIError(error: Strings.ErrorNoConfigurationsFound))
                 
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.ErrorReason: Strings.ErrorInScrapperConfigAPI,
                                       EventConstant.Status: EventStatus.Failure]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAPIScrapperConfig, eventAttributes: logEventAttributes)

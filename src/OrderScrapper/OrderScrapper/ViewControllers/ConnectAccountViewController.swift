@@ -219,17 +219,17 @@ class ConnectAccountViewController: UIViewController {
                 }
                 switch authState {
                 case .email:
-                    logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                           EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                           EventConstant.Status: status]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSInjectUserName, eventAttributes: logEventAttributes)
                 case .password:
-                    logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                           EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                           EventConstant.Status: status]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSInjectPassword, eventAttributes: logEventAttributes)
                 case .captcha:
-                    logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                           EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                           EventConstant.Status: status]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedCaptcha, eventAttributes: logEventAttributes)
@@ -237,7 +237,7 @@ class ConnectAccountViewController: UIViewController {
                     self.navigationHelper.stopTimer()
                     //Logging event for report generation
                     var logEventAttributes:[String:String] = [:]
-                    logEventAttributes = [EventConstant.OrderSource:                    String(OrderSource.Amazon.rawValue),
+                    logEventAttributes = [EventConstant.OrderSource:              OrderSource.Amazon.value,
                                           EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                           EventConstant.Status: status]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportGeneration, eventAttributes: logEventAttributes)
@@ -245,7 +245,7 @@ class ConnectAccountViewController: UIViewController {
                     self.navigationHelper.stopTimer()
                     //Logging event for report download
                     var logEventAttributes:[String:String] = [:]
-                    logEventAttributes = [EventConstant.OrderSource:                    String(OrderSource.Amazon.rawValue),
+                    logEventAttributes = [EventConstant.OrderSource:                    OrderSource.Amazon.value,
                                           EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                           EventConstant.Status: status]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportDownload, eventAttributes: logEventAttributes)
