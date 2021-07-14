@@ -53,6 +53,7 @@ struct AppConstants {
     static let msgTimeout = "Something went wrong. Try again after sometime."
     static let fetchAccounts = "Failed to fetch Account."
     static let fetchOrderDetails = "Failed to fetch orderDetails"
+    static let userAccountConnected = "This account is already associated with an existing user. Please try with another account."
     
   
     //Sentry Variables
