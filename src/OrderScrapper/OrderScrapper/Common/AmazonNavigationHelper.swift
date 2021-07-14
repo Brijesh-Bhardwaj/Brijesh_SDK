@@ -91,8 +91,11 @@ class AmazonNavigationHelper: NavigationHelper {
                         self.currentStep = .generateReport
                         self.publishProgrssFor(step: .generateReport)
                     } else {
-                        self.viewModel.authError.send((isError: true, errorMsg: error!))
-                        SentrySDK.capture(error: error as! Error)
+                        self.viewModel.authError.send((isError: true, errorMsg: AppConstants.userAccountConnected))
+                        if let error = error {
+                            SentrySDK.capture(error: error)
+                        }
+                        
                     }
                 }
             } else {

@@ -118,8 +118,7 @@ class AmazonService {
         return client
     }
     
-    static func registerConnection(amazonId: String, status: String, message: String, orderStatus: String,
-                                 completionHandler: @escaping (AccountDetails?, String?) -> Void) -> APIClient {
+    static func registerConnection(amazonId: String, status: String, message: String, orderStatus: String, completionHandler: @escaping (AccountDetails?, Error?) -> Void) -> APIClient {
         let client = NetworkClient<APIResponse<AccountDetails>>(relativeURL: CreateConnection, requestMethod: .post)
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         
@@ -129,7 +128,7 @@ class AmazonService {
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<AccountDetails> {
                 if response.isError {
-                    completionHandler(nil, response.error ?? "Error")
+                    completionHandler(nil, APIError(error: response.error ?? "Error"))
                     print(AppConstants.tag, "registerConnection", response.error ?? "Error")
                     SentrySDK.capture(error: APIError(error: response.error ?? Strings.ErrorAPIReposneRegisterConnection))
                 } else {
