@@ -41,7 +41,9 @@ class PIIScrapper {
                 
                 var piiAttributes: [String] = []
                 for attribute in attributes {
-                    piiAttributes.append(attribute.attributes)
+                    if attribute.regex == nil {
+                        piiAttributes.append(attribute.attributes)
+                    }
                 }
                 
                 let headers = reader.headerRow!
@@ -56,14 +58,34 @@ class PIIScrapper {
                     
                     for attribute in requiredHeaders {
                         if let attributeValue = reader[attribute] {
-                            try writer.write(field: attributeValue)
+                            let searchedValue = attributes.first {
+                                $0.attributes == attribute
+                            }
+                            if let searchedValue = searchedValue, let regex = searchedValue.regex {
+                                do {
+                                    let regex = try! NSRegularExpression(pattern: regex, options: [])
+                                    let result = regex.firstMatch(in: attributeValue, options: [],  range: NSRange(attributeValue.startIndex..., in: attributeValue))
+                                    try result.map {
+                                           let pValue = String(attributeValue[Range($0.range, in: attributeValue)!])
+                                        try writer.write(field: pValue)
+                                        }
+                                    
+                                } catch let error {
+                                    print("invalid regex",error)
+                                }
+                            } else {
+                                try writer.write(field: attributeValue)
+                            }
+                            
                         }
                     }
                 }
                 completionHandler(downloadURL, nil)
-            } catch {
+            }catch {
                 completionHandler(nil, nil)
             }
+            
         }
     }
 }
+
