@@ -39,4 +39,12 @@ struct Strings {
     static let ExtractionDisabled = "Receipts scrapped already."
     static let ErrorUserAbortedProcess = "User aborted the process."
     static let ErrorConfigsMissing = "Configs missing"
+    
+    //Sentry error message
+    static let ErrorAPIReponseDateRange = "Error while getting date range"
+    static let ErrorAPIReposneUplodFile = "Error while uploading file"
+    static let ErrorAPIReposnePIIList = "Error while getting PIIList"
+    static let ErrorAPIReposneGetAccount = "Error while fetching accounts"
+    static let ErrorAPIReposneRegisterConnection = "Error while registering connection"
+    static let ErrorAPIResponseUpdateStatus = "Error while updating account status "
 }

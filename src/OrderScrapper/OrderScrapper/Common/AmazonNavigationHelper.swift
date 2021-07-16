@@ -6,6 +6,7 @@
 import Foundation
 import SwiftUI
 import Combine
+import Sentry
 
 struct AmazonURL {
     static let signIn           =   "ap/signin"
@@ -90,7 +91,11 @@ class AmazonNavigationHelper: NavigationHelper {
                         self.currentStep = .generateReport
                         self.publishProgrssFor(step: .generateReport)
                     } else {
-                        self.viewModel.authError.send((isError: true, errorMsg: error!))
+                        self.viewModel.authError.send((isError: true, errorMsg: AppConstants.userAccountConnected))
+                        if let error = error {
+                            SentrySDK.capture(error: error)
+                        }
+                        
                     }
                 }
             } else {

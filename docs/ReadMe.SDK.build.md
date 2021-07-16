@@ -23,6 +23,23 @@ iOS SDK is built as a Framework.
 - Build the SDK by choosing `Product -> Build`
 - The built framework is copied to '<amazon_order_scraping_ios>/bin' directory on successful build as 'OrderScrapper.framework'
 
+# Updating SDK
+
+This section provides instructions to update the SDK version in case there are specific changes required in the application.
+
+## Version 1.1.0
+
+This version introduces Sentry library integration with the SDK. The following steps needs to be done to udpate it.
+
+- Using the 'Terminal', navigate to '<amazon_order_scraping_ios>/src/OrderScrapper/'
+- Run this command to update the carthage dependencies
+  > carthage update sentry-cocoa
+  > carthage build --use-xcframeworks --no-use-binaries  
+- Install the sentry-cli: This step enables Sentry to upload dSYM file to symbolicate the crash logs.
+     https://docs.sentry.io/product/cli/installation/
+- Add the Sentry.xcframework dependency to the application at
+  AppProject -> General -> Framework, Libraries, and Embedded Contents    
+
 # Notes
 
 - Currently, the framework is created for a single target only, either for the `Simulator` or for the `iOS device` 

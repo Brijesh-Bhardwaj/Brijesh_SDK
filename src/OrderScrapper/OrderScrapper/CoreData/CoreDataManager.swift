@@ -3,6 +3,7 @@
 
 import Foundation
 import CoreData
+import Sentry
 
 class CoreDataManager {
     private static var instance: CoreDataManager!
@@ -50,6 +51,7 @@ class CoreDataManager {
             }
         } catch let error {
             print(AppConstants.tag, "addAccount", error.localizedDescription)
+            SentrySDK.capture(error: error)
         }
         if let account = account {
             account.userId = userId
@@ -61,6 +63,7 @@ class CoreDataManager {
                 try context.save()
             } catch let error {
                 print(AppConstants.tag, "addAccount", error.localizedDescription)
+                SentrySDK.capture(error: error)
             }
         }
     }
@@ -85,6 +88,7 @@ class CoreDataManager {
             accounts = try context.fetch(fetchRequest)
         } catch let fetchErr {
             print("Failed to fetch Account:",fetchErr)
+            SentrySDK.capture(error: fetchErr)
         }
         return accounts
     }
@@ -127,6 +131,7 @@ class CoreDataManager {
             try context.save()
         } catch let error as NSError  {
             print(error.userInfo)
+            SentrySDK.capture(error: error)
         }
         
     }
@@ -148,6 +153,7 @@ class CoreDataManager {
             try context.save()
         } catch let error as NSError  {
             print(error.userInfo)
+            SentrySDK.capture(error: error)
         }
         
     }

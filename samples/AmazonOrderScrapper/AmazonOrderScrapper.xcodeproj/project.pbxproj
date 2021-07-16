@@ -22,6 +22,8 @@
 		1CBF6D1425F5FE71001A801B /* AmazonOrderScrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D1325F5FE71001A801B /* AmazonOrderScrapperTests.swift */; };
 		1CBF6D1F25F5FE71001A801B /* AmazonOrderScrapperUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D1E25F5FE71001A801B /* AmazonOrderScrapperUITests.swift */; };
 		1CE8507025F7B646000A7158 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE8506F25F7B646000A7158 /* ContentView.swift */; };
+		9D81CE3826A0660500D35C60 /* Sentry.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DC2081626916EC000F79807 /* Sentry.xcframework */; };
+		9D81CE3926A0660500D35C60 /* Sentry.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9DC2081626916EC000F79807 /* Sentry.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E15343BB26138B270074F3ED /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15343B2261386ED0074F3ED /* OrderScrapper.framework */; };
 		E15343BC26138B270074F3ED /* OrderScrapper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E15343B2261386ED0074F3ED /* OrderScrapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E1793950261F355D001E4E39 /* FIRAnalyticsConnector.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1793945261F355C001E4E39 /* FIRAnalyticsConnector.framework */; };
@@ -73,6 +75,7 @@
 				E1EDF12E2615A65000752507 /* Alamofire.xcframework in Embed Frameworks */,
 				E15343BC26138B270074F3ED /* OrderScrapper.framework in Embed Frameworks */,
 				E1EDF1302615A65000752507 /* CSV.xcframework in Embed Frameworks */,
+				9D81CE3926A0660500D35C60 /* Sentry.xcframework in Embed Frameworks */,
 				E1EDF1322615A65000752507 /* RNCryptor.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -102,6 +105,7 @@
 		1CBF6D1E25F5FE71001A801B /* AmazonOrderScrapperUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmazonOrderScrapperUITests.swift; sourceTree = "<group>"; };
 		1CBF6D2025F5FE71001A801B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1CE8506F25F7B646000A7158 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		9DC2081626916EC000F79807 /* Sentry.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Sentry.xcframework; path = ../../src/OrderScrapper/Carthage/Build/Sentry.xcframework; sourceTree = "<group>"; };
 		E15343B2261386ED0074F3ED /* OrderScrapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OrderScrapper.framework; path = ../../bin/OrderScrapper.framework; sourceTree = "<group>"; };
 		E1793945261F355C001E4E39 /* FIRAnalyticsConnector.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FIRAnalyticsConnector.framework; path = ../../src/OrderScrapper/Carthage/Build/iOS/FIRAnalyticsConnector.framework; sourceTree = "<group>"; };
 		E1793946261F355C001E4E39 /* GoogleUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleUtilities.framework; path = ../../src/OrderScrapper/Carthage/Build/iOS/GoogleUtilities.framework; sourceTree = "<group>"; };
@@ -141,6 +145,7 @@
 				E1EDF12D2615A65000752507 /* Alamofire.xcframework in Frameworks */,
 				E15343BB26138B270074F3ED /* OrderScrapper.framework in Frameworks */,
 				E1EDF12F2615A65000752507 /* CSV.xcframework in Frameworks */,
+				9D81CE3826A0660500D35C60 /* Sentry.xcframework in Frameworks */,
 				E1EDF1312615A65000752507 /* RNCryptor.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -268,6 +273,7 @@
 		E1052A2D25F7A22500B67F90 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9DC2081626916EC000F79807 /* Sentry.xcframework */,
 				E1793945261F355C001E4E39 /* FIRAnalyticsConnector.framework */,
 				E179394A261F355C001E4E39 /* Firebase.framework */,
 				E179394B261F355C001E4E39 /* FirebaseAnalytics.framework */,
@@ -556,7 +562,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 38;
+				CURRENT_PROJECT_VERSION = 43;
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_BITCODE = NO;
 				EXCLUDED_ARCHS = "";
@@ -574,7 +580,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACH_O_TYPE = mh_execute;
-				MARKETING_VERSION = 0.3.4;
+				MARKETING_VERSION = 1.0.5;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.receiptstraw.dev;
@@ -698,7 +704,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 38;
+				CURRENT_PROJECT_VERSION = 43;
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_BITCODE = NO;
 				EXCLUDED_ARCHS = "";
@@ -716,7 +722,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACH_O_TYPE = mh_execute;
-				MARKETING_VERSION = 0.3.4;
+				MARKETING_VERSION = 1.0.5;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.receiptstraw.dev;
@@ -840,7 +846,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 38;
+				CURRENT_PROJECT_VERSION = 43;
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_BITCODE = NO;
 				EXCLUDED_ARCHS = "";
@@ -858,7 +864,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACH_O_TYPE = mh_execute;
-				MARKETING_VERSION = 0.3.4;
+				MARKETING_VERSION = 1.0.5;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.receiptstraw.dev;
@@ -982,7 +988,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 38;
+				CURRENT_PROJECT_VERSION = 43;
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_BITCODE = NO;
 				EXCLUDED_ARCHS = "";
@@ -1000,7 +1006,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACH_O_TYPE = mh_execute;
-				MARKETING_VERSION = 0.3.4;
+				MARKETING_VERSION = 1.0.5;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.receiptstraw.dev;
