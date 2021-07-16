@@ -9,7 +9,12 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Added : This section to enlist the additions/implementations 
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
-
+  ## [1.0.5] - 2021-07-15
+  
+  ### Added
+  - SDK version updated to 1.0.5
+  - Added the payment instrument column into CSV and remvoed the PII information.
+  
 ## [1.0.4] - 2021-07-08
 
 ### Added

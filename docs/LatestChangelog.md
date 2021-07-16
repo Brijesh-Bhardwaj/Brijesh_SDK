@@ -1,1 +1,2 @@
-- SDK updated with the Sentry integration to log the events, errors and crashes  
+  - SDK version updated to 1.0.5
+  - Added the payment instrument column into CSV and remvoed the PII information.
