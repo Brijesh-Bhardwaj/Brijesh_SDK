@@ -9,4 +9,5 @@ struct PIIAttribute: Decodable {
     let id: Int
     let attributes: String
     let status: Bool
+    let regex: String?
 }

@@ -54,7 +54,6 @@ struct AppConstants {
     static let fetchAccounts = "Failed to fetch Account."
     static let fetchOrderDetails = "Failed to fetch orderDetails"
     static let userAccountConnected = "This account is already associated with an existing user. Please try with another account."
-    
   
     //Sentry Variables
     static let dsnURL = "https://6ad6390802f44f3fa71739de94424310@o915046.ingest.sentry.io/5854887"
