@@ -29,6 +29,7 @@ public class OrdersExtractor {
             options.debug = true // Enabled debug when first installing is always helpful
             options.attachStacktrace = true
             options.tracesSampleRate = AppConstants.tracesSampleRate
+            options.enableAutoSessionTracking = true
 
         }
         
@@ -61,6 +62,13 @@ public class OrdersExtractor {
         }
         registerFonts()
         
+        //get Scrapper config details
+        ConfigManager.shared.loadConfigs(orderSource: .Amazon) { configurations, error in
+            
+        }
+        //get scripts for the order sources
+        BSScriptFileManager.shared.loadScriptFile()
+
         _ = AmazonService.getConfigs() {configs, error in
             if let configs = configs {
                 print("### Timeout ",configs.timeoutValue!)

@@ -124,6 +124,7 @@ class ConnectAccountViewController: UIViewController {
         if self.shouldAllowBack {
             self.webContentView.stopLoading()
             LibContext.shared.scrapeCompletionPublisher.send(((false, nil), ASLException(errorMessage: Strings.ErrorUserAbortedProcess, errorType: ErrorType.userAborted)))
+            WebCacheCleaner.clear(completionHandler: nil)
             self.dismiss(animated: true, completion: nil)
         }
     }
@@ -218,17 +219,17 @@ class ConnectAccountViewController: UIViewController {
                 }
                 switch authState {
                 case .email:
-                    logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                           EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                           EventConstant.Status: status]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSInjectUserName, eventAttributes: logEventAttributes)
                 case .password:
-                    logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                           EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                           EventConstant.Status: status]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSInjectPassword, eventAttributes: logEventAttributes)
                 case .captcha:
-                    logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                           EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                           EventConstant.Status: status]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedCaptcha, eventAttributes: logEventAttributes)
@@ -236,7 +237,7 @@ class ConnectAccountViewController: UIViewController {
                     self.navigationHelper.stopTimer()
                     //Logging event for report generation
                     var logEventAttributes:[String:String] = [:]
-                    logEventAttributes = [EventConstant.OrderSource:                    String(OrderSource.Amazon.rawValue),
+                    logEventAttributes = [EventConstant.OrderSource:              OrderSource.Amazon.value,
                                           EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                           EventConstant.Status: status]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportGeneration, eventAttributes: logEventAttributes)
@@ -244,7 +245,7 @@ class ConnectAccountViewController: UIViewController {
                     self.navigationHelper.stopTimer()
                     //Logging event for report download
                     var logEventAttributes:[String:String] = [:]
-                    logEventAttributes = [EventConstant.OrderSource:                    String(OrderSource.Amazon.rawValue),
+                    logEventAttributes = [EventConstant.OrderSource:                    OrderSource.Amazon.value,
                                           EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                           EventConstant.Status: status]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportDownload, eventAttributes: logEventAttributes)
@@ -287,6 +288,7 @@ class ConnectAccountViewController: UIViewController {
             if isError.0 {
                 self.navigationHelper.stopTimer()
                 LibContext.shared.webAuthErrorPublisher.send((isError.0, isError.1))
+                WebCacheCleaner.clear(completionHandler: nil)
                 self.dismiss(animated: true, completion: nil)
             }
         })
@@ -389,15 +391,6 @@ extension ConnectAccountViewController: WKNavigationDelegate {
             return
         }
         decisionHandler(.allow)
-    }
-    
-    // This function is essential for intercepting every navigation in the webview
-    func webView(_ webView: WKWebView,
-                 decidePolicyFor navigationAction: WKNavigationAction,
-                 preferences: WKWebpagePreferences,
-                 decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
-        preferences.preferredContentMode = .mobile
-        decisionHandler(.allow, preferences)
     }
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {

@@ -83,7 +83,8 @@ public class UserAccountMO: NSManagedObject, Account {
         switch orderSource {
         case .Amazon:
             AmazonOrderScrapper.shared.disconnectAccount(account: self,
-                                                         accountDisconnectedListener: accountDisconnectedListener)
+                                                         accountDisconnectedListener: accountDisconnectedListener, orderSource: orderSource.value)
+            
         }
     }
     /// Use this method to fetch already connected account

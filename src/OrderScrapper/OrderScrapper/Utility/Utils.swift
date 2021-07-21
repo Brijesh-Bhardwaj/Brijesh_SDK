@@ -25,4 +25,9 @@ class Utils {
         let infoDict = AppConstants.bundle.infoDictionary!
         return infoDict["BASE_API_ENDPOINT"] as! String
     }
+    
+    static func getSubUrl(url: String, delimeter: String) -> String {
+        let subUrl = url.components(separatedBy: delimeter)
+        return subUrl[0]
+    }
 }

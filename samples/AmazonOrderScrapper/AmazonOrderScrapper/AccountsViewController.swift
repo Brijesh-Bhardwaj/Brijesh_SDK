@@ -23,6 +23,12 @@ class AccountsViewController: UIViewController {
     @IBOutlet weak var tickImage: UIImageView!
     
     private var currentAccount: Account!
+    private lazy var foregroundOrderExtractionListner: ForegroundOrderExtractionListner = {
+        return ForegroundOrderExtractionListner(accountViewController: self)
+    }()
+    private lazy var backgroundOrderExtractionListner: BackgroundOrderExtractionListner = {
+        return BackgroundOrderExtractionListner(accountViewController: self)
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,7 +56,7 @@ class AccountsViewController: UIViewController {
         parentView.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
     }
     
-    private func loadAccounts() {
+    func loadAccounts() {
         do {
             try OrdersExtractor.getAccounts(orderSource: nil) { accounts, hasNeverConnected in
                 let connectedAccounts = accounts.filter() { $0.accountState != .ConnectedAndDisconnected }
@@ -103,7 +109,7 @@ class AccountsViewController: UIViewController {
     @IBAction func disconnectAccount(_ sender: Any) {
         if let title = self.disconnectButton.title(for: .normal) {
             if title.elementsEqual("Reconnect") {
-                self.currentAccount.connect(orderExtractionListener: self)
+                self.currentAccount.connect(orderExtractionListener: self.foregroundOrderExtractionListner)
                 return
             }
         }
@@ -113,14 +119,59 @@ class AccountsViewController: UIViewController {
     @IBAction func onActionButtonClick(_ sender: Any) {
         if self.actionButton.tag == ButtonAction.connectAccount.rawValue {
             do {
-                try OrdersExtractor.registerAccount(orderSource: .Amazon, orderExtractionListner: self)
+                try OrdersExtractor.registerAccount(orderSource: .Amazon, orderExtractionListner: self.foregroundOrderExtractionListner)
             } catch {
                 let message = "An error occured while displaying register screen"
                 showAlert(title: "Alert", message: message, completionHandler: nil)
             }
         } else {
-            self.currentAccount.fetchOrders(orderExtractionListener: self)
+            self.currentAccount.fetchOrders(orderExtractionListener: self.backgroundOrderExtractionListner)
         }
+    }
+}
+
+class ForegroundOrderExtractionListner: OrderExtractionListener {
+    private weak var accountViewController: AccountsViewController?
+    
+    init(accountViewController: AccountsViewController) {
+        self.accountViewController = accountViewController
+    }
+    
+    func onOrderExtractionSuccess(successType: OrderFetchSuccessType, account: Account) {
+        if successType == .fetchSkipped {
+            accountViewController?.showAlert(title: "Alert", message: "Receipts scrapped already.", completionHandler: nil)
+        }
+        
+        if account.isFirstConnectedAccount {
+            accountViewController?.showAlert(title: "Alert", message: "You've received 1000 points for connecting your first Amazon account!", completionHandler: nil)
+        }
+    }
+    
+    func onOrderExtractionFailure(error: ASLException, account: Account) {
+        accountViewController?.showAlert(title: "Alert", message: error.errorMessage, completionHandler: nil)
+        accountViewController?.loadAccounts()
+    }
+}
+
+class BackgroundOrderExtractionListner: OrderExtractionListener {
+    private weak var accountViewController: AccountsViewController?
+    
+    init(accountViewController: AccountsViewController) {
+        self.accountViewController = accountViewController
+    }
+    
+    func onOrderExtractionSuccess(successType: OrderFetchSuccessType, account: Account) {
+        if successType == .fetchSkipped {
+            accountViewController?.showAlert(title: "Alert", message: "Background extraction skipped", completionHandler: nil)
+        } else {
+            accountViewController?.showAlert(title: "Alert", message: "Background extraction process completed", completionHandler: nil)
+            accountViewController?.loadAccounts()
+        }
+    }
+    
+    func onOrderExtractionFailure(error: ASLException, account: Account) {
+        accountViewController?.showAlert(title: "Alert", message: error.errorMessage, completionHandler: nil)
+        accountViewController?.loadAccounts()
     }
 }
 
@@ -160,29 +211,13 @@ extension AccountsViewController: AuthProvider {
     }
 }
 
-extension AccountsViewController: OrderExtractionListener {
-    func onOrderExtractionSuccess(successType: OrderFetchSuccessType, account: Account) {
-        if successType == .fetchSkipped {
-            showAlert(title: "Alert", message: "Receipts scrapped already.", completionHandler: nil)
-        }
-        
-        if account.isFirstConnectedAccount {
-            showAlert(title: "Alert", message: "You've received 1000 points for connecting your first Amazon account!", completionHandler: nil)
-        }
-    }
-    
-    func onOrderExtractionFailure(error: ASLException, account: Account) {
-        showAlert(title: "Alert", message: error.errorMessage, completionHandler: nil)
-    }
-}
-
 extension AccountsViewController: AnalyticsProvider {
     func logEvent(eventType: String, eventAttributes: Dictionary<String, String>) {
         Analytics.logEvent(eventType, parameters: eventAttributes)
     }
     
     func setUserProperty(userProperty: String, userPropertyValue: String) {
-        Analytics.setUserProperty(userProperty, forName: userPropertyValue)
+        Analytics.setUserProperty(userPropertyValue, forName: userProperty)
     }
 }
 extension UIViewController {

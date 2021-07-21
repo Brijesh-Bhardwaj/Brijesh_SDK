@@ -9,6 +9,30 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Added : This section to enlist the additions/implementations 
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
+  
+## [1.1.0] - 2021-07-21
+
+  ### Added
+ - SDK developed with background scrapping, navigation code, amazon connection and order scrapping support.
+ - Amazon orders are fetched by scraping of html content from orders listing and order details page.
+ - Added public interfaces and classes to allow application to integrate with SDK.
+ - Implemented code to connect to Amazon account using a hidden webview.
+   Login/Connection code supports these scenarios:
+   - Successful login with correct user-id and password
+   - Login failure on wrong account or password
+   - Captcha identification,unknown url identification and changing account state to connected with exception.
+ - Data-Persistence code to save order listing details in database.
+ - Integration with API/backend for
+   - Retrieve the date-ranges to fetch the orders for a connected amazon account. 
+   - Upload order details after fetching it.
+ - JavaScripts for operations like:
+   - Amazon login and evaluating login success/failure.
+   - Navigating to order listing page
+   - Retrieve the list of orders that needs to be scraped from the order listing page.
+   - Retrieve order details by navigating to order details page for each order.
+ - Configuration api integrated to make SDK timeout time configurable.
+ - Implemented timeout functionality  in sdk, added timeout in between steps of sdk when trying to scrape the orders.
+ - Shown an error message to user in case timeout exceeds the configured timeout time.
 
 ## [1.0.5] - 2021-07-15
   
@@ -19,8 +43,9 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 ## [1.0.4] - 2021-07-08
 
 ### Added
-- SDK updated with the Sentry integration to log the events, errors and crashes  
-  
+- SDK updated with the Sentry integration to log the events, errors and crashes
+- Please check ReadMe.SDK.build.md file updated for Sentry changes  
+
 ## [1.0.3] - 2021-07-05
 - SDK version updated to 1.0.3
 
@@ -38,6 +63,16 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   
 ### Changed
 - Modified the error message for AuthProvider
+
+## [0.3.5] - 2021-06-07
+
+### Added
+- Implementation of user authentication in background using zero size webview
+- Downloading of JS file and reading script from the file
+- Scrapping of order listing page using JS script and inserted scrape details into DB
+- Retrieve order details from DB and scrapping of order detail page one after another
+- Uploading of scrape order detail page data to backend through API
+- Completion/failure callback given to the caller after uploading of scrape order details data     
 
 ## [0.3.4] - 2021-06-01
 
