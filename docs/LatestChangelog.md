@@ -1,1 +1,21 @@
+ - SDK developed with background scrapping, navigation code, amazon connection and order scrapping support.
+ - Amazon orders are fetched by scraping of html content from orders listing and order details page.
+ - Added public interfaces and classes to allow application to integrate with SDK.
+ - Implemented code to connect to Amazon account using a hidden webview.
+   Login/Connection code supports these scenarios:
+   - Successful login with correct user-id and password
+   - Login failure on wrong account or password
+   - Captcha identification,unknown url identification and changing account state to connected with exception.
+ - Data-Persistence code to save order listing details in database.
+ - Integration with API/backend for
+   - Retrieve the date-ranges to fetch the orders for a connected amazon account. 
+   - Upload order details after fetching it.
+ - JavaScripts for operations like:
+   - Amazon login and evaluating login success/failure.
+   - Navigating to order listing page
+   - Retrieve the list of orders that needs to be scraped from the order listing page.
+   - Retrieve order details by navigating to order details page for each order.
+ - Configuration api integrated to make SDK timeout time configurable.
+ - Implemented timeout functionality  in sdk, added timeout in between steps of sdk when trying to scrape the orders.
+ - Shown an error message to user in case timeout exceeds the configured timeout time.
 
