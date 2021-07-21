@@ -10,7 +10,7 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
   
-## [1.1.0] - 2021-07-07
+## [1.1.0] - 2021-07-21
 
   ### Added
  - SDK developed with background scrapping, navigation code, amazon connection and order scrapping support.
