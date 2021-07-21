@@ -31,14 +31,33 @@ struct Strings {
     static let SuccessMsgReceiptsFechedSuccessfully = "success_msg_receipts_fetched_successfully"
     static let HeadingFetchingReceipts = "heading_fetching_receipts"
     
-    
     // Mark:- Non-Localized strings
     static let ErrorLibAlreadyInitialized = "OrdersExtractor is already initialized."
     static let ErrorLibNotInitialized = "OrdersExtractor is not initialized."
     static let ErrorAuthProviderNotImplemented = "authToken or panelistId is missing in AuthProvider."
     static let ExtractionDisabled = "Receipts scrapped already."
     static let ErrorUserAbortedProcess = "User aborted the process."
+    
+    static let ErrorChildClassShouldImplementMethod = "Child class should implement this method"
+    static let ErrorOtherUrlLoaded = "Other url loaded"
+    static let ErrorOccuredWhileInjectingJS = "Error occured"
+    static let ErrorCaptchaPageLoaded = "Captcha page loaded"
+    static let ErrorUserIdIsNil = "userId is nil"
+    static let ErrorPasswordIsNil = "password is nil"
+    static let ErrorEmailJSInjectionFailed = "email JS injection failed"
+    static let ErrorPasswordJSInjectionFailed = "password JS injection failed"
+    static let ErrorDuringNavigation = "An error occurred during navigation"
+    static let ErrorDuringEarlyNavigation = "An error occurred during the early navigation process"
+    static let ErrorWebContentProcessDidTerminate = "webViewWebContentProcessDidTerminate()"
+    static let ErrorNoConfigurationsFound = "Configurations not found for the given order source"
+    static let ErrorInScrapperConfigAPI = "scrapper_config_api_failed"
+    static let ErrorOrderListingNavigationFailed = "order_listing_navigation_failed"
+    static let ErrorOrderExtractionFailed = "Order extraction failed"
     static let ErrorConfigsMissing = "Configs missing"
+    static let ErrorPageNotloaded = "Error while loading web page"
+    static let ErrorFetchSkipped = "Fetch skipped"
+    static let ErrorScriptNotFound = "Could not read the script from the file"
+    static let ErrorScriptFileNotFound = "Script file not found"
     
     //Sentry error message
     static let ErrorAPIReponseDateRange = "Error while getting date range"

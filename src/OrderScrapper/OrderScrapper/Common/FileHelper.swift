@@ -8,6 +8,10 @@ import Foundation
 struct Directories {
     static let Reports = "Reports"
     static let Amazon = "Amazon"
+    static let Scripts = "Scripts"
+}
+struct File {
+    static let ScrapperScript = "ScrapperScript.txt"
 }
 
 class FileHelper {
@@ -75,5 +79,51 @@ class FileHelper {
                 } catch {print(AppConstants.tag, "clearDirectory", error.localizedDescription)}
             }
         } catch  { print(AppConstants.tag, "clearDirectory", error.localizedDescription) }
+    }
+    
+    // MARK: - Public Methods
+    static func getScriptDownloadPath(fileName: String, orderSource: OrderSource) -> URL {
+        let downloadDirectoryURL = getScriptDownloadDirectory(orderSource: orderSource)
+        return downloadDirectoryURL.appendingPathComponent(fileName)
+    }
+    
+    // MARK: - Private Methods
+    private static func getScriptDownloadDirectory(orderSource: OrderSource) -> URL {
+        let documentsURL = getDocumentsDirectory()
+        var downloadDirectoryURL: URL
+        switch orderSource {
+        case .Amazon:
+            downloadDirectoryURL = documentsURL
+                .appendingPathComponent(Directories.Scripts)
+                .appendingPathComponent(Directories.Amazon)
+        }
+        try? FileManager.default.createDirectory(at: downloadDirectoryURL, withIntermediateDirectories: true, attributes: nil)
+        return downloadDirectoryURL
+    }
+    
+    static func getDataFromFile(fileUrl: URL) -> String? {
+        var fileContent: String?
+        do {
+            fileContent = try String(contentsOf: fileUrl, encoding: .utf8)
+            return fileContent
+        }
+        catch {
+            print("getDataFromFile(): Error in reading file content")
+        }
+        return fileContent
+    }
+    
+    //Get script file URL for the given order source
+    static func getScriptFilePath(orderSource: OrderSource) -> URL {
+        let fileName = String(orderSource.value) + File.ScrapperScript
+        let filePath = FileHelper.getScriptDownloadPath(fileName: fileName, orderSource: orderSource)
+        return filePath
+    }
+    
+    //Check script file exist or not for given order source
+    static func isScriptFileExist(orderSource: OrderSource) -> Bool {
+        let filePath = FileHelper.getScriptFilePath(orderSource: orderSource)
+        let fileManager = FileManager.default
+        return fileManager.fileExists(atPath: filePath.path)
     }
 }

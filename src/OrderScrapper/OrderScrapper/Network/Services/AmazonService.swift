@@ -8,7 +8,7 @@ import Alamofire
 import Sentry
 
 private enum JSONKeys: String, CodingKey {
-    case panelistId, panelist_id, amazonId, file, fromDate, toDate, status, message, orderStatus
+    case panelistId, panelist_id, amazonId, file, fromDate, toDate, status, message, orderStatus, data, configDetails
 }
 
 class AmazonService {
@@ -18,6 +18,9 @@ class AmazonService {
     private static let GetAccounts = "amazon-connection/get_accounts"
     private static let CreateConnection = "amazon-connection/register_connection"
     private static let UpdateStatus = "amazon-connection/update_status"
+    private static let FetchScript = "scrapping/fetchScript"
+    private static let ScrapperConfigURL = "scraper_config/get_config"
+    private static let orderUpload = "order_history/upload_orders"
     private static let GetConfigs = "scraper_config"
     
     static func getDateRange(amazonId: String,
@@ -50,7 +53,6 @@ class AmazonService {
         let client = NetworkClient<APIResponse<ReportUpload>>(relativeURL: UploadReportURL, requestMethod: .multipart)
         
         let panelistId = LibContext.shared.authProvider.getPanelistID()
-    
         client.multipartFormClosure = { multipartData in
             multipartData.append(fileURL, withName: JSONKeys.file.rawValue)
             multipartData.append(Data(amazonId.utf8), withName: JSONKeys.amazonId.rawValue)
@@ -100,7 +102,6 @@ class AmazonService {
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         let relativeUrl = GetAccounts + "/" + panelistId
         let client = NetworkClient<APIResponse<GetAccountsResponse>>(relativeURL: relativeUrl, requestMethod: .get)
-       
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<GetAccountsResponse> {
                 if response.isError {
@@ -143,7 +144,7 @@ class AmazonService {
     }
     
     static func updateStatus(amazonId: String, status: String, message: String, orderStatus: String,
-                                 completionHandler: @escaping (AccountDetails?, Error?) -> Void) -> APIClient {
+                             completionHandler: @escaping (AccountDetails?, Error?) -> Void) -> APIClient {
         let relativeUrl = UpdateStatus
         let client = NetworkClient<APIResponse<AccountDetails>>(relativeURL: relativeUrl, requestMethod: .put)
         let panelistId = LibContext.shared.authProvider.getPanelistID()
@@ -166,7 +167,66 @@ class AmazonService {
         return client
     }
     
-    static func getConfigs(completionHandler: @escaping (Configs?, Error?) -> Void) -> APIClient {
+   static func getScrapperConfig(orderSource: [String], completionHandler: @escaping ([PlatformSourceConfig]?, Error?) -> Void) -> APIClient {
+        
+        let client = NetworkClient<APIResponse<[PlatformSourceConfig]>>(relativeURL: ScrapperConfigURL, requestMethod: .post)
+        client.body = [JSONKeys.configDetails.rawValue: orderSource]
+        
+        client.executeAPI() { (response, error) in
+            if let response = response as? APIResponse<[PlatformSourceConfig]> {
+                if response.isError {
+                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    print(AppConstants.tag, "getScrapperConfig", response.error ?? "Error")
+                } else {
+                    completionHandler(response.data, nil)
+                }
+            } else {
+                completionHandler(nil, nil)
+            }
+        }
+        return client
+    }
+    
+    static func fetchScript(orderSource: OrderSource, completionHandler: @escaping (FetchScript?, Error?) -> Void) -> APIClient {
+        let relativeUrl = FetchScript + "/" + orderSource.value
+        let client = NetworkClient<APIResponse<FetchScript>>(relativeURL: relativeUrl, requestMethod: .get)
+        
+        client.executeAPI() { (response, error) in
+            if let response = response as? APIResponse<FetchScript> {
+                if response.isError {
+                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    print(AppConstants.tag, "fetchScript", response.error ?? "Error")
+                } else {
+                    completionHandler(response.data, nil)
+                }
+            } else {
+                completionHandler(nil, nil)
+            }
+        }
+        return client
+    }
+    
+   static func uploadOrderHistory(orderRequest: OrderRequest, completionHandler:
+                                    @escaping (OrderData?, Error?) -> Void) -> APIClient {
+        let client = NetworkClient<APIResponse<OrderData>>(relativeURL: orderUpload, requestMethod: .post)
+        client.body = orderRequest.toDictionary()
+        
+        client.executeAPI() { (response, error) in
+            if let response = response as? APIResponse<OrderData> {
+                if response.isError {
+                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    print("uploadOrderHistory error",response.error ?? "Error")
+                } else {
+                    completionHandler(response.data!, nil)
+                }
+            } else {
+                completionHandler(nil, nil)
+            }
+        }
+        return client
+    }
+
+   static func getConfigs(completionHandler: @escaping (Configs?, Error?) -> Void) -> APIClient {
         let client = NetworkClient<APIResponse<Configs>>(relativeURL: GetConfigs, requestMethod: .get)
         
         client.executeAPI() { (response, error) in

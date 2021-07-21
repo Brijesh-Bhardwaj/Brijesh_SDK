@@ -15,6 +15,12 @@ iOS SDK is built as a Framework.
 - Run command `carthage update --use-xcframeworks`. This will fetch dependencies into a 'Carthage/Checkouts' folder and build each one or download a pre-compiled XCFramework inside 'Carthage/Build'.
 - The dependencies and paths are already configured in the project.
 
+# Build Configurations
+
+- The SDK does not support any build configurations of its own
+- The SDK provides the `OrdersExtractorConfig` class through which the application and pass certain configuration values such as the base URL for API calls.
+- The app should take pass the correct configuration to the SDK while initializing it as per the desired backend environement.
+
 # Build SDK
 
 - Open '<amazon_order_scraping_ios>/src/OrderScrapper/OrderScrapper.xcodeproj' project using XCode
@@ -33,8 +39,8 @@ This version introduces Sentry library integration with the SDK. The following s
 
 - Using the 'Terminal', navigate to '<amazon_order_scraping_ios>/src/OrderScrapper/'
 - Run this command to update the carthage dependencies
-  > carthage update sentry-cocoa
-  > carthage build --use-xcframeworks --no-use-binaries  
+  > carthage update sentry-cocoa  
+  > carthage build --use-xcframeworks --no-use-binaries 
 - Install the sentry-cli: This step enables Sentry to upload dSYM file to symbolicate the crash logs.
      https://docs.sentry.io/product/cli/installation/
 - Add the Sentry.xcframework dependency to the application at

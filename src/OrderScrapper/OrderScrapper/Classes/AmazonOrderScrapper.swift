@@ -6,6 +6,7 @@
 import Foundation
 import SwiftUI
 import Combine
+import WebKit
 import Sentry
 
 class AmazonOrderScrapper {
@@ -13,6 +14,7 @@ class AmazonOrderScrapper {
     private var viewPresenter: ViewPresenter!
     public var analyticsProvider: AnalyticsProvider?
     private var completionSubscriber: AnyCancellable?
+    private var backgroundScrapper: BSScrapper!
     
     private static var instance: AmazonOrderScrapper!
     
@@ -62,15 +64,20 @@ class AmazonOrderScrapper {
         let viewController = storyboard.instantiateViewController(identifier: "RegisterAccountVC") as! RegisterAccountViewController
         viewController.account = account as? UserAccountMO
         viewController.modalPresentationStyle = .fullScreen
-    
+        
         self.viewPresenter.presentView(view: viewController)
     }
     
-    func disconnectAccount(account: Account, accountDisconnectedListener: AccountDisconnectedListener) {
+    func disconnectAccount(account: Account, accountDisconnectedListener: AccountDisconnectedListener, orderSource: String) {
         _ = AmazonService.updateStatus(amazonId: account.userID, status: AccountState.ConnectedAndDisconnected.rawValue, message: AppConstants.msgDisconnected, orderStatus: OrderStatus.None.rawValue) { response, error in
             if response != nil {
+                if self.backgroundScrapper != nil {
+                    self.backgroundScrapper.stopScrapping()
+                    self.backgroundScrapper = nil
+                }
                 let panelistId = LibContext.shared.authProvider.getPanelistID()
                 CoreDataManager.shared.deleteAccounts(userId: account.userID, panelistId: panelistId)
+                CoreDataManager.shared.deleteOrderDetails(userID: account.userID, panelistID: panelistId, orderSource: orderSource)
                 WebCacheCleaner.clear(completionHandler: nil)
                 accountDisconnectedListener.onAccountDisconnected(account: account)
             } else {
@@ -86,24 +93,34 @@ class AmazonOrderScrapper {
     }
     
     func startOrderExtraction(account: Account, orderExtractionListener: OrderExtractionListener) {
-        self.completionSubscriber = LibContext.shared.scrapeCompletionPublisher.receive(on: RunLoop.main).sink() { [weak self] result, error in
-            guard let self = self else { return }
-            let (completed, successType) = result
-            if completed {
-                orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
-            } else {
-                let error = ASLException(errorMessage: error?.errorMessage ?? "" , errorType: nil)
-                orderExtractionListener.onOrderExtractionFailure(error: error, account: account)
-                SentrySDK.capture(error: error)
-            }
-            self.viewPresenter.dismissView()
+        if backgroundScrapper == nil {
+            //Start scrapping in the background
+            let scriptMessageHandler = BSScriptMessageHandler()
+            let contentController = WKUserContentController()
+            contentController.add(scriptMessageHandler, name: "iOS")
+            let config = WKWebViewConfiguration()
+            config.userContentController = contentController
+            let frame = CGRect(x: 0, y: 0, width: 250, height: 400)
+            let webClient = BSWebClient(frame: frame, configuration: config, scriptMessageHandler: scriptMessageHandler)
+            
+            backgroundScrapper = AmazonScrapper(webClient: webClient) { [weak self] result, error in
+                guard let self = self else {return}
+                
+                let (completed, successType) = result
+                DispatchQueue.main.async {
+                    if completed {
+                        orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
+                    } else {
+                        orderExtractionListener.onOrderExtractionFailure(error: error!, account: account)
+                    }
+                }
+                
+                self.backgroundScrapper = nil
+           }
+            
+            //Start scrapping in the background
+            self.backgroundScrapper.startScrapping(account: account)
         }
-        
-        let storyboard = UIStoryboard(name: "OSLibUI", bundle: AppConstants.bundle)
-        let viewController = storyboard.instantiateViewController(identifier: "ConnectAccountVC") as! ConnectAccountViewController
-        viewController.account = account
-        viewController.modalPresentationStyle = .fullScreen
-    
-        self.viewPresenter.presentView(view: viewController)
     }
 }
+

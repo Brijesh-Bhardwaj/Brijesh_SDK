@@ -9,4 +9,5 @@ struct DateRange: Decodable {
     let fromDate: String?
     let toDate: String?
     let enableScraping: Bool
+    let lastOrderId: String?
 }
