@@ -25,7 +25,7 @@ class CoreDataManager {
         container.loadPersistentStores { (storeDescription, error) in
             
             if let err = error {
-                fatalError("Loading of store failed:\(err)")
+                debugPrint("Loading of store failed:\(err)")
             }
         }
         return container
