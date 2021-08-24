@@ -30,3 +30,5 @@
 "step6" = "Step 6";
 "success_msg_receipts_fetched_successfully" = "Receipts fetched successfully";
 "heading_fetching_receipts" = "Fetching Receipts";
+"dont_be_alarmed" = "Don’t be alarmed!";
+"user_alert_message" = " You will receive an email from Amazon containing your historical orders. This is a standard part of connecting your account with ";

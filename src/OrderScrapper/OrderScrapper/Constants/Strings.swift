@@ -30,6 +30,8 @@ struct Strings {
     static let Step6 = "step6"
     static let SuccessMsgReceiptsFechedSuccessfully = "success_msg_receipts_fetched_successfully"
     static let HeadingFetchingReceipts = "heading_fetching_receipts"
+    static let AlertBoldMessage = "dont_be_alarmed"
+    static let AlertUserMessage = "user_alert_message"
     
     
     // Mark:- Non-Localized strings
@@ -39,4 +41,7 @@ struct Strings {
     static let ExtractionDisabled = "Receipts scrapped already."
     static let ErrorUserAbortedProcess = "User aborted the process."
     static let ErrorConfigsMissing = "Configs missing"
+    static let UIFontBold = "HelveticaNeue-Bold"
+    static let UIFontLight = "HelveticaNeue-Light"
+    
 }
