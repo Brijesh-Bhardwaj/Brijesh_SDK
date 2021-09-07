@@ -8,7 +8,7 @@ import Alamofire
 import Sentry
 
 private enum JSONKeys: String, CodingKey {
-    case panelistId, panelist_id, amazonId, file, fromDate, toDate, status, message, orderStatus, data, configDetails
+    case panelistId, panelist_id, amazonId, file, fromDate, toDate, status, message, orderStatus, data, configDetails, platformId
 }
 
 class AmazonService {
@@ -22,6 +22,7 @@ class AmazonService {
     private static let ScrapperConfigURL = "scraper_config/get_config"
     private static let orderUpload = "order_history/upload_orders"
     private static let GetConfigs = "scraper_config"
+    private static let PostEvents = "scrapping/push_events"
     
     static func getDateRange(amazonId: String,
                              completionHandler: @escaping (DateRange?, Error?) -> Void) -> APIClient {
@@ -215,7 +216,7 @@ class AmazonService {
             if let response = response as? APIResponse<OrderData> {
                 if response.isError {
                     completionHandler(nil, APIError(error: response.error ?? "Error"))
-                    print("uploadOrderHistory error",response.error ?? "Error")
+                    print(AppConstants.tag, "uploadOrderHistory error",response.error ?? "Error")
                 } else {
                     completionHandler(response.data!, nil)
                 }
@@ -242,5 +243,27 @@ class AmazonService {
             }
         }
         return client
+    }
+    
+    static func logEvents(eventLogs: EventLogs, completionHandler: @escaping (EventLogs?, Error?) -> Void) -> APIClient {
+        let client = NetworkClient<APIResponse<EventLogs>>(relativeURL: PostEvents, requestMethod: .post)
+        client.body = eventLogs.toDictionary()
+        client.executeAPI() { (response, error) in
+            if let response = response as? APIResponse<EventLogs> {
+                if response.isError {
+                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    print(AppConstants.tag, "pushEvents", response.error ?? "Error")
+                } else {
+                    completionHandler(response.data, nil)
+                }
+            } else {
+                completionHandler(nil, nil)
+            }
+        }
+        return client
+    }
+    
+    static func cancelAPI() {
+        AF.cancelAllRequests()
     }
 }

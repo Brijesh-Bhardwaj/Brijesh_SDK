@@ -11,7 +11,7 @@ enum ButtonAction: Int {
     case connectAccount, fetchReceipts
 }
 
-class AccountsViewController: UIViewController {
+class AccountsViewController: UIViewController, UNUserNotificationCenterDelegate {
     var panelistID: String!
     var authToken: String!
     
@@ -22,8 +22,9 @@ class AccountsViewController: UIViewController {
     @IBOutlet weak var actionButton: UIButton!
     @IBOutlet weak var tickImage: UIImageView!
     
-    private var currentAccount: Account!
-    private lazy var foregroundOrderExtractionListner: ForegroundOrderExtractionListner = {
+    var currentAccount: Account!
+    private let userNotificationCenter = UNUserNotificationCenter.current()
+    lazy var foregroundOrderExtractionListner: ForegroundOrderExtractionListner = {
         return ForegroundOrderExtractionListner(accountViewController: self)
     }()
     private lazy var backgroundOrderExtractionListner: BackgroundOrderExtractionListner = {
@@ -33,6 +34,8 @@ class AccountsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         do {
+            self.userNotificationCenter.delegate = self
+            self.requestNotificationAuthorization()
             let configValue = OrderExtractorConfig()
             configValue.baseURL = Util.getBaseUrl()
             configValue.appName = "ReceiptStraw-Dev"
@@ -56,6 +59,16 @@ class AccountsViewController: UIViewController {
         parentView.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
     }
     
+    func requestNotificationAuthorization() {
+        let authOptions = UNAuthorizationOptions.init(arrayLiteral: .alert, .badge, .sound)
+        
+        self.userNotificationCenter.requestAuthorization(options: authOptions) { (success, error) in
+            if let error = error {
+                print("Error: ", error)
+            }
+        }
+    }
+    
     func loadAccounts() {
         do {
             try OrdersExtractor.getAccounts(orderSource: nil) { accounts, hasNeverConnected in
@@ -69,6 +82,40 @@ class AccountsViewController: UIViewController {
         } catch {
             let message = "An error occurred while loading accounts"
             showAlert(title: "Alert", message: message, completionHandler: nil)
+        }
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        if response.actionIdentifier == UNNotificationDismissActionIdentifier {
+            // The user dismissed the notification without taking action
+            //            sendNotification()
+            print("dismmised the notification")
+        } else if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
+            // The user launched the app
+            print("Tapped the notification")
+            self.currentAccount.fetchOrders(orderExtractionListener: self.backgroundOrderExtractionListner, source: .notification)
+        }
+        completionHandler()
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.alert, .badge, .sound])
+    }
+    
+    func sendNotification() {
+        let content = UNMutableNotificationContent()
+        content.title = "Authorization needed"
+        content.subtitle = "Coinout"
+        content.body = "You are missing some extra credit points in application"
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1.0, repeats: false)
+        let request = UNNotificationRequest(identifier: "ai.blackstraw.receiptstraw.dev", content: content, trigger: trigger)
+        
+        let center = UNUserNotificationCenter.current()
+        center.add(request) { (error : Error?) in
+            if let theError = error {
+                print(theError.localizedDescription)
+            }
         }
     }
     
@@ -125,7 +172,7 @@ class AccountsViewController: UIViewController {
                 showAlert(title: "Alert", message: message, completionHandler: nil)
             }
         } else {
-            self.currentAccount.fetchOrders(orderExtractionListener: self.backgroundOrderExtractionListner)
+            self.currentAccount.fetchOrders(orderExtractionListener: self.backgroundOrderExtractionListner, source: .general)
         }
     }
 }
@@ -145,12 +192,24 @@ class ForegroundOrderExtractionListner: OrderExtractionListener {
         if account.isFirstConnectedAccount {
             accountViewController?.showAlert(title: "Alert", message: "You've received 1000 points for connecting your first Amazon account!", completionHandler: nil)
         }
+        
+        if let accountViewController = self.accountViewController {
+            if let currentAccount = accountViewController.currentAccount {
+                currentAccount.fetchOrders(orderExtractionListener: accountViewController.foregroundOrderExtractionListner, source: .general)
+            }
+        }
     }
     
     func onOrderExtractionFailure(error: ASLException, account: Account) {
         accountViewController?.showAlert(title: "Alert", message: error.errorMessage, completionHandler: nil)
         accountViewController?.loadAccounts()
     }
+    
+    func showNotification(account: Account) {
+        // TODO
+    }
+    
+   
 }
 
 class BackgroundOrderExtractionListner: OrderExtractionListener {
@@ -172,6 +231,11 @@ class BackgroundOrderExtractionListner: OrderExtractionListener {
     func onOrderExtractionFailure(error: ASLException, account: Account) {
         accountViewController?.showAlert(title: "Alert", message: error.errorMessage, completionHandler: nil)
         accountViewController?.loadAccounts()
+    }
+    
+    func showNotification(account: Account) {
+        self.accountViewController?.sendNotification()
+
     }
 }
 

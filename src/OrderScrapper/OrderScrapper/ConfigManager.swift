@@ -24,7 +24,10 @@ class ConfigManager {
             if let platformSourceConfigs = response {
                 for scrapperConfig in platformSourceConfigs {
                     if scrapperConfig.platformSource == orderSource.value {
+                        scrapperConfig.urls.captchaRetries = scrapperConfig.connections.captchaRetries
+                        scrapperConfig.urls.cooloffPeriodCaptcha = scrapperConfig.connections.cooloffPeriodCaptcha
                         self.configs[OrderSource.Amazon] = scrapperConfig.urls
+                        print("@@@@",scrapperConfig.urls)
                         completion(self.configs[orderSource], nil)
                         break
                     }
@@ -62,3 +65,4 @@ class ConfigManager {
         }
     }
 }
+

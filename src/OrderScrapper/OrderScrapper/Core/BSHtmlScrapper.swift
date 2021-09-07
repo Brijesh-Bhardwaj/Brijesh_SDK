@@ -12,19 +12,22 @@ class BSHtmlScrapperParams {
     let authenticator: BSAuthenticator
     let configuration: Configurations
     let account: Account
+    let scrappingType: String?
     
     init(webClient: BSWebClient,
          webNavigationDelegate: BSWebNavigationDelegate,
          listener: BSHtmlScrappingStatusListener,
          authenticator: BSAuthenticator,
          configuration: Configurations,
-         account: Account) {
+         account: Account,
+         scrappingType: String?) {
         self.webClient = webClient
         self.webNavigationDelegate = webNavigationDelegate
         self.listener = listener
         self.authenticator = authenticator
         self.configuration = configuration
         self.account = account
+        self.scrappingType = scrappingType
     }
 }
 
@@ -35,6 +38,8 @@ class BSHtmlScrapper {
     private var script: String?
     private var url: String!
     private var loginDetected = false
+    private var dateRange: DateRange?
+    var timer = BSTimer()
     
     init(params: BSHtmlScrapperParams) {
         self.params = params
@@ -103,26 +108,34 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                         logEventAttributes = [EventConstant.Status: EventStatus.Success]
                         FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAuthentication, eventAttributes: logEventAttributes)
                     } else {
-                        self.didFinishWith(error: error!)
-                        SentrySDK.capture(message: url)
-                        var logEventAttributes:[String:String] = [:]
-                        logEventAttributes = [EventConstant.ErrorReason: error!.errorMessage,
-                                              EventConstant.Status: EventStatus.Failure]
-                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAuthentication, eventAttributes: logEventAttributes)
+                        if error?.errorMessage == "Captcha page loaded" || error?.errorMessage == "Other url loaded" {
+//                            let errorMessage = ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError)
+                            let errorMessage = ASLException(errorMessages: Strings.ErrorOtherUrlLoaded, errorTypes: .authError, errorEventLog: .unknownURL, errorScrappingType: ScrappingType.html)
+                            self.onAuthenticationFailure(error: errorMessage)
+                        } else {
+                            let errorMessage = ASLException(errorMessages: Strings.ErrorPasswordJSInjectionFailed, errorTypes: .authError, errorEventLog: .other, errorScrappingType: ScrappingType.html)
+                            self.didFinishWith(error: errorMessage)
+                            var logEventAttributes:[String:String] = [:]
+                            logEventAttributes = [EventConstant.ErrorReason: error!.errorMessage,
+                                                  EventConstant.Status: EventStatus.Failure]
+                            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAuthentication, eventAttributes: logEventAttributes)
+                        }
+                        
                     }
                 }
             } else if(url.contains(subURL) || subURL.contains(url)) {
                 print("### Injecting script for URL: ", url)
                 self.params.webClient.evaluateJavaScript(script) { response, error in
                     print("#### evaluateJavaScript")
-//                    SentrySDK.capture(message: url)
+                    //SentrySDK.capture(message: url)
                 }
             } else {
-                let error = ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError)
+//                let error = ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError)
+                let error = ASLException(errorMessages: Strings.ErrorOtherUrlLoaded, errorTypes: nil, errorEventLog: .unknownURL, errorScrappingType: ScrappingType.html)
                 let exception = NSException(name: AppConstants.bsOrderFailed, reason: url)
                 SentrySDK.capture(exception: exception)
                 SentrySDK.capture(error: error)
-                self.didFinishWith(error: error)
+                self.onAuthenticationFailure(error: error)
                 
                 var logOtherUrlEventAttributes:[String:String] = [:]
                 let userId = params.account.userID
@@ -133,7 +146,8 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSDetectOtherURL, eventAttributes: logOtherUrlEventAttributes)
             }
         } else {
-            let error = ASLException(errorMessage: Strings.ErrorPageNotloaded, errorType: nil)
+//            let error = ASLException(errorMessage: Strings.ErrorPageNotloaded, errorType: nil)
+            let error = ASLException(errorMessages: Strings.ErrorPageNotloaded, errorTypes: nil, errorEventLog: .pageNotLoded, errorScrappingType: ScrappingType.html)
             SentrySDK.capture(error: error)
             self.params.listener.onHtmlScrappingFailure(error: error)
         }
@@ -141,15 +155,46 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
     
     func didStartPageNavigation(url: URL?) {
         if url == nil {
-            let error = ASLException(errorMessage: Strings.ErrorPageNotloaded, errorType: nil)
+            let error = ASLException(errorMessages: Strings.ErrorPageNotloaded, errorTypes: nil, errorEventLog: .pageNotLoded, errorScrappingType: ScrappingType.html)
             SentrySDK.capture(error: error)
             self.params.listener.onHtmlScrappingFailure(error: error)
         }
     }
     
     func didFailPageNavigation(for url: URL?, withError error: Error) {
-        let error = ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil)
+        let error = ASLException(errorMessages: Strings.ErrorOrderExtractionFailed, errorTypes: nil, errorEventLog: .pageNotLoded, errorScrappingType: ScrappingType.html)
         SentrySDK.capture(error: error)
         self.params.listener.onHtmlScrappingFailure(error: error)
+    }
+    
+    func onAuthenticationFailure(error: ASLException) {
+        let failureCount = UserDefaults.standard.integer(forKey: Strings.OnNumberOfCaptchaRetry)
+        UserDefaults.standard.setValue(failureCount + 1, forKey: Strings.OnNumberOfCaptchaRetry)
+        let currentDate = Date().timeIntervalSince1970
+        UserDefaults.standard.setValue(currentDate, forKey: Strings.OnBackgroundScrappingTimeOfPeriod)
+        
+        self.shouldShowAlert { boolValue in
+            if boolValue {
+                let error = ASLException(errorMessages: Strings.ErrorOnAuthenticationChallenge, errorTypes: error.errorType, errorEventLog: .notify, errorScrappingType: error.errorScrappingType)
+                self.params.listener.onHtmlScrappingFailure(error: error)
+            } else {
+                self.params.listener.onHtmlScrappingFailure(error: error)
+            }
+        }
+    }
+    
+    func shouldShowAlert(completion: @escaping (Bool) -> Void) {
+        
+        //TODO:- Add orderSource 
+        ConfigManager.shared.getConfigurations(orderSource: .Amazon) { (configurations, error) in
+            if let configuration = configurations {
+                let showNotification = self.dateRange?.showNotification ?? false
+                let captchaRetries = configuration.captchaRetries
+                let failureCount = UserDefaults.standard.integer(forKey: Strings.OnNumberOfCaptchaRetry)
+                completion(showNotification || failureCount > captchaRetries!)
+            } else {
+                completion(false)
+            }
+        }
     }
 }

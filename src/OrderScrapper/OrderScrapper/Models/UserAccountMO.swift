@@ -89,12 +89,14 @@ public class UserAccountMO: NSManagedObject, Account {
     }
     /// Use this method to fetch already connected account
     /// - Parameter orderExtractionListener: It is a listener which gives onOrderExtractionSuccess and onOrderExtractionFailure callback
-    public func fetchOrders(orderExtractionListener: OrderExtractionListener) {
+    // TODO:- ScrappingMode - fs,bs
+    public func fetchOrders(orderExtractionListener: OrderExtractionListener, source: FetchRequestSource) {
         let orderSource = getOrderSource()
         switch orderSource {
         case .Amazon:
             AmazonOrderScrapper.shared.startOrderExtraction(account: self,
-                                                            orderExtractionListener: orderExtractionListener)
+                                                            orderExtractionListener: orderExtractionListener,
+                                                            source: source)
         }
     }
     

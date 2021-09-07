@@ -30,8 +30,12 @@ struct Strings {
     static let Step6 = "step6"
     static let SuccessMsgReceiptsFechedSuccessfully = "success_msg_receipts_fetched_successfully"
     static let HeadingFetchingReceipts = "heading_fetching_receipts"
+    static let AlertBoldMessage = "dont_be_alarmed"
+    static let AlertUserMessage = "user_alert_message"
     
     // Mark:- Non-Localized strings
+    static let ScrappingPageListing = "Scraping time for listing"
+    static let ScrappingPageDetails = "Scraping time for details"
     static let ErrorLibAlreadyInitialized = "OrdersExtractor is already initialized."
     static let ErrorLibNotInitialized = "OrdersExtractor is not initialized."
     static let ErrorAuthProviderNotImplemented = "authToken or panelistId is missing in AuthProvider."
@@ -54,10 +58,16 @@ struct Strings {
     static let ErrorOrderListingNavigationFailed = "order_listing_navigation_failed"
     static let ErrorOrderExtractionFailed = "Order extraction failed"
     static let ErrorConfigsMissing = "Configs missing"
+    static let UIFontBold = "HelveticaNeue-Bold"
+    static let UIFontLight = "HelveticaNeue-Light"
     static let ErrorPageNotloaded = "Error while loading web page"
     static let ErrorFetchSkipped = "Fetch skipped"
     static let ErrorScriptNotFound = "Could not read the script from the file"
     static let ErrorScriptFileNotFound = "Script file not found"
+    static let ErrorOnAuthenticationChallenge = "Authentication challenge received"
+    static let OnBackgroundScrappingTimeOfPeriod = "Cool oof Time period"
+    static let OnNumberOfCaptchaRetry = "Captcha retry count"
+    static let BGScrappingCoolOffTime = 300.0
     
     //Sentry error message
     static let ErrorAPIReponseDateRange = "Error while getting date range"

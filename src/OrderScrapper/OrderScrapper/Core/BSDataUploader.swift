@@ -29,7 +29,7 @@ class BSDataUploader {
             uploadOperation.userId = String(orderDetail.userID!)
             uploadOperation.orderSource = String(orderDetail.orderSource!)
             uploadOperation.data = data
-            uploadOperation.dateRange = DateRange(fromDate: orderDetail.startDate, toDate: orderDetail.endDate, enableScraping: true, lastOrderId: nil)
+            uploadOperation.dateRange = DateRange(fromDate: orderDetail.startDate, toDate: orderDetail.endDate, enableScraping: true, lastOrderId: nil, scrappingType: nil, showNotification: false)
             
             uploadOperation.completionBlock = { [weak self] in
                 guard let self = self else {

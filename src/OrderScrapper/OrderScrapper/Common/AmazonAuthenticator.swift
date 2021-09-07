@@ -160,9 +160,14 @@ internal class AmazonAuthenticator: Authenticator {
                                        , message: message, orderStatus: OrderStatus.Initiated.rawValue) { response, error in
             //Todo
         }
+        let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.captcha.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrappingType: nil)
+        _ = AmazonService.logEvents(eventLogs: eventLog) { response, error in
+                //TODO
+        }
     }
     
     private func notifyAuthError(errorMessage: String) {
+        let panelistId = LibContext.shared.authProvider.getPanelistID()
         let accountState = self.viewModel.userAccount.accountState.rawValue
         if accountState == AccountState.NeverConnected.rawValue {
             let userId = self.viewModel.userAccount.userID
@@ -171,10 +176,14 @@ internal class AmazonAuthenticator: Authenticator {
                                                  message: errorMessage, orderStatus: OrderStatus.None.rawValue) { response, error in
                 //TODO
             }
+            let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authenticaion.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrappingType: nil)
+            _ = AmazonService.logEvents(eventLogs: eventLog) { response, error in
+                    //TODO
+            }
         } else {
             self.updateAccountWithExceptionState(message: AppConstants.msgAuthError)
         }
-        self.viewModel.authError.send((true, ""))
+        self.viewModel.authError.send((true, errorMessage))
         WebCacheCleaner.clear(completionHandler: nil)
     }
     

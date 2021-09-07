@@ -38,12 +38,14 @@ struct EventType {
     static let BgRetrieveScrapperScript = "bg_retrieve_scrapper_script"
     
     static let BgInjectJSForOrderDetail = "bg_inject_js_against_order_details_page"
-    static let BgScrappingOrderDetailResult = "bg_scrapping_order_details_result"
+    static let BgScrappingOrderDetailResultSuccess = "bg_scrapping_order_details_result_success"
+    static let BgScrappingOrderDetailResultFilure = "bg_scrapping_order_details_result_failure"
     static let BgInsertScrappedOrderDetailsInDB = "bg_insert_scrapped_order_details_into_db"
     static let BgRetrieveScrappedOrderDetailsFromDB = "bg_get_scrapped_order_details_db"
     static let BgAPIUploadOrderDetails = "bg_api_upload_order_details"
     static let BgInjectJSForOrderListing = "bg_inject_js_against_order_listing_page"
-    static let BgScrappingOrderListResult = "bg_scrapping_order_list_result"
+    static let BgScrappingOrderListResultSuccess = "bg_scrapping_order_list_result_success"
+    static let BgScrappingOrderListResultFailure = "bg_scrapping_order_list_result_failure"
    
 }
 

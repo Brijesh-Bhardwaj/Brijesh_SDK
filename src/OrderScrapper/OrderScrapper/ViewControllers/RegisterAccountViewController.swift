@@ -16,6 +16,7 @@ class RegisterAccountViewController: UIViewController {
     @IBOutlet weak var authErrorLabel: UILabel!
     @IBOutlet weak var showPasswordButton: UIButton!
     
+    @IBOutlet weak var userAlertLabel: UILabel!
     var account: UserAccountMO!
     
     private var authErrorSubscriber: AnyCancellable? = nil
@@ -34,15 +35,17 @@ class RegisterAccountViewController: UIViewController {
         
         self.passwordTextField.delegate = self
         self.userIDTextField.delegate = self
-        
+        userInfoMessage()
         setupSubscribers()
         
         if !account.userID.isEmpty {
             self.userIDTextField.text = account.userID
             self.userIDTextField.isEnabled = false
         }
-        
-        WebCacheCleaner.clear(completionHandler: nil)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+//        WebCacheCleaner.clear(completionHandler: nil)
     }
     
     override func viewWillLayoutSubviews() {
@@ -66,7 +69,7 @@ class RegisterAccountViewController: UIViewController {
         }
         
         self.authErrorView.isHidden = true
-
+        
         if !ValidationUtil.isValidEmail(email: userId) {
             self.authErrorLabel.text = Utils.getString(key: Strings.ValidationPleaseEnterValidEmail)
             self.authErrorView.isHidden = false
@@ -134,6 +137,25 @@ class RegisterAccountViewController: UIViewController {
         viewController.account = self.account
         viewController.modalPresentationStyle = .fullScreen
         self.present(viewController, animated: true, completion: nil)
+    }
+    
+    private func userInfoMessage() {
+        let boldMessage = [
+            NSAttributedString.Key.font: UIFont(name: Strings.UIFontBold, size: 17.0)!
+        ]
+        let regularMessage = [
+            NSAttributedString.Key.font: UIFont(name: Strings.UIFontLight, size: 17.0)!
+        ]
+        let message = Utils.getString(key: Strings.AlertBoldMessage)
+        let alertMessage = Utils.getString(key: Strings.AlertUserMessage)
+        let appName = LibContext.shared.orderExtractorConfig.appName
+        let alert = alertMessage + appName + "."
+        let boldText = NSAttributedString(string: message, attributes: boldMessage)
+        let regularText = NSAttributedString(string: alert, attributes: regularMessage)
+        let newString = NSMutableAttributedString()
+        newString.append(boldText)
+        newString.append(regularText)
+        userAlertLabel.attributedText = newString
     }
 }
 

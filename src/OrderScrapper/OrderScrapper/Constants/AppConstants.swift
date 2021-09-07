@@ -54,9 +54,13 @@ struct AppConstants {
     static let fetchAccounts = "Failed to fetch Account."
     static let fetchOrderDetails = "Failed to fetch orderDetails"
     static let userAccountConnected = "This account is already associated with an existing user. Please try with another account."
-  
+    static let bgScrappingCompleted = "Background scrapping completed"
     //Sentry Variables
     static let dsnURL = "https://6ad6390802f44f3fa71739de94424310@o915046.ingest.sentry.io/5854887"
     static let tracesSampleRate: NSNumber = 1.0
     static let bsOrderFailed = NSExceptionName("BS Other URL loaded")
+    
+    static let generateReportUrl = "https://www.amazon.com/gp/b2b/reports/"
+    static let msgUploadCSVSuccess = "CSV uploaded successfully"
+    static let msgOrderListSuccess = "List scrapping success"
 }

@@ -4,7 +4,7 @@
 import Foundation
 
 class AmazonScrapper: BSScrapper {
-   
+    
     override func getAuthenticator() throws -> BSAuthenticator {
         return BSAmazonAuthenticator(webClient: webClient, delegate: webClientDelegate)
     }

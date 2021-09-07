@@ -71,12 +71,13 @@ public class OrdersExtractor {
 
         _ = AmazonService.getConfigs() {configs, error in
             if let configs = configs {
-                print("### Timeout ",configs.timeoutValue!)
                 if let timeoutValue = configs.timeoutValue {
                     LibContext.shared.timeoutValue = timeoutValue
                 } else {
                     LibContext.shared.timeoutValue = AppConstants.timeoutCounter
                 }
+            } else {
+                LibContext.shared.timeoutValue = AppConstants.timeoutCounter
             }
         }
         

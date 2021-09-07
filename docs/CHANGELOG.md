@@ -9,6 +9,10 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Added : This section to enlist the additions/implementations 
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
+  ## [1.1.1] - 2021-08-12
+  
+  ### Added
+  - Static message on login screen for alerting the panelists for the csv file they will be sent after they connect their account.
   
 ## [1.1.0] - 2021-07-21
 
