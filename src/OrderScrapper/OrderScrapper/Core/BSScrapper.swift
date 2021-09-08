@@ -263,77 +263,82 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
         }
     }
     
-    func onHtmlScrappingSucess(response: String) {
+   func onHtmlScrappingSucess(response: String) {
         let jsonData = response.data(using: .utf8)!
-        let scrapeResponse = try? JSONDecoder().decode(JSCallback<[OrderDetails]>.self, from: jsonData)
-        print("#### onHtmlScrappingSucess BSCrapper ", response)
-        if scrapeResponse?.type == "order\(ScrappingPage.details.rawValue)" {
-            return
-        }
-        
-        var logEventAttributes:[String:String] = [EventConstant.OrderSource: self.orderSource.value,
-                                                  EventConstant.PanelistID: self.account!.panelistID,
-                                                  EventConstant.OrderSourceID: self.account!.userID]
-        if scrapeResponse?.type == "orderlist" {
-            if scrapeResponse?.status == "success" {
-                if let listener = self.scraperListener {
-                    listener.updateProgressStep(htmlScrappingStep: .listing)
-                }
-                
-                let timerValue = self.timer.stop()
-                let message = "\(Strings.ScrappingPageListing) + \(timerValue) + \(String(describing: scrapeResponse?.data?.count))"
-                SentrySDK.capture(message: message)
-                if let orderDetails = scrapeResponse?.data, !orderDetails.isEmpty {
-                    insertOrderDetailsToDB(orderDetails: orderDetails) { dataInserted in
-                        if dataInserted {
-                            self.didInsertToDB()
-                        } else {
-                            self.stopScrapping()
-                            let error = ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil)
-                            SentrySDK.capture(error: error)
-                            self.completionHandler((false, nil), error)
-                        }
-                    }
-                } else {
-                    self.stopScrapping()
-                    if let listener = self.scraperListener {
-                        listener.updateProgressStep(htmlScrappingStep: .complete)
-                    }
-                    self.completionHandler((true, .fetchCompleted), nil)
-                }
-                let amazonLogs = EventLogs(panelistId:account!.panelistID , platformId: account!.userID, section: SectionType.orderUpload.rawValue, type: FailureTypes.none.rawValue, status: EventState.success.rawValue, message: AppConstants.msgOrderListSuccess, fromDate: dateRange?.fromDate, toDate: dateRange?.toDate, scrappingType: ScrappingType.html.rawValue)
-                _ = AmazonService.logEvents(eventLogs: amazonLogs) { response, error in
-                    
-                }
-                logEventAttributes[EventConstant.Status] =  EventStatus.Success
-                logEventAttributes[EventConstant.Message] = message
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderListResultSuccess, eventAttributes: logEventAttributes)
-            } else if scrapeResponse?.status == "failed" {
-                let timerValue = self.timer.stop()
-                self.stopScrapping()
-                self.completionHandler((false, nil), ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
-                
-                var error: String
-                if let errorReason = scrapeResponse?.errorMessage {
-                    error = errorReason
-                } else {
-                    error = Strings.ErrorOrderExtractionFailed
-                }
-                
-                let message = "\(Strings.ScrappingPageListing) + \(timerValue) + \(String(describing: scrapeResponse?.data?.count)) + \(error) "
-                SentrySDK.capture(message: message)
-              
-                let panelistId = account!.panelistID
-                let userId = account!.userID
-                let amazonLogs = EventLogs(panelistId: panelistId , platformId: userId, section: SectionType.orderUpload.rawValue, type: FailureTypes.jsFailed.rawValue, status: EventState.fail.rawValue, message: error, fromDate: dateRange?.fromDate, toDate: dateRange?.toDate, scrappingType: ScrappingType.html.rawValue)
-                _ = AmazonService.logEvents(eventLogs: amazonLogs) { response, error in
-                    
-                }
-                logEventAttributes[EventConstant.ErrorReason] =  error
-                logEventAttributes[EventConstant.Status] =  EventStatus.Failure
-                logEventAttributes = [EventConstant.Message: message]
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResultFilure, eventAttributes: logEventAttributes)
+        do {
+            let scrapeResponse = try JSONDecoder().decode(JSCallback<[OrderDetails]>.self, from: jsonData)
+            print("#### onHtmlScrappingSucess BSCrapper ", response)
+            if scrapeResponse.type == "order\(ScrappingPage.details.rawValue)" {
+                return
             }
+            
+            var logEventAttributes:[String:String] = [EventConstant.OrderSource: self.orderSource.value,
+                                                      EventConstant.PanelistID: self.account!.panelistID,
+                                                      EventConstant.OrderSourceID: self.account!.userID]
+            if scrapeResponse.type == "orderlist" {
+                if scrapeResponse.status == "success" {
+                    if let listener = self.scraperListener {
+                        listener.updateProgressStep(htmlScrappingStep: .listing)
+                    }
+                    
+                    let timerValue = self.timer.stop()
+                    let message = "\(Strings.ScrappingPageListing) + \(timerValue) + \(String(describing: scrapeResponse.data?.count))"
+                    SentrySDK.capture(message: message)
+                    if let orderDetails = scrapeResponse.data, !orderDetails.isEmpty {
+                        insertOrderDetailsToDB(orderDetails: orderDetails) { dataInserted in
+                            if dataInserted {
+                                self.didInsertToDB()
+                            } else {
+                                self.stopScrapping()
+                                let error = ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil)
+                                SentrySDK.capture(error: error)
+                                self.completionHandler((false, nil), error)
+                            }
+                        }
+                    } else {
+                        self.stopScrapping()
+                        if let listener = self.scraperListener {
+                            listener.updateProgressStep(htmlScrappingStep: .complete)
+                        }
+                        self.completionHandler((true, .fetchCompleted), nil)
+                    }
+                    let amazonLogs = EventLogs(panelistId:account!.panelistID , platformId: account!.userID, section: SectionType.orderUpload.rawValue, type: FailureTypes.none.rawValue, status: EventState.success.rawValue, message: AppConstants.msgOrderListSuccess, fromDate: dateRange?.fromDate, toDate: dateRange?.toDate, scrappingType: ScrappingType.html.rawValue)
+                    _ = AmazonService.logEvents(eventLogs: amazonLogs) { response, error in
+                        
+                    }
+                    logEventAttributes[EventConstant.Status] =  EventStatus.Success
+                    logEventAttributes[EventConstant.Message] = message
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderListResultSuccess, eventAttributes: logEventAttributes)
+                } else if scrapeResponse.status == "failed" {
+                    let timerValue = self.timer.stop()
+                    self.stopScrapping()
+                    self.completionHandler((false, nil), ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
+                    
+                    var error: String
+                    if let errorReason = scrapeResponse.errorMessage {
+                        error = errorReason
+                    } else {
+                        error = Strings.ErrorOrderExtractionFailed
+                    }
+                    let message = "\(Strings.ScrappingPageListing) + \(timerValue) + \(String(describing: scrapeResponse.data?.count)) + \(error) "
+                    SentrySDK.capture(message: message)
+                    
+                    let panelistId = account!.panelistID
+                    let userId = account!.userID
+                    let amazonLogs = EventLogs(panelistId: panelistId , platformId: userId, section: SectionType.orderUpload.rawValue, type: FailureTypes.jsFailed.rawValue, status: EventState.fail.rawValue, message: error, fromDate: dateRange?.fromDate, toDate: dateRange?.toDate, scrappingType: ScrappingType.html.rawValue)
+                    _ = AmazonService.logEvents(eventLogs: amazonLogs) { response, error in
+                        
+                    }
+                    logEventAttributes[EventConstant.ErrorReason] =  error
+                    logEventAttributes[EventConstant.Status] =  EventStatus.Failure
+                    logEventAttributes = [EventConstant.Message: message]
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResultFilure, eventAttributes: logEventAttributes)
+                }
+            }
+        } catch {
+            let error = Strings.ErrorOrderExtractionFailed
+            SentrySDK.capture(message: error)
+            self.completionHandler((false, nil), ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
         }
     }
     

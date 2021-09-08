@@ -9,7 +9,14 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Added : This section to enlist the additions/implementations 
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
-  ## [1.1.1] - 2021-08-12
+
+## [1.1.2] - 2021-09-08
+  ### Added
+ - While scraping in background if user gets authentication challenge such as captcha, two-factor auth and approval auth, then maintained the scraping failure count in SDK and if in case the scraping failure count increases than the configured value then shown notification to user and on click of that notification navigated user to progress bar screen to handle auth challenge scenario.
+ - Implemented configured cool-off period while scraping in background.
+ - Implemented csv scraping in background mode if SDK gets configured scraping type as csv from backend.
+
+## [1.1.1] - 2021-08-12
   
   ### Added
   - Static message on login screen for alerting the panelists for the csv file they will be sent after they connect their account.
