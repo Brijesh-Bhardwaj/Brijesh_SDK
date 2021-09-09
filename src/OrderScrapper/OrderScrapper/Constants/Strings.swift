@@ -68,12 +68,11 @@ struct Strings {
     static let OnBackgroundScrappingTimeOfPeriod = "Cool oof Time period"
     static let OnNumberOfCaptchaRetry = "Captcha retry count"
     static let BGScrappingCoolOffTime = 300.0
-    
-    //Sentry error message
     static let ErrorAPIReponseDateRange = "Error while getting date range"
     static let ErrorAPIReposneUplodFile = "Error while uploading file"
     static let ErrorAPIReposnePIIList = "Error while getting PIIList"
     static let ErrorAPIReposneGetAccount = "Error while fetching accounts"
     static let ErrorAPIReposneRegisterConnection = "Error while registering connection"
     static let ErrorAPIResponseUpdateStatus = "Error while updating account status "
+    
 }

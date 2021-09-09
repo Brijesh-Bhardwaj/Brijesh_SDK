@@ -99,7 +99,7 @@
                                                         <rect key="frame" x="0.0" y="134" width="354" height="29"/>
                                                         <subviews>
                                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="jou-dq-vxd">
-                                                                <rect key="frame" x="0.0" y="0.0" width="138" height="29"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="130" height="29"/>
                                                                 <subviews>
                                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EZP-gw-xQe">
                                                                         <rect key="frame" x="0.0" y="4.5" width="20" height="20"/>
@@ -162,7 +162,7 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="9ad-8p-CKH">
-                                                <rect key="frame" x="30" y="263" width="354" height="0.0"/>
+                                               <rect key="frame" x="30" y="263" width="354" height="0.0"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fQs-iA-wpA">
                                                         <rect key="frame" x="0.0" y="0.0" width="354" height="0.0"/>
@@ -178,12 +178,14 @@
                                             <constraint firstItem="9ad-8p-CKH" firstAttribute="top" secondItem="RTY-yD-amg" secondAttribute="bottom" id="9vi-uB-I4I"/>
                                             <constraint firstItem="9ad-8p-CKH" firstAttribute="leading" secondItem="gq0-PW-dZT" secondAttribute="leading" constant="30" id="LVH-bf-fjT"/>
                                             <constraint firstItem="ULU-Ht-frQ" firstAttribute="leading" secondItem="gq0-PW-dZT" secondAttribute="leading" constant="30" id="N8N-vR-0hV"/>
+                                            <constraint firstAttribute="trailing" secondItem="kcG-Ti-nqo" secondAttribute="trailing" constant="30" id="XLi-O3-1fB"/>
                                             <constraint firstAttribute="trailing" secondItem="RTY-yD-amg" secondAttribute="trailing" constant="20" id="crz-8f-QqQ"/>
                                             <constraint firstItem="RTY-yD-amg" firstAttribute="top" secondItem="ULU-Ht-frQ" secondAttribute="bottom" id="d1g-cp-Pp0"/>
                                             <constraint firstAttribute="trailing" secondItem="ULU-Ht-frQ" secondAttribute="trailing" constant="30" id="g3s-yN-uE5"/>
                                             <constraint firstAttribute="trailing" secondItem="9ad-8p-CKH" secondAttribute="trailing" constant="30" id="jO0-qT-I5r"/>
                                             <constraint firstItem="ULU-Ht-frQ" firstAttribute="top" secondItem="gq0-PW-dZT" secondAttribute="top" constant="30" id="uTa-wS-OOV"/>
                                             <constraint firstItem="RTY-yD-amg" firstAttribute="leading" secondItem="gq0-PW-dZT" secondAttribute="leading" constant="16" id="xZ1-Mg-X8l"/>
+                                            <constraint firstItem="kcG-Ti-nqo" firstAttribute="top" secondItem="RTY-yD-amg" secondAttribute="bottom" id="y1e-th-Kfw"/>
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BNw-dy-Pbn" userLabel="HeaderView">
@@ -263,7 +265,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JFK-Vl-fMc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-500" y="58.374384236453203"/>
+            <point key="canvasLocation" x="-500.00000000000006" y="58.258928571428569"/>
         </scene>
         <!--Connect Account View Controller-->
         <scene sceneID="jZy-dp-I0v">
