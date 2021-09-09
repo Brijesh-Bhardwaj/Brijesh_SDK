@@ -17,4 +17,5 @@ struct EventConstant {
     static let ErrorReason = "error_reason"
     static let FileName = "file_name"
     static let URL = "url"
+    static let Message = "message"
 }

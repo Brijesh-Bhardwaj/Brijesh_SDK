@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import Sentry
 
 public class OrdersExtractor {
     private init() {}
@@ -23,6 +24,15 @@ public class OrdersExtractor {
                                   viewPresenter: ViewPresenter,
                                   analyticsProvider: AnalyticsProvider?,
                                   orderExtractionConfig: OrderExtractorConfig) throws {
+        SentrySDK.start { options in
+            options.dsn = AppConstants.dsnURL
+            options.debug = true // Enabled debug when first installing is always helpful
+            options.attachStacktrace = true
+            options.tracesSampleRate = AppConstants.tracesSampleRate
+            options.enableAutoSessionTracking = true
+
+        }
+        
         let authToken = authProvider.getAuthToken()
         let panelistId = authProvider.getPanelistID()
         let baseUrl = orderExtractionConfig.baseURL
@@ -32,10 +42,14 @@ public class OrdersExtractor {
         {
             LibContext.shared.orderExtractorConfig = orderExtractionConfig
         } else {
-            throw ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
+            let error = ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
+            SentrySDK.capture(error: error)
+            throw error
         }
         if (authToken.isEmpty || panelistId.isEmpty) {
-            throw ASLException(errorMessage: Strings.ErrorAuthProviderNotImplemented, errorType: nil)
+            let error = ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
+            SentrySDK.capture(error: error)
+            throw error
         }
         
         AmazonOrderScrapper.shared.initialize(authProvider: authProvider,
@@ -48,14 +62,22 @@ public class OrdersExtractor {
         }
         registerFonts()
         
+        //get Scrapper config details
+        ConfigManager.shared.loadConfigs(orderSource: .Amazon) { configurations, error in
+            
+        }
+        //get scripts for the order sources
+        BSScriptFileManager.shared.loadScriptFile()
+
         _ = AmazonService.getConfigs() {configs, error in
             if let configs = configs {
-                print("### Timeout ",configs.timeoutValue!)
                 if let timeoutValue = configs.timeoutValue {
                     LibContext.shared.timeoutValue = timeoutValue
                 } else {
                     LibContext.shared.timeoutValue = AppConstants.timeoutCounter
                 }
+            } else {
+                LibContext.shared.timeoutValue = AppConstants.timeoutCounter
             }
         }
         
@@ -146,7 +168,9 @@ public class OrdersExtractor {
                 
             }
         } else {
-            throw ASLException(errorMessage: Strings.ErrorLibNotInitialized, errorType: nil)
+            let error = ASLException(errorMessage: Strings.ErrorLibNotInitialized, errorType: nil)
+            SentrySDK.capture(error: error)
+            throw error
         }
     }
     
@@ -166,7 +190,9 @@ public class OrdersExtractor {
             
             account.connect(orderExtractionListener: orderExtractionListner)
         } else {
-            throw ASLException(errorMessage: Strings.ErrorLibNotInitialized, errorType: nil)
+            let error =  ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
+            SentrySDK.capture(error:error)
+            throw error
         }
     }
     

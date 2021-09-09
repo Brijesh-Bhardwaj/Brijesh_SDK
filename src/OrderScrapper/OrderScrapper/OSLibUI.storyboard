@@ -55,7 +55,7 @@
                                                             </label>
                                                         </subviews>
                                                     </stackView>
-                                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email or mobile number" minimumFontSize="14" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="lXm-EU-1TR">
+                                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email" minimumFontSize="14" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="lXm-EU-1TR">
                                                         <rect key="frame" x="0.0" y="34" width="354" height="40"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="40" id="bCQ-AL-3YF"/>
@@ -114,7 +114,7 @@
                                                                         </connections>
                                                                     </button>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Show password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HYH-OJ-IiP">
-                                                                        <rect key="frame" x="30" y="5.5" width="100" height="18"/>
+                                                                        <rect key="frame" x="30" y="6" width="108" height="17.5"/>
                                                                         <fontDescription key="fontDescription" name="SFProRounded-Regular" family="SF Pro Rounded" pointSize="15"/>
                                                                         <nil key="textColor"/>
                                                                         <nil key="highlightedColor"/>
@@ -161,8 +161,8 @@
                                                     </button>
                                                 </subviews>
                                             </stackView>
-                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="kcG-Ti-nqo">
-                                                <rect key="frame" x="30" y="263" width="354" height="0.0"/>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="9ad-8p-CKH">
+                                               <rect key="frame" x="30" y="263" width="354" height="0.0"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fQs-iA-wpA">
                                                         <rect key="frame" x="0.0" y="0.0" width="354" height="0.0"/>
@@ -175,12 +175,14 @@
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
+                                            <constraint firstItem="9ad-8p-CKH" firstAttribute="top" secondItem="RTY-yD-amg" secondAttribute="bottom" id="9vi-uB-I4I"/>
+                                            <constraint firstItem="9ad-8p-CKH" firstAttribute="leading" secondItem="gq0-PW-dZT" secondAttribute="leading" constant="30" id="LVH-bf-fjT"/>
                                             <constraint firstItem="ULU-Ht-frQ" firstAttribute="leading" secondItem="gq0-PW-dZT" secondAttribute="leading" constant="30" id="N8N-vR-0hV"/>
                                             <constraint firstAttribute="trailing" secondItem="kcG-Ti-nqo" secondAttribute="trailing" constant="30" id="XLi-O3-1fB"/>
                                             <constraint firstAttribute="trailing" secondItem="RTY-yD-amg" secondAttribute="trailing" constant="20" id="crz-8f-QqQ"/>
                                             <constraint firstItem="RTY-yD-amg" firstAttribute="top" secondItem="ULU-Ht-frQ" secondAttribute="bottom" id="d1g-cp-Pp0"/>
                                             <constraint firstAttribute="trailing" secondItem="ULU-Ht-frQ" secondAttribute="trailing" constant="30" id="g3s-yN-uE5"/>
-                                            <constraint firstItem="kcG-Ti-nqo" firstAttribute="leading" secondItem="gq0-PW-dZT" secondAttribute="leading" constant="30" id="rVI-Qa-uID"/>
+                                            <constraint firstAttribute="trailing" secondItem="9ad-8p-CKH" secondAttribute="trailing" constant="30" id="jO0-qT-I5r"/>
                                             <constraint firstItem="ULU-Ht-frQ" firstAttribute="top" secondItem="gq0-PW-dZT" secondAttribute="top" constant="30" id="uTa-wS-OOV"/>
                                             <constraint firstItem="RTY-yD-amg" firstAttribute="leading" secondItem="gq0-PW-dZT" secondAttribute="leading" constant="16" id="xZ1-Mg-X8l"/>
                                             <constraint firstItem="kcG-Ti-nqo" firstAttribute="top" secondItem="RTY-yD-amg" secondAttribute="bottom" id="y1e-th-Kfw"/>
@@ -201,7 +203,7 @@
                                                 </connections>
                                             </button>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Connect Amazon Account" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cUw-oV-Tub">
-                                                <rect key="frame" x="60" y="52.5" width="237.5" height="24"/>
+                                                <rect key="frame" x="60" y="53" width="234.5" height="23.5"/>
                                                 <fontDescription key="fontDescription" name="SFProRounded-Bold" family="SF Pro Rounded" pointSize="20"/>
                                                 <color key="textColor" red="0.13725490196078433" green="0.20784313725490194" blue="0.34509803921568627" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>

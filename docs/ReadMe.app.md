@@ -106,12 +106,14 @@ All protocols needed to be implemented by the application are
   - ConnectedButException - Account connected before but SDK encountered issues with the account.
  - Use the `hasNeverConnected` flag, to check if the panelist has never connected any account before.
  
-- To initiate an order-extraction operation on a connected account, use instance method `fetchOrders` on account reference as below:
+- To initiate an order-extraction operation on a connected account silently i.e without any UI and without user-intervention, use instance method `fetchOrders` on account reference as below:
  ```
  account.fetchOrders(orderExtractionListener)
  ```
- - where orderExtractionListener is a reference implementing protocol `OrderExtractionListener`
-
+   - where orderExtractionListener is a reference implementing protocol `OrderExtractionListener`
+   - for this method, the SDK invokes the background order scrapping mechanism
+   - **the SDK uses the same protocol to provide callback for foreground and background mechanism of scrapping.  In order to distinguish between them, it is recommended to pass differerent protocol instances.** 
+ 
 ### SDK Callback Methods
 
 - SDK provides callback methods to the application to notify the status of the operations.
@@ -135,4 +137,4 @@ All protocols needed to be implemented by the application are
    
  > func onAccountDisconnectionFailed(account : Account, error: ASLException)
    
-  This method is called when the account disconnection has failed
+  This method is called when the account disconnection has failed  

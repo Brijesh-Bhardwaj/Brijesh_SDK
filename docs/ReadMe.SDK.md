@@ -39,10 +39,15 @@ Currently supported order sources are
 
 SDK provides order fetch feature through :
 - Order report generation page by downloading the order items in a CSV format
+- Extracting the details by navigating to order details pages and scrapping the html silently (without UI and user intervention)
+
+- **Note:** The Non-UI/Silent scrapping mechanism is used for already connected accounts. When the user is connecting the account, the download CSV mechanism is used. 
 
 ### Orders fetching mechanism
 
 #### Amazon
+
+##### Download CSV mechanism (UI/Foreground mechanism)
 
 SDK fetches orders as a CSV file from Amazon's order-report generation page as below:
 - For the current panelist-id and amazon-id, SDK fetches the desired start and end dates of reports from API.
@@ -58,6 +63,17 @@ SDK fetches orders as a CSV file from Amazon's order-report generation page as b
 - The edited CSV is then uploaded to the backend through an upload API.
 - Post upload irrespective of failure/success, the file is deleted from the internal storage too.
 
+##### HTML scrapping mechanism (Non-UI/Background mechanism)
+
+SDK scrapes the Amazon order details HTML pages as below:
+- Downloads the scripts required for the scrapping from API.
+- Gets the configurations required for navigation to the login and orderlisting pages from API.
+- Checks if scrapping for the current panelist is allowed or not from API.
+- Authenticates the current panelist using the stored amazon-id and password.
+- Navigates to orderlisting page and injects javascript that scrapes the orders list and extracts the order IDs and order detail URLs
+- Navigates to order details URLs one by one and injects javascript that scrapes the required order details.
+- Uploads the received order details from previous step until all details are uploaded to backend.
+
 # Notes
 
 - Downloaded order reports are always deleted after upload. 
@@ -66,8 +82,8 @@ SDK fetches orders as a CSV file from Amazon's order-report generation page as b
  Hence if the API responses indicate no scraping for a particular request then the SDK would redirect users back to the previous screen with an appropriate message.
 - Some dependencies needed by the library will have to be linked into the application. More details in ReadMe.app.md
 - For event logging/analytics, the SDK utilizes the application's event logging/analytics mechanism. The application should implement the provided SDK protocol method to log the SDK events.
+- Background order scrapping is done only for the already connected accounts
  
-
 # Usage 
 
 - Refer to ReadMe.SDK.build.md file for SDK build instructions
