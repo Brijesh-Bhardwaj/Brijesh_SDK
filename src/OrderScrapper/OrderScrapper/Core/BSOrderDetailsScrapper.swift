@@ -96,9 +96,9 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                         if status == "success" {
                             let timerValue = self.timer.stop()
                             let orderDataCount = jsCallBackResult["data"] as? Dictionary<String,Any>
-                            let message = "\(Strings.ScrappingPageListing) + \(timerValue) + \(String(describing: orderDataCount?.count)))"
+                            let message = "\(Strings.ScrappingPageDetails) + \(timerValue) + \(String(describing: orderDataCount?.count)))"
                             SentrySDK.capture(message: message)
-                            let logEventAttributes = [EventConstant.Message: message, EventConstant.OrderSource: orderDetail.orderSource ?? ""]
+                            let logEventAttributes = [EventConstant.Message: message, EventConstant.OrderSource: orderDetail.orderSource ?? "", EventConstant.Status: EventStatus.Success]
                             FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResultSuccess, eventAttributes: logEventAttributes)
                             print("### onHtmlScrappingSucess for OrderDetail", response)
                             if let orderDetails = jsCallBackResult["data"] as? Dictionary<String,Any> {

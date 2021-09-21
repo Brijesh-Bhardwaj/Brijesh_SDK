@@ -461,6 +461,9 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             
             self.isFailureButAccountConnected = true
             
+            // On timeout cancel all the ongoing API calls
+            AmazonService.cancelAPI()
+
             //Timeout happens and if account is connected
             //then update order status as failed in the backend
             let amazonId = self.viewModel.userAccount.userID
@@ -469,7 +472,6 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                                            message: AppConstants.msgTimeout,
                                            orderStatus: OrderStatus.Failed.rawValue) { response, error in
             }
-            AmazonService.cancelAPI()
             let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrappingType: ScrappingType.report.rawValue)
             self.logEvents(logEvents: eventLogs)
             DispatchQueue.main.async {

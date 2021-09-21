@@ -1,3 +1,1 @@
- - While scraping in background if user gets authentication challenge such as captcha, two-factor auth and approval auth, then maintained the scraping failure count in SDK and if in case the scraping failure count increases than the configured value then shown notification to user and on click of that notification navigated user to progress bar screen to handle auth challenge scenario.
- - Implemented configured cool-off period while scraping in background.
- - Implemented csv scraping in background mode if SDK gets configured scraping type as csv from backend.
+- On timeout update status API not getting called issue fixed

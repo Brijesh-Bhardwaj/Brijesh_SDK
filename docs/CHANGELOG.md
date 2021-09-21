@@ -10,6 +10,11 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
 
+## [1.1.3] - 2021-09-17
+
+  ### Fixed
+  - On timeout update status API not getting called issue fixed 
+
 ## [1.1.2] - 2021-09-08
   ### Added
  - While scraping in background if user gets authentication challenge such as captcha, two-factor auth and approval auth, then maintained the scraping failure count in SDK and if in case the scraping failure count increases than the configured value then shown notification to user and on click of that notification navigated user to progress bar screen to handle auth challenge scenario.
