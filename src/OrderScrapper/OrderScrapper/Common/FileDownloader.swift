@@ -24,7 +24,7 @@ class FileDownloader {
                 completion(false, nil)
                 print(AppConstants.tag, "downloadReportFile", error.debugDescription)
                 if let error = error {
-                    SentrySDK.capture(error: error)
+                    FirebaseAnalyticsUtil.logSentryError(error: error)
                 }
             }
         }

@@ -35,12 +35,12 @@ public class OrdersExtractor {
             LibContext.shared.orderExtractorConfig = orderExtractionConfig
         } else {
             let error = ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
-            SentrySDK.capture(error: error)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
             throw error
         }
         if (authToken.isEmpty || panelistId.isEmpty) {
             let error = ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
-            SentrySDK.capture(error: error)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
             throw error
         }
         
@@ -163,7 +163,7 @@ public class OrdersExtractor {
             }
         } else {
             let error = ASLException(errorMessage: Strings.ErrorLibNotInitialized, errorType: nil)
-            SentrySDK.capture(error: error)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
             throw error
         }
     }
@@ -185,7 +185,7 @@ public class OrdersExtractor {
             account.connect(orderExtractionListener: orderExtractionListner)
         } else {
             let error =  ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
-            SentrySDK.capture(error:error)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
             throw error
         }
     }

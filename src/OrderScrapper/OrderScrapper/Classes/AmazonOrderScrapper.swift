@@ -76,7 +76,7 @@ class AmazonOrderScrapper {
                 }
                 let error = ASLException(errorMessage: errorMsg, errorType: nil)
                 accountDisconnectedListener.onAccountDisconnectionFailed(account: account, error: error)
-                SentrySDK.capture(error: error)
+                FirebaseAnalyticsUtil.logSentryError(error: error)
             }
         }
     }
@@ -171,7 +171,7 @@ class AmazonOrderScrapper {
             } else {
                 let error = ASLException(errorMessage: error?.errorMessage ?? "", errorType: error?.errorType)
                 orderExtractionListener.onOrderExtractionFailure(error: error, account: account)
-                SentrySDK.capture(error: error)
+                FirebaseAnalyticsUtil.logSentryError(error: error)
             }
             self.viewPresenter.dismissView()
         }

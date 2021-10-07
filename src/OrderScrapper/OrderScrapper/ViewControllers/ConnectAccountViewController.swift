@@ -100,7 +100,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             } else {
                 print(AppConstants.tag, "evaluateJavaScript", error.debugDescription)
                 if let error = error {
-                    SentrySDK.capture(error: error)
+                    FirebaseAnalyticsUtil.logSentryError(error: error)
                 }
                 
             }
@@ -223,7 +223,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                     status = EventStatus.Failure
                     print(AppConstants.tag, "evaluateJavaScript", error.debugDescription)
                     if let error = error {
-                        SentrySDK.capture(error: error)
+                        FirebaseAnalyticsUtil.logSentryError(error: error)
                     }
                 }
                 switch authState {
@@ -504,12 +504,12 @@ extension ConnectAccountViewController: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         print(AppConstants.tag,"An error occurred during navigation", error.localizedDescription)
-        SentrySDK.capture(error: error)
+        FirebaseAnalyticsUtil.logSentryError(error: error)
     }
     
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         print(AppConstants.tag,"An error occurred during the early navigation process", error.localizedDescription)
-        SentrySDK.capture(error: error)
+        FirebaseAnalyticsUtil.logSentryError(error: error)
     }
     
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {

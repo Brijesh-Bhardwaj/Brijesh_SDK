@@ -54,7 +54,7 @@ class ConfigManager {
                 completion(configs, nil)
             } else {
                 let error = APIError(error: Strings.ErrorNoConfigurationsFound)
-                SentrySDK.capture(error: error)
+                FirebaseAnalyticsUtil.logSentryError(error: error)
                 completion(nil, error)
             }
         } else {
@@ -64,7 +64,7 @@ class ConfigManager {
                     completion(configs, nil)
                 } else {
                     let error = APIError(error: Strings.ErrorNoConfigurationsFound)
-                    SentrySDK.capture(error: error)
+                    FirebaseAnalyticsUtil.logSentryError(error: error)
                     completion(nil, error)
                 }
             }

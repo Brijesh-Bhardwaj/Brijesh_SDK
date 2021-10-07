@@ -51,7 +51,7 @@ class CoreDataManager {
             }
         } catch let error {
             print(AppConstants.tag, "addAccount", error.localizedDescription)
-            SentrySDK.capture(error: error)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
         }
         if let account = account {
             account.userId = userId
@@ -63,7 +63,7 @@ class CoreDataManager {
                 try context.save()
             } catch let error {
                 print(AppConstants.tag, "addAccount", error.localizedDescription)
-                SentrySDK.capture(error: error)
+                FirebaseAnalyticsUtil.logSentryError(error: error)
             }
         }
     }
@@ -88,8 +88,8 @@ class CoreDataManager {
             accounts = try context.fetch(fetchRequest)
         } catch let fetchErr {
             print("Failed to fetch Account:",fetchErr)
-            SentrySDK.capture(message:AppConstants.fetchAccounts)
-            SentrySDK.capture(error: fetchErr)
+            FirebaseAnalyticsUtil.logSentryMessage(message: AppConstants.fetchAccounts)
+            FirebaseAnalyticsUtil.logSentryError(error: fetchErr)
         }
         return accounts
     }
@@ -132,7 +132,7 @@ class CoreDataManager {
             try context.save()
         } catch let error as NSError  {
             print(error.userInfo)
-            SentrySDK.capture(error: error)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
         }
         
     }
@@ -154,7 +154,7 @@ class CoreDataManager {
             try context.save()
         } catch let error as NSError  {
             print(error.userInfo)
-            SentrySDK.capture(error: error)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
         }
         
     }
@@ -183,7 +183,7 @@ class CoreDataManager {
                     try context.save()
                 } catch let error {
                     print(AppConstants.tag, "addOrderDetails", error.localizedDescription)
-                    SentrySDK.capture(error: error)
+                    FirebaseAnalyticsUtil.logSentryError(error: error)
                 }
             }
             completionHandler(true)
@@ -208,8 +208,8 @@ class CoreDataManager {
             orderDetails = try context.fetch(fetchRequest)
         } catch let error {
             print("Failed to fetch orderDetails",error)
-            SentrySDK.capture(message: AppConstants.fetchOrderDetails)
-            SentrySDK.capture(error: error)
+            FirebaseAnalyticsUtil.logSentryMessage(message:  AppConstants.fetchOrderDetails)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
         }
         return orderDetails
     }
@@ -234,7 +234,7 @@ class CoreDataManager {
                 try context.save()
             } catch let error {
                 print("Failed to save orderDetails",error)
-                SentrySDK.capture(error: error)
+                FirebaseAnalyticsUtil.logSentryError(error: error)
             }
         }
     }
@@ -257,7 +257,7 @@ class CoreDataManager {
                 try context.save()
             } catch let error as NSError  {
                 print(error.userInfo)
-                SentrySDK.capture(error: error)
+                FirebaseAnalyticsUtil.logSentryError(error: error)
             }
         }
     }
