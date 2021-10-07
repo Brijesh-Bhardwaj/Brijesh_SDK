@@ -1,1 +1,1 @@
-- On timeout update status API not getting called issue fixed
+- Sentry configs changes added such that if Sentry is enable in get_config API response then only Sentry will log the errors and events
