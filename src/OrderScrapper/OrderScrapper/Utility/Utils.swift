@@ -5,6 +5,7 @@
 
 import Foundation
 import SwiftUI
+import Sentry
 
 class Utils {
     //Returns string value for the key

@@ -24,14 +24,6 @@ public class OrdersExtractor {
                                   viewPresenter: ViewPresenter,
                                   analyticsProvider: AnalyticsProvider?,
                                   orderExtractionConfig: OrderExtractorConfig) throws {
-        SentrySDK.start { options in
-            options.dsn = AppConstants.dsnURL
-            options.debug = true // Enabled debug when first installing is always helpful
-            options.attachStacktrace = true
-            options.tracesSampleRate = AppConstants.tracesSampleRate
-            options.enableAutoSessionTracking = true
-
-        }
         
         let authToken = authProvider.getAuthToken()
         let panelistId = authProvider.getPanelistID()
@@ -63,8 +55,10 @@ public class OrdersExtractor {
         registerFonts()
         
         //get Scrapper config details
-        ConfigManager.shared.loadConfigs(orderSource: .Amazon) { configurations, error in
-            
+        ConfigManager.shared.loadConfigs(orderSource: .Amazon) { scrapeConfigs, error in
+            if let scrapeConfigs = scrapeConfigs {
+                FirebaseAnalyticsUtil.initSentrySDK(scrapeConfigs: scrapeConfigs)
+            }
         }
         //get scripts for the order sources
         BSScriptFileManager.shared.loadScriptFile()
@@ -206,4 +200,6 @@ public class OrdersExtractor {
             //Todo
         }
     }
+    
+    
 }

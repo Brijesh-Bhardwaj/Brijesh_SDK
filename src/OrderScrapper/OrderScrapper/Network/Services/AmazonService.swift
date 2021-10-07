@@ -168,13 +168,13 @@ class AmazonService {
         return client
     }
     
-   static func getScrapperConfig(orderSource: [String], completionHandler: @escaping ([PlatformSourceConfig]?, Error?) -> Void) -> APIClient {
+   static func getScrapperConfig(orderSource: [String], completionHandler: @escaping (ScrapeConfigs?, Error?) -> Void) -> APIClient {
         
-        let client = NetworkClient<APIResponse<[PlatformSourceConfig]>>(relativeURL: ScrapperConfigURL, requestMethod: .post)
+        let client = NetworkClient<APIResponse<ScrapeConfigs>>(relativeURL: ScrapperConfigURL, requestMethod: .post)
         client.body = [JSONKeys.configDetails.rawValue: orderSource]
         
         client.executeAPI() { (response, error) in
-            if let response = response as? APIResponse<[PlatformSourceConfig]> {
+            if let response = response as? APIResponse<ScrapeConfigs> {
                 if response.isError {
                     completionHandler(nil, APIError(error: response.error ?? "Error"))
                     print(AppConstants.tag, "getScrapperConfig", response.error ?? "Error")

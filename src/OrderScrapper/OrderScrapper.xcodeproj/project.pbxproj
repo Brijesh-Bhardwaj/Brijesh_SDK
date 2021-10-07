@@ -55,6 +55,8 @@
 		1CA1EDF1260E16110000C859 /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1EDF0260E16110000C859 /* EventType.swift */; };
 		1CA1EDF4260E16EF0000C859 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA1EDF3260E16EF0000C859 /* Event.swift */; };
 		1CA860C8260D03DB00261595 /* FirebaseAnalyticsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA860C7260D03DB00261595 /* FirebaseAnalyticsUtil.swift */; };
+		1CAEB81A2705EE300028C1FE /* ScrapeConfigs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CAEB8192705EE300028C1FE /* ScrapeConfigs.swift */; };
+		1CB08A892705E50B00FA65DF /* SentryConfigs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB08A882705E50B00FA65DF /* SentryConfigs.swift */; };
 		1CB5FFE9263BEE710072F35C /* ErrorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB5FFE8263BEE710072F35C /* ErrorType.swift */; };
 		1CB9A7A8262427B60085E494 /* OrderStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB9A7A7262427B60085E494 /* OrderStatus.swift */; };
 		1CBF6D4325F5FFBE001A801B /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CBF6D3925F5FFBE001A801B /* OrderScrapper.framework */; };
@@ -222,6 +224,8 @@
 		1CA860A5260CEE1400261595 /* GoogleAppMeasurement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAppMeasurement.framework; path = Carthage/Build/iOS/GoogleAppMeasurement.framework; sourceTree = "<group>"; };
 		1CA860A6260CEE1400261595 /* FirebaseCoreDiagnostics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCoreDiagnostics.framework; path = Carthage/Build/iOS/FirebaseCoreDiagnostics.framework; sourceTree = "<group>"; };
 		1CA860C7260D03DB00261595 /* FirebaseAnalyticsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseAnalyticsUtil.swift; sourceTree = "<group>"; };
+		1CAEB8192705EE300028C1FE /* ScrapeConfigs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrapeConfigs.swift; sourceTree = "<group>"; };
+		1CB08A882705E50B00FA65DF /* SentryConfigs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentryConfigs.swift; sourceTree = "<group>"; };
 		1CB5FFE8263BEE710072F35C /* ErrorType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorType.swift; sourceTree = "<group>"; };
 		1CB9A7A7262427B60085E494 /* OrderStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderStatus.swift; sourceTree = "<group>"; };
 		1CBF6D3925F5FFBE001A801B /* OrderScrapper.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OrderScrapper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -388,6 +392,8 @@
 				1C4F89A02654E91100925FAB /* ScrapperConfigs.swift */,
 				1C4F89A42654E98D00925FAB /* PlatformSourceConfig.swift */,
 				1C4F89AA2654EA0C00925FAB /* Configurations.swift */,
+				1CB08A882705E50B00FA65DF /* SentryConfigs.swift */,
+				1CAEB8192705EE300028C1FE /* ScrapeConfigs.swift */,
 			);
 			path = ScrapperConfigModels;
 			sourceTree = "<group>";
@@ -908,7 +914,9 @@
 				E148DB6D25FF2BFD001430BE /* AccountDisconnectedListener.swift in Sources */,
 				1C147C42264BA68E0003EDF7 /* JSFileUtils.swift in Sources */,
 				E15343E8261466700074F3ED /* OrderFetchSuccessType.swift in Sources */,
+				1CB08A892705E50B00FA65DF /* SentryConfigs.swift in Sources */,
 				E148DC9C2605CB1E001430BE /* FileDownloader.swift in Sources */,
+				1CAEB81A2705EE300028C1FE /* ScrapeConfigs.swift in Sources */,
 				9DACB06E26C5200B004ED440 /* AccountReconnectListener.swift in Sources */,
 				1C4F89AB2654EA0C00925FAB /* Configurations.swift in Sources */,
 				E1155D28261DC1F200739735 /* GradientButton.swift in Sources */,
