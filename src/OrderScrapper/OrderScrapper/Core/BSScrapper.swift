@@ -76,13 +76,13 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     
     func getAuthenticator() throws -> BSAuthenticator {
         let error = ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
-        SentrySDK.capture(error: error)
+        FirebaseAnalyticsUtil.logSentryError(error: error)
         throw error
     }
     
     func getOrderSource() throws -> OrderSource {
         let error = ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
-        SentrySDK.capture(error: error)
+        FirebaseAnalyticsUtil.logSentryError(error: error)
         throw error
     }
     
@@ -101,7 +101,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
                 let error = ASLException(
                     errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil)
                 self.completionHandler((false, nil), error)
-                SentrySDK.capture(error: error)
+                FirebaseAnalyticsUtil.logSentryError(error: error)
                 
                 
             }
@@ -120,7 +120,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
                 self.stopScrapping()
                 let error = ASLException(
                     errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil)
-                SentrySDK.capture(error: error)
+                FirebaseAnalyticsUtil.logSentryError(error: error)
                 self.completionHandler((false, nil),error )
                 
             }
@@ -139,7 +139,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
                     self.stopScrapping()
                     let error = ASLException(
                         errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil)
-                    SentrySDK.capture(error: error)
+                    FirebaseAnalyticsUtil.logSentryError(error: error)
                     self.completionHandler((false, nil), error)
                 }
             }
@@ -147,7 +147,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
             self.stopScrapping()
             let error =  ASLException(
                 errorMessage: Strings.ErrorFetchSkipped, errorType: nil)
-            SentrySDK.capture(error: error)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
             self.completionHandler((false, .fetchSkipped), error)
         }
     }
@@ -182,7 +182,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
                 self.stopScrapping()
                 let error = ASLException(
                     errorMessage: Strings.ErrorNoConfigurationsFound, errorType: nil)
-                SentrySDK.capture(error: error)
+                FirebaseAnalyticsUtil.logSentryError(error: error)
                 self.completionHandler((false, nil), error)
             }
         }
@@ -197,7 +197,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
             
         }
         let error = ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil)
-        SentrySDK.capture(error: error)
+        FirebaseAnalyticsUtil.logSentryError(error: error)
         self.completionHandler((false, nil), error)
     }
     
@@ -205,7 +205,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
         if isError {
             self.stopScrapping()
             let error = ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil)
-            SentrySDK.capture(error: error)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
             self.completionHandler((false, nil), error)
         }
     }
@@ -283,7 +283,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     
                     let timerValue = self.timer.stop()
                     let message = "\(Strings.ScrappingPageListing) + \(timerValue) + \(String(describing: scrapeResponse.data?.count))"
-                    SentrySDK.capture(message: message)
+                    FirebaseAnalyticsUtil.logSentryMessage(message: message)
                     if let orderDetails = scrapeResponse.data, !orderDetails.isEmpty {
                         insertOrderDetailsToDB(orderDetails: orderDetails) { dataInserted in
                             if dataInserted {
@@ -291,7 +291,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                             } else {
                                 self.stopScrapping()
                                 let error = ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil)
-                                SentrySDK.capture(error: error)
+                                FirebaseAnalyticsUtil.logSentryError(error: error)
                                 self.completionHandler((false, nil), error)
                             }
                         }
@@ -321,7 +321,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                         error = Strings.ErrorOrderExtractionFailed
                     }
                     let message = "\(Strings.ScrappingPageListing) + \(timerValue) + \(String(describing: scrapeResponse.data?.count)) + \(error) "
-                    SentrySDK.capture(message: message)
+                    FirebaseAnalyticsUtil.logSentryMessage(message: message)
                     
                     let panelistId = account!.panelistID
                     let userId = account!.userID
@@ -337,14 +337,14 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
             }
         } catch {
             let error = Strings.ErrorOrderExtractionFailed
-            SentrySDK.capture(message: error)
+            FirebaseAnalyticsUtil.logSentryMessage(message: error)
             self.completionHandler((false, nil), ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
         }
     }
     
     func onHtmlScrappingFailure(error: ASLException) {
         self.stopScrapping()
-        SentrySDK.capture(error: error)
+        FirebaseAnalyticsUtil.logSentryError(error: error)
         let eventLogs = EventLogs(panelistId: self.account!.panelistID, platformId: self.account!.userID, section: SectionType.orderUpload.rawValue , type: error.errorEventLog!.rawValue, status: EventState.fail.rawValue, message: error.errorMessage, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrappingType: error.errorScrappingType?.rawValue)
         _ = AmazonService.logEvents(eventLogs: eventLogs) { response, error in
                 //TODO

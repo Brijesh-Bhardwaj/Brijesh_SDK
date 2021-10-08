@@ -31,7 +31,7 @@ class BSBaseAuthenticator: NSObject, BSAuthenticator {
     
     func onPageFinish(url: String) throws {
         let error = ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
-        SentrySDK.capture(error: error)
+        FirebaseAnalyticsUtil.logSentryError(error: error)
         throw error
     }
 }
@@ -49,7 +49,7 @@ extension BSBaseAuthenticator: BSWebNavigationObserver {
     }
     
     func didFailPageNavigation(for url: URL?, withError error: Error) {
-        SentrySDK.capture(error: error)
+        FirebaseAnalyticsUtil.logSentryError(error: error)
         print(AppConstants.tag, Strings.ErrorDuringNavigation, error.localizedDescription)
     }
 }

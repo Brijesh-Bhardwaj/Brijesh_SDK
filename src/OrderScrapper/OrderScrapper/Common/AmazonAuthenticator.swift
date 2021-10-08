@@ -153,7 +153,7 @@ internal class AmazonAuthenticator: Authenticator {
                 try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: panelistId)
             } catch let error {
                 print(AppConstants.tag, "updateAccountWithExceptionState", error.localizedDescription)
-                SentrySDK.capture(error: error)
+                FirebaseAnalyticsUtil.logSentryError(error: error)
             }
         }
         _ = AmazonService.updateStatus(amazonId: userId, status: status

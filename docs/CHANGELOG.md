@@ -9,6 +9,17 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Added : This section to enlist the additions/implementations 
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
+  
+ ## [1.1.4] - 2021-10-07
+ 
+  ### Fixed
+  -Sentry configs changes added such that if Sentry is enable in get_config API response then only Sentry will log the errors and events
+
+
+## [1.1.3] - 2021-09-17
+
+  ### Fixed
+  - On timeout update status API not getting called issue fixed 
 
 ## [1.1.2] - 2021-09-08
   ### Added

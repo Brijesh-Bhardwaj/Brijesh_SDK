@@ -105,7 +105,7 @@ class AmazonNavigationHelper: NavigationHelper {
                     } else {
                         self.viewModel.authError.send((isError: true, errorMsg: AppConstants.userAccountConnected))
                         if let error = error {
-                            SentrySDK.capture(error: error)
+                            FirebaseAnalyticsUtil.logSentryError(error: error)
                         }
                         
                     }

@@ -58,4 +58,31 @@ class FirebaseAnalyticsUtil {
         eventUser.email = orderSourceId
         SentrySDK.setUser(eventUser)
     }
+
+    static func logSentryError(error: Error) {
+        SentrySDK.capture(error: error)
+    }
+    
+    static func logSentryException(exception: NSException) {
+        SentrySDK.capture(exception: exception)
+    }
+    
+    static func logSentryMessage(message: String) {
+        SentrySDK.capture(message: message)
+    }
+ 
+    static func initSentrySDK(scrapeConfigs: ScrapeConfigs) {
+        let sentryConfigs = scrapeConfigs.sentry
+        if sentryConfigs != nil {
+            if sentryConfigs.enabled {
+                SentrySDK.start { options in
+                    options.dsn = sentryConfigs.iosDSN
+                    options.debug = true // Enabled debug when first installing is always helpful
+                    options.attachStacktrace = true
+                    options.tracesSampleRate = AppConstants.tracesSampleRate
+                    options.enableAutoSessionTracking = true
+                }
+            }
+        }
+    }
 }

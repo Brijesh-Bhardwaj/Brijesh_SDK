@@ -123,7 +123,7 @@ class NetworkClient<T: Decodable>: APIClient {
                 } else {
                     completionHandler(nil, error)
                     if let error = error {
-                        SentrySDK.capture(error: error)
+                        FirebaseAnalyticsUtil.logSentryError(error: error)
                     }
                 }
             }
@@ -133,7 +133,7 @@ class NetworkClient<T: Decodable>: APIClient {
                 completionHandler(result, nil)
             case let .failure(error):
                 completionHandler(nil, error)
-                SentrySDK.capture(error: error)
+                FirebaseAnalyticsUtil.logSentryError(error: error)
             }
         }
     }

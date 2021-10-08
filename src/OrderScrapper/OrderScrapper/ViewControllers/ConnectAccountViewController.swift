@@ -100,7 +100,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             } else {
                 print(AppConstants.tag, "evaluateJavaScript", error.debugDescription)
                 if let error = error {
-                    SentrySDK.capture(error: error)
+                    FirebaseAnalyticsUtil.logSentryError(error: error)
                 }
                 
             }
@@ -223,7 +223,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                     status = EventStatus.Failure
                     print(AppConstants.tag, "evaluateJavaScript", error.debugDescription)
                     if let error = error {
-                        SentrySDK.capture(error: error)
+                        FirebaseAnalyticsUtil.logSentryError(error: error)
                     }
                 }
                 switch authState {
@@ -461,6 +461,9 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             
             self.isFailureButAccountConnected = true
             
+            // On timeout cancel all the ongoing API calls
+            AmazonService.cancelAPI()
+
             //Timeout happens and if account is connected
             //then update order status as failed in the backend
             let amazonId = self.viewModel.userAccount.userID
@@ -469,7 +472,6 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                                            message: AppConstants.msgTimeout,
                                            orderStatus: OrderStatus.Failed.rawValue) { response, error in
             }
-            AmazonService.cancelAPI()
             let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrappingType: ScrappingType.report.rawValue)
             self.logEvents(logEvents: eventLogs)
             DispatchQueue.main.async {
@@ -502,12 +504,12 @@ extension ConnectAccountViewController: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         print(AppConstants.tag,"An error occurred during navigation", error.localizedDescription)
-        SentrySDK.capture(error: error)
+        FirebaseAnalyticsUtil.logSentryError(error: error)
     }
     
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         print(AppConstants.tag,"An error occurred during the early navigation process", error.localizedDescription)
-        SentrySDK.capture(error: error)
+        FirebaseAnalyticsUtil.logSentryError(error: error)
     }
     
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {

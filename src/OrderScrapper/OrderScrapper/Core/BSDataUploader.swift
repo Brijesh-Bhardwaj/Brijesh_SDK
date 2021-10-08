@@ -91,7 +91,7 @@ class DataUploadOperation: Operation {
                                                                            orderSource: self.orderSource)
                     }
                     if let error = error {
-                        SentrySDK.capture(error: error)
+                        FirebaseAnalyticsUtil.logSentryError(error: error)
                     }
                     
                     finish()

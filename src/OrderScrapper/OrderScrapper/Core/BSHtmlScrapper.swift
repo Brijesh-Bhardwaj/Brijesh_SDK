@@ -71,9 +71,9 @@ class BSHtmlScrapper {
             
             //TODO
         }
-        SentrySDK.capture(error: error)
+        FirebaseAnalyticsUtil.logSentryError(error: error)
         let exception = NSException(name: AppConstants.bsOrderFailed, reason: error.errorMessage)
-        SentrySDK.capture(exception: exception)
+        FirebaseAnalyticsUtil.logSentryException(exception: exception)
         self.params.listener.onHtmlScrappingFailure(error: error)
     }
 }
@@ -133,8 +133,8 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
 //                let error = ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError)
                 let error = ASLException(errorMessages: Strings.ErrorOtherUrlLoaded, errorTypes: nil, errorEventLog: .unknownURL, errorScrappingType: ScrappingType.html)
                 let exception = NSException(name: AppConstants.bsOrderFailed, reason: url)
-                SentrySDK.capture(exception: exception)
-                SentrySDK.capture(error: error)
+                FirebaseAnalyticsUtil.logSentryException(exception: exception)
+                FirebaseAnalyticsUtil.logSentryError(error: error)
                 self.onAuthenticationFailure(error: error)
                 
                 var logOtherUrlEventAttributes:[String:String] = [:]
@@ -148,7 +148,7 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
         } else {
 //            let error = ASLException(errorMessage: Strings.ErrorPageNotloaded, errorType: nil)
             let error = ASLException(errorMessages: Strings.ErrorPageNotloaded, errorTypes: nil, errorEventLog: .pageNotLoded, errorScrappingType: ScrappingType.html)
-            SentrySDK.capture(error: error)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
             self.params.listener.onHtmlScrappingFailure(error: error)
         }
     }
@@ -156,14 +156,14 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
     func didStartPageNavigation(url: URL?) {
         if url == nil {
             let error = ASLException(errorMessages: Strings.ErrorPageNotloaded, errorTypes: nil, errorEventLog: .pageNotLoded, errorScrappingType: ScrappingType.html)
-            SentrySDK.capture(error: error)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
             self.params.listener.onHtmlScrappingFailure(error: error)
         }
     }
     
     func didFailPageNavigation(for url: URL?, withError error: Error) {
         let error = ASLException(errorMessages: Strings.ErrorOrderExtractionFailed, errorTypes: nil, errorEventLog: .pageNotLoded, errorScrappingType: ScrappingType.html)
-        SentrySDK.capture(error: error)
+        FirebaseAnalyticsUtil.logSentryError(error: error)
         self.params.listener.onHtmlScrappingFailure(error: error)
     }
     

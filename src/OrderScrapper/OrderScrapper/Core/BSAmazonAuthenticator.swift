@@ -44,12 +44,12 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
                         self.injectCaptchaIdentificationJS()
                     } else {
                         let error = ASLException(errorMessage: Strings.ErrorOccuredWhileInjectingJS, errorType: .authError)
-                        SentrySDK.capture(error: error)
+                        FirebaseAnalyticsUtil.logSentryError(error: error)
                         self.completionHandler?(false,error)
                     }
                 } else {
                     let error = ASLException(errorMessage: Strings.ErrorOccuredWhileInjectingJS, errorType: .authError)
-                    SentrySDK.capture(error: error)
+                    FirebaseAnalyticsUtil.logSentryError(error: error)
                     self.completionHandler?(false, error)
                 }
             }
@@ -66,7 +66,7 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
                 if let response = response as? String {
                     if response.contains("captcha") {
                         let error = ASLException(errorMessage: Strings.ErrorCaptchaPageLoaded, errorType: .authError)
-                        SentrySDK.capture(error: error)
+                        FirebaseAnalyticsUtil.logSentryError(error: error)
                         self.completionHandler?(false, error)
                         
                         guard let userId = self.account?.userID else {return}
@@ -96,8 +96,8 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
                     if response.contains("other") {
                         let error = ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError)
                         let exception = NSException(name: AppConstants.bsOrderFailed, reason: Strings.ErrorOtherUrlLoaded)
-                        SentrySDK.capture(exception: exception)
-                        SentrySDK.capture(error: error)
+                        FirebaseAnalyticsUtil.logSentryException(exception: exception)
+                        FirebaseAnalyticsUtil.logSentryError(error: error)
                         self.completionHandler?(false, error)
                     } else if response.contains("emailId") {
                         self.injectEmailJS()
@@ -135,13 +135,13 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
     private func injectPasswordJS() {
         guard let email = self.account?.userID else {
             let error = ASLException(errorMessage: Strings.ErrorUserIdIsNil, errorType: .authError)
-            SentrySDK.capture(error: error)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
             self.completionHandler?(false, error)
             return
         }
         guard let password = self.account?.userPassword else {
             let error = ASLException(errorMessage: Strings.ErrorPasswordIsNil,errorType: .authError)
-            SentrySDK.capture(error: error)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
             self.completionHandler?(false,error)
             return
         }

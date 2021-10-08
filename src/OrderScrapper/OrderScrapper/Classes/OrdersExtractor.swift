@@ -24,14 +24,6 @@ public class OrdersExtractor {
                                   viewPresenter: ViewPresenter,
                                   analyticsProvider: AnalyticsProvider?,
                                   orderExtractionConfig: OrderExtractorConfig) throws {
-        SentrySDK.start { options in
-            options.dsn = AppConstants.dsnURL
-            options.debug = true // Enabled debug when first installing is always helpful
-            options.attachStacktrace = true
-            options.tracesSampleRate = AppConstants.tracesSampleRate
-            options.enableAutoSessionTracking = true
-
-        }
         
         let authToken = authProvider.getAuthToken()
         let panelistId = authProvider.getPanelistID()
@@ -43,12 +35,12 @@ public class OrdersExtractor {
             LibContext.shared.orderExtractorConfig = orderExtractionConfig
         } else {
             let error = ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
-            SentrySDK.capture(error: error)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
             throw error
         }
         if (authToken.isEmpty || panelistId.isEmpty) {
             let error = ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
-            SentrySDK.capture(error: error)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
             throw error
         }
         
@@ -63,8 +55,10 @@ public class OrdersExtractor {
         registerFonts()
         
         //get Scrapper config details
-        ConfigManager.shared.loadConfigs(orderSource: .Amazon) { configurations, error in
-            
+        ConfigManager.shared.loadConfigs(orderSource: .Amazon) { scrapeConfigs, error in
+            if let scrapeConfigs = scrapeConfigs {
+                FirebaseAnalyticsUtil.initSentrySDK(scrapeConfigs: scrapeConfigs)
+            }
         }
         //get scripts for the order sources
         BSScriptFileManager.shared.loadScriptFile()
@@ -169,7 +163,7 @@ public class OrdersExtractor {
             }
         } else {
             let error = ASLException(errorMessage: Strings.ErrorLibNotInitialized, errorType: nil)
-            SentrySDK.capture(error: error)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
             throw error
         }
     }
@@ -191,7 +185,7 @@ public class OrdersExtractor {
             account.connect(orderExtractionListener: orderExtractionListner)
         } else {
             let error =  ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
-            SentrySDK.capture(error:error)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
             throw error
         }
     }
@@ -206,4 +200,6 @@ public class OrdersExtractor {
             //Todo
         }
     }
+    
+    
 }
