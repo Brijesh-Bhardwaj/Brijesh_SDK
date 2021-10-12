@@ -58,6 +58,7 @@ public class OrdersExtractor {
         ConfigManager.shared.loadConfigs(orderSource: .Amazon) { scrapeConfigs, error in
             if let scrapeConfigs = scrapeConfigs {
                 FirebaseAnalyticsUtil.initSentrySDK(scrapeConfigs: scrapeConfigs)
+                FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_init_library")
             }
         }
         //get scripts for the order sources
@@ -116,10 +117,12 @@ public class OrdersExtractor {
                             CoreDataManager.shared.addAccount(userId: account.amazonId, password: "",
                                                               accountStatus:statusToUpdate,
                                                               orderSource: OrderSource.Amazon.rawValue, panelistId: panelistId)
-                            let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
-                            accountsFromDB.first?.isFirstConnectedAccount = account.firstaccount
-                            DispatchQueue.main.async {
-                                completionHandler(accountsFromDB, hasNeverConnected)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { [self] in
+                                let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
+                                accountsFromDB.first?.isFirstConnectedAccount = account.firstaccount
+                                DispatchQueue.main.async {
+                                    completionHandler(accountsFromDB, hasNeverConnected)
+                                }
                             }
                         } else {
                             if let account = accountDetails.first, let accountInDb = accountsInDB.first {
@@ -135,10 +138,12 @@ public class OrdersExtractor {
                                                                       accountStatus:AccountState.ConnectedButException.rawValue,
                                                                       orderSource: OrderSource.Amazon.rawValue,
                                                                       panelistId: panelistId)
-                                    let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
-                                    accountsFromDB.first?.isFirstConnectedAccount = account.firstaccount
-                                    DispatchQueue.main.async {
-                                        completionHandler(accountsFromDB, hasNeverConnected)
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { [self] in
+                                        let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
+                                        accountsFromDB.first?.isFirstConnectedAccount = account.firstaccount
+                                        DispatchQueue.main.async {
+                                            completionHandler(accountsFromDB, hasNeverConnected)
+                                        }
                                     }
                                 }
                             } else {

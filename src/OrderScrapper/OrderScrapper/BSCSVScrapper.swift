@@ -36,7 +36,10 @@ class BSCSVScrapper: NSObject {
             self.bsScrapper = BSHtmlScrapper(params: param!)
             loadUrl()
         } else {
-            evaluateJS(jsType: .dateRange, javascript: getOldestPossibleYear())
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                guard let self = self else {return}
+                self.evaluateJS(jsType: .dateRange, javascript: self.getOldestPossibleYear())
+            }
         }
     }
     
@@ -45,10 +48,12 @@ class BSCSVScrapper: NSObject {
         let url = URL(string: AppConstants.generateReportUrl)
         let urlRequest = URLRequest(url: url!)
         self.webView.load(urlRequest)
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_CSVScrapper_loadUrl() \(url)")
     }
     private func evaluateJS(jsType: JSInjectValue, javascript: String) {
-        self.webView.evaluateJavaScript(javascript) {
+        self.webView.evaluateJavaScript(javascript) { [weak self]
             (response, error) in
+            guard let self = self else { return }
             self.evaluateJSResult(jsType: jsType, response: (response, error))
             
             //Log events for JS injection
@@ -122,7 +127,10 @@ class BSCSVScrapper: NSObject {
                         reportConfig.fullStartDate = DateUtils.getFormattedDate(dateStr: endDate)
                     }
                 }
-                self.injectGenerateReportJS()
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                    guard let self = self else {return}
+                    self.injectGenerateReportJS()
+                }
             }
         }
     }
@@ -135,6 +143,7 @@ class BSCSVScrapper: NSObject {
     private func navigateWith(url: URL?) {
         guard let url = url else { return }
         let urlString = url.absoluteString
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_CSVScraper_navigateWith() \(urlString)")
         
         if scrapingMode == .Background {
             let loginSubURL = getSubURL(from: self.param!.configuration.login, delimeter: "/?")
@@ -160,16 +169,23 @@ class BSCSVScrapper: NSObject {
             }
         }
         
-        if (urlString.contains(AmazonURL.generateReport)) {
-            evaluateJS(jsType: .dateRange, javascript: getOldestPossibleYear())
-        } else if (urlString.contains(AmazonURL.downloadReport)
-                    && urlString.contains(AmazonURL.reportID)) {
-            self.injectDownloadReportJS()
-            self.currentStep = .downloadReport
-            publishProgrssFor(step: .downloadReport)
-            self.timerHandler.startTimer(action: Actions.DownloadReportJSInjection)
+        if (urlString.contains(AmazonURL.downloadReport)
+                && urlString.contains(AmazonURL.reportID)) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                guard let self = self else {return}
+                self.injectDownloadReportJS()
+                self.currentStep = .downloadReport
+                self.publishProgrssFor(step: .downloadReport)
+                self.timerHandler.startTimer(action: Actions.DownloadReportJSInjection)
+            }
         } else if (urlString.contains(AmazonURL.reportSuccess)) {
             //No handling required
+        } else if (urlString.contains(AmazonURL.generateReport)) {
+            FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_CSVScrapper_generate_report_url \(urlString)")
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                guard let self = self else {return}
+                self.evaluateJS(jsType: .dateRange, javascript: self.getOldestPossibleYear())
+            }
         } else {
             if scrapingMode == .Background {
                 print("other url",urlString)
@@ -424,7 +440,11 @@ class BSCSVScrapper: NSObject {
         
         self.scraperListener.updateProgressValue(progressValue: progressValue)
         self.scraperListener.updateStepMessage(stepMessage: stepMessage)
-        self.scraperListener.onCompletion(isComplete: (step == .complete))
+        
+        if step == .complete {
+            self.webView.navigationDelegate = nil
+            self.scraperListener.onCompletion(isComplete: true)
+        }
     }
     
     private func didFinishWith(error: ASLException) {
@@ -466,13 +486,16 @@ extension BSCSVScrapper: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         print(AppConstants.tag,"An error occurred during navigation", error.localizedDescription)
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_CSVScrapper_didFail \(webView.url)")
     }
     
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         print(AppConstants.tag,"An error occurred during the early navigation process", error.localizedDescription)
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_CSVScrapper_didFailProvisionalNavigation \(webView.url)")
     }
     
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         print(AppConstants.tag, "webViewWebContentProcessDidTerminate()")
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_CSVScrapper_webViewWebContentProcessDidTerminate \(webView.url)")
     }
 }

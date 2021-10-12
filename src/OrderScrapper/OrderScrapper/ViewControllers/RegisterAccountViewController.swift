@@ -94,6 +94,7 @@ class RegisterAccountViewController: UIViewController {
     }
     
     @IBAction func onBackEvent(_ sender: Any) {
+        AmazonOrderScrapper.shared.isScrapping = false
         self.dismiss(animated: true, completion: nil)
     }
     

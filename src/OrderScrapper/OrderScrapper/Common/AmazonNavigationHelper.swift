@@ -40,7 +40,8 @@ class AmazonNavigationHelper: NavigationHelper {
     let scraperListener: ScraperProgressListener
     let timerHandler: TimerHandler!
     private var backgroundScrapper: BSScrapper!
-    
+    var isGenerateReport: Bool = false
+
     private lazy var CSVScrapper: BSCSVScrapper = {
         return BSCSVScrapper(webview: self.webView, scrapingMode: .Foreground, scraperListener: self.scraperListener)
     }()
@@ -60,18 +61,27 @@ class AmazonNavigationHelper: NavigationHelper {
     
     // MARK:- NavigationHelper Methods
     func navigateWith(url: URL?) {
+
         guard let url = url else { return }
         
         let urlString = url.absoluteString
         
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_navigateWith() \(urlString)")
+
         if (urlString.contains(AmazonURL.signIn)) {
             if self.authenticator.isUserAuthenticated() {
-                self.viewModel.authenticationComplete.send(true)
-                self.authenticator.resetAuthenticatedFlag()
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                    guard let self = self else {return}
+                    self.authenticator.resetAuthenticatedFlag()
+                    self.viewModel.authenticationComplete.send(true)
+                }
             } else {
-                self.authenticator.authenticate()
-                self.currentStep = .authentication
-                publishProgrssFor(step: .authentication)
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                    guard let self = self else {return}
+                    self.authenticator.authenticate()
+                    self.currentStep = .authentication
+                    self.publishProgrssFor(step: .authentication)
+                }
             }
         } else if (urlString.contains(AmazonURL.authApproval)
                     || urlString.contains(AmazonURL.twoFactorAuth)) {
@@ -91,32 +101,42 @@ class AmazonNavigationHelper: NavigationHelper {
             let eventLogs = EventLogs(panelistId: self.viewModel.userAccount.panelistID, platformId:self.viewModel.userAccount.userID, section: SectionType.connection.rawValue, type: FailureTypes.other.rawValue, status: EventState.success.rawValue, message: "Authentication challenge", fromDate: nil, toDate: nil, scrappingType: nil)
             logEvents(logEvents: eventLogs)
         } else if (urlString.contains(AmazonURL.generateReport)) {
-            let userAccountState = self.viewModel.userAccount.accountState
-            if userAccountState == AccountState.NeverConnected {
-                let userId = self.viewModel.userAccount.userID
-                _ = AmazonService.registerConnection(amazonId: userId, status: AccountState.Connected.rawValue, message: AppConstants.msgAccountConnected, orderStatus: OrderStatus.Initiated.rawValue) { response, error in
-                    if let response = response  {
+            FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_helper_generate_report_url \(urlString)")
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
+                guard let self = self else {return}
+                
+                if self.isGenerateReport {
+                    return
+                } else {
+                    self.isGenerateReport = true
+                    
+                    let userAccountState = self.viewModel.userAccount.accountState
+                    if userAccountState == AccountState.NeverConnected {
+                        let userId = self.viewModel.userAccount.userID
+                        _ = AmazonService.registerConnection(amazonId: userId, status: AccountState.Connected.rawValue, message: AppConstants.msgAccountConnected, orderStatus: OrderStatus.Initiated.rawValue) { response, error in
+                            if let response = response  {
+                                //On authentication add user account details to DB
+                                self.addUserAccountInDB()
+                                self.viewModel.userAccount.isFirstConnectedAccount = response.firstaccount
+                                self.getDateRange()
+                                self.currentStep = .generateReport
+                                self.publishProgrssFor(step: .generateReport)
+                            } else {
+                                self.viewModel.authError.send((isError: true, errorMsg: AppConstants.userAccountConnected))
+                                if let error = error {
+                                    FirebaseAnalyticsUtil.logSentryError(error: error)
+                                }
+                            }
+                        }
+                    } else {
                         //On authentication add user account details to DB
+                        self.updateAccountStatusToConnected(orderStatus: OrderStatus.Initiated.rawValue)
                         self.addUserAccountInDB()
-                        self.viewModel.userAccount.isFirstConnectedAccount = response.firstaccount
                         self.getDateRange()
                         self.currentStep = .generateReport
                         self.publishProgrssFor(step: .generateReport)
-                    } else {
-                        self.viewModel.authError.send((isError: true, errorMsg: AppConstants.userAccountConnected))
-                        if let error = error {
-                            FirebaseAnalyticsUtil.logSentryError(error: error)
-                        }
-                        
                     }
                 }
-            } else {
-                //On authentication add user account details to DB
-                self.updateAccountStatusToConnected(orderStatus: OrderStatus.Initiated.rawValue)
-                self.addUserAccountInDB()
-                self.getDateRange()
-                self.currentStep = .generateReport
-                self.publishProgrssFor(step: .generateReport)
             }
         } else if (urlString.contains(AmazonURL.resetPassword)) {
             let userAccountState = self.viewModel.userAccount.accountState

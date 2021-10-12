@@ -50,28 +50,48 @@ internal class AmazonAuthenticator: Authenticator {
                     if let response = response {
                         let strResult = response as! String
                         if (strResult.isEmpty) {
-                            self.injectCaptchaIdentificationJS()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                                guard let self = self else {return}
+                                self.injectCaptchaIdentificationJS()
+                            }
                         } else {
                             self.notifyAuthError(errorMessage: strResult)
                         }
                     } else {
-                        self.injectCaptchaIdentificationJS()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                            guard let self = self else {return}
+                            self.injectCaptchaIdentificationJS()
+                        }
                     }
                 case .identification:
                     if let response = response as? String {
                         if response.contains("other") {
                             self.viewModel.showWebView.send(true)
+                            FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_identification_other")
+
                         } else if response.contains("emailId") {
-                            self.injectEmailJS()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                                guard let self = self else {return}
+                                self.injectEmailJS()
+                                FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_identification_email")
+                            }
                         } else {
-                            self.injectPasswordJS()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                                guard let self = self else {return}
+                                self.injectPasswordJS()
+                            }
                         }
                     } else {
-                        self.injectPasswordJS()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                            guard let self = self else {return}
+                            self.injectPasswordJS()
+                        }
                     }
                 case .captcha:
                     if let response = response as? String {
                         if response.contains("captcha") {
+                            FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_amazonauthenticator_captcha")
+                            
                             self.updateAccountWithExceptionState(message: AppConstants.msgCapchaEncountered)
                             self.viewModel.showWebView.send(true)
                         } else {
@@ -79,10 +99,16 @@ internal class AmazonAuthenticator: Authenticator {
                                 self.isPasswordInjected = false
                                 self.isAuthenticated = true
                             }
-                            self.injectFieldIdentificationJS()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                                guard let self = self else {return}
+                                self.injectFieldIdentificationJS()
+                            }
                         }
                     } else {
-                        self.injectFieldIdentificationJS()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                            guard let self = self else {return}
+                            self.injectFieldIdentificationJS()
+                        }
                     }
                 }
             })

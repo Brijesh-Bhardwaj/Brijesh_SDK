@@ -81,6 +81,7 @@ class FirebaseAnalyticsUtil {
                     options.attachStacktrace = true
                     options.tracesSampleRate = AppConstants.tracesSampleRate
                     options.enableAutoSessionTracking = true
+                    options.dist = "OrderScrapperLogs"
                 }
             }
         }

@@ -91,7 +91,6 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
         self.webClient.evaluateJavaScript(js) { (response, error) in
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
                 guard let self = self else { return }
-                
                 if let response = response as? String {
                     if response.contains("other") {
                         let error = ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError)
