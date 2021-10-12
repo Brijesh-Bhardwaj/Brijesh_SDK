@@ -1298,7 +1298,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.receiptstraw.dev;
 				PRODUCT_NAME = "ReceiptStraw-Dev";
 				PROVISIONING_PROFILE_SPECIFIER = receiptstraw_dev_profile;
-				SDK_BASE_ENDPOINT = "https://emailconnect.receiptstarapp.com/orderscrapperqa/";
+				SDK_BASE_ENDPOINT = "https://emailconnect.receiptstarapp.com/coinoutorderscrapperdev/";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_WORKSPACE = YES;

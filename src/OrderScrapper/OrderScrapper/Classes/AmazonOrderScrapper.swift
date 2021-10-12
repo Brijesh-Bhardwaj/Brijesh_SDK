@@ -15,6 +15,7 @@ class AmazonOrderScrapper {
     public var analyticsProvider: AnalyticsProvider?
     private var completionSubscriber: AnyCancellable?
     private var backgroundScrapper: BSScrapper!
+    public var isScrapping: Bool = false
     
     private static var instance: AmazonOrderScrapper!
     
@@ -46,6 +47,7 @@ class AmazonOrderScrapper {
     }
     
     func connectAccount(account: Account, orderExtractionListener: OrderExtractionListener) {
+        isScrapping = true
         self.setupCompletionHandler(account, orderExtractionListener)
         
         let storyboard = UIStoryboard(name: "OSLibUI", bundle: AppConstants.bundle)
@@ -84,22 +86,26 @@ class AmazonOrderScrapper {
     func startOrderExtraction(account: Account,
                               orderExtractionListener: OrderExtractionListener,
                               source: FetchRequestSource) {
-        self.shouldStartScrapping() { [weak self] shouldScrape in
-            guard let self = self else { return }
-            
-            if shouldScrape {
-                if source == .notification {
-                    self.performForegroundScraping(account, orderExtractionListener)
+        if !isScrapping {
+            self.shouldStartScrapping() { [weak self] shouldScrape in
+                guard let self = self else { return }
+                
+                if shouldScrape {
+                    if source == .notification {
+                        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_foreground_scrapping \(source)")
+                        self.performForegroundScraping(account, orderExtractionListener)
+                    } else {
+                        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_background_scrapping \(source)")
+                        self.performBackgroundScraping(account, orderExtractionListener)
+                    }
                 } else {
-                    self.performBackgroundScraping(account, orderExtractionListener)
+                    let error = ASLException(errorMessage: "bg process in cool off period" , errorType: nil)
+                    orderExtractionListener.onOrderExtractionFailure(error: error, account: account)
+                    FirebaseAnalyticsUtil.logSentryError(error: error)
                 }
-            } else {
-                let error = ASLException(errorMessage: "bg process in cool off period" , errorType: nil)
-                orderExtractionListener.onOrderExtractionFailure(error: error, account: account)
             }
         }
     }
-    
     private func shouldStartScrapping(completion: @escaping(Bool) -> Void) {
         // ConfigObject to
         ConfigManager.shared.getConfigurations(orderSource: .Amazon) { (configurations, error) in
@@ -117,6 +123,7 @@ class AmazonOrderScrapper {
     
     private func performForegroundScraping(_ account: Account,
                                            _ orderExtractionListener: OrderExtractionListener) {
+        isScrapping = true
         self.setupCompletionHandler(account, orderExtractionListener)
         
         let storyboard = UIStoryboard(name: "OSLibUI", bundle: Bundle(identifier: AppConstants.identifier))
@@ -173,6 +180,7 @@ class AmazonOrderScrapper {
                 orderExtractionListener.onOrderExtractionFailure(error: error, account: account)
                 FirebaseAnalyticsUtil.logSentryError(error: error)
             }
+            self.isScrapping = false
             self.viewPresenter.dismissView()
         }
     }

@@ -38,9 +38,11 @@ class AmazonService {
                     print(AppConstants.tag, "getDateRange", response.error ?? "Error")
                     FirebaseAnalyticsUtil.logSentryError(error: APIError(error: response.error ?? Strings.ErrorAPIReponseDateRange))
                 } else {
+                    FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_daterange_api_success")
                     completionHandler(response.data, nil)
                 }
             } else {
+                FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_daterange_api_fail")
                 completionHandler(nil, nil)
             }
         }
@@ -69,9 +71,11 @@ class AmazonService {
                     print(AppConstants.tag, "uploadFile", response.error ?? "Error")
                     FirebaseAnalyticsUtil.logSentryError(error: APIError(error: response.error ?? Strings.ErrorAPIReposneUplodFile))
                 } else {
+                    FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_uploadfile_api_success")
                     completionHandler(response.data, nil)
                 }
             } else {
+                FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_uploadfile_api_fail")
                 completionHandler(nil, nil)
             }
         }

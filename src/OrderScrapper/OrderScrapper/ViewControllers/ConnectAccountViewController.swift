@@ -108,10 +108,12 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             if let url = URL(string: self.baseURL) {
                 self.timerHandler.startTimer(action: Actions.BaseURLLoading)
                 self.webContentView.load(URLRequest(url: url))
+                FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_ejs_loadurl \(url)")
             }
         }
         
         self.registerSubscribers()
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_viewDidLoad")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -119,6 +121,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         
         self.initViews()
         viewInit = true
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_viewWillAppear")
     }
     
     override func viewWillLayoutSubviews() {
@@ -149,10 +152,12 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             // on the main thread
             DispatchQueue.main.async {
                 if path.status == .satisfied {
+                    FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_network_satisfied")
                     if self.viewInit {
                         self.loadWebContent()
                     }
                 } else {
+                    FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_network_not_satisfied")
                     self.contentView.bringSubviewToFront(self.networkErrorView)
                     self.shouldAllowBack = true
                 }
@@ -164,9 +169,11 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     private func hasNetwork() -> Bool {
         if let path = self.path {
             if path.status == NWPath.Status.satisfied {
+                FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_hasNetwork()_satisfied")
                 return true
             }
         }
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_hasNetwork()_Not_satisfied")
         return false
     }
     
@@ -270,6 +277,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             case .reload:
                 if let url = URL(string: self.baseURL) {
                     self.webContentView.load(URLRequest(url: url))
+                    FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_reload_url \(url)")
                 }
             }
         })
@@ -346,8 +354,10 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     }
     
     private func loadWebContent() {
+        navigationHelper.isGenerateReport = false
         if let url = URL(string: self.baseURL) {
             self.webContentView.load(URLRequest(url: url))
+            FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_loadWebContent() \(url)")
         }
         self.contentView.bringSubviewToFront(self.progressView)
         self.progressView.progress = 1/6
@@ -427,8 +437,8 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     }
     
     func onCompletion(isComplete: Bool) {
-        DispatchQueue.main.async {
-            if isComplete {
+        if isComplete {
+            DispatchQueue.main.async {
                 self.backButton.isEnabled = false
                 self.backButton.isHidden = true
                 self.contentView.bringSubviewToFront(self.fetchSuccessView)
@@ -455,6 +465,8 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     }
     
     func onTimerTriggered(action: String) {
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_onTimerTriggered() \(action)")
+        
         if action == Actions.GetOldestPossibleYearJSCallback ||
             action == Actions.DownloadReportJSInjection ||
             action == Actions.ReportGenerationJSCallback {
@@ -492,6 +504,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
 
 extension ConnectAccountViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        print("######: didFinish ",webView.url)
         self.navigationHelper.navigateWith(url: webView.url)
     }
     
@@ -500,6 +513,8 @@ extension ConnectAccountViewController: WKNavigationDelegate {
         let showWebView = self.navigationHelper.shouldShowWebViewFor(url: webView.url)
         self.viewModel.showWebView.send(showWebView)
         self.timerHandler.startTimer(action: Actions.DidStartProvisionalNavigation)
+        
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_didStartProvisionalNavigation- \(webView.url)")
     }
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
@@ -514,5 +529,6 @@ extension ConnectAccountViewController: WKNavigationDelegate {
     
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         print(AppConstants.tag, "webViewWebContentProcessDidTerminate()")
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_webViewWebContentProcessDidTerminate")
     }
 }
