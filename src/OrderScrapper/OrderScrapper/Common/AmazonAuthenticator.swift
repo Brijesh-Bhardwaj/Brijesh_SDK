@@ -7,6 +7,7 @@ import Foundation
 import WebKit
 import SwiftUI
 import Combine
+import Sentry
 
 enum JSInjectValue {
     case email, password, captcha, error, identification, generateReport, downloadReport, dateRange
@@ -49,28 +50,48 @@ internal class AmazonAuthenticator: Authenticator {
                     if let response = response {
                         let strResult = response as! String
                         if (strResult.isEmpty) {
-                            self.injectCaptchaIdentificationJS()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                                guard let self = self else {return}
+                                self.injectCaptchaIdentificationJS()
+                            }
                         } else {
                             self.notifyAuthError(errorMessage: strResult)
                         }
                     } else {
-                        self.injectCaptchaIdentificationJS()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                            guard let self = self else {return}
+                            self.injectCaptchaIdentificationJS()
+                        }
                     }
                 case .identification:
                     if let response = response as? String {
                         if response.contains("other") {
                             self.viewModel.showWebView.send(true)
+                            FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_identification_other")
+
                         } else if response.contains("emailId") {
-                            self.injectEmailJS()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                                guard let self = self else {return}
+                                self.injectEmailJS()
+                                FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_identification_email")
+                            }
                         } else {
-                            self.injectPasswordJS()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                                guard let self = self else {return}
+                                self.injectPasswordJS()
+                            }
                         }
                     } else {
-                        self.injectPasswordJS()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                            guard let self = self else {return}
+                            self.injectPasswordJS()
+                        }
                     }
                 case .captcha:
                     if let response = response as? String {
                         if response.contains("captcha") {
+                            FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_amazonauthenticator_captcha")
+                            
                             self.updateAccountWithExceptionState(message: AppConstants.msgCapchaEncountered)
                             self.viewModel.showWebView.send(true)
                         } else {
@@ -78,10 +99,16 @@ internal class AmazonAuthenticator: Authenticator {
                                 self.isPasswordInjected = false
                                 self.isAuthenticated = true
                             }
-                            self.injectFieldIdentificationJS()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                                guard let self = self else {return}
+                                self.injectFieldIdentificationJS()
+                            }
                         }
                     } else {
-                        self.injectFieldIdentificationJS()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                            guard let self = self else {return}
+                            self.injectFieldIdentificationJS()
+                        }
                     }
                 }
             })
@@ -152,15 +179,21 @@ internal class AmazonAuthenticator: Authenticator {
                 try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: panelistId)
             } catch let error {
                 print(AppConstants.tag, "updateAccountWithExceptionState", error.localizedDescription)
+                FirebaseAnalyticsUtil.logSentryError(error: error)
             }
         }
         _ = AmazonService.updateStatus(amazonId: userId, status: status
                                        , message: message, orderStatus: OrderStatus.Initiated.rawValue) { response, error in
             //Todo
         }
+        let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.captcha.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrappingType: nil)
+        _ = AmazonService.logEvents(eventLogs: eventLog) { response, error in
+                //TODO
+        }
     }
     
     private func notifyAuthError(errorMessage: String) {
+        let panelistId = LibContext.shared.authProvider.getPanelistID()
         let accountState = self.viewModel.userAccount.accountState.rawValue
         if accountState == AccountState.NeverConnected.rawValue {
             let userId = self.viewModel.userAccount.userID
@@ -169,10 +202,14 @@ internal class AmazonAuthenticator: Authenticator {
                                                  message: errorMessage, orderStatus: OrderStatus.None.rawValue) { response, error in
                 //TODO
             }
+            let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authenticaion.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrappingType: nil)
+            _ = AmazonService.logEvents(eventLogs: eventLog) { response, error in
+                    //TODO
+            }
         } else {
             self.updateAccountWithExceptionState(message: AppConstants.msgAuthError)
         }
-        self.viewModel.authError.send((true, ""))
+        self.viewModel.authError.send((true, errorMessage))
         WebCacheCleaner.clear(completionHandler: nil)
     }
     

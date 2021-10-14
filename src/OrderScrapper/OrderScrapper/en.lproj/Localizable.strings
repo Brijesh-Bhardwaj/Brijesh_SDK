@@ -20,7 +20,7 @@
 "heading_fetching_your_receipts" = "Fetching your receipts";
 "msg_report_downloaded_successfully" = "Report downloaded successfully";
 "btn_ok" = "Okay";
-"validation_please_enter_valid_email" = "Please enter valid email address or mobile number";
+"validation_please_enter_valid_email" = "Please enter valid email address";
 "validation_please_enter_valid_password" = "Please enter valid password";
 "step1" = "Step 1";
 "step2" = "Step 2";

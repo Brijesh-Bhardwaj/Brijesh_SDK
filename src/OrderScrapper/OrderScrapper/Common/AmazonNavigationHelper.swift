@@ -6,6 +6,8 @@
 import Foundation
 import SwiftUI
 import Combine
+import Sentry
+import WebKit
 
 struct AmazonURL {
     static let signIn           =   "ap/signin"
@@ -16,9 +18,10 @@ struct AmazonURL {
     static let generateReport   =   "gp/b2b/reports/"
     static let resetPassword    =   "ap/forgotpassword/reverification"
     static let reportSuccess    =   "gp/b2b/reports?"
+    static let orderHistory     =   "/gp/your-account/order-history"
 }
 
-private enum Step: Int16 {
+public enum Step: Int16 {
     case authentication = 1,
          generateReport = 2,
          downloadReport = 3,
@@ -33,10 +36,23 @@ class AmazonNavigationHelper: NavigationHelper {
     private var timer: Timer?
     var jsResultSubscriber: AnyCancellable? = nil
     let authenticator: Authenticator
+    var webView: WKWebView
+    let scraperListener: ScraperProgressListener
+    let timerHandler: TimerHandler!
+    private var backgroundScrapper: BSScrapper!
+    var isGenerateReport: Bool = false
+
+    private lazy var CSVScrapper: BSCSVScrapper = {
+        return BSCSVScrapper(webview: self.webView, scrapingMode: .Foreground, scraperListener: self.scraperListener)
+    }()
     
-    required init(_ viewModel: WebViewModel) {
+    required init(_ viewModel: WebViewModel, webView: WKWebView, scraperListener: ScraperProgressListener,
+                  timerHandler: TimerHandler) {
         self.viewModel = viewModel
         self.authenticator = AmazonAuthenticator(viewModel)
+        self.webView = webView
+        self.scraperListener = scraperListener
+        self.timerHandler = timerHandler
     }
     
     deinit {
@@ -45,18 +61,27 @@ class AmazonNavigationHelper: NavigationHelper {
     
     // MARK:- NavigationHelper Methods
     func navigateWith(url: URL?) {
+
         guard let url = url else { return }
         
         let urlString = url.absoluteString
         
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_navigateWith() \(urlString)")
+
         if (urlString.contains(AmazonURL.signIn)) {
             if self.authenticator.isUserAuthenticated() {
-                self.viewModel.authenticationComplete.send(true)
-                self.authenticator.resetAuthenticatedFlag()
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                    guard let self = self else {return}
+                    self.authenticator.resetAuthenticatedFlag()
+                    self.viewModel.authenticationComplete.send(true)
+                }
             } else {
-                self.authenticator.authenticate()
-                self.currentStep = .authentication
-                publishProgrssFor(step: .authentication)
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+                    guard let self = self else {return}
+                    self.authenticator.authenticate()
+                    self.currentStep = .authentication
+                    self.publishProgrssFor(step: .authentication)
+                }
             }
         } else if (urlString.contains(AmazonURL.authApproval)
                     || urlString.contains(AmazonURL.twoFactorAuth)) {
@@ -69,53 +94,75 @@ class AmazonNavigationHelper: NavigationHelper {
             } else {
                 eventType = EventType.JSDetectedTwoFactorAuth
             }
-            logAuthEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+            logAuthEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                       EventConstant.Status: EventStatus.Success]
             FirebaseAnalyticsUtil.logEvent(eventType: eventType, eventAttributes: logAuthEventAttributes)
-        } else if (urlString.contains(AmazonURL.downloadReport)
-                    && urlString.contains(AmazonURL.reportID)) {
-            self.injectDownloadReportJS()
-            self.currentStep = .downloadReport
-            publishProgrssFor(step: .downloadReport)
+            let eventLogs = EventLogs(panelistId: self.viewModel.userAccount.panelistID, platformId:self.viewModel.userAccount.userID, section: SectionType.connection.rawValue, type: FailureTypes.other.rawValue, status: EventState.success.rawValue, message: "Authentication challenge", fromDate: nil, toDate: nil, scrappingType: nil)
+            logEvents(logEvents: eventLogs)
         } else if (urlString.contains(AmazonURL.generateReport)) {
-            let userAccountState = self.viewModel.userAccount.accountState
-            if userAccountState == AccountState.NeverConnected {
-                let userId = self.viewModel.userAccount.userID
-                _ = AmazonService.registerConnection(amazonId: userId, status: AccountState.NeverConnected.rawValue, message: AppConstants.msgAccountConnected, orderStatus: OrderStatus.Initiated.rawValue) { response, error in
-                    if let response = response  {
+            FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_helper_generate_report_url \(urlString)")
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
+                guard let self = self else {return}
+                
+                if self.isGenerateReport {
+                    return
+                } else {
+                    self.isGenerateReport = true
+                    
+                    let userAccountState = self.viewModel.userAccount.accountState
+                    if userAccountState == AccountState.NeverConnected {
+                        let userId = self.viewModel.userAccount.userID
+                        _ = AmazonService.registerConnection(amazonId: userId, status: AccountState.Connected.rawValue, message: AppConstants.msgAccountConnected, orderStatus: OrderStatus.Initiated.rawValue) { response, error in
+                            if let response = response  {
+                                //On authentication add user account details to DB
+                                self.addUserAccountInDB()
+                                self.viewModel.userAccount.isFirstConnectedAccount = response.firstaccount
+                                self.getDateRange()
+                                self.currentStep = .generateReport
+                                self.publishProgrssFor(step: .generateReport)
+                            } else {
+                                self.viewModel.authError.send((isError: true, errorMsg: AppConstants.userAccountConnected))
+                                if let error = error {
+                                    FirebaseAnalyticsUtil.logSentryError(error: error)
+                                }
+                            }
+                        }
+                    } else {
                         //On authentication add user account details to DB
-                        self.viewModel.userAccount.isFirstConnectedAccount = response.firstaccount
+                        self.updateAccountStatusToConnected(orderStatus: OrderStatus.Initiated.rawValue)
+                        self.addUserAccountInDB()
                         self.getDateRange()
                         self.currentStep = .generateReport
                         self.publishProgrssFor(step: .generateReport)
-                    } else {
-                        self.viewModel.authError.send((isError: true, errorMsg: error!))
                     }
                 }
-            } else {
-                //On authentication add user account details to DB
-                self.updateAccountStatusToConnected(orderStatus: OrderStatus.Initiated.rawValue)
-                self.addUserAccountInDB()
-                self.getDateRange()
-                self.currentStep = .generateReport
-                self.publishProgrssFor(step: .generateReport)
             }
         } else if (urlString.contains(AmazonURL.resetPassword)) {
+            let userAccountState = self.viewModel.userAccount.accountState
+            if userAccountState != AccountState.NeverConnected {
+                do {
+                    try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: self.viewModel.userAccount.panelistID)
+                } catch {
+                    print("updateAccountWithExceptionState")
+                }
+            }
             self.viewModel.authError.send((isError: true, errorMsg: AppConstants.msgResetPassword))
-            stopTimer()
+            self.timerHandler.stopTimer()
         } else if (urlString.contains(AmazonURL.reportSuccess)) {
             //No handling required
         } else {
             print(AppConstants.tag, "unknown URL", urlString)
             //Log event for getting other url
             var logOtherUrlEventAttributes:[String:String] = [:]
-            logOtherUrlEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+            logOtherUrlEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                           EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                           EventConstant.Status: EventStatus.Success,
                                           EventConstant.URL: urlString]
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectOtherURL, eventAttributes: logOtherUrlEventAttributes)
             
+            let eventLogs = EventLogs(panelistId: self.viewModel.userAccount.panelistID, platformId:self.viewModel.userAccount.userID, section: SectionType.connection.rawValue, type: FailureTypes.other.rawValue, status: EventState.fail.rawValue, message: "unknow URL", fromDate: nil, toDate: nil, scrappingType: nil)
+            logEvents(logEvents: eventLogs)
             guard let currentStep = self.currentStep else {
                 return
             }
@@ -125,7 +172,7 @@ class AmazonNavigationHelper: NavigationHelper {
             } else {
                 self.viewModel.authError.send((isError: true, errorMsg: AppConstants.msgUnknownURL))
             }
-            stopTimer()
+            self.timerHandler.stopTimer()
         }
         
         //Timer handling for each step
@@ -133,52 +180,15 @@ class AmazonNavigationHelper: NavigationHelper {
         case .authentication:
             if (urlString.contains(AmazonURL.authApproval) &&
                     urlString.contains(AmazonURL.twoFactorAuth)) {
-                stopTimer()
+                self.timerHandler.stopTimer()
             } else {
-                startTimer()
+                self.timerHandler.startTimer(action: Actions.DoingAuthentication)
             }
         case .downloadReport:
-            startTimer()
+            print("### Do nothing")
+        //self.timerHandler.startTimer(viewModel: self.viewModel)
         case .generateReport, .parseReport, .uploadReport, .complete, .none:
             print("### Do nothing")
-        }
-    }
-    
-    func shouldIntercept(navigationResponse response: URLResponse) -> Bool {
-        if let mimeType = response.mimeType {
-            let result = mimeType.compare("text/csv")
-            return result == .orderedSame
-        }
-        return false
-    }
-    
-    func intercept(navigationResponse response: URLResponse, cookies: [HTTPCookie]) {
-        guard let url = response.url else {
-            self.viewModel.webviewError.send(true)
-            return
-        }
-        let fileDownloader = FileDownloader()
-        fileDownloader.downloadReportFile(fromURL: url, cookies: cookies) { success, tempURL in
-            var logEventAttributes:[String:String] = [:]
-            if success, let tempURL = tempURL {
-                let fileName = FileHelper.getReportFileNameFromResponse(response)
-                self.removePIIAttributes(fileName: fileName, fileURL: tempURL)
-                
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                      EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                      EventConstant.Status: EventStatus.Success,
-                                      EventConstant.FileName: fileName]
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.OrderCSVDownload, eventAttributes: logEventAttributes)
-                self.stopTimer()
-            } else {
-                self.updateOrderStatusFor(error: AppConstants.msgDownloadCSVFailed, accountStatus: self.viewModel.userAccount.accountState.rawValue)
-                self.viewModel.webviewError.send(true)
-                
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                      EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                      EventConstant.Status: EventStatus.Failure]
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.OrderCSVDownload, eventAttributes: logEventAttributes)
-            }
         }
     }
     
@@ -207,54 +217,6 @@ class AmazonNavigationHelper: NavigationHelper {
         
         // For unknown URL, hide if current step is not authentication step
         return (currentStep == .authentication)
-    }
-    
-    // MARK:- Private Methods
-    private func injectGenerateReportJS() {
-        if let reportConfig = self.viewModel.reportConfig {
-            let js = "javascript:" +
-                "document.getElementById('report-type').value = '" + AppConstants.amazonReportType + "';" +
-                "document.getElementById('report-month-start').value = '" + reportConfig.startMonth + "';" +
-                "document.getElementById('report-day-start').value = '" + reportConfig.startDate + "';" +
-                "document.getElementById('report-year-start').value = '" + reportConfig.startYear + "';" +
-                "document.getElementById('report-month-end').value = '" + reportConfig.endMonth + "';" +
-                "document.getElementById('report-day-end').value = '" + reportConfig.endDate + "';" +
-                "document.getElementById('report-year-end').value = '" + reportConfig.endYear + "';" +
-                "document.getElementById('report-confirm').click()"
-            self.viewModel.jsPublisher.send((.generateReport, js))
-        }
-    }
-    
-    private func injectDownloadReportJS() {
-        let js = "javascript:" +
-            "document.getElementById(window['download-cell-'+new URLSearchParams(window.location.search).get(\"reportId\")].id).click()"
-        
-        self.viewModel.jsPublisher.send((.downloadReport, js))
-    }
-    
-    private func parseReportConfig(dateRange: DateRange) -> ReportConfig {
-        let startDateComponents = DateUtils.parseDateComponents(fromDate: dateRange.fromDate!,
-                                                                dateFormat: DateUtils.APIDateFormat)
-        
-        let endDateComponents = DateUtils.parseDateComponents(fromDate: dateRange.toDate!,
-                                                              dateFormat: DateUtils.APIDateFormat)
-        
-        debugPrint("Start Date Comps: ", startDateComponents)
-        debugPrint("End Date Comps: ", endDateComponents)
-        
-        var reportConfig = ReportConfig()
-        reportConfig.startDate = String(startDateComponents.day!)
-        reportConfig.startMonth = String(startDateComponents.month!)
-        reportConfig.startYear = String(startDateComponents.year!)
-        reportConfig.endDate = String(endDateComponents.day!)
-        reportConfig.endMonth = String(endDateComponents.month!)
-        reportConfig.endYear = String(endDateComponents.year!)
-        reportConfig.fullStartDate = dateRange.fromDate!
-        reportConfig.fullEndDate = dateRange.toDate!
-        
-        debugPrint("Report Config: ", reportConfig)
-        
-        return reportConfig
     }
     
     /*
@@ -304,25 +266,26 @@ class AmazonNavigationHelper: NavigationHelper {
         _ = AmazonService.getDateRange(amazonId: self.viewModel.userAccount.userID) { response, error in
             if let response = response {
                 if response.enableScraping {
-                    let reportConfig = self.parseReportConfig(dateRange: response)
-                    self.viewModel.reportConfig = reportConfig
-                    self.setJSInjectionResultSubscriber()
-                    self.viewModel.jsPublisher.send((.dateRange, self.getOldestPossibleYear()))
+                    if response.scrappingType == ScrappingType.report.rawValue {
+                        self.scrapeReport(response: response)
+                    } else {
+                        self.timerHandler.stopTimer()
+                        self.scrapeHtml()
+                    }
                 } else {
                     self.updateAccountStatusToConnected(orderStatus: OrderStatus.None.rawValue)
-                    self.addUserAccountInDB()
                     self.viewModel.disableScrapping.send(true)
                 }
                 //Logging event for successful date range API call
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIDateRange, eventAttributes: logEventAttributes)
             } else {
-                self.updateOrderStatusFor(error: AppConstants.msgDateRangeAPIFailed, accountStatus: self.viewModel.userAccount.accountState.rawValue)
+                self.updateOrderStatusFor(error: AppConstants.msgDateRangeAPIFailed, accountStatus: AccountState.Connected.rawValue)
                 self.viewModel.webviewError.send(true)
                 //Log event for failure of date range API call
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                       EventConstant.ErrorReason: error.debugDescription,
                                       EventConstant.Status: EventStatus.Failure]
@@ -331,147 +294,47 @@ class AmazonNavigationHelper: NavigationHelper {
         }
     }
     
-    private func setJSInjectionResultSubscriber() {
-        self.jsResultSubscriber = viewModel.jsResultPublisher.receive(on: RunLoop.main)
-            .sink(receiveValue: { [weak self] (injectValue, result) in
-                guard let self = self else { return }
-                let (response, _) = result
-                switch injectValue {
-                case .captcha,.downloadReport, .email, .generateReport, .identification, .password, .error: break
-                case .dateRange:
-                    if let response = response {
-                        self.startTimer()
-                        let strResult = response as! String
-                        if (!strResult.isEmpty) {
-                            let year = Int(strResult) ?? 0
-                            let startYear = Int(self.viewModel.reportConfig!.startYear)
-                            let endYear = Int(self.viewModel.reportConfig!.endYear)
-                            if year > startYear! {
-                                self.viewModel.reportConfig?.startYear = String(year)
-                                self.viewModel.reportConfig?.startDate = AppConstants.firstDayOfJan
-                                self.viewModel.reportConfig?.startMonth =  AppConstants.monthJan
-                                let startDate = AppConstants.firstDayOfJan + "-" + AppConstants.monthJan + "-" + String(year)
-                                self.viewModel.reportConfig?.fullStartDate = DateUtils.getFormattedDate(dateStr: startDate)
-                            }
-                            if year > endYear! {
-                                self.viewModel.reportConfig?.endYear = String(year)
-                                let endDate = self.viewModel.reportConfig!.endDate + "-" + self.viewModel.reportConfig!.endMonth + "-" + String(year)
-                                self.viewModel.reportConfig?.fullStartDate = DateUtils.getFormattedDate(dateStr: endDate)
-                            }
-                        }
-                        self.injectGenerateReportJS()
-                    }
-                }
-            })
-        
+    private func scrapeReport(response: DateRange) {
+        let account = self.viewModel.userAccount
+        self.CSVScrapper.scrapeOrders(response: response, account: account!, timerHandler: self.timerHandler, param: nil)
     }
     
-    private func getOldestPossibleYear() -> String {
-        return "(function() {var listOfYears = document.getElementById('report-year-start');" +
-            "var oldestYear = 0;" +
-            "for (i = 0; i < listOfYears.options.length; i++) {" +
-            "if(!isNaN(listOfYears.options[i].value) && (listOfYears.options[i].value < oldestYear || oldestYear ==0))" +
-            "{ oldestYear = listOfYears.options[i].value;}" +
-            "} return oldestYear })()"
-    }
-    
-    private func removePIIAttributes(fileName: String, fileURL: URL) {
-        self.currentStep = .parseReport
-        publishProgrssFor(step: .parseReport)
-        var logAPIEventAttributes:[String:String] = [:]
-        let tempURL = FileHelper.getReportDownloadPath(fileName: "temp.csv", orderSource: .Amazon)
-        _ = FileHelper.moveFileToPath(fromURL: fileURL, destinationURL: tempURL)
+    private func scrapeHtml() {
+        if self.backgroundScrapper != nil {
+            self.backgroundScrapper.scraperListener = nil
+            self.backgroundScrapper = nil
+        }
         
-        _ = AmazonService.getPIIList() { response, error in
-            guard let attributes = response else {
-                self.updateOrderStatusFor(error: AppConstants.msgPIIAPIFailed, accountStatus: self.viewModel.userAccount.accountState.rawValue)
-                self.viewModel.webviewError.send(true)
-                // Log event for PIIList API failure
-                logAPIEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                         EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                         EventConstant.ErrorReason: error.debugDescription,
-                                         EventConstant.Status: EventStatus.Failure]
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIPIIList, eventAttributes: logAPIEventAttributes)
-                return
-            }
-            // Log event for PIIList API success
-            logAPIEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                     EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                     EventConstant.Status: EventStatus.Success]
-            FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIPIIList, eventAttributes: logAPIEventAttributes)
-            
-            let scrapper = PIIScrapper(fileURL: tempURL, fileName: fileName, orderSource: .Amazon)
-            var logEventAttributes:[String:String] = [:]
-            scrapper.scrapPII(attributes: attributes) { destinationURL, error in
-                guard let destinationURL = destinationURL else {
-                    self.updateOrderStatusFor(error: AppConstants.msgCSVParsingFailed, accountStatus: self.viewModel.userAccount.accountState.rawValue)
-                    self.viewModel.webviewError.send(true)
-                    
-                    //Log event for error in parsing
-                    logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                          EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                          EventConstant.FileName: fileName,
-                                          EventConstant.ErrorReason: error.debugDescription,
-                                          EventConstant.Status: EventStatus.Failure]
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.OrderCSVPParse, eventAttributes: logEventAttributes)
-                    print(AppConstants.tag, "removePIIAttributes", error.debugDescription)
-                    return
+        //Start html scrapping in the foreground
+        let scriptMessageHandler = BSScriptMessageHandler()
+        let contentController = WKUserContentController()
+        contentController.add(scriptMessageHandler, name: "iOS")
+        let config = WKWebViewConfiguration()
+        config.userContentController = contentController
+        let frame = CGRect(x: 0, y: 0, width: 250, height: 400)
+        let webClient = BSWebClient(frame: frame, configuration: config, scriptMessageHandler: scriptMessageHandler)
+        let account = self.viewModel.userAccount!
+        
+        self.backgroundScrapper = AmazonScrapper(webClient: webClient) { [weak self] result, error in
+            guard let self = self else {return}
+            let (completed, successType) = result
+            DispatchQueue.main.async {
+                if completed {
+                    self.scraperListener.updateSuccessType(successType: successType!)
+                    self.scraperListener.onCompletion(isComplete: true)
+                    UserDefaults.standard.setValue(0, forKey: Strings.OnNumberOfCaptchaRetry)
+                } else {
+                    self.scraperListener.updateSuccessType(successType: .failureButAccountConnected)
+                    self.scraperListener.onCompletion(isComplete: true)
                 }
-                self.uploadCSVFile(fileURL: destinationURL)
                 
-                //Log event for successful parsing
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                      EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                      EventConstant.FileName: fileName,
-                                      EventConstant.Status: EventStatus.Success]
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.OrderCSVPParse, eventAttributes: logEventAttributes)
+                self.backgroundScrapper.scraperListener = nil
+                self.backgroundScrapper = nil
             }
         }
-    }
-    
-    private func uploadCSVFile(fileURL url: URL) {
-        self.currentStep = .uploadReport
-        publishProgrssFor(step: .uploadReport)
-        let reportConfig = self.viewModel.reportConfig!
-        let fromDate = reportConfig.fullStartDate!
-        let toDate = reportConfig.fullEndDate!
-        _ = AmazonService.uploadFile(fileURL: url,
-                                     amazonId: self.viewModel.userAccount.userID,
-                                     fromDate: fromDate, toDate: toDate) { response, error in
-            var logEventAttributes:[String:String] = [:]
-            if response != nil {
-                self.currentStep = .complete
-                self.publishProgrssFor(step: .complete)
-                self.addUserAccountInDB()
-                //Log event for successful uploading of csv
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                      EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                      EventConstant.Status: EventStatus.Success]
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIUploadReport, eventAttributes: logEventAttributes)
-                
-                //Log event for connect account
-                var logConnectAccountEventAttributes:[String:String] = [:]
-                logConnectAccountEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                                    EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                                    EventConstant.Status: EventStatus.Connected]
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.AccountConnect, eventAttributes: logConnectAccountEventAttributes)
-            } else {
-                self.viewModel.webviewError.send(true)
-                _ = AmazonService.updateStatus(amazonId: self.viewModel.userAccount.userID,
-                                               status: AccountState.NeverConnected.rawValue, message: AppConstants.msgCSVUploadFailed, orderStatus: OrderStatus.Failed.rawValue) { response, error in
-                    //Todo
-                }
-                
-                //Log event for failure in csv upload
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                      EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                      EventConstant.ErrorReason: error.debugDescription,
-                                      EventConstant.Status: EventStatus.Failure]
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIUploadReport, eventAttributes: logEventAttributes)
-            }
-            //Delete downloaded file even if file uploading is successful or failure
-            FileHelper.clearDirectory(orderSource: .Amazon)
-        }
+        self.backgroundScrapper.scraperListener = self.scraperListener
+        self.backgroundScrapper.scrappingMode = .Foreground
+        self.backgroundScrapper.startScrapping(account: account)
     }
     
     /*
@@ -501,24 +364,9 @@ class AmazonNavigationHelper: NavigationHelper {
         }
     }
     
-    public func startTimer() {
-        if let timer = timer {
-            timer.invalidate()
-            self.timer = nil
-        }
-        print("### Timer Started")
-        timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(LibContext.shared.timeoutValue), repeats: false) { timer in
-            WebCacheCleaner.clear(completionHandler: nil)
-            self.viewModel.authError.send((isError: true, errorMsg: AppConstants.msgTimeout))
-            print("### Timer triggered")
-        }
-    }
-    
-    public func stopTimer() {
-        if let timer = timer {
-            timer.invalidate()
-            self.timer = nil
-            print("### Stopeed Timer ")
+    private func logEvents(logEvents: EventLogs) {
+        _ = AmazonService.logEvents(eventLogs: logEvents) { respose, error in
+            
         }
     }
 }

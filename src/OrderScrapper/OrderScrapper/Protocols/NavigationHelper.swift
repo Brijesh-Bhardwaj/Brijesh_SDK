@@ -6,15 +6,9 @@
 import Foundation
 
 protocol NavigationHelper {
+    var isGenerateReport: Bool { get set }
+    
     func navigateWith(url: URL?)
     
-    func shouldIntercept(navigationResponse: URLResponse) -> Bool
-    
-    func intercept(navigationResponse: URLResponse, cookies: [HTTPCookie])
-    
     func shouldShowWebViewFor(url: URL?) -> Bool
-    
-    func startTimer()
-    
-    func stopTimer()
 }

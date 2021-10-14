@@ -6,7 +6,7 @@
 import Foundation
 
 class ValidationUtil {
-    static let emailRegEx = "[A-Z0-9a-z.-_]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,3}"
+    static let emailRegEx = "[a-zA-Z0-9_.+-]+@[a-z]+\\.+[a-z]+"
     static let mobileNoRegex = "^[+]?[0-9]{10,13}$"
     
     static func isValidEmail(email: String) -> Bool {

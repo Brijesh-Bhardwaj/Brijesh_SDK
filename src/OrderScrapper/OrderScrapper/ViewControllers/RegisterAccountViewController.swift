@@ -45,7 +45,7 @@ class RegisterAccountViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        WebCacheCleaner.clear(completionHandler: nil)
+//        WebCacheCleaner.clear(completionHandler: nil)
     }
     
     override func viewWillLayoutSubviews() {
@@ -86,12 +86,15 @@ class RegisterAccountViewController: UIViewController {
         
         WebCacheCleaner.clear() { [weak self] cleared in
             guard let self = self else { return }
-            self.presentConnectVC(userID: userId, password: password)
+            DispatchQueue.main.async {
+                self.presentConnectVC(userID: userId, password: password)
+            }
         }
         FirebaseAnalyticsUtil.logUserProperty(orderSourceId: userId, orderSource: OrderSource.Amazon)
     }
     
     @IBAction func onBackEvent(_ sender: Any) {
+        AmazonOrderScrapper.shared.isScrapping = false
         self.dismiss(animated: true, completion: nil)
     }
     

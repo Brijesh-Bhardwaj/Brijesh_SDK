@@ -5,6 +5,7 @@
 
 import Foundation
 import Alamofire
+import Sentry
 
 enum RequestMethod {
     case get, post, put, delete, multipart
@@ -121,14 +122,21 @@ class NetworkClient<T: Decodable>: APIClient {
                     self.executeAPI(completionHandler: completionHandler)
                 } else {
                     completionHandler(nil, error)
+                    if let error = error {
+                        FirebaseAnalyticsUtil.logSentryError(error: error)
+                    }
                 }
             }
         } else {
             switch response.result {
             case let .success(result):
+                FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_APICall\(relativeURL)")
+
                 completionHandler(result, nil)
             case let .failure(error):
+                FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_APICall\(relativeURL) \(error)")
                 completionHandler(nil, error)
+                FirebaseAnalyticsUtil.logSentryError(error: error)
             }
         }
     }

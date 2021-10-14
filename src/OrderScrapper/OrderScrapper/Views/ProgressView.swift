@@ -33,7 +33,7 @@ class ProgressView: UIView {
     
     var progress: CGFloat {
         get {
-            return 0
+            return progressView.progress
         }
         set {
             progressView.progress = newValue

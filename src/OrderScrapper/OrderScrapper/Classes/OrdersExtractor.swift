@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import Sentry
 
 public class OrdersExtractor {
     private init() {}
@@ -23,6 +24,7 @@ public class OrdersExtractor {
                                   viewPresenter: ViewPresenter,
                                   analyticsProvider: AnalyticsProvider?,
                                   orderExtractionConfig: OrderExtractorConfig) throws {
+        
         let authToken = authProvider.getAuthToken()
         let panelistId = authProvider.getPanelistID()
         let baseUrl = orderExtractionConfig.baseURL
@@ -32,10 +34,14 @@ public class OrdersExtractor {
         {
             LibContext.shared.orderExtractorConfig = orderExtractionConfig
         } else {
-            throw ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
+            let error = ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
+            throw error
         }
         if (authToken.isEmpty || panelistId.isEmpty) {
-            throw ASLException(errorMessage: Strings.ErrorAuthProviderNotImplemented, errorType: nil)
+            let error = ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
+            throw error
         }
         
         AmazonOrderScrapper.shared.initialize(authProvider: authProvider,
@@ -48,14 +54,25 @@ public class OrdersExtractor {
         }
         registerFonts()
         
+        //get Scrapper config details
+        ConfigManager.shared.loadConfigs(orderSource: .Amazon) { scrapeConfigs, error in
+            if let scrapeConfigs = scrapeConfigs {
+                FirebaseAnalyticsUtil.initSentrySDK(scrapeConfigs: scrapeConfigs)
+                FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_init_library")
+            }
+        }
+        //get scripts for the order sources
+        BSScriptFileManager.shared.loadScriptFile()
+
         _ = AmazonService.getConfigs() {configs, error in
             if let configs = configs {
-                print("### Timeout ",configs.timeoutValue!)
                 if let timeoutValue = configs.timeoutValue {
                     LibContext.shared.timeoutValue = timeoutValue
                 } else {
                     LibContext.shared.timeoutValue = AppConstants.timeoutCounter
                 }
+            } else {
+                LibContext.shared.timeoutValue = AppConstants.timeoutCounter
             }
         }
         
@@ -100,10 +117,12 @@ public class OrdersExtractor {
                             CoreDataManager.shared.addAccount(userId: account.amazonId, password: "",
                                                               accountStatus:statusToUpdate,
                                                               orderSource: OrderSource.Amazon.rawValue, panelistId: panelistId)
-                            let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
-                            accountsFromDB.first?.isFirstConnectedAccount = account.firstaccount
-                            DispatchQueue.main.async {
-                                completionHandler(accountsFromDB, hasNeverConnected)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { [self] in
+                                let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
+                                accountsFromDB.first?.isFirstConnectedAccount = account.firstaccount
+                                DispatchQueue.main.async {
+                                    completionHandler(accountsFromDB, hasNeverConnected)
+                                }
                             }
                         } else {
                             if let account = accountDetails.first, let accountInDb = accountsInDB.first {
@@ -119,10 +138,12 @@ public class OrdersExtractor {
                                                                       accountStatus:AccountState.ConnectedButException.rawValue,
                                                                       orderSource: OrderSource.Amazon.rawValue,
                                                                       panelistId: panelistId)
-                                    let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
-                                    accountsFromDB.first?.isFirstConnectedAccount = account.firstaccount
-                                    DispatchQueue.main.async {
-                                        completionHandler(accountsFromDB, hasNeverConnected)
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { [self] in
+                                        let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
+                                        accountsFromDB.first?.isFirstConnectedAccount = account.firstaccount
+                                        DispatchQueue.main.async {
+                                            completionHandler(accountsFromDB, hasNeverConnected)
+                                        }
                                     }
                                 }
                             } else {
@@ -146,7 +167,9 @@ public class OrdersExtractor {
                 
             }
         } else {
-            throw ASLException(errorMessage: Strings.ErrorLibNotInitialized, errorType: nil)
+            let error = ASLException(errorMessage: Strings.ErrorLibNotInitialized, errorType: nil)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
+            throw error
         }
     }
     
@@ -166,7 +189,9 @@ public class OrdersExtractor {
             
             account.connect(orderExtractionListener: orderExtractionListner)
         } else {
-            throw ASLException(errorMessage: Strings.ErrorLibNotInitialized, errorType: nil)
+            let error =  ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
+            FirebaseAnalyticsUtil.logSentryError(error: error)
+            throw error
         }
     }
     
@@ -180,4 +205,6 @@ public class OrdersExtractor {
             //Todo
         }
     }
+    
+    
 }

@@ -7,18 +7,21 @@ import UIKit
 import WebKit
 import Combine
 import Network
+import Sentry
 
-class ConnectAccountViewController: UIViewController {
+class ConnectAccountViewController: UIViewController, ScraperProgressListener, TimerCallbacks {
     private let baseURL = "https://www.amazon.com/ap/signin?_encoding=UTF8&openid.assoc_handle=usflex&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.mode=checkid_setup&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&openid.ns.pape=http%3A%2F%2Fspecs.openid.net%2Fextensions%2Fpape%2F1.0&openid.pape.max_auth_age=900&openid.return_to=https%3A%2F%2Fwww.amazon.com%2Fgp%2Fb2b%2Freports%2F"
     private let reportUrl = "https://www.amazon.com/gp/b2b/reports/"
     private let viewModel = WebViewModel()
-    
+    private var scraperListener: ScraperProgressListener!
     private var navigationHelper: NavigationHelper!
     private var path: NWPath?
-    
+    private var timerHandler: TimerHandler!
     private var viewInit = false
     private var isFetchSkipped: Bool = false
+    private var isFailureButAccountConnected: Bool = false
     private var shouldAllowBack = false
+    private var timerCallback: TimerCallbacks!
     let monitor = NWPathMonitor()
     var account: Account!
     
@@ -35,7 +38,7 @@ class ConnectAccountViewController: UIViewController {
     private var completionSubscriber: AnyCancellable? = nil
     private var stopScrappingSubscriber: AnyCancellable? = nil
     private var authenticationCompleteSubscriber: AnyCancellable? = nil
-
+    
     // MARK: - View References
     
     // MARK: - IBOutlets
@@ -73,31 +76,44 @@ class ConnectAccountViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.scraperListener = self
+        
+        self.timerCallback = self
+        
         self.initNetworkMonitor()
         
         self.viewModel.userAccount = self.account
         
         self.webContentView.navigationDelegate = self
-               
-        self.navigationHelper = AmazonNavigationHelper(self.viewModel)
+        
+        self.timerHandler = TimerHandler(timerCallback: self.timerCallback)
+        
+        self.navigationHelper = AmazonNavigationHelper(self.viewModel, webView: self.webContentView
+                                                       , scraperListener: scraperListener, timerHandler: self.timerHandler)
         
         self.webContentView.evaluateJavaScript("navigator.userAgent") { [weak self] (agent, error) in
             guard let self = self else { return }
-
+            
             var userAgent = "iPhone;"
             if let agent = agent as? String {
                 userAgent = agent.replacingOccurrences(of: "iPad", with: "iPhone")
             } else {
                 print(AppConstants.tag, "evaluateJavaScript", error.debugDescription)
+                if let error = error {
+                    FirebaseAnalyticsUtil.logSentryError(error: error)
+                }
+                
             }
             self.webContentView.customUserAgent = userAgent
             if let url = URL(string: self.baseURL) {
-                self.navigationHelper.startTimer()
+                self.timerHandler.startTimer(action: Actions.BaseURLLoading)
                 self.webContentView.load(URLRequest(url: url))
+                FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_ejs_loadurl \(url)")
             }
         }
         
         self.registerSubscribers()
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_viewDidLoad")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -105,6 +121,7 @@ class ConnectAccountViewController: UIViewController {
         
         self.initViews()
         viewInit = true
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_viewWillAppear")
     }
     
     override func viewWillLayoutSubviews() {
@@ -119,6 +136,7 @@ class ConnectAccountViewController: UIViewController {
         if self.shouldAllowBack {
             self.webContentView.stopLoading()
             LibContext.shared.scrapeCompletionPublisher.send(((false, nil), ASLException(errorMessage: Strings.ErrorUserAbortedProcess, errorType: ErrorType.userAborted)))
+            WebCacheCleaner.clear(completionHandler: nil)
             self.dismiss(animated: true, completion: nil)
         }
     }
@@ -134,10 +152,12 @@ class ConnectAccountViewController: UIViewController {
             // on the main thread
             DispatchQueue.main.async {
                 if path.status == .satisfied {
+                    FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_network_satisfied")
                     if self.viewInit {
                         self.loadWebContent()
                     }
                 } else {
+                    FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_network_not_satisfied")
                     self.contentView.bringSubviewToFront(self.networkErrorView)
                     self.shouldAllowBack = true
                 }
@@ -149,9 +169,11 @@ class ConnectAccountViewController: UIViewController {
     private func hasNetwork() -> Bool {
         if let path = self.path {
             if path.status == NWPath.Status.satisfied {
+                FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_hasNetwork()_satisfied")
                 return true
             }
         }
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_hasNetwork()_Not_satisfied")
         return false
     }
     
@@ -207,36 +229,39 @@ class ConnectAccountViewController: UIViewController {
                 } else {
                     status = EventStatus.Failure
                     print(AppConstants.tag, "evaluateJavaScript", error.debugDescription)
+                    if let error = error {
+                        FirebaseAnalyticsUtil.logSentryError(error: error)
+                    }
                 }
                 switch authState {
                 case .email:
-                    logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                           EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                           EventConstant.Status: status]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSInjectUserName, eventAttributes: logEventAttributes)
                 case .password:
-                    logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                           EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                           EventConstant.Status: status]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSInjectPassword, eventAttributes: logEventAttributes)
                 case .captcha:
-                    logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                           EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                           EventConstant.Status: status]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedCaptcha, eventAttributes: logEventAttributes)
                 case .generateReport:
-                    self.navigationHelper.stopTimer()
+                    self.timerHandler.stopTimer()
                     //Logging event for report generation
                     var logEventAttributes:[String:String] = [:]
-                    logEventAttributes = [EventConstant.OrderSource:                    String(OrderSource.Amazon.rawValue),
+                    logEventAttributes = [EventConstant.OrderSource:              OrderSource.Amazon.value,
                                           EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                           EventConstant.Status: status]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportGeneration, eventAttributes: logEventAttributes)
                 case .downloadReport:
-                    self.navigationHelper.stopTimer()
+                    self.timerHandler.stopTimer()
                     //Logging event for report download
                     var logEventAttributes:[String:String] = [:]
-                    logEventAttributes = [EventConstant.OrderSource:                    String(OrderSource.Amazon.rawValue),
+                    logEventAttributes = [EventConstant.OrderSource:                    OrderSource.Amazon.value,
                                           EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                           EventConstant.Status: status]
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportDownload, eventAttributes: logEventAttributes)
@@ -252,6 +277,7 @@ class ConnectAccountViewController: UIViewController {
             case .reload:
                 if let url = URL(string: self.baseURL) {
                     self.webContentView.load(URLRequest(url: url))
+                    FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_reload_url \(url)")
                 }
             }
         })
@@ -260,7 +286,7 @@ class ConnectAccountViewController: UIViewController {
             guard let self = self else { return }
             self.hideWebContents(hide: !showWeb)
             if showWeb {
-                self.navigationHelper.stopTimer()
+                self.timerHandler.stopTimer()
             }
         })
         webViewErrorSubscriber = self.viewModel.webviewError.receive(on: RunLoop.main).sink(receiveValue: { [weak self] isWebError in
@@ -277,8 +303,9 @@ class ConnectAccountViewController: UIViewController {
         authErrorSubscriber = self.viewModel.authError.receive(on: RunLoop.main).sink(receiveValue: { [weak self] isError in
             guard let self = self else { return }
             if isError.0 {
-                self.navigationHelper.stopTimer()
+                self.timerHandler.stopTimer()
                 LibContext.shared.webAuthErrorPublisher.send((isError.0, isError.1))
+                WebCacheCleaner.clear(completionHandler: nil)
                 self.dismiss(animated: true, completion: nil)
             }
         })
@@ -327,8 +354,10 @@ class ConnectAccountViewController: UIViewController {
     }
     
     private func loadWebContent() {
+        navigationHelper.isGenerateReport = false
         if let url = URL(string: self.baseURL) {
             self.webContentView.load(URLRequest(url: url))
+            FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_loadWebContent() \(url)")
         }
         self.contentView.bringSubviewToFront(self.progressView)
         self.progressView.progress = 1/6
@@ -348,19 +377,134 @@ class ConnectAccountViewController: UIViewController {
         if self.isFetchSkipped {
             let result = (true, OrderFetchSuccessType.fetchSkipped)
             LibContext.shared.scrapeCompletionPublisher.send((result, ASLException(errorMessage: Strings.ExtractionDisabled, errorType: nil) ))
+        } else if self.isFailureButAccountConnected {
+            let result = (true, OrderFetchSuccessType.failureButAccountConnected)
+            LibContext.shared.scrapeCompletionPublisher.send((result, nil))
         } else {
             let result = (true, OrderFetchSuccessType.fetchCompleted)
             LibContext.shared.scrapeCompletionPublisher.send((result, nil))
         }
     }
     
+    private func logEvents(logEvents: EventLogs) {
+        _ = AmazonService.logEvents(eventLogs: logEvents) { response, error in
+                //TODO
+        }
+    }
+    
     func removeNavigationDelegate() {
         self.webContentView.navigationDelegate = nil
+    }
+    
+    func onWebviewError(isError: Bool) {
+        DispatchQueue.main.async {
+            if isError {
+                if self.hasNetwork() {
+                    self.contentView.bringSubviewToFront(self.errorView)
+                } else {
+                    self.contentView.bringSubviewToFront(self.networkErrorView)
+                }
+                self.shouldAllowBack = true
+            }
+        }
+    }
+    
+    func updateProgressValue(progressValue: Float) {
+        DispatchQueue.main.async {
+            self.contentView.bringSubviewToFront(self.progressView)
+            self.progressView.progress = CGFloat(progressValue)
+        }
+    }
+    
+    func updateStepMessage(stepMessage: String) {
+        DispatchQueue.main.async {
+            if !stepMessage.elementsEqual(self.progressView.stepText) {
+                self.contentView.bringSubviewToFront(self.progressView)
+                self.progressView.stepText = stepMessage
+            }
+        }
+    }
+    
+    func updateSuccessType(successType: OrderFetchSuccessType) {
+        switch successType {
+        case .fetchSkipped:
+            self.isFetchSkipped = true
+        case .failureButAccountConnected:
+            self.isFailureButAccountConnected = true
+        case .fetchCompleted:
+            print("")
+        }
+    }
+    
+    func onCompletion(isComplete: Bool) {
+        if isComplete {
+            DispatchQueue.main.async {
+                self.backButton.isEnabled = false
+                self.backButton.isHidden = true
+                self.contentView.bringSubviewToFront(self.fetchSuccessView)
+            }
+        }
+    }
+    
+    func updateProgressStep(htmlScrappingStep: HtmlScrappingStep) {
+        let currentProgress = self.progressView.progress
+        let remainingProgress = 1 - currentProgress
+        var newProgressValue: Float = 0
+        switch htmlScrappingStep {
+        case .startScrapping:
+            newProgressValue = Float(currentProgress) + Float(remainingProgress)/3
+            updateStepMessage(stepMessage: "Step 3")
+        case .listing:
+            newProgressValue = Float(currentProgress) + Float(remainingProgress)/2
+            updateStepMessage(stepMessage: "Step 4")
+        case .complete:
+            newProgressValue = Float(currentProgress) + Float(remainingProgress)/1
+            updateStepMessage(stepMessage: "Step 5")
+        }
+        updateProgressValue(progressValue: newProgressValue)
+    }
+    
+    func onTimerTriggered(action: String) {
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_onTimerTriggered() \(action)")
+        
+        if action == Actions.GetOldestPossibleYearJSCallback ||
+            action == Actions.DownloadReportJSInjection ||
+            action == Actions.ReportGenerationJSCallback {
+            
+            self.isFailureButAccountConnected = true
+            
+            // On timeout cancel all the ongoing API calls
+            AmazonService.cancelAPI()
+
+            //Timeout happens and if account is connected
+            //then update order status as failed in the backend
+            let amazonId = self.viewModel.userAccount.userID
+            _ = AmazonService.updateStatus(amazonId: amazonId,
+                                           status: AccountState.Connected.rawValue,
+                                           message: AppConstants.msgTimeout,
+                                           orderStatus: OrderStatus.Failed.rawValue) { response, error in
+            }
+            let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrappingType: ScrappingType.report.rawValue)
+            self.logEvents(logEvents: eventLogs)
+            DispatchQueue.main.async {
+                self.backButton.isEnabled = false
+                self.backButton.isHidden = true
+                self.contentView.bringSubviewToFront(self.fetchSuccessView)
+            }
+        } else {
+            self.timerHandler.stopTimer()
+            let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.success.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrappingType: nil)
+            self.logEvents(logEvents: eventLogs)
+            LibContext.shared.webAuthErrorPublisher.send((true, AppConstants.msgTimeout))
+            WebCacheCleaner.clear(completionHandler: nil)
+            self.dismiss(animated: true, completion: nil)
+        }
     }
 }
 
 extension ConnectAccountViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        print("######: didFinish ",webView.url)
         self.navigationHelper.navigateWith(url: webView.url)
     }
     
@@ -368,39 +512,23 @@ extension ConnectAccountViewController: WKNavigationDelegate {
         // Shows loader
         let showWebView = self.navigationHelper.shouldShowWebViewFor(url: webView.url)
         self.viewModel.showWebView.send(showWebView)
-        self.navigationHelper.startTimer()
-    }
-    
-    func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {        
-        if (self.navigationHelper.shouldIntercept(navigationResponse: navigationResponse.response)) {
-            webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { [weak self] cookies in
-                guard let self = self else { return }
-                self.navigationHelper.intercept(navigationResponse: navigationResponse.response, cookies: cookies)
-            }
-            decisionHandler(.cancel)
-            return
-        }
-        decisionHandler(.allow)
-    }
-    
-    // This function is essential for intercepting every navigation in the webview
-    func webView(_ webView: WKWebView,
-                 decidePolicyFor navigationAction: WKNavigationAction,
-                 preferences: WKWebpagePreferences,
-                 decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
-        preferences.preferredContentMode = .mobile
-        decisionHandler(.allow, preferences)
+        self.timerHandler.startTimer(action: Actions.DidStartProvisionalNavigation)
+        
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_didStartProvisionalNavigation- \(webView.url)")
     }
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         print(AppConstants.tag,"An error occurred during navigation", error.localizedDescription)
+        FirebaseAnalyticsUtil.logSentryError(error: error)
     }
     
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         print(AppConstants.tag,"An error occurred during the early navigation process", error.localizedDescription)
+        FirebaseAnalyticsUtil.logSentryError(error: error)
     }
     
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         print(AppConstants.tag, "webViewWebContentProcessDidTerminate()")
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_webViewWebContentProcessDidTerminate")
     }
 }

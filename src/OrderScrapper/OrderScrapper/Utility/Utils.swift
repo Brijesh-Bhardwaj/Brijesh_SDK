@@ -5,6 +5,7 @@
 
 import Foundation
 import SwiftUI
+import Sentry
 
 class Utils {
     //Returns string value for the key
@@ -24,5 +25,10 @@ class Utils {
     static func getBaseURL() -> String {
         let infoDict = AppConstants.bundle.infoDictionary!
         return infoDict["BASE_API_ENDPOINT"] as! String
+    }
+    
+    static func getSubUrl(url: String, delimeter: String) -> String {
+        let subUrl = url.components(separatedBy: delimeter)
+        return subUrl[0]
     }
 }

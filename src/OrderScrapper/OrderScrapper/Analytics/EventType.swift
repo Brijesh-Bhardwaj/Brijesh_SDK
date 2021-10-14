@@ -22,6 +22,31 @@ struct EventType {
     static let JSDetectOtherURL = "js_detect_other_url"
     static let JSDetectReportGeneration = "js_detected_report_generation"
     static let JSDetectReportDownload = "js_detected_report_download"
+    
+    //Event types in background
+    static let BgAccountConnect = "bg_account_connect"
+    static let BgJSInjectUserName = "bg_js_inject_user_name"
+    static let BgJSInjectPassword = "bg_js_inject_password"
+    static let BgJSDetectedCaptcha = "bg_js_detected_captcha"
+    static let BgJSDetectOtherURL = "bg_js_detect_other_url"
+    static let BgScrappingStarted = "bg_scrapping_started"
+    
+    static let BgAPIScrapperConfig = "bg_api_scraper_config"
+    static let BgAuthentication = "bg_authentication"
+    static let BgNavigatedToOrderListing = "bg_navigated_to_order_listing"
+    static let BgDownloadScrapperScriptFile = "bg_download_scrapper_script_file"
+    static let BgRetrieveScrapperScript = "bg_retrieve_scrapper_script"
+    
+    static let BgInjectJSForOrderDetail = "bg_inject_js_against_order_details_page"
+    static let BgScrappingOrderDetailResultSuccess = "bg_scrapping_order_details_result_success"
+    static let BgScrappingOrderDetailResultFilure = "bg_scrapping_order_details_result_failure"
+    static let BgInsertScrappedOrderDetailsInDB = "bg_insert_scrapped_order_details_into_db"
+    static let BgRetrieveScrappedOrderDetailsFromDB = "bg_get_scrapped_order_details_db"
+    static let BgAPIUploadOrderDetails = "bg_api_upload_order_details"
+    static let BgInjectJSForOrderListing = "bg_inject_js_against_order_listing_page"
+    static let BgScrappingOrderListResultSuccess = "bg_scrapping_order_list_result_success"
+    static let BgScrappingOrderListResultFailure = "bg_scrapping_order_list_result_failure"
+   
 }
 
 struct EventStatus {
