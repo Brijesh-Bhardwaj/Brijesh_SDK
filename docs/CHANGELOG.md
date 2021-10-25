@@ -10,10 +10,17 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
   
- ## [1.1.4] - 2021-10-07
+## [1.1.5] - 2021-10-25
  
   ### Fixed
-  -Sentry configs changes added such that if Sentry is enable in get_config API response then only Sentry will log the errors and events
+   - Optimized code to handle multiple network callbacks simultaneously ensuring the webview doesn't reload the same login URL multiple times
+   - Removed the cool-off condition check in case the scraping is requested after notification click
+   - Optimized core data code to be thread safe using a synchronized thread handler ensuring the object is not accessed simultaneously by different threads
+
+## [1.1.4] - 2021-10-07
+ 
+  ### Fixed
+  - Sentry configs changes added such that if Sentry is enable in get_config API response then only Sentry will log the errors and events
 
 
 ## [1.1.3] - 2021-09-17
@@ -22,6 +29,7 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - On timeout update status API not getting called issue fixed 
 
 ## [1.1.2] - 2021-09-08
+
   ### Added
  - While scraping in background if user gets authentication challenge such as captcha, two-factor auth and approval auth, then maintained the scraping failure count in SDK and if in case the scraping failure count increases than the configured value then shown notification to user and on click of that notification navigated user to progress bar screen to handle auth challenge scenario.
  - Implemented configured cool-off period while scraping in background.
