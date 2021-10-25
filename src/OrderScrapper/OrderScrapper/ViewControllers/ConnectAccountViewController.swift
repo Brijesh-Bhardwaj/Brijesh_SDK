@@ -370,6 +370,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     }
     
     private func loadWebContent() {
+        navigationHelper.isGenerateReport = false
         if let url = URL(string: self.baseURL) {
             self.webContentView.load(URLRequest(url: url))
             FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_loadWebContent() \(url)")
