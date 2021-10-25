@@ -22,6 +22,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     private var isFailureButAccountConnected: Bool = false
     private var shouldAllowBack = false
     private var timerCallback: TimerCallbacks!
+    private var networkState: NetworkState = .available
     let monitor = NWPathMonitor()
     var account: Account!
     
@@ -152,18 +153,33 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             // on the main thread
             DispatchQueue.main.async {
                 if path.status == .satisfied {
-                    FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_network_satisfied")
-                    if self.viewInit {
-                        self.loadWebContent()
+                    if self.networkState != .available {
+                        self.networkState = .available
+                        self.onNetworkConnected()
                     }
                 } else {
-                    FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_network_not_satisfied")
-                    self.contentView.bringSubviewToFront(self.networkErrorView)
-                    self.shouldAllowBack = true
+                    if self.networkState != .notAvailable {
+                        self.networkState = .notAvailable
+                        self.onNetworkDisconnected()
+                    }
                 }
             }
         }
         monitor.start(queue: queue)
+    }
+    
+    private func onNetworkConnected() {
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_network_satisfied")
+        if self.viewInit {
+            self.loadWebContent()
+        }
+    }
+    
+    private func onNetworkDisconnected() {
+        self.navigationHelper.isGenerateReport = false
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_network_not_satisfied")
+        self.contentView.bringSubviewToFront(self.networkErrorView)
+        self.shouldAllowBack = true
     }
     
     private func hasNetwork() -> Bool {
@@ -354,7 +370,6 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     }
     
     private func loadWebContent() {
-        navigationHelper.isGenerateReport = false
         if let url = URL(string: self.baseURL) {
             self.webContentView.load(URLRequest(url: url))
             FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_loadWebContent() \(url)")
@@ -486,6 +501,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             }
             let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrappingType: ScrappingType.report.rawValue)
             self.logEvents(logEvents: eventLogs)
+            
             DispatchQueue.main.async {
                 self.backButton.isEnabled = false
                 self.backButton.isHidden = true
@@ -504,7 +520,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
 
 extension ConnectAccountViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        print("######: didFinish ",webView.url)
+        print("######: didFinish ",webView.url as Any)
         self.navigationHelper.navigateWith(url: webView.url)
     }
     
@@ -514,7 +530,7 @@ extension ConnectAccountViewController: WKNavigationDelegate {
         self.viewModel.showWebView.send(showWebView)
         self.timerHandler.startTimer(action: Actions.DidStartProvisionalNavigation)
         
-        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_didStartProvisionalNavigation- \(webView.url)")
+        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_didStartProvisionalNavigation- \(webView.url as Any)")
     }
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
