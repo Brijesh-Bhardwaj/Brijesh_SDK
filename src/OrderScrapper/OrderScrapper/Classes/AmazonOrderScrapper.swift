@@ -86,22 +86,25 @@ class AmazonOrderScrapper {
     func startOrderExtraction(account: Account,
                               orderExtractionListener: OrderExtractionListener,
                               source: FetchRequestSource) {
-        if !isScrapping {
-            self.shouldStartScrapping() { [weak self] shouldScrape in
-                guard let self = self else { return }
-                
-                if shouldScrape {
-                    if source == .notification {
-                        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_foreground_scrapping \(source)")
-                        self.performForegroundScraping(account, orderExtractionListener)
-                    } else {
+        if source == .notification {
+            if isScrapping && self.backgroundScrapper != nil {
+                self.backgroundScrapper.stopScrapping()
+                self.backgroundScrapper = nil
+            }
+            FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_foreground_scrapping \(source)")
+            self.performForegroundScraping(account, orderExtractionListener)
+        } else {
+            if !isScrapping {
+                self.shouldStartScrapping() { [weak self] shouldScrape in
+                    guard let self = self else { return }
+                    if shouldScrape {
                         FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_background_scrapping \(source)")
                         self.performBackgroundScraping(account, orderExtractionListener)
+                    } else {
+                        let error = ASLException(errorMessage: "bg process in cool off period" , errorType: nil)
+                        orderExtractionListener.onOrderExtractionFailure(error: error, account: account)
+                        FirebaseAnalyticsUtil.logSentryError(error: error)
                     }
-                } else {
-                    let error = ASLException(errorMessage: "bg process in cool off period" , errorType: nil)
-                    orderExtractionListener.onOrderExtractionFailure(error: error, account: account)
-                    FirebaseAnalyticsUtil.logSentryError(error: error)
                 }
             }
         }
