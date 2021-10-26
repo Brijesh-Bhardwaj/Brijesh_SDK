@@ -80,8 +80,6 @@ class AmazonOrderScrapper {
                 accountDisconnectedListener.onAccountDisconnectionFailed(account: account, error: error)
                 FirebaseAnalyticsUtil.logSentryError(error: error)
             }
-            //Start scrapping in the background
-            self.backgroundScrapper.startScrapping(account: account)
         }
     }
     
