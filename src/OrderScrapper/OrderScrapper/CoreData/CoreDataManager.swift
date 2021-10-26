@@ -138,6 +138,7 @@ class CoreDataManager {
                 print(error.userInfo)
                 FirebaseAnalyticsUtil.logSentryError(error: error)
             }
+
         }
     }
     

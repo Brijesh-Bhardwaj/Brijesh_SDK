@@ -23,6 +23,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     private var shouldAllowBack = false
     private var timerCallback: TimerCallbacks!
     private var networkState: NetworkState = .available
+
     let monitor = NWPathMonitor()
     var account: Account!
     
@@ -502,7 +503,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             }
             let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrappingType: ScrappingType.report.rawValue)
             self.logEvents(logEvents: eventLogs)
-            
+
             DispatchQueue.main.async {
                 self.backButton.isEnabled = false
                 self.backButton.isHidden = true
