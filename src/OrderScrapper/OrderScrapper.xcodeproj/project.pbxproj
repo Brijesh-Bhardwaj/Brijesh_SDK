@@ -45,6 +45,7 @@
 		1C5133D6265D03FD00BCAC2C /* BSHtmlScrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5133D5265D03FD00BCAC2C /* BSHtmlScrapper.swift */; };
 		1C5133DA265D0D1A00BCAC2C /* ScrappingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5133D9265D0D1A00BCAC2C /* ScrappingPage.swift */; };
 		1C5133E6265D458F00BCAC2C /* BSHtmlScrappingStatusListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5133E5265D458F00BCAC2C /* BSHtmlScrappingStatusListener.swift */; };
+		1C563CB0272036A60061462A /* NetworkState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C563CAF272036A60061462A /* NetworkState.swift */; };
 		1C5B95B826CCEB8500FF0040 /* TimerHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5B95B726CCEB8500FF0040 /* TimerHandler.swift */; };
 		1C5DE05F264EA76400275073 /* JSUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5DE05E264EA76400275073 /* JSUtils.swift */; };
 		1C65D32C26669DC200548A84 /* ScrapeResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C65D32B26669DC200548A84 /* ScrapeResponse.swift */; };
@@ -203,6 +204,7 @@
 		1C5133D5265D03FD00BCAC2C /* BSHtmlScrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSHtmlScrapper.swift; sourceTree = "<group>"; };
 		1C5133D9265D0D1A00BCAC2C /* ScrappingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrappingPage.swift; sourceTree = "<group>"; };
 		1C5133E5265D458F00BCAC2C /* BSHtmlScrappingStatusListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSHtmlScrappingStatusListener.swift; sourceTree = "<group>"; };
+		1C563CAF272036A60061462A /* NetworkState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkState.swift; sourceTree = "<group>"; };
 		1C5B95B726CCEB8500FF0040 /* TimerHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerHandler.swift; sourceTree = "<group>"; };
 		1C5DE05E264EA76400275073 /* JSUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSUtils.swift; sourceTree = "<group>"; };
 		1C65D32B26669DC200548A84 /* ScrapeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrapeResponse.swift; sourceTree = "<group>"; };
@@ -570,6 +572,7 @@
 				9DA8027826D790EF00AEBD0D /* SectionType.swift */,
 				9DA8027C26D79B4100AEBD0D /* FailureTypes.swift */,
 				9DA8028026D7A4E900AEBD0D /* EventState.swift */,
+				1C563CAF272036A60061462A /* NetworkState.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -869,6 +872,7 @@
 				E148DC182601F3AA001430BE /* ReportConfig.swift in Sources */,
 				E148DB8D25FF31B4001430BE /* NavigationHelper.swift in Sources */,
 				E148DC4E260338B0001430BE /* DateRange.swift in Sources */,
+				1C563CB0272036A60061462A /* NetworkState.swift in Sources */,
 				E148DC7626048299001430BE /* PIIAttribute.swift in Sources */,
 				E148DB7E25FF313A001430BE /* AmazonNavigationHelper.swift in Sources */,
 				E148DB6425FF2BFD001430BE /* OrderSource.swift in Sources */,
