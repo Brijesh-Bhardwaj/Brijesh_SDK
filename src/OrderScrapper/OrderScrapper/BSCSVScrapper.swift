@@ -398,7 +398,6 @@ class BSCSVScrapper: NSObject {
             if response != nil {
                 self.currentStep = .complete
                 self.publishProgrssFor(step: .complete)
-                self.addUserAccountInDB()
                 
                 if self.scrapingMode == .Background {
                     self.logEvents(message: AppConstants.msgUploadCSVSuccess, section: SectionType.orderUpload.rawValue, status: EventState.success.rawValue, type: FailureTypes.other.rawValue)
