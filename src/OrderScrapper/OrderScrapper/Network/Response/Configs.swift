@@ -3,6 +3,6 @@
 
 import Foundation
 
-struct Configs: Decodable {
+struct Configs: Codable {
     let timeoutValue: Double?
 }

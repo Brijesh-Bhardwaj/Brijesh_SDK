@@ -26,6 +26,13 @@ class ConfigManager {
                                   EventConstant.PanelistID: panelistId]
             
             if let platformSourceConfigs = response?.configurations {
+                var json: String
+                do {
+                    let jsonData = try JSONEncoder().encode(response)
+                    json = String(data: jsonData, encoding: .utf8)!
+                } catch {
+                    json = AppConstants.ErrorInJsonEncoding
+                }
                 for scrapperConfig in platformSourceConfigs {
                     if scrapperConfig.platformSource == orderSource.value {
                         scrapperConfig.urls.captchaRetries = scrapperConfig.connections.captchaRetries
@@ -36,7 +43,8 @@ class ConfigManager {
                 }
                 
                 completion(response, nil)
-                //TODO Add response in attributes
+                
+                logEventAttributes[EventConstant.Data] = json
                 logEventAttributes[EventConstant.Status] = EventStatus.Success
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIConfigDetails, eventAttributes: logEventAttributes)
             } else {

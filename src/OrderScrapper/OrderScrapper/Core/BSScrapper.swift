@@ -162,6 +162,21 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
         _ = AmazonService.getDateRange(amazonId: self.account!.userID){ response, error in
             if let dateRange = response {
                 self.didReceive(dateRange: dateRange)
+                var json: String
+                do {
+                    let jsonData = try JSONEncoder().encode(response)
+                    json = String(data: jsonData, encoding: .utf8)!
+                } catch {
+                    json = AppConstants.ErrorInJsonEncoding
+                }
+                var logEventAttributes:[String:String] = [:]
+                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                      EventConstant.PanelistID: self.account!.panelistID,
+                                      EventConstant.OrderSourceID: self.account!.userID,
+                                      EventConstant.ScrappingStep: HtmlScrappingStep.startScrapping.value,
+                                      EventConstant.Data: json,
+                                      EventConstant.Status: EventStatus.Success]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIDateRange, eventAttributes: logEventAttributes)
             } else {
                 var logEventAttributes:[String:String] = [:]
                 logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),

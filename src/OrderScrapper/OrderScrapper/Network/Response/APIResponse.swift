@@ -14,7 +14,7 @@
 
 import Foundation
 
-struct APIResponse<T: Decodable>: Decodable {
+struct APIResponse<T: Codable>: Codable {
     let statusCode: Int
     let message: String?
     let error: String?

@@ -4,7 +4,7 @@
 
 import Foundation
 
-class SentryConfigs: Decodable {
+class SentryConfigs: Codable {
     let enabled: Bool
     let iosDSN: String
 }

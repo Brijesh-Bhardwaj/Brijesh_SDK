@@ -331,10 +331,18 @@ class BSCSVScrapper: NSObject {
                 return
             }
             // Log event for PIIList API success
+            var json: String
+            do {
+                let jsonData = try JSONEncoder().encode(response)
+                json = String(data: jsonData, encoding: .utf8)!
+            } catch {
+                json = AppConstants.ErrorInJsonEncoding
+            }
             logAPIEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
                                      EventConstant.OrderSourceID: self.account.userID,
                                      EventConstant.PanelistID: self.account.panelistID,
                                      EventConstant.ScrappingMode: self.scrapingMode.rawValue,
+                                     EventConstant.Data: json,
                                      EventConstant.Status: EventStatus.Success]
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIPIIList, eventAttributes: logAPIEventAttributes)
             

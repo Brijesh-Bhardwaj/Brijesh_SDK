@@ -3,7 +3,7 @@
 
 import Foundation
 
-public class OrderDetails: Decodable {
+public class OrderDetails: Codable {
     
     var orderId: String
     var orderDate: String?

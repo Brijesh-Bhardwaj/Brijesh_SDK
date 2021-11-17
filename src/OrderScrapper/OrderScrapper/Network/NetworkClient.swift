@@ -19,7 +19,7 @@ class APIError: Error {
     }
 }
 
-class NetworkClient<T: Decodable>: APIClient {
+class NetworkClient<T: Codable>: APIClient {
     private let AuthErrorResponseCode = 401
     private let BaseURL = LibContext.shared.orderExtractorConfig.baseURL
     private let HeaderContentType = "Content-Type"

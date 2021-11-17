@@ -64,4 +64,5 @@ struct AppConstants {
     static let generateReportUrl = "https://www.amazon.com/gp/b2b/reports/"
     static let msgUploadCSVSuccess = "CSV uploaded successfully"
     static let msgOrderListSuccess = "List scrapping success"
+    static let ErrorInJsonEncoding = "Error in JSON encoding"
 }

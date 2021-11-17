@@ -323,10 +323,18 @@ class AmazonNavigationHelper: NavigationHelper {
                     self.viewModel.disableScrapping.send(true)
                 }
                 //Logging event for successful date range API call
+                var json: String
+                do {
+                    let jsonData = try JSONEncoder().encode(response)
+                    json = String(data: jsonData, encoding: .utf8)!
+                } catch {
+                    json = AppConstants.ErrorInJsonEncoding
+                }
                 logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                                       EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
                                       EventConstant.ScrappingType: ScrappingType.report.rawValue,
+                                      EventConstant.Data: json,
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIDateRange, eventAttributes: logEventAttributes)
             } else {
