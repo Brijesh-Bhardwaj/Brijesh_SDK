@@ -18,4 +18,12 @@ struct EventConstant {
     static let FileName = "file_name"
     static let URL = "url"
     static let Message = "message"
+    
+    static let ScrappingType = "scrapping_type" //html/report
+    static let ScrappingMode = "scrapping_mode" // foreground/background
+    static let ScrappingStep = "scrapping_step" //
+    static let Platform = "platform"
+    static let Data = "data"
+    static let EventName = "event_name"
+    static let JSInjectType = "js_inject_type"
 }

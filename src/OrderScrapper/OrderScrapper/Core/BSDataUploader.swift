@@ -85,13 +85,22 @@ class DataUploadOperation: Operation {
             let orderRequest = OrderRequest(panelistId: self.panelistId, amazonId: self.userId, fromDate: dateRange.fromDate!, toDate: dateRange.toDate!, data: [data])
             _ = AmazonService.uploadOrderHistory(orderRequest: orderRequest) { [self] response, error in
                 DispatchQueue.global().async {
+                    var logEventAttributes:[String:String] = [:]
+                    logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                          EventConstant.PanelistID: self.panelistId,
+                                          EventConstant.OrderSourceID: self.userId]
+                    
                     if let response = response {
                         print("### uploadData() Response ", response)
                         CoreDataManager.shared.deleteOrderDetailsByOrderID(orderID: self.orderId,
                                                                            orderSource: self.orderSource)
                     }
+                    logEventAttributes[EventConstant.Status] = EventStatus.Failure
                     if let error = error {
-                        FirebaseAnalyticsUtil.logSentryError(error: error)
+                        logEventAttributes[EventConstant.EventName] = EventType.UploadOrdersAPIFailed
+                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                    } else {
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.UploadOrdersAPIFailed, eventAttributes: logEventAttributes)
                     }
                     
                     finish()

@@ -101,7 +101,14 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             } else {
                 print(AppConstants.tag, "evaluateJavaScript", error.debugDescription)
                 if let error = error {
-                    FirebaseAnalyticsUtil.logSentryError(error: error)
+                    var logEventAttributes:[String:String] = [:]
+                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                          EventConstant.PanelistID: self.viewModel.userAccount.panelistID,
+                                          EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                          EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                                          EventConstant.EventName: EventType.ErrorWhileEvaluatingJS,
+                                          EventConstant.Status: EventStatus.Failure]
+                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
                 }
                 
             }
@@ -139,6 +146,14 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             LibContext.shared.scrapeCompletionPublisher.send(((false, nil), ASLException(errorMessage: Strings.ErrorUserAbortedProcess, errorType: ErrorType.userAborted)))
             WebCacheCleaner.clear(completionHandler: nil)
             self.dismiss(animated: true, completion: nil)
+            
+            var logEventAttributes:[String:String] = [:]
+            logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                  EventConstant.PanelistID: self.viewModel.userAccount.panelistID,
+                                  EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                  EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                                  EventConstant.Status: EventStatus.Success]
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.UserAbortedProcess, eventAttributes: logEventAttributes)
         }
     }
     
@@ -246,7 +261,15 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                     status = EventStatus.Failure
                     print(AppConstants.tag, "evaluateJavaScript", error.debugDescription)
                     if let error = error {
-                        FirebaseAnalyticsUtil.logSentryError(error: error)
+                        var logErrorEventAttributes:[String:String] = [:]
+                        logErrorEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                              EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                              EventConstant.PanelistID: self.viewModel.userAccount.panelistID,
+                                              EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                                              EventConstant.Status: status,
+                                              EventConstant.JSInjectType: authState.value,
+                                              EventConstant.EventName: EventType.ErrorWhileEvaluatingJS]
+                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logErrorEventAttributes, error: error)
                     }
                 }
                 switch authState {
@@ -370,7 +393,6 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     }
     
     private func loadWebContent() {
-        navigationHelper.isGenerateReport = false
         if let url = URL(string: self.baseURL) {
             self.webContentView.load(URLRequest(url: url))
             FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_loadWebContent() \(url)")
@@ -536,16 +558,48 @@ extension ConnectAccountViewController: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         print(AppConstants.tag,"An error occurred during navigation", error.localizedDescription)
-        FirebaseAnalyticsUtil.logSentryError(error: error)
+        
+        var logEventAttributes:[String:String] = [:]
+        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                              EventConstant.PanelistID: self.account!.panelistID,
+                              EventConstant.OrderSourceID: self.account!.userID,
+                              EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                              EventConstant.EventName: EventType.DidFailPageNavigation,
+                              EventConstant.Status: EventStatus.Failure]
+        if let url = webView.url {
+            logEventAttributes[EventConstant.URL] = url.absoluteString
+        }
+        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
     }
     
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         print(AppConstants.tag,"An error occurred during the early navigation process", error.localizedDescription)
-        FirebaseAnalyticsUtil.logSentryError(error: error)
+        var logEventAttributes:[String:String] = [:]
+        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                              EventConstant.PanelistID: self.account!.panelistID,
+                              EventConstant.OrderSourceID: self.account!.userID,
+                              EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                              EventConstant.EventName: EventType.DidFailProvisionalNavigation,
+                              EventConstant.Status: EventStatus.Failure]
+        if let url = webView.url {
+            logEventAttributes[EventConstant.URL] = url.absoluteString
+        }
+        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
     }
     
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         print(AppConstants.tag, "webViewWebContentProcessDidTerminate()")
-        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_webViewWebContentProcessDidTerminate")
+        var logEventAttributes:[String:String] = [:]
+        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                              EventConstant.PanelistID: self.account!.panelistID,
+                              EventConstant.OrderSourceID: self.account!.userID,
+                              EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                              EventConstant.EventName: EventType.WebContentProcessDidTerminate,
+                              EventConstant.Status: EventStatus.Failure]
+        if let url = webView.url {
+            logEventAttributes[EventConstant.URL] = url.absoluteString
+        }
+        FirebaseAnalyticsUtil.logEvent(eventType: EventType.WebContentProcessDidTerminate, eventAttributes: logEventAttributes)
+        
     }
 }

@@ -14,6 +14,7 @@ struct AppConstants {
     static let orderDetailEntity = "OrderDetails"
     static let resource = "CoreDataModel"
     static let extensionName = "momd"
+    static let iOS = "iOS"
     //UserAccount Entity columns
     static let userAccountColumnOrderSource = "orderSource"
     static let userAccountColumnUserId = "userId"

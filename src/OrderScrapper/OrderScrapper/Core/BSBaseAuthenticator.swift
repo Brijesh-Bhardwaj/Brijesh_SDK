@@ -49,7 +49,17 @@ extension BSBaseAuthenticator: BSWebNavigationObserver {
     }
     
     func didFailPageNavigation(for url: URL?, withError error: Error) {
-        FirebaseAnalyticsUtil.logSentryError(error: error)
+        var logEventAttributes:[String:String] = [:]
+        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                              EventConstant.PanelistID: self.account!.panelistID,
+                              EventConstant.OrderSourceID: self.account!.userID,
+                              EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                              EventConstant.EventName: EventType.DidFailPageNavigation,
+                              EventConstant.Status: EventStatus.Failure]
+        if let url = url {
+            logEventAttributes[EventConstant.URL] = url.absoluteString
+        }
+        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
         print(AppConstants.tag, Strings.ErrorDuringNavigation, error.localizedDescription)
     }
 }

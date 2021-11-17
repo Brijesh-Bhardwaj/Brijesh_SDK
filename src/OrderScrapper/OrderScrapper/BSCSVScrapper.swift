@@ -58,43 +58,35 @@ class BSCSVScrapper: NSObject {
             
             //Log events for JS injection
             var logEventAttributes:[String:String] = [:]
+            var commonEventAttributes:[String:String] = [:]
+            commonEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                                  EventConstant.OrderSourceID: self.account.userID,
+                                  EventConstant.ScrappingMode: self.scrapingMode.rawValue,
+                                  EventConstant.ScrappingType: ScrappingType.report.rawValue]
+            
             var status: String
             if error == nil {
                 status = EventStatus.Success
             } else {
                 status = EventStatus.Failure
                 print(AppConstants.tag, "evaluateJavaScript", error.debugDescription)
+                logEventAttributes[EventConstant.ErrorReason] = error.debugDescription
             }
+            logEventAttributes[EventConstant.Status] = status
+            logEventAttributes.merge(dict: commonEventAttributes)
             switch jsType {
             case .email:
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                      EventConstant.OrderSourceID: self.account.userID,
-                                      EventConstant.Status: status]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSInjectUserName, eventAttributes: logEventAttributes)
             case .password:
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                      EventConstant.OrderSourceID: self.account.userID,
-                                      EventConstant.Status: status]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSInjectPassword, eventAttributes: logEventAttributes)
             case .captcha:
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
-                                      EventConstant.OrderSourceID: self.account.userID,
-                                      EventConstant.Status: status]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedCaptcha, eventAttributes: logEventAttributes)
             case .generateReport:
                 self.timerHandler.startTimer(action: Actions.ReportGenerationJSCallback)
                 //Logging event for report generation
-                var logEventAttributes:[String:String] = [:]
-                logEventAttributes = [EventConstant.OrderSource:                    String(OrderSource.Amazon.rawValue),
-                                      EventConstant.OrderSourceID: self.account.userID,
-                                      EventConstant.Status: status]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportGeneration, eventAttributes: logEventAttributes)
             case .downloadReport:
                 self.timerHandler.stopTimer()
-                var logEventAttributes:[String:String] = [:]
-                logEventAttributes = [EventConstant.OrderSource:                    String(OrderSource.Amazon.rawValue),
-                                      EventConstant.OrderSourceID: self.account.userID,
-                                      EventConstant.Status: status]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportDownload, eventAttributes: logEventAttributes)
             case .dateRange, .identification, .error:break
             }
@@ -143,7 +135,14 @@ class BSCSVScrapper: NSObject {
     private func navigateWith(url: URL?) {
         guard let url = url else { return }
         let urlString = url.absoluteString
-        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_CSVScraper_navigateWith() \(urlString)")
+        
+        var logEventAttributes:[String:String] = [:]
+        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                              EventConstant.OrderSourceID: self.account.userID,
+                              EventConstant.ScrappingMode: self.scrapingMode.rawValue,
+                              EventConstant.URL: urlString,
+                              EventConstant.Status: EventStatus.Success]
+        FirebaseAnalyticsUtil.logEvent(eventType: EventType.UrlLoadedReportScrapping, eventAttributes: logEventAttributes)
         
         if scrapingMode == .Background {
             let loginSubURL = getSubURL(from: self.param!.configuration.login, delimeter: "/?")
@@ -189,6 +188,18 @@ class BSCSVScrapper: NSObject {
         } else {
             if scrapingMode == .Background {
                 print("other url",urlString)
+                
+                var logOtherUrlEventAttributes:[String:String] = [:]
+                logOtherUrlEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                              EventConstant.PanelistID: self.account.panelistID,
+                                              EventConstant.OrderSourceID: self.account.userID,
+                                              EventConstant.ScrappingMode: scrapingMode.rawValue,
+                                              EventConstant.ScrappingType: ScrappingType.report.rawValue,
+                                              EventConstant.Status: EventStatus.Success,
+                                              EventConstant.URL: urlString]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.StepOtherURLLoaded, eventAttributes: logOtherUrlEventAttributes)
+
+                
                 let error = ASLException(errorMessages: Strings.ErrorOtherUrlLoaded, errorTypes: nil, errorEventLog: .unknownURL, errorScrappingType: ScrappingType.report)
                 bsScrapper!.onAuthenticationFailure(error: error)
             }
@@ -271,6 +282,9 @@ class BSCSVScrapper: NSObject {
                 
                 logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
                                       EventConstant.OrderSourceID: self.account.userID,
+                                      EventConstant.PanelistID: self.account.panelistID,
+                                      EventConstant.ScrappingMode: self.scrapingMode.rawValue,
+                                      EventConstant.ScrappingType: ScrappingType.report.rawValue,
                                       EventConstant.Status: EventStatus.Success,
                                       EventConstant.FileName: fileName]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.OrderCSVDownload, eventAttributes: logEventAttributes)
@@ -281,8 +295,11 @@ class BSCSVScrapper: NSObject {
                 
                 logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
                                       EventConstant.OrderSourceID: self.account.userID,
+                                      EventConstant.PanelistID: self.account.panelistID,
+                                      EventConstant.ScrappingMode: self.scrapingMode.rawValue,
+                                      EventConstant.ScrappingType: ScrappingType.report.rawValue,
                                       EventConstant.Status: EventStatus.Failure]
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.OrderCSVDownload, eventAttributes: logEventAttributes)
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.ExceptionDownloadingCSVFile, eventAttributes: logEventAttributes)
             }
         }
     }
@@ -301,14 +318,23 @@ class BSCSVScrapper: NSObject {
                 // Log event for PIIList API failure
                 logAPIEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
                                          EventConstant.OrderSourceID: self.account.userID,
+                                         EventConstant.PanelistID: self.account.panelistID,
+                                         EventConstant.ScrappingMode: self.scrapingMode.rawValue,
                                          EventConstant.ErrorReason: error.debugDescription,
+                                         EventConstant.EventName: EventType.PIIDetailsAPIFailed,
                                          EventConstant.Status: EventStatus.Failure]
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIPIIList, eventAttributes: logAPIEventAttributes)
+                if let error = error {
+                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logAPIEventAttributes, error: error)
+                } else {
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.PIIDetailsAPIFailed, eventAttributes: logAPIEventAttributes)
+                }
                 return
             }
             // Log event for PIIList API success
             logAPIEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
                                      EventConstant.OrderSourceID: self.account.userID,
+                                     EventConstant.PanelistID: self.account.panelistID,
+                                     EventConstant.ScrappingMode: self.scrapingMode.rawValue,
                                      EventConstant.Status: EventStatus.Success]
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIPIIList, eventAttributes: logAPIEventAttributes)
             
@@ -322,10 +348,18 @@ class BSCSVScrapper: NSObject {
                     //Log event for error in parsing
                     logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
                                           EventConstant.OrderSourceID: self.account.userID,
+                                          EventConstant.PanelistID: self.account.panelistID,
+                                          EventConstant.ScrappingMode: self.scrapingMode.rawValue,
                                           EventConstant.FileName: fileName,
                                           EventConstant.ErrorReason: error.debugDescription,
                                           EventConstant.Status: EventStatus.Failure]
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.OrderCSVPParse, eventAttributes: logEventAttributes)
+                    
+                    if let error = error {
+                        logEventAttributes[EventConstant.EventName] = EventType.ExceptionWhileUpdatingCSVFile
+                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                    } else {
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.ExceptionWhileUpdatingCSVFile, eventAttributes: logEventAttributes)
+                    }
                     print(AppConstants.tag, "removePIIAttributes", error.debugDescription)
                     return
                 }
@@ -334,6 +368,8 @@ class BSCSVScrapper: NSObject {
                 //Log event for successful parsing
                 logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
                                       EventConstant.OrderSourceID: self.account.userID,
+                                      EventConstant.PanelistID: self.account.panelistID,
+                                      EventConstant.ScrappingMode: self.scrapingMode.rawValue,
                                       EventConstant.FileName: fileName,
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.OrderCSVPParse, eventAttributes: logEventAttributes)
@@ -364,6 +400,8 @@ class BSCSVScrapper: NSObject {
                 //Log event for successful uploading of csv
                 logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
                                       EventConstant.OrderSourceID: self.account.userID,
+                                      EventConstant.PanelistID: self.account.panelistID,
+                                      EventConstant.ScrappingMode: self.scrapingMode.rawValue,
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIUploadReport, eventAttributes: logEventAttributes)
                 
@@ -371,7 +409,9 @@ class BSCSVScrapper: NSObject {
                 var logConnectAccountEventAttributes:[String:String] = [:]
                 logConnectAccountEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
                                                     EventConstant.OrderSourceID: self.account.userID,
-                                                    EventConstant.Status: EventStatus.Connected]
+                                                    EventConstant.PanelistID: self.account.panelistID,
+                                                    EventConstant.Status: EventStatus.Connected,
+                                                    EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.AccountConnect, eventAttributes: logConnectAccountEventAttributes)
             } else {
                 self.scraperListener.onWebviewError(isError: true)
@@ -389,9 +429,17 @@ class BSCSVScrapper: NSObject {
                 //Log event for failure in csv upload
                 logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
                                       EventConstant.OrderSourceID: self.account.userID,
+                                      EventConstant.PanelistID: self.account.panelistID,
+                                      EventConstant.ScrappingMode: self.scrapingMode.rawValue,
+                                      EventConstant.ScrappingType: ScrappingType.report.rawValue,
                                       EventConstant.ErrorReason: error.debugDescription,
                                       EventConstant.Status: EventStatus.Failure]
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIUploadReport, eventAttributes: logEventAttributes)
+                if let error = error {
+                    logEventAttributes[EventConstant.EventName] = EventType.UploadReportAPIFailed
+                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                } else {
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIUploadReport, eventAttributes: logEventAttributes)
+                }
             }
             //Delete downloaded file even if file uploading is successful or failure
             FileHelper.clearDirectory(orderSource: .Amazon)
@@ -420,6 +468,7 @@ class BSCSVScrapper: NSObject {
      * get progress value in the range 0 to 1 from step number
      **/
     private func publishProgrssFor(step : Step) {
+        var logEventAttributes:[String:String] = [:]
         let progressValue = Float(step.rawValue) / AppConstants.numberOfSteps
         var stepMessage: String
         
@@ -430,12 +479,47 @@ class BSCSVScrapper: NSObject {
             stepMessage = Utils.getString(key: Strings.Step2)
         case .downloadReport:
             stepMessage = Utils.getString(key: Strings.Step3)
+            
+            logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                  EventConstant.OrderSourceID: self.account.userID,
+                                  EventConstant.PanelistID: self.account.panelistID,
+                                  EventConstant.ScrappingMode: scrapingMode.rawValue,
+                                  EventConstant.ScrappingStep: Step.downloadReport.value,
+                                  EventConstant.Status: EventStatus.Success]
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.StepDownloadReport, eventAttributes: logEventAttributes)
+
         case .parseReport:
             stepMessage = Utils.getString(key: Strings.Step4)
+            
+            logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                  EventConstant.OrderSourceID: self.account.userID,
+                                  EventConstant.PanelistID: self.account.panelistID,
+                                  EventConstant.ScrappingMode: scrapingMode.rawValue,
+                                  EventConstant.ScrappingStep: Step.parseReport.value,
+                                  EventConstant.Status: EventStatus.Success]
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.StepParseReport, eventAttributes: logEventAttributes)
+
         case .uploadReport:
             stepMessage = Utils.getString(key: Strings.Step5)
+            
+            logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                  EventConstant.OrderSourceID: self.account.userID,
+                                  EventConstant.PanelistID: self.account.panelistID,
+                                  EventConstant.ScrappingMode: scrapingMode.rawValue,
+                                  EventConstant.ScrappingStep: Step.uploadReport.value,
+                                  EventConstant.Status: EventStatus.Success]
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.StepUploadReport, eventAttributes: logEventAttributes)
+
         case .complete:
             stepMessage = Utils.getString(key: Strings.Step6)
+            
+            logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                  EventConstant.OrderSourceID: self.account.userID,
+                                  EventConstant.PanelistID: self.account.panelistID,
+                                  EventConstant.ScrappingMode: scrapingMode.rawValue,
+                                  EventConstant.ScrappingStep: Step.complete.value,
+                                  EventConstant.Status: EventStatus.Success]
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.StepComplete, eventAttributes: logEventAttributes)
         }
         
         self.scraperListener.updateProgressValue(progressValue: progressValue)
@@ -486,16 +570,46 @@ extension BSCSVScrapper: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         print(AppConstants.tag,"An error occurred during navigation", error.localizedDescription)
-        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_CSVScrapper_didFail \(webView.url)")
+        
+        var logEventAttributes:[String:String] = [:]
+        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                              EventConstant.PanelistID: self.account!.panelistID,
+                              EventConstant.OrderSourceID: self.account!.userID,
+                              EventConstant.ScrappingMode: self.scrapingMode.rawValue,
+                              EventConstant.ScrappingType: ScrappingType.report.rawValue,
+                              EventConstant.EventName: EventType.DidFailPageNavigation]
+        if let url = webView.url {
+            logEventAttributes[EventConstant.URL] = url.absoluteString
+        }
+        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
     }
     
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         print(AppConstants.tag,"An error occurred during the early navigation process", error.localizedDescription)
-        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_CSVScrapper_didFailProvisionalNavigation \(webView.url)")
-    }
+        var logEventAttributes:[String:String] = [:]
+        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                              EventConstant.PanelistID: self.account!.panelistID,
+                              EventConstant.OrderSourceID: self.account!.userID,
+                              EventConstant.ScrappingMode: self.scrapingMode.rawValue,
+                              EventConstant.ScrappingType: ScrappingType.report.rawValue,
+                              EventConstant.EventName: EventType.DidFailProvisionalNavigation]
+        if let url = webView.url {
+            logEventAttributes[EventConstant.URL] = url.absoluteString
+        }
+        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)    }
     
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         print(AppConstants.tag, "webViewWebContentProcessDidTerminate()")
-        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_CSVScrapper_webViewWebContentProcessDidTerminate \(webView.url)")
+        var logEventAttributes:[String:String] = [:]
+        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                              EventConstant.PanelistID: self.account!.panelistID,
+                              EventConstant.OrderSourceID: self.account!.userID,
+                              EventConstant.ScrappingMode: self.scrapingMode.rawValue,
+                              EventConstant.ScrappingType: ScrappingType.report.rawValue,
+                              EventConstant.EventName: EventType.WebContentProcessDidTerminate]
+        if let url = webView.url {
+            logEventAttributes[EventConstant.URL] = url.absoluteString
+        }
+        FirebaseAnalyticsUtil.logEvent(eventType: EventType.WebContentProcessDidTerminate, eventAttributes: logEventAttributes)
     }
 }
