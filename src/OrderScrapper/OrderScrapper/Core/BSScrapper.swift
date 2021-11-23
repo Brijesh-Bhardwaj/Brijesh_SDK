@@ -80,7 +80,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     func getAuthenticator() throws -> BSAuthenticator {
         let error = ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+        logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
                               EventConstant.PanelistID: self.account!.panelistID,
                               EventConstant.OrderSourceID: self.account!.userID,
                               EventConstant.ScrappingType: scrappingType,
@@ -96,7 +96,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     func getOrderSource() throws -> OrderSource {
         let error = ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+        logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
                               EventConstant.PanelistID: self.account!.panelistID,
                               EventConstant.OrderSourceID: self.account!.userID,
                               EventConstant.ScrappingType: scrappingType,
@@ -149,7 +149,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
         if let listener = self.scraperListener {
             listener.updateProgressStep(htmlScrappingStep: .startScrapping)
             var logEventAttributes:[String:String] = [:]
-            logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+            logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
                                   EventConstant.PanelistID: self.account!.panelistID,
                                   EventConstant.OrderSourceID: self.account!.userID,
                                   EventConstant.ScrappingStep: HtmlScrappingStep.startScrapping.value,
@@ -170,7 +170,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
                     json = AppConstants.ErrorInJsonEncoding
                 }
                 var logEventAttributes:[String:String] = [:]
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
                                       EventConstant.PanelistID: self.account!.panelistID,
                                       EventConstant.OrderSourceID: self.account!.userID,
                                       EventConstant.ScrappingStep: HtmlScrappingStep.startScrapping.value,
@@ -179,7 +179,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIDateRange, eventAttributes: logEventAttributes)
             } else {
                 var logEventAttributes:[String:String] = [:]
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
                                       EventConstant.PanelistID: self.account!.panelistID,
                                       EventConstant.OrderSourceID: self.account!.userID,
                                       EventConstant.ScrappingStep: HtmlScrappingStep.startScrapping.value,

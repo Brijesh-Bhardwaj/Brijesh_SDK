@@ -560,7 +560,7 @@ extension ConnectAccountViewController: WKNavigationDelegate {
         print(AppConstants.tag,"An error occurred during navigation", error.localizedDescription)
         
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+        logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
                               EventConstant.PanelistID: self.account!.panelistID,
                               EventConstant.OrderSourceID: self.account!.userID,
                               EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
@@ -575,7 +575,7 @@ extension ConnectAccountViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         print(AppConstants.tag,"An error occurred during the early navigation process", error.localizedDescription)
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+        logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
                               EventConstant.PanelistID: self.account!.panelistID,
                               EventConstant.OrderSourceID: self.account!.userID,
                               EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
@@ -590,7 +590,7 @@ extension ConnectAccountViewController: WKNavigationDelegate {
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         print(AppConstants.tag, "webViewWebContentProcessDidTerminate()")
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+        logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
                               EventConstant.PanelistID: self.account!.panelistID,
                               EventConstant.OrderSourceID: self.account!.userID,
                               EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,

@@ -50,7 +50,7 @@ extension BSBaseAuthenticator: BSWebNavigationObserver {
     
     func didFailPageNavigation(for url: URL?, withError error: Error) {
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+        logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
                               EventConstant.PanelistID: self.account!.panelistID,
                               EventConstant.OrderSourceID: self.account!.userID,
                               EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,

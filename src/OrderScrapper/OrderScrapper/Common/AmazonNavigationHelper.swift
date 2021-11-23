@@ -71,7 +71,7 @@ class AmazonNavigationHelper: NavigationHelper {
         let urlString = url.absoluteString
         
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+        logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
                               EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
                               EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
                               EventConstant.ScrappingType: ScrappingType.report.rawValue,

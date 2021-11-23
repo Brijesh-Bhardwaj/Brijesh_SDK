@@ -86,7 +86,7 @@ class DataUploadOperation: Operation {
             _ = AmazonService.uploadOrderHistory(orderRequest: orderRequest) { [self] response, error in
                 DispatchQueue.global().async {
                     var logEventAttributes:[String:String] = [:]
-                    logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                    logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
                                           EventConstant.PanelistID: self.panelistId,
                                           EventConstant.OrderSourceID: self.userId]
                     

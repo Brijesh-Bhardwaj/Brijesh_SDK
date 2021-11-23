@@ -175,7 +175,7 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
         self.params.listener.onHtmlScrappingFailure(error: error)
         
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+        logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
                               EventConstant.PanelistID: self.params.account.panelistID,
                               EventConstant.OrderSourceID: self.params.account.userID,
                               EventConstant.EventName: EventType.DidFailPageNavigation,
@@ -191,7 +191,7 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
     
     func onAuthenticationFailure(error: ASLException) {
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+        logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
                               EventConstant.PanelistID: self.params.account.panelistID,
                               EventConstant.OrderSourceID: self.params.account.userID,
                               EventConstant.EventName: EventType.UserAuthenticationFailed,
@@ -228,7 +228,7 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
             } else {
                 if let error = error {
                     var logEventAttributes:[String:String] = [:]
-                    logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                    logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
                                           EventConstant.PanelistID: self.params.account.panelistID,
                                           EventConstant.OrderSourceID: self.params.account.userID,
                                           EventConstant.EventName: EventType.ExceptionWhileGettingConfiguration,

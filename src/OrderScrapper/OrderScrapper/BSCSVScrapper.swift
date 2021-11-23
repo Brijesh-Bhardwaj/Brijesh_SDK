@@ -59,7 +59,7 @@ class BSCSVScrapper: NSObject {
             //Log events for JS injection
             var logEventAttributes:[String:String] = [:]
             var commonEventAttributes:[String:String] = [:]
-            commonEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+            commonEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
                                   EventConstant.OrderSourceID: self.account.userID,
                                   EventConstant.ScrappingMode: self.scrapingMode.rawValue,
                                   EventConstant.ScrappingType: ScrappingType.report.rawValue]
@@ -137,7 +137,7 @@ class BSCSVScrapper: NSObject {
         let urlString = url.absoluteString
         
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+        logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                               EventConstant.OrderSourceID: self.account.userID,
                               EventConstant.ScrappingMode: self.scrapingMode.rawValue,
                               EventConstant.URL: urlString,
@@ -280,7 +280,7 @@ class BSCSVScrapper: NSObject {
                 let fileName = FileHelper.getReportFileNameFromResponse(response)
                 self.removePIIAttributes(fileName: fileName, fileURL: tempURL)
                 
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.OrderSourceID: self.account.userID,
                                       EventConstant.PanelistID: self.account.panelistID,
                                       EventConstant.ScrappingMode: self.scrapingMode.rawValue,
@@ -293,7 +293,7 @@ class BSCSVScrapper: NSObject {
                 self.updateOrderStatusFor(error: AppConstants.msgDownloadCSVFailed, accountStatus: self.account.accountState.rawValue)
                 self.scraperListener.onWebviewError(isError: true)
                 
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.OrderSourceID: self.account.userID,
                                       EventConstant.PanelistID: self.account.panelistID,
                                       EventConstant.ScrappingMode: self.scrapingMode.rawValue,
@@ -316,7 +316,7 @@ class BSCSVScrapper: NSObject {
                 self.updateOrderStatusFor(error: AppConstants.msgPIIAPIFailed, accountStatus: AccountState.Connected.rawValue)
                 self.scraperListener.onWebviewError(isError: true)
                 // Log event for PIIList API failure
-                logAPIEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logAPIEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                          EventConstant.OrderSourceID: self.account.userID,
                                          EventConstant.PanelistID: self.account.panelistID,
                                          EventConstant.ScrappingMode: self.scrapingMode.rawValue,
@@ -338,7 +338,7 @@ class BSCSVScrapper: NSObject {
             } catch {
                 json = AppConstants.ErrorInJsonEncoding
             }
-            logAPIEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+            logAPIEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                      EventConstant.OrderSourceID: self.account.userID,
                                      EventConstant.PanelistID: self.account.panelistID,
                                      EventConstant.ScrappingMode: self.scrapingMode.rawValue,
@@ -354,7 +354,7 @@ class BSCSVScrapper: NSObject {
                     self.scraperListener.onWebviewError(isError: true)  
                     
                     //Log event for error in parsing
-                    logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                           EventConstant.OrderSourceID: self.account.userID,
                                           EventConstant.PanelistID: self.account.panelistID,
                                           EventConstant.ScrappingMode: self.scrapingMode.rawValue,
@@ -374,7 +374,7 @@ class BSCSVScrapper: NSObject {
                 self.uploadCSVFile(fileURL: destinationURL)
                 
                 //Log event for successful parsing
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.OrderSourceID: self.account.userID,
                                       EventConstant.PanelistID: self.account.panelistID,
                                       EventConstant.ScrappingMode: self.scrapingMode.rawValue,
@@ -405,7 +405,7 @@ class BSCSVScrapper: NSObject {
                     self.logEvents(message: AppConstants.msgUploadCSVSuccess, section: SectionType.connection.rawValue, status: EventState.success.rawValue, type: FailureTypes.other.rawValue)
                 }
                 //Log event for successful uploading of csv
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
                                       EventConstant.OrderSourceID: self.account.userID,
                                       EventConstant.PanelistID: self.account.panelistID,
                                       EventConstant.ScrappingMode: self.scrapingMode.rawValue,
@@ -414,10 +414,9 @@ class BSCSVScrapper: NSObject {
                 
                 //Log event for connect account
                 var logConnectAccountEventAttributes:[String:String] = [:]
-                logConnectAccountEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logConnectAccountEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                                     EventConstant.OrderSourceID: self.account.userID,
                                                     EventConstant.PanelistID: self.account.panelistID,
-                                                    EventConstant.Status: EventStatus.Connected,
                                                     EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.AccountConnect, eventAttributes: logConnectAccountEventAttributes)
             } else {
@@ -434,7 +433,7 @@ class BSCSVScrapper: NSObject {
                 }
                 
                 //Log event for failure in csv upload
-                logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.OrderSourceID: self.account.userID,
                                       EventConstant.PanelistID: self.account.panelistID,
                                       EventConstant.ScrappingMode: self.scrapingMode.rawValue,
@@ -579,7 +578,7 @@ extension BSCSVScrapper: WKNavigationDelegate {
         print(AppConstants.tag,"An error occurred during navigation", error.localizedDescription)
         
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+        logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                               EventConstant.PanelistID: self.account!.panelistID,
                               EventConstant.OrderSourceID: self.account!.userID,
                               EventConstant.ScrappingMode: self.scrapingMode.rawValue,
@@ -594,7 +593,7 @@ extension BSCSVScrapper: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         print(AppConstants.tag,"An error occurred during the early navigation process", error.localizedDescription)
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+        logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                               EventConstant.PanelistID: self.account!.panelistID,
                               EventConstant.OrderSourceID: self.account!.userID,
                               EventConstant.ScrappingMode: self.scrapingMode.rawValue,
@@ -608,7 +607,7 @@ extension BSCSVScrapper: WKNavigationDelegate {
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         print(AppConstants.tag, "webViewWebContentProcessDidTerminate()")
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource: String(OrderSource.Amazon.rawValue),
+        logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                               EventConstant.PanelistID: self.account!.panelistID,
                               EventConstant.OrderSourceID: self.account!.userID,
                               EventConstant.ScrappingMode: self.scrapingMode.rawValue,
