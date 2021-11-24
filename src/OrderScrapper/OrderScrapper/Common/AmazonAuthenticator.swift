@@ -178,13 +178,15 @@ internal class AmazonAuthenticator: Authenticator {
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         let accountState = self.viewModel.userAccount.accountState
         var status: String
+        var orderStatus: String
         
         switch accountState {
         case .NeverConnected:
             status = AccountState.NeverConnected.rawValue
+            orderStatus = OrderStatus.None.rawValue
         case .ConnectedButException, .ConnectedAndDisconnected, .Connected:
             status = AccountState.ConnectedButException.rawValue
-            
+            orderStatus = OrderStatus.None.rawValue
             do {
                 try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: panelistId)
             } catch let error {
@@ -198,7 +200,7 @@ internal class AmazonAuthenticator: Authenticator {
             }
         }
         _ = AmazonService.updateStatus(amazonId: userId, status: status
-                                       , message: message, orderStatus: OrderStatus.Initiated.rawValue) { response, error in
+                                       , message: message, orderStatus: orderStatus) { response, error in
             //Todo
         }
         let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.captcha.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrappingType: nil)
