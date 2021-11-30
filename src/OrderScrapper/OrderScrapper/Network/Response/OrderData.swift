@@ -4,12 +4,12 @@
 
 import Foundation
 
-struct OrderData: Decodable {
+struct OrderData: Codable {
     let amazonId: String
     let panelistId: String
     let orderData: [OrderId]?
 }
 
-struct OrderId: Decodable {
+struct OrderId: Codable {
     let orderId: String
 }

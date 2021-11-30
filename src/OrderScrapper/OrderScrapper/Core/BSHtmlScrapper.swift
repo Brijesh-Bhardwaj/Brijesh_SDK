@@ -13,6 +13,7 @@ class BSHtmlScrapperParams {
     let configuration: Configurations
     let account: Account
     let scrappingType: String?
+    let scrappingMode: String?
     
     init(webClient: BSWebClient,
          webNavigationDelegate: BSWebNavigationDelegate,
@@ -20,7 +21,8 @@ class BSHtmlScrapperParams {
          authenticator: BSAuthenticator,
          configuration: Configurations,
          account: Account,
-         scrappingType: String?) {
+         scrappingType: String?,
+         scrappingMode:String?) {
         self.webClient = webClient
         self.webNavigationDelegate = webNavigationDelegate
         self.listener = listener
@@ -28,6 +30,7 @@ class BSHtmlScrapperParams {
         self.configuration = configuration
         self.account = account
         self.scrappingType = scrappingType
+        self.scrappingMode = scrappingMode
     }
 }
 
@@ -118,6 +121,9 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                             var logEventAttributes:[String:String] = [:]
                             logEventAttributes = [EventConstant.ErrorReason: error!.errorMessage,
                                                   EventConstant.Status: EventStatus.Failure]
+                            if let scrappingMode = self.params.scrappingMode {
+                                logEventAttributes[EventConstant.ScrappingMode] = scrappingMode
+                            }
                             FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAuthentication, eventAttributes: logEventAttributes)
                         }
                         
@@ -133,16 +139,20 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
 //                let error = ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError)
                 let error = ASLException(errorMessages: Strings.ErrorOtherUrlLoaded, errorTypes: nil, errorEventLog: .unknownURL, errorScrappingType: ScrappingType.html)
                 let exception = NSException(name: AppConstants.bsOrderFailed, reason: url)
-                FirebaseAnalyticsUtil.logSentryException(exception: exception)
-                FirebaseAnalyticsUtil.logSentryError(error: error)
                 self.onAuthenticationFailure(error: error)
                 
                 var logOtherUrlEventAttributes:[String:String] = [:]
                 let userId = params.account.userID
+                let panelistId = params.account.panelistID
                 logOtherUrlEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                               EventConstant.OrderSourceID: userId,
+                                              EventConstant.PanelistID: panelistId,
+                                              EventConstant.ScrappingType: ScrappingType.html.rawValue,
                                               EventConstant.Status: EventStatus.Success,
                                               EventConstant.URL: url]
+                if let scrappingMode = self.params.scrappingMode {
+                    logOtherUrlEventAttributes[EventConstant.ScrappingMode] = scrappingMode
+                }
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSDetectOtherURL, eventAttributes: logOtherUrlEventAttributes)
             }
         } else {
@@ -156,18 +166,41 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
     func didStartPageNavigation(url: URL?) {
         if url == nil {
             let error = ASLException(errorMessages: Strings.ErrorPageNotloaded, errorTypes: nil, errorEventLog: .pageNotLoded, errorScrappingType: ScrappingType.html)
-            FirebaseAnalyticsUtil.logSentryError(error: error)
             self.params.listener.onHtmlScrappingFailure(error: error)
         }
     }
     
     func didFailPageNavigation(for url: URL?, withError error: Error) {
         let error = ASLException(errorMessages: Strings.ErrorOrderExtractionFailed, errorTypes: nil, errorEventLog: .pageNotLoded, errorScrappingType: ScrappingType.html)
-        FirebaseAnalyticsUtil.logSentryError(error: error)
         self.params.listener.onHtmlScrappingFailure(error: error)
+        
+        var logEventAttributes:[String:String] = [:]
+        logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
+                              EventConstant.PanelistID: self.params.account.panelistID,
+                              EventConstant.OrderSourceID: self.params.account.userID,
+                              EventConstant.EventName: EventType.DidFailPageNavigation,
+                              EventConstant.Status: EventStatus.Failure]
+        if let url = url {
+            logEventAttributes[EventConstant.URL] = url.absoluteString
+        }
+        if let scrappingType = self.params.scrappingType {
+            logEventAttributes[EventConstant.ScrappingMode] = scrappingType
+        }
+        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
     }
     
     func onAuthenticationFailure(error: ASLException) {
+        var logEventAttributes:[String:String] = [:]
+        logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
+                              EventConstant.PanelistID: self.params.account.panelistID,
+                              EventConstant.OrderSourceID: self.params.account.userID,
+                              EventConstant.EventName: EventType.UserAuthenticationFailed,
+                              EventConstant.Status: EventStatus.Failure]
+        if let scrappingType = self.params.scrappingType {
+            logEventAttributes[EventConstant.ScrappingMode] = scrappingType
+        }
+        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+        
         let failureCount = UserDefaults.standard.integer(forKey: Strings.OnNumberOfCaptchaRetry)
         UserDefaults.standard.setValue(failureCount + 1, forKey: Strings.OnNumberOfCaptchaRetry)
         let currentDate = Date().timeIntervalSince1970
@@ -193,6 +226,15 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                 let failureCount = UserDefaults.standard.integer(forKey: Strings.OnNumberOfCaptchaRetry)
                 completion(showNotification || failureCount > captchaRetries!)
             } else {
+                if let error = error {
+                    var logEventAttributes:[String:String] = [:]
+                    logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
+                                          EventConstant.PanelistID: self.params.account.panelistID,
+                                          EventConstant.OrderSourceID: self.params.account.userID,
+                                          EventConstant.EventName: EventType.ExceptionWhileGettingConfiguration,
+                                          EventConstant.Status: EventStatus.Failure]
+                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                }
                 completion(false)
             }
         }

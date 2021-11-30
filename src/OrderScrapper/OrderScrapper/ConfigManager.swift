@@ -21,7 +21,18 @@ class ConfigManager {
         //get Scrapper config details
         _ = AmazonService.getScrapperConfig(orderSource: [orderSource.value]) { response, error in
             var logEventAttributes:[String:String] = [:]
+            let panelistId = LibContext.shared.authProvider.getPanelistID()
+            logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                  EventConstant.PanelistID: panelistId]
+            
             if let platformSourceConfigs = response?.configurations {
+                var json: String
+                do {
+                    let jsonData = try JSONEncoder().encode(response)
+                    json = String(data: jsonData, encoding: .utf8)!
+                } catch {
+                    json = AppConstants.ErrorInJsonEncoding
+                }
                 for scrapperConfig in platformSourceConfigs {
                     if scrapperConfig.platformSource == orderSource.value {
                         scrapperConfig.urls.captchaRetries = scrapperConfig.connections.captchaRetries
@@ -33,28 +44,38 @@ class ConfigManager {
                 
                 completion(response, nil)
                 
-                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
-                                      EventConstant.Status: EventStatus.Success]
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAPIScrapperConfig, eventAttributes: logEventAttributes)
+                logEventAttributes[EventConstant.Data] = json
+                logEventAttributes[EventConstant.Status] = EventStatus.Success
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIConfigDetails, eventAttributes: logEventAttributes)
             } else {
                 completion(nil, APIError(error: Strings.ErrorNoConfigurationsFound))
                 
-                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
-                                      EventConstant.ErrorReason: Strings.ErrorInScrapperConfigAPI,
-                                      EventConstant.Status: EventStatus.Failure]
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAPIScrapperConfig, eventAttributes: logEventAttributes)
+                if let error = error {
+                    logEventAttributes[EventConstant.Status] = EventStatus.Failure
+                    logEventAttributes[EventConstant.EventName] = EventType.GetScraperConfigAPIFailed
+                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                } else {
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.GetScraperConfigAPIFailed, eventAttributes: logEventAttributes)
+                }
             }
         }
     }
     
     func getConfigurations(orderSource: OrderSource, completion: @escaping (Configurations?, Error?) -> Void) {
+        let panelistId = LibContext.shared.authProvider.getPanelistID()
+        var logEventAttributes:[String:String] = [EventConstant.OrderSource: orderSource.value,
+                                                  EventConstant.PanelistID: panelistId]
+        
         if !configs.isEmpty {
             let configs = getConfigDetails(orderSource: orderSource)
             if let configs = configs {
                 completion(configs, nil)
             } else {
                 let error = APIError(error: Strings.ErrorNoConfigurationsFound)
-                FirebaseAnalyticsUtil.logSentryError(error: error)
+                logEventAttributes[EventConstant.EventName] = EventType.ExceptionWhileGettingConfiguration
+                logEventAttributes[EventConstant.Status] = EventStatus.Failure
+                FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                
                 completion(nil, error)
             }
         } else {
@@ -64,7 +85,6 @@ class ConfigManager {
                     completion(configs, nil)
                 } else {
                     let error = APIError(error: Strings.ErrorNoConfigurationsFound)
-                    FirebaseAnalyticsUtil.logSentryError(error: error)
                     completion(nil, error)
                 }
             }

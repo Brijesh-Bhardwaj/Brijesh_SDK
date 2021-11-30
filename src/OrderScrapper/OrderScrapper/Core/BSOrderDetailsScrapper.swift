@@ -26,7 +26,7 @@ class BSOrderDetailsScrapper {
     }()
     
     lazy var scrapperParams: BSHtmlScrapperParams = {
-        return BSHtmlScrapperParams(webClient: self.params.webClient, webNavigationDelegate: self.params.webNavigationDelegate, listener: self, authenticator: self.params.authenticator, configuration: self.params.configuration, account: self.params.account, scrappingType: nil)
+        return BSHtmlScrapperParams(webClient: self.params.webClient, webNavigationDelegate: self.params.webNavigationDelegate, listener: self, authenticator: self.params.authenticator, configuration: self.params.configuration, account: self.params.account, scrappingType: nil, scrappingMode: scrappingMode?.rawValue)
     }()
     
     init(scrapperParams: BSHtmlScrapperParams) {
@@ -49,7 +49,11 @@ class BSOrderDetailsScrapper {
                 logEventAttributes = [EventConstant.OrderSource: orderDetail.orderSource ?? "",
                                       EventConstant.PanelistID: orderDetail.panelistID ?? "",
                                       EventConstant.OrderSourceID: orderDetail.userID ?? "",
+                                      EventConstant.ScrappingType: ScrappingType.html.rawValue,
                                       EventConstant.Status: EventStatus.Success]
+                if let scrappingMode = scrappingMode {
+                    logEventAttributes[EventConstant.ScrappingMode] = scrappingMode.rawValue
+                }
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResultSuccess, eventAttributes: logEventAttributes)
             }
             
@@ -98,7 +102,10 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                             let orderDataCount = jsCallBackResult["data"] as? Dictionary<String,Any>
                             let message = "\(Strings.ScrappingPageDetails) + \(timerValue) + \(String(describing: orderDataCount?.count)))"
                             FirebaseAnalyticsUtil.logSentryMessage(message: message)
-                            let logEventAttributes = [EventConstant.Message: message, EventConstant.OrderSource: orderDetail.orderSource ?? "", EventConstant.Status: EventStatus.Success]
+                            var logEventAttributes = [EventConstant.Message: message, EventConstant.OrderSource: orderDetail.orderSource ?? "", EventConstant.Status: EventStatus.Success, EventConstant.ScrappingType: ScrappingType.html.rawValue]
+                            if let scrappingMode = scrappingMode {
+                                logEventAttributes[EventConstant.ScrappingMode] = scrappingMode.rawValue
+                            }
                             FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResultSuccess, eventAttributes: logEventAttributes)
                             print("### onHtmlScrappingSucess for OrderDetail", response)
                             if let orderDetails = jsCallBackResult["data"] as? Dictionary<String,Any> {
@@ -123,8 +130,12 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                             logEventAttributes = [EventConstant.OrderSource: orderDetail.orderSource ?? "",
                                                   EventConstant.PanelistID: orderDetail.panelistID ?? "",
                                                   EventConstant.OrderSourceID: orderDetail.userID ?? "",
+                                                  EventConstant.ScrappingType: ScrappingType.html.rawValue,
                                                   EventConstant.ErrorReason: error,
                                                   EventConstant.Status: EventStatus.Failure, EventConstant.Message: message]
+                            if let scrappingMode = scrappingMode {
+                                logEventAttributes[EventConstant.ScrappingMode] = scrappingMode.rawValue
+                            }
                             FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResultFilure, eventAttributes: logEventAttributes)
                         }
                     }
@@ -138,13 +149,16 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
         if error.errorType == ErrorType.authError {
             self.params.listener.onScrapeDataUploadCompleted(complete: false, error: error)
             
-            var logEventAttributes:[String:String] = [:]
-            logEventAttributes = [EventConstant.OrderSource: orderDetail.orderSource ?? "",
-                                  EventConstant.PanelistID: orderDetail.panelistID ?? "",
-                                  EventConstant.OrderSourceID: orderDetail.userID ?? "",
-                                  EventConstant.ErrorReason: error.errorMessage,
-                                  EventConstant.Status: EventStatus.Failure]
-            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResultFilure, eventAttributes: logEventAttributes)
+            var logEventAttributes:[String:String] = [EventConstant.OrderSource: orderDetail.orderSource ?? "",
+                                                      EventConstant.PanelistID: orderDetail.panelistID ?? "",
+                                                      EventConstant.OrderSourceID: orderDetail.userID ?? "",
+                                                      EventConstant.ScrappingType: ScrappingType.html.rawValue,
+                                                      EventConstant.EventName: EventType.HtmlScrapingFailed,
+                                                      EventConstant.Status: EventStatus.Failure]
+            if let scrappingMode = self.scrappingMode {
+                logEventAttributes[EventConstant.ScrappingMode] = scrappingMode.rawValue
+            }
+            FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
         } else {
             self.scrapeNextOrder()
         }

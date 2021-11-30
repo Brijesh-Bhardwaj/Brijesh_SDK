@@ -11,6 +11,9 @@ import Sentry
 
 enum JSInjectValue {
     case email, password, captcha, error, identification, generateReport, downloadReport, dateRange
+    var value: String {
+        return String(describing: self)
+    }
 }
 
 internal class AmazonAuthenticator: Authenticator {
@@ -90,10 +93,17 @@ internal class AmazonAuthenticator: Authenticator {
                 case .captcha:
                     if let response = response as? String {
                         if response.contains("captcha") {
-                            FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_amazonauthenticator_captcha")
-                            
                             self.updateAccountWithExceptionState(message: AppConstants.msgCapchaEncountered)
                             self.viewModel.showWebView.send(true)
+                            
+                            var logEventAttributes:[String:String] = [:]
+                            logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                                  EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                                  EventConstant.PanelistID: self.viewModel.userAccount.panelistID,
+                                                  EventConstant.ScrappingType: ScrappingType.report.rawValue,
+                                                  EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                                                  EventConstant.Status: EventStatus.Success]
+                            FirebaseAnalyticsUtil.logEvent(eventType: EventType.EncounteredCaptcha, eventAttributes: logEventAttributes)
                         } else {
                             if self.isPasswordInjected {
                                 self.isPasswordInjected = false
@@ -168,22 +178,29 @@ internal class AmazonAuthenticator: Authenticator {
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         let accountState = self.viewModel.userAccount.accountState
         var status: String
+        var orderStatus: String
         
         switch accountState {
         case .NeverConnected:
             status = AccountState.NeverConnected.rawValue
+            orderStatus = OrderStatus.None.rawValue
         case .ConnectedButException, .ConnectedAndDisconnected, .Connected:
             status = AccountState.ConnectedButException.rawValue
-            
+            orderStatus = OrderStatus.None.rawValue
             do {
                 try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: panelistId)
             } catch let error {
                 print(AppConstants.tag, "updateAccountWithExceptionState", error.localizedDescription)
-                FirebaseAnalyticsUtil.logSentryError(error: error)
+                
+                let logEventAttributes:[String:String] = [EventConstant.PanelistID: panelistId,
+                                                          EventConstant.OrderSourceID: userId,
+                                                          EventConstant.ScrappingType: ScrappingType.report.rawValue,
+                                                          EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue]
+                FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
             }
         }
         _ = AmazonService.updateStatus(amazonId: userId, status: status
-                                       , message: message, orderStatus: OrderStatus.Initiated.rawValue) { response, error in
+                                       , message: message, orderStatus: orderStatus) { response, error in
             //Todo
         }
         let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.captcha.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrappingType: nil)
@@ -200,7 +217,24 @@ internal class AmazonAuthenticator: Authenticator {
             _ = AmazonService.registerConnection(amazonId: userId,
                                                  status: AccountState.NeverConnected.rawValue,
                                                  message: errorMessage, orderStatus: OrderStatus.None.rawValue) { response, error in
-                //TODO
+                var logEventAttributes:[String:String] = [:]
+                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                          EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                          EventConstant.PanelistID: self.viewModel.userAccount.panelistID,
+                                          EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue]
+                if let response = response  {
+                    //TODO Add response in attributes
+                    logEventAttributes[EventConstant.Status] = EventStatus.Success
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIRegisterUser, eventAttributes: logEventAttributes)
+                } else {
+                    logEventAttributes[EventConstant.Status] = EventStatus.Failure
+                    if let error = error {
+                        logEventAttributes[EventConstant.EventName] = EventType.UserRegistrationAPIFailed
+                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                    } else {
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.UserRegistrationAPIFailed, eventAttributes: logEventAttributes)
+                    }
+                }
             }
             let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authenticaion.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrappingType: nil)
             _ = AmazonService.logEvents(eventLogs: eventLog) { response, error in

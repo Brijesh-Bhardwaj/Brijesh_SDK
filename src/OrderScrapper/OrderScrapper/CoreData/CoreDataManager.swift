@@ -138,7 +138,6 @@ class CoreDataManager {
                 print(error.userInfo)
                 FirebaseAnalyticsUtil.logSentryError(error: error)
             }
-
         }
     }
     
@@ -191,7 +190,13 @@ class CoreDataManager {
                         try context.save()
                     } catch let error {
                         print(AppConstants.tag, "addOrderDetails", error.localizedDescription)
-                        FirebaseAnalyticsUtil.logSentryError(error: error)
+                        
+                        let panelistId = LibContext.shared.authProvider.getPanelistID()
+                        var logEventAttributes:[String:String] = [:]
+                        logEventAttributes = [EventConstant.PanelistID: panelistId,
+                                              EventConstant.Status: EventStatus.Failure,
+                                              EventConstant.EventName: EventType.ExceptionWhileLocalDBInsertion]
+                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
                     }
                 }
                 completionHandler(true)

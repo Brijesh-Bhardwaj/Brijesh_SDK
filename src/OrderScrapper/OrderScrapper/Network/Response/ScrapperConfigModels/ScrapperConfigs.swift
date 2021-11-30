@@ -3,6 +3,6 @@
 
 import Foundation
 
-class ScrapperConfigs: Decodable {
+class ScrapperConfigs: Codable {
     let platformSourceConfig: [PlatformSourceConfig]
 }

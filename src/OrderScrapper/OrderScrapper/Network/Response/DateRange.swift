@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct DateRange: Decodable {
+struct DateRange: Codable {
     let fromDate: String?
     let toDate: String?
     let enableScraping: Bool

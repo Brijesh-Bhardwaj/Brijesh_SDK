@@ -31,4 +31,11 @@ class Utils {
         let subUrl = url.components(separatedBy: delimeter)
         return subUrl[0]
     }
+    
+    static func getJsonString(object: Any) -> String {
+        //        let jsonEncoder = JSONEncoder()
+        //        let jsonData = try jsonEncoder.encode(object)
+        //        let json = String(data: jsonData, encoding: String.Encoding.utf16)
+        return ""
+    }
 }

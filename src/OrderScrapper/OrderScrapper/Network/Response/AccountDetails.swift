@@ -2,7 +2,7 @@ import Foundation
 //  AccountDetails.swift
 //  OrderScrapper
 
-struct AccountDetails: Decodable {
+struct AccountDetails: Codable {
     let id: Int
     let panelistId: String
     let amazonId: String

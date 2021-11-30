@@ -4,7 +4,7 @@
 
 import Foundation
 
-class ScrapeConfigs: Decodable {
+class ScrapeConfigs: Codable {
     let configurations: [PlatformSourceConfig]
     let sentry: SentryConfigs
 }

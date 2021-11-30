@@ -62,7 +62,7 @@ class BSScriptFileManager {
                         
                         logEventAttributes[EventConstant.ErrorReason] = Strings.ErrorScriptFileNotFound
                         logEventAttributes[EventConstant.Status] = EventStatus.Failure
-                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgDownloadScrapperScriptFile, eventAttributes: logEventAttributes)
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.FailureWhileDownloadingScript, eventAttributes: logEventAttributes)
                     }
                 }
             } else {
@@ -91,7 +91,7 @@ class BSScriptFileManager {
                     completion(nil)
                     
                     logEventRetrieveScriptAttributes[EventConstant.Status] = EventStatus.Failure
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrapperScript, eventAttributes: logEventRetrieveScriptAttributes)
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.ExceptionWhileLoadingScrapingScript, eventAttributes: logEventRetrieveScriptAttributes)
                 }
             }
         }
@@ -100,9 +100,18 @@ class BSScriptFileManager {
     //API call for fetchScript
     func getScriptFetchUrl(orderSource: OrderSource, completion: @escaping (String?, Error?) -> Void) {
         _ = AmazonService.fetchScript(orderSource: orderSource) { response, error in
+            let panelistId = LibContext.shared.authProvider.getPanelistID()
+            var logEventAttributes:[String:String] = [:]
+            logEventAttributes = [EventConstant.OrderSource: orderSource.value,
+                                      EventConstant.PanelistID: panelistId]
             if let response = response {
                 completion(response.jsUrl, nil)
+                //TODO Add response in attributes
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIFetchScript, eventAttributes: logEventAttributes)
             } else {
+                if let error = error {
+                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                }
                 completion(nil, APIError(error: error.debugDescription))
             }
         }

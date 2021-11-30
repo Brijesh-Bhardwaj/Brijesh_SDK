@@ -7,7 +7,7 @@ enum EventJsonKey: String {
     case panelistId, toDate, fromDate, platformId, section, status, message, type, scrappingType
 }
 
-struct EventLogs: Decodable {
+struct EventLogs: Codable {
     let panelistId: String
     let platformId: String
     let section: String

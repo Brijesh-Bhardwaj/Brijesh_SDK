@@ -3,7 +3,7 @@
 
 import Foundation
 
-class Configurations: Decodable {
+class Configurations: Codable {
     let login: String
     let listing: String
     let details: String
@@ -11,7 +11,7 @@ class Configurations: Decodable {
     var cooloffPeriodCaptcha: Double?
 }
 
-class Connection: Decodable {
+class Connection: Codable {
     var captchaRetries: Int
     var cooloffPeriodCaptcha: Double
 }
