@@ -22,7 +22,6 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   ### Fixed
   - Sentry configs changes added such that if Sentry is enable in get_config API response then only Sentry will log the errors and events
 
-
 ## [1.1.3] - 2021-09-17
 
   ### Fixed
