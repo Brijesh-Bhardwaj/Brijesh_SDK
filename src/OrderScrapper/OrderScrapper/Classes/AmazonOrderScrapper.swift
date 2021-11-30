@@ -54,8 +54,9 @@ class AmazonOrderScrapper {
         let viewController = storyboard.instantiateViewController(identifier: "RegisterAccountVC") as! RegisterAccountViewController
         viewController.account = account as? UserAccountMO
         viewController.modalPresentationStyle = .fullScreen
-        
-        self.viewPresenter.presentView(view: viewController)
+        DispatchQueue.main.async {
+            self.viewPresenter.presentView(view: viewController)
+        }
     }
     
     func disconnectAccount(account: Account, accountDisconnectedListener: AccountDisconnectedListener, orderSource: String) {
@@ -69,7 +70,9 @@ class AmazonOrderScrapper {
                 CoreDataManager.shared.deleteAccounts(userId: account.userID, panelistId: panelistId)
                 CoreDataManager.shared.deleteOrderDetails(userID: account.userID, panelistID: panelistId, orderSource: orderSource)
                 WebCacheCleaner.clear(completionHandler: nil)
-                accountDisconnectedListener.onAccountDisconnected(account: account)
+                DispatchQueue.main.async {
+                    accountDisconnectedListener.onAccountDisconnected(account: account)
+                }
                 UserDefaults.standard.setValue(0, forKey: Strings.OnNumberOfCaptchaRetry)
             } else {
                 var logEventAttributes:[String:String] = [:]
@@ -88,7 +91,9 @@ class AmazonOrderScrapper {
                     errorMsg = error.errorMessage
                 }
                 let error = ASLException(errorMessage: errorMsg, errorType: nil)
-                accountDisconnectedListener.onAccountDisconnectionFailed(account: account, error: error)
+                DispatchQueue.main.async {
+                    accountDisconnectedListener.onAccountDisconnectionFailed(account: account, error: error)
+                }
             }
         }
     }
@@ -159,7 +164,9 @@ class AmazonOrderScrapper {
         let viewController = storyboard.instantiateViewController(identifier: "ConnectAccountVC") as! ConnectAccountViewController
         viewController.account = account
         viewController.modalPresentationStyle = .fullScreen
-        self.viewPresenter.presentView(view: viewController)
+        DispatchQueue.main.async {
+            self.viewPresenter.presentView(view: viewController)
+        }
     }
     
     private func performBackgroundScraping(_ account: Account,
@@ -202,21 +209,25 @@ class AmazonOrderScrapper {
         self.completionSubscriber = LibContext.shared.scrapeCompletionPublisher.receive(on: RunLoop.main).sink() { [weak self] result, error in
             guard let self = self else { return }
             let (completed, successType) = result
-            if completed {
-                orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
-                UserDefaults.standard.setValue(0, forKey: Strings.OnNumberOfCaptchaRetry)
-            } else {
-                let error = ASLException(errorMessage: error?.errorMessage ?? "", errorType: error?.errorType)
-                orderExtractionListener.onOrderExtractionFailure(error: error, account: account)
-                
-                var logEventAttributes:[String:String] = [:]
-                logEventAttributes = [EventConstant.PanelistID: account.panelistID,
-                                      EventConstant.OrderSourceID: account.userID,
-                                      EventConstant.Status: EventStatus.Failure]
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.OrderExtractionFailure, eventAttributes: logEventAttributes)
+            DispatchQueue.main.async {
+                if completed {
+                    orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
+                    UserDefaults.standard.setValue(0, forKey: Strings.OnNumberOfCaptchaRetry)
+                } else {
+                    let error = ASLException(errorMessage: error?.errorMessage ?? "", errorType: error?.errorType)
+                    orderExtractionListener.onOrderExtractionFailure(error: error, account: account)
+                    
+                    var logEventAttributes:[String:String] = [:]
+                    logEventAttributes = [EventConstant.PanelistID: account.panelistID,
+                                          EventConstant.OrderSourceID: account.userID,
+                                          EventConstant.Status: EventStatus.Failure]
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.OrderExtractionFailure, eventAttributes: logEventAttributes)
+                }
             }
             self.isScrapping = false
-            self.viewPresenter.dismissView()
+            DispatchQueue.main.async {
+                self.viewPresenter.dismissView()
+            }
         }
     }
 }
