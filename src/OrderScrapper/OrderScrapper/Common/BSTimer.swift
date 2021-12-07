@@ -12,17 +12,17 @@ class BSTimer {
         startTime = CFAbsoluteTimeGetCurrent()
     }
     
-    func stop() -> String{
-        endTime = CFAbsoluteTimeGetCurrent()
-        if let endTime = endTime {
-            let value = endTime - startTime
-            var seconds = Int(value / 1000)
-            let minutes = seconds / 60
-            seconds %= 60
-            let milliSeconds = Int(value) % 1000
-            let message = " \(minutes):\(seconds):\(milliSeconds)"
-            return message
-         }
+    func stop() -> String {
+            endTime = CFAbsoluteTimeGetCurrent()
+            if let endTime = endTime {
+                var milliseconds = Int((endTime - startTime) * 1000)
+                var seconds = Int(milliseconds / 1000)
+                milliseconds %= 1000
+                let minutes = seconds / 60
+                seconds %= 60
+                let message = "\(minutes):\(seconds):\(milliseconds)"
+                return message
+             }
         return ""
     }
 }

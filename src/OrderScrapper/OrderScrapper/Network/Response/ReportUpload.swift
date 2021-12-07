@@ -8,7 +8,7 @@ import Foundation
 struct ReportUpload: Codable {
     let id: Int?
     let fromDate: String?
-    let amazonId: String?
+    let platformId: String?
     let toDate: String?
     let panelistId: String?
     let fileName: String?

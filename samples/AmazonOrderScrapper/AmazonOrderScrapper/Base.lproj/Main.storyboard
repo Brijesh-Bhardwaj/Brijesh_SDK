@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="gPi-Qt-J2h">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="gPi-Qt-J2h">
     <device id="retina5_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -274,6 +274,196 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Fxg-lT-cZB" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="400.00000000000006" y="24.776785714285712"/>
+        </scene>
+        <!--Account List View Controller-->
+        <scene sceneID="NvL-Bs-PSb">
+            <objects>
+                <viewController storyboardIdentifier="AccountListVC" id="Us3-pA-Y0M" customClass="AccountListViewController" customModule="ReceiptStraw_Dev" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="qWu-qQ-T11">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="QV7-d8-A7o">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="headerCell" rowHeight="45" id="xql-qp-8Gj" customClass="HeaderCell" customModule="ReceiptStraw_Dev" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="44.666666030883789" width="414" height="45"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="xql-qp-8Gj" id="iNd-9T-Syt">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="45"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nlr-D4-B0C">
+                                                    <rect key="frame" x="180.33333333333334" y="9.9999999999999982" width="53.666666666666657" height="25.333333333333329"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="21" id="jcF-mz-apW"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="21"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="nlr-D4-B0C" firstAttribute="centerY" secondItem="iNd-9T-Syt" secondAttribute="centerY" id="2kw-BV-fLZ"/>
+                                                <constraint firstItem="nlr-D4-B0C" firstAttribute="centerX" secondItem="iNd-9T-Syt" secondAttribute="centerX" id="zcb-xX-3zz"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="headerLabel" destination="nlr-D4-B0C" id="RiD-gs-zXC"/>
+                                        </connections>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="connectAccountCell" rowHeight="170" id="JQg-kc-Plq" customClass="ConnectAccountCell" customModule="ReceiptStraw_Dev" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="89.666666030883789" width="414" height="170"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="JQg-kc-Plq" id="fTN-vv-YLj">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="170"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="35" translatesAutoresizingMaskIntoConstraints="NO" id="49c-es-dxw">
+                                                    <rect key="frame" x="0.0" y="-11" width="414" height="120"/>
+                                                    <subviews>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Accounts Connected" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qeh-dY-A2g">
+                                                            <rect key="frame" x="0.0" y="0.0" width="414" height="50"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ocF-gh-WSy">
+                                                            <rect key="frame" x="0.0" y="85" width="414" height="35"/>
+                                                            <color key="backgroundColor" red="0.94117647059999998" green="0.63921568630000003" blue="0.039215686270000001" alpha="1" colorSpace="calibratedRGB"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="height" constant="35" id="dEh-lW-vOu"/>
+                                                            </constraints>
+                                                            <state key="normal" title="Connect"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                                    <integer key="value" value="20"/>
+                                                                </userDefinedRuntimeAttribute>
+                                                            </userDefinedRuntimeAttributes>
+                                                            <connections>
+                                                                <action selector="connectAccount:" destination="JQg-kc-Plq" eventType="touchUpInside" id="YA3-kc-HDk"/>
+                                                            </connections>
+                                                        </button>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstItem="ocF-gh-WSy" firstAttribute="leading" secondItem="49c-es-dxw" secondAttribute="leading" constant="10" id="A1p-wV-bYH"/>
+                                                        <constraint firstAttribute="trailing" secondItem="ocF-gh-WSy" secondAttribute="trailing" constant="10" id="CjP-61-Isg"/>
+                                                        <constraint firstAttribute="bottom" secondItem="ocF-gh-WSy" secondAttribute="bottom" constant="5" id="FGk-OK-6ut"/>
+                                                        <constraint firstItem="Qeh-dY-A2g" firstAttribute="top" secondItem="49c-es-dxw" secondAttribute="top" constant="10" id="hdc-Vl-r3w"/>
+                                                        <constraint firstAttribute="height" constant="120" id="r1o-Sd-Ktr"/>
+                                                    </constraints>
+                                                </stackView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="49c-es-dxw" firstAttribute="leading" secondItem="fTN-vv-YLj" secondAttribute="leading" id="e3E-B3-VAa"/>
+                                                <constraint firstAttribute="trailing" secondItem="49c-es-dxw" secondAttribute="trailing" id="hC1-TZ-KuY"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="connectAccount" destination="ocF-gh-WSy" id="YbD-cS-muk"/>
+                                        </connections>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="accountActionCell" rowHeight="150" id="YHs-Gg-a5h" customClass="AccountActionCell" customModule="ReceiptStraw_Dev" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="259.66666603088379" width="414" height="150"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="YHs-Gg-a5h" id="ehN-84-dzx">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="150"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="Hm8-64-qAs">
+                                                    <rect key="frame" x="5" y="5" width="404" height="140"/>
+                                                    <subviews>
+                                                        <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="5sa-dg-doI">
+                                                            <rect key="frame" x="167.33333333333334" y="0.0" width="69.333333333333343" height="67.666666666666671"/>
+                                                            <subviews>
+                                                                <imageView opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" semanticContentAttribute="forceLeftToRight" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Tick" translatesAutoresizingMaskIntoConstraints="NO" id="GcQ-RY-l62">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="18" height="67.666666666666671"/>
+                                                                </imageView>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fAu-jO-jQ8">
+                                                                    <rect key="frame" x="28.000000000000004" y="0.0" width="41.333333333333343" height="67.666666666666671"/>
+                                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                                    <nil key="textColor"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                            </subviews>
+                                                        </stackView>
+                                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="bPb-CF-wJf">
+                                                            <rect key="frame" x="10" y="72.666666666666686" width="384" height="67.333333333333314"/>
+                                                            <subviews>
+                                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wb0-MY-4I8">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="384" height="28.666666666666668"/>
+                                                                    <color key="backgroundColor" red="0.94117647059999998" green="0.63921568630000003" blue="0.039215686270000001" alpha="1" colorSpace="calibratedRGB"/>
+                                                                    <state key="normal" title="Disconnect"/>
+                                                                    <userDefinedRuntimeAttributes>
+                                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                                            <integer key="value" value="20"/>
+                                                                        </userDefinedRuntimeAttribute>
+                                                                    </userDefinedRuntimeAttributes>
+                                                                    <connections>
+                                                                        <action selector="accountAction:" destination="YHs-Gg-a5h" eventType="touchUpInside" id="9KC-YF-UDR"/>
+                                                                        <action selector="onActionButtonClick:" destination="hLj-my-eJj" eventType="touchUpInside" id="HdU-YU-0wp"/>
+                                                                    </connections>
+                                                                </button>
+                                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Nu3-bR-j3M">
+                                                                    <rect key="frame" x="0.0" y="38.666666666666657" width="384" height="28.666666666666671"/>
+                                                                    <color key="backgroundColor" red="0.94117647059999998" green="0.63921568630000003" blue="0.039215686270000001" alpha="1" colorSpace="calibratedRGB"/>
+                                                                    <state key="normal" title="Fetch Receipt"/>
+                                                                    <userDefinedRuntimeAttributes>
+                                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                                            <integer key="value" value="20"/>
+                                                                        </userDefinedRuntimeAttribute>
+                                                                    </userDefinedRuntimeAttributes>
+                                                                    <connections>
+                                                                        <action selector="backgroundScrapping:" destination="YHs-Gg-a5h" eventType="touchUpInside" id="q2G-jy-rOt"/>
+                                                                        <action selector="onActionButtonClick:" destination="hLj-my-eJj" eventType="touchUpInside" id="g85-oI-WvL"/>
+                                                                    </connections>
+                                                                </button>
+                                                            </subviews>
+                                                        </stackView>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstItem="bPb-CF-wJf" firstAttribute="leading" secondItem="Hm8-64-qAs" secondAttribute="leading" constant="10" id="325-N2-kkf"/>
+                                                        <constraint firstAttribute="trailing" secondItem="bPb-CF-wJf" secondAttribute="trailing" constant="10" id="56K-id-3aX"/>
+                                                    </constraints>
+                                                </stackView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="Hm8-64-qAs" firstAttribute="top" secondItem="ehN-84-dzx" secondAttribute="top" constant="5" id="RfA-LJ-WWq"/>
+                                                <constraint firstAttribute="trailing" secondItem="Hm8-64-qAs" secondAttribute="trailing" constant="5" id="S1S-gW-b3R"/>
+                                                <constraint firstItem="Hm8-64-qAs" firstAttribute="leading" secondItem="ehN-84-dzx" secondAttribute="leading" constant="5" id="gCD-oZ-kUh"/>
+                                                <constraint firstAttribute="bottom" secondItem="Hm8-64-qAs" secondAttribute="bottom" constant="5" id="iS4-nN-tTW"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="accountActionButton" destination="Wb0-MY-4I8" id="Izr-dP-U6D"/>
+                                            <outlet property="accountIDLabel" destination="fAu-jO-jQ8" id="ZpH-Ni-mRx"/>
+                                            <outlet property="accountStatusImage" destination="GcQ-RY-l62" id="ndm-cy-36j"/>
+                                            <outlet property="bgScrapeButton" destination="Nu3-bR-j3M" id="kF0-wU-G2h"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="fS8-0g-cXU"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="QV7-d8-A7o" firstAttribute="top" secondItem="fS8-0g-cXU" secondAttribute="top" id="9A5-fx-h39"/>
+                            <constraint firstItem="fS8-0g-cXU" firstAttribute="trailing" secondItem="QV7-d8-A7o" secondAttribute="trailing" id="MiS-Aa-seQ"/>
+                            <constraint firstItem="QV7-d8-A7o" firstAttribute="leading" secondItem="fS8-0g-cXU" secondAttribute="leading" id="Orf-0Y-PcH"/>
+                            <constraint firstItem="fS8-0g-cXU" firstAttribute="bottom" secondItem="QV7-d8-A7o" secondAttribute="bottom" id="kNW-iN-5Iw"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="tableView" destination="QV7-d8-A7o" id="TRi-32-De4"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hGQ-a5-1wo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1111.5942028985507" y="24.456521739130437"/>
         </scene>
     </scenes>
     <resources>

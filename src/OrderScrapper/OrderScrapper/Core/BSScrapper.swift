@@ -23,9 +23,15 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     var configuration: Configurations!
     var extractingOldOrders = false;
     var timer = BSTimer()
+    var orderDetails = BSTimer()
     var scrappingType: String!
     public var scraperListener: ScraperProgressListener?
     public var scrappingMode: ScrapingMode?
+    var fetchRequestSource: FetchRequestSource?
+
+    private lazy var bsHtmlScrapper: BSHtmlScrapper = {
+        return BSHtmlScrapper(params: self.scrapperParams)
+    }()
     
     lazy var scrapperParams: BSHtmlScrapperParams = {
         let authenticator = try! self.getAuthenticator()
@@ -80,7 +86,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     func getAuthenticator() throws -> BSAuthenticator {
         let error = ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
+        logEventAttributes = [EventConstant.OrderSource: self.account!.source.value,
                               EventConstant.PanelistID: self.account!.panelistID,
                               EventConstant.OrderSourceID: self.account!.userID,
                               EventConstant.ScrappingType: scrappingType,
@@ -96,7 +102,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     func getOrderSource() throws -> OrderSource {
         let error = ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
+        logEventAttributes = [EventConstant.OrderSource: self.account!.source.value,
                               EventConstant.PanelistID: self.account!.panelistID,
                               EventConstant.OrderSourceID: self.account!.userID,
                               EventConstant.ScrappingType: scrappingType,
@@ -146,10 +152,12 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     
     private func extractNewOrders() {
         extractingOldOrders = false
+
         if let listener = self.scraperListener {
             listener.updateProgressStep(htmlScrappingStep: .startScrapping)
             var logEventAttributes:[String:String] = [:]
-            logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
+
+            logEventAttributes = [EventConstant.OrderSource:self.account!.source.value,
                                   EventConstant.PanelistID: self.account!.panelistID,
                                   EventConstant.OrderSourceID: self.account!.userID,
                                   EventConstant.ScrappingStep: HtmlScrappingStep.startScrapping.value,
@@ -159,7 +167,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
             }
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.StepStarHtmlScrapping, eventAttributes: logEventAttributes)
         }
-        _ = AmazonService.getDateRange(amazonId: self.account!.userID){ response, error in
+        _ = AmazonService.getDateRange(platformId: self.account!.userID, orderSource: self.orderSource.value) { response, error in
             if let dateRange = response {
                 self.didReceive(dateRange: dateRange)
                 var json: String
@@ -170,7 +178,8 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
                     json = AppConstants.ErrorInJsonEncoding
                 }
                 var logEventAttributes:[String:String] = [:]
-                logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
+
+                logEventAttributes = [EventConstant.OrderSource: self.account!.source.value,
                                       EventConstant.PanelistID: self.account!.panelistID,
                                       EventConstant.OrderSourceID: self.account!.userID,
                                       EventConstant.ScrappingStep: HtmlScrappingStep.startScrapping.value,
@@ -179,7 +188,8 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIDateRange, eventAttributes: logEventAttributes)
             } else {
                 var logEventAttributes:[String:String] = [:]
-                logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
+
+                logEventAttributes = [EventConstant.OrderSource:self.account!.source.value,
                                       EventConstant.PanelistID: self.account!.panelistID,
                                       EventConstant.OrderSourceID: self.account!.userID,
                                       EventConstant.ScrappingStep: HtmlScrappingStep.startScrapping.value,
@@ -257,7 +267,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
                 let urls = Urls(login: self.configuration.login, listing: self.configuration.listing, details: self.configuration.details)
                 let scriptBuilder = ScriptParam(script: script, dateRange: self.dateRange
                                                 , url: self.configuration.listing, scrappingPage: .listing, urls: urls,
-                                                orderId: nil)
+                                                orderId: nil, orderDate: nil)
                 let executableScript = ExecutableScriptBuilder().getExecutableScript(param: scriptBuilder)
                 
                 if self.dateRange?.scrappingType == ScrappingType.report.rawValue {
@@ -265,8 +275,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
                     self.CSVScrapper.scrapeOrders(response: self.dateRange!, account: self.account!
                                                   , timerHandler: timerHandler, param: self.scrapperParams)
                 } else {
-                    BSHtmlScrapper(params: self.scrapperParams)
-                        .extractOrders(script: executableScript, url: self.configuration.listing)
+                    self.bsHtmlScrapper.extractOrders(script: executableScript, url: self.configuration.listing)
                     
                     var logEventAttributes:[String:String] = [:]
                     logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
@@ -304,8 +313,9 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
         self.stopScrapping()
         let panelistID = self.account?.panelistID ?? ""
         let platformId = self.account?.userID ?? ""
+        let orderSource = self.account?.source.value ?? ""
         let eventLogs = EventLogs(panelistId: panelistID, platformId:platformId, section: SectionType.orderUpload.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: self.dateRange?.fromDate, toDate: self.dateRange?.toDate, scrappingType: ScrappingType.report.rawValue)
-        _ = AmazonService.logEvents(eventLogs: eventLogs) { response, error in
+        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: orderSource) { response, error in
             
         }
         let error = ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil)
@@ -378,11 +388,12 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     listener.updateProgressStep(htmlScrappingStep: .complete)
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.StepComplete, eventAttributes: logEventAttributes)
                 }
-                self.logEvent()
+                self.logEvent(status: EventState.success.rawValue)
                 self.completionHandler((true, .fetchCompleted), nil)
                 logEventAttributes[EventConstant.Status] = EventStatus.Success
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAPIUploadOrderDetails, eventAttributes: logEventAttributes)
             } else {
+                self.logEvent(status: EventState.fail.rawValue)
                 self.completionHandler((false, nil), error!)
                 logEventAttributes[EventConstant.Status] = EventStatus.Failure
                 logEventAttributes[EventConstant.Reason] = Strings.ErrorOrderExtractionFailed
@@ -419,7 +430,9 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     }
                     
                     let timerValue = self.timer.stop()
-                    let message = "\(Strings.ScrappingPageListing) + \(timerValue) + \(String(describing: scrapeResponse.data?.count))"
+                    let message = "\(timerValue) + \(String(describing: scrapeResponse.data?.count))"
+                    logEventAttributes [EventConstant.ScrappingTime] = message
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.onOrderListingCompletion, eventAttributes: logEventAttributes)
                     FirebaseAnalyticsUtil.logSentryMessage(message: message)
                     if let orderDetails = scrapeResponse.data, !orderDetails.isEmpty {
                         insertOrderDetailsToDB(orderDetails: orderDetails) { dataInserted in
@@ -440,7 +453,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                         self.completionHandler((true, .fetchCompleted), nil)
                     }
                     let amazonLogs = EventLogs(panelistId:account!.panelistID , platformId: account!.userID, section: SectionType.orderUpload.rawValue, type: FailureTypes.none.rawValue, status: EventState.success.rawValue, message: AppConstants.msgOrderListSuccess, fromDate: dateRange?.fromDate, toDate: dateRange?.toDate, scrappingType: ScrappingType.html.rawValue)
-                    _ = AmazonService.logEvents(eventLogs: amazonLogs) { response, error in
+                    _ = AmazonService.logEvents(eventLogs: amazonLogs, orderSource: self.account!.source.value) { response, error in
                         
                     }
                     logEventAttributes[EventConstant.Status] =  EventStatus.Success
@@ -448,6 +461,8 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderListResultSuccess, eventAttributes: logEventAttributes)
                 } else if scrapeResponse.status == "failed" {
                     let timerValue = self.timer.stop()
+                    logEventAttributes [EventConstant.ScrappingTime] = timerValue
+                    FirebaseAnalyticsUtil.logEvent(eventType: Strings.ScrappingPageListing, eventAttributes: logEventAttributes)
                     self.stopScrapping()
                     self.completionHandler((false, nil), ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil))
                     
@@ -463,7 +478,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     let panelistId = account!.panelistID
                     let userId = account!.userID
                     let amazonLogs = EventLogs(panelistId: panelistId , platformId: userId, section: SectionType.orderUpload.rawValue, type: FailureTypes.jsFailed.rawValue, status: EventState.fail.rawValue, message: error, fromDate: dateRange?.fromDate, toDate: dateRange?.toDate, scrappingType: ScrappingType.html.rawValue)
-                    _ = AmazonService.logEvents(eventLogs: amazonLogs) { response, error in
+                    _ = AmazonService.logEvents(eventLogs: amazonLogs, orderSource: self.account!.source.value) { response, error in
                         
                     }
                     logEventAttributes[EventConstant.ErrorReason] =  error
@@ -483,7 +498,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     func onHtmlScrappingFailure(error: ASLException) {
         self.stopScrapping()
         let eventLogs = EventLogs(panelistId: self.account!.panelistID, platformId: self.account!.userID, section: SectionType.orderUpload.rawValue , type: error.errorEventLog!.rawValue, status: EventState.fail.rawValue, message: error.errorMessage, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrappingType: error.errorScrappingType?.rawValue)
-        _ = AmazonService.logEvents(eventLogs: eventLogs) { response, error in
+        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.account!.source.value) { response, error in
                 //TODO
         }
         self.completionHandler((false, nil), error)
@@ -555,7 +570,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgInjectJSForOrderDetail, eventAttributes: logEventAttributes)
                 
-                BSOrderDetailsScrapper(scrapperParams: self.scrapperParams).scrapeOrderDetailPage(script: script, orderDetails: orderDetails, mode: self.scrappingMode)
+                BSOrderDetailsScrapper(scrapperParams: self.scrapperParams).scrapeOrderDetailPage(script: script, orderDetails: orderDetails, mode: self.scrappingMode, source: self.fetchRequestSource)
                 print("### BSScrapper started scrapeOrderDetailPage")
                 
             } else {
@@ -576,11 +591,12 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
         }
     }
     
-    private func logEvent() {
-        let eventLogs = EventLogs(panelistId: self.account!.panelistID, platformId: self.account!.userID, section: SectionType.orderUpload.rawValue , type: FailureTypes.none.rawValue, status: EventState.success.rawValue, message: AppConstants.bgScrappingCompleted, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrappingType: ScrappingType.html.rawValue)
-        _ = AmazonService.logEvents(eventLogs: eventLogs) { response, error in
+    private func logEvent(status: String) {
+        let eventLogs = EventLogs(panelistId: self.account!.panelistID, platformId: self.account!.userID, section: SectionType.orderUpload.rawValue , type: FailureTypes.none.rawValue, status: status, message: AppConstants.bgScrappingCompleted, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrappingType: ScrappingType.html.rawValue)
+        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.account!.source.value) { response, error in
                 //TODO
         }
     }
 }
+
 

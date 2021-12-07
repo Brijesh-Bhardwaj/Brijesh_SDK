@@ -23,8 +23,8 @@ class NetworkClient<T: Codable>: APIClient {
     private let AuthErrorResponseCode = 401
     private let BaseURL = LibContext.shared.orderExtractorConfig.baseURL
     private let HeaderContentType = "Content-Type"
-    private let ContentTypeJSON = "application/json"
     
+    var ContentTypeJSON = "application/json"
     var relativeURL: String
     var requestMethod: RequestMethod
     var headers: [String: String]?
@@ -34,6 +34,12 @@ class NetworkClient<T: Codable>: APIClient {
     required init(relativeURL url: String, requestMethod method: RequestMethod) {
         self.relativeURL = url
         self.requestMethod = method
+    }
+    
+    required init(relativeURL url: String, requestMethod method: RequestMethod, contentType type:String) {
+        self.relativeURL = url
+        self.requestMethod = method
+        self.ContentTypeJSON = type
     }
     
     func executeAPI(completionHandler: @escaping (Any?, Error?) -> Void) {

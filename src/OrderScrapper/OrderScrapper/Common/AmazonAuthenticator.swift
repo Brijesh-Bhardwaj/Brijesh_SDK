@@ -21,7 +21,7 @@ internal class AmazonAuthenticator: Authenticator {
     
     private var isPasswordInjected: Bool = false
     private var isAuthenticated: Bool = false
-
+    
     var jsResultSubscriber: AnyCancellable? = nil
     
     required init(_ viewModel: WebViewModel) {
@@ -177,8 +177,9 @@ internal class AmazonAuthenticator: Authenticator {
         let userId = self.viewModel.userAccount.userID
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         let accountState = self.viewModel.userAccount.accountState
-        var status: String
-        var orderStatus: String
+        let orderSource = self.viewModel.userAccount.source.value
+        var status: String = ""
+        var orderStatus = ""
         
         switch accountState {
         case .NeverConnected:
@@ -188,7 +189,7 @@ internal class AmazonAuthenticator: Authenticator {
             status = AccountState.ConnectedButException.rawValue
             orderStatus = OrderStatus.None.rawValue
             do {
-                try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: panelistId)
+                try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: panelistId, orderSource: self.viewModel.userAccount.source.rawValue)
             } catch let error {
                 print(AppConstants.tag, "updateAccountWithExceptionState", error.localizedDescription)
                 
@@ -198,13 +199,16 @@ internal class AmazonAuthenticator: Authenticator {
                                                           EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue]
                 FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
             }
+        case .ConnectedButScrappingFailed:
+            status = AccountState.ConnectedButException.rawValue
+            orderStatus = OrderStatus.Failed.rawValue
         }
-        _ = AmazonService.updateStatus(amazonId: userId, status: status
-                                       , message: message, orderStatus: orderStatus) { response, error in
+        _ = AmazonService.updateStatus(platformId: userId, status: status
+                                       , message: message, orderStatus: orderStatus, orderSource: OrderSource.Amazon.value) { response, error in
             //Todo
         }
         let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.captcha.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrappingType: nil)
-        _ = AmazonService.logEvents(eventLogs: eventLog) { response, error in
+        _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource) { response, error in
                 //TODO
         }
     }
@@ -212,16 +216,17 @@ internal class AmazonAuthenticator: Authenticator {
     private func notifyAuthError(errorMessage: String) {
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         let accountState = self.viewModel.userAccount.accountState.rawValue
+        let orderSource = self.viewModel.userAccount.source.value
         if accountState == AccountState.NeverConnected.rawValue {
             let userId = self.viewModel.userAccount.userID
-            _ = AmazonService.registerConnection(amazonId: userId,
+            _ = AmazonService.registerConnection(platformId: userId,
                                                  status: AccountState.NeverConnected.rawValue,
-                                                 message: errorMessage, orderStatus: OrderStatus.None.rawValue) { response, error in
+                                                 message: errorMessage, orderStatus: OrderStatus.None.rawValue, orderSource: OrderSource.Amazon.value) { response, error in
                 var logEventAttributes:[String:String] = [:]
                 logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
-                                          EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                          EventConstant.PanelistID: self.viewModel.userAccount.panelistID,
-                                          EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue]
+                                      EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                      EventConstant.PanelistID: self.viewModel.userAccount.panelistID,
+                                      EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue]
                 if let response = response  {
                     //TODO Add response in attributes
                     logEventAttributes[EventConstant.Status] = EventStatus.Success
@@ -236,9 +241,9 @@ internal class AmazonAuthenticator: Authenticator {
                     }
                 }
             }
-            let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authenticaion.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrappingType: nil)
-            _ = AmazonService.logEvents(eventLogs: eventLog) { response, error in
-                    //TODO
+            let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrappingType: nil)
+            _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource) { response, error in
+                //TODO
             }
         } else {
             self.updateAccountWithExceptionState(message: AppConstants.msgAuthError)

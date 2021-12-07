@@ -20,4 +20,11 @@ class Queue<T> {
         }
         return nil
     }
+    
+    func peekData() -> T? {
+        if (!isEmpty()) {
+            return dataQueue.first
+        }
+        return nil
+    }
 }

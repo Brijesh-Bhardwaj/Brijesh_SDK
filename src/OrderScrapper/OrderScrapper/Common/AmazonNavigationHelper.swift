@@ -45,18 +45,20 @@ class AmazonNavigationHelper: NavigationHelper {
     let timerHandler: TimerHandler!
     private var backgroundScrapper: BSScrapper!
     var isGenerateReport: Bool = false
+    var fetchRequestSource: FetchRequestSource?
 
     private lazy var CSVScrapper: BSCSVScrapper = {
         return BSCSVScrapper(webview: self.webView, scrapingMode: .Foreground, scraperListener: self.scraperListener)
     }()
     
     required init(_ viewModel: WebViewModel, webView: WKWebView, scraperListener: ScraperProgressListener,
-                  timerHandler: TimerHandler) {
+                  timerHandler: TimerHandler, fetchRequestSource: FetchRequestSource?) {
         self.viewModel = viewModel
         self.authenticator = AmazonAuthenticator(viewModel)
         self.webView = webView
         self.scraperListener = scraperListener
         self.timerHandler = timerHandler
+        self.fetchRequestSource = fetchRequestSource
     }
     
     deinit {
@@ -126,7 +128,7 @@ class AmazonNavigationHelper: NavigationHelper {
                     let userAccountState = self.viewModel.userAccount.accountState
                     if userAccountState == AccountState.NeverConnected {
                         let userId = self.viewModel.userAccount.userID
-                        _ = AmazonService.registerConnection(amazonId: userId, status: AccountState.Connected.rawValue, message: AppConstants.msgAccountConnected, orderStatus: OrderStatus.Initiated.rawValue) { response, error in
+                        _ = AmazonService.registerConnection(platformId: userId, status: AccountState.Connected.rawValue, message: AppConstants.msgAccountConnected, orderStatus: OrderStatus.Initiated.rawValue, orderSource: OrderSource.Amazon.value) { response, error in
                             var logEventAttributes:[String:String] = [:]
                             logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
@@ -169,7 +171,7 @@ class AmazonNavigationHelper: NavigationHelper {
             let userAccountState = self.viewModel.userAccount.accountState
             if userAccountState != AccountState.NeverConnected {
                 do {
-                    try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: self.viewModel.userAccount.panelistID)
+                    try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: self.viewModel.userAccount.panelistID, orderSource: self.viewModel.userAccount.source.rawValue)
                 } catch {
                     print("updateAccountWithExceptionState")
                 }
@@ -309,13 +311,20 @@ class AmazonNavigationHelper: NavigationHelper {
     
     private func getDateRange() {
         var logEventAttributes:[String:String] = [:]
-        _ = AmazonService.getDateRange(amazonId: self.viewModel.userAccount.userID) { response, error in
+        _ = AmazonService.getDateRange(platformId: self.viewModel.userAccount.userID, orderSource: OrderSource.Amazon.value) { response, error in
             if let response = response {
                 if response.enableScraping {
+                    
+                    //Clear order details from DB while doing foreground scrapping
+                    let account = self.viewModel.userAccount as! UserAccountMO
+                    let source: OrderSource = OrderSource(rawValue: account.orderSource)!
+                    CoreDataManager.shared.deleteOrderDetails(userID: account.userID, panelistID: account.panelistID, orderSource: source.value)
+                    
                     if response.scrappingType == ScrappingType.report.rawValue {
                         self.scrapeReport(response: response)
                     } else {
                         self.timerHandler.stopTimer()
+                        self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping)
                         self.scrapeHtml()
                     }
                 } else {
@@ -382,10 +391,11 @@ class AmazonNavigationHelper: NavigationHelper {
             guard let self = self else {return}
             let (completed, successType) = result
             DispatchQueue.main.async {
+                self.timerHandler.stopTimer()
                 if completed {
                     self.scraperListener.updateSuccessType(successType: successType!)
                     self.scraperListener.onCompletion(isComplete: true)
-                    UserDefaults.standard.setValue(0, forKey: Strings.OnNumberOfCaptchaRetry)
+                    UserDefaults.standard.setValue(0, forKey: Strings.AmazonOnNumberOfCaptchaRetry)
                 } else {
                     self.scraperListener.updateSuccessType(successType: .failureButAccountConnected)
                     self.scraperListener.onCompletion(isComplete: true)
@@ -397,9 +407,13 @@ class AmazonNavigationHelper: NavigationHelper {
         }
         self.backgroundScrapper.scraperListener = self.scraperListener
         self.backgroundScrapper.scrappingMode = .Foreground
+        if let fetchRequestSource = fetchRequestSource {
+            self.backgroundScrapper.fetchRequestSource = fetchRequestSource
+        }
         self.backgroundScrapper.startScrapping(account: account)
     }
     
+   
     /*
      * add user account details in DB
      */
@@ -411,24 +425,24 @@ class AmazonNavigationHelper: NavigationHelper {
     
     private func updateOrderStatusFor(error: String, accountStatus: String) {
         let amazonId = self.viewModel.userAccount.userID
-        _ = AmazonService.updateStatus(amazonId: amazonId,
+        _ = AmazonService.updateStatus(platformId: amazonId,
                                        status: accountStatus,
                                        message: error,
-                                       orderStatus: OrderStatus.Failed.rawValue) { response, error in
+                                       orderStatus: OrderStatus.Failed.rawValue, orderSource:  OrderSource.Amazon.value) { response, error in
         }
     }
     
     private func updateAccountStatusToConnected(orderStatus: String) {
         let amazonId = self.viewModel.userAccount.userID
-        _ = AmazonService.updateStatus(amazonId: amazonId,
+        _ = AmazonService.updateStatus(platformId: amazonId,
                                        status: AccountState.Connected.rawValue,
                                        message: AppConstants.msgConnected,
-                                       orderStatus: orderStatus) { response, error in
+                                       orderStatus: orderStatus, orderSource:  OrderSource.Amazon.value) { response, error in
         }
     }
     
     private func logEvents(logEvents: EventLogs) {
-        _ = AmazonService.logEvents(eventLogs: logEvents) { respose, error in
+        _ = AmazonService.logEvents(eventLogs: logEvents, orderSource: self.viewModel.userAccount.source.value) { respose, error in
             
         }
     }

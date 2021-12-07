@@ -27,8 +27,15 @@
 		1C26830F264BE310004ED054 /* BSAmazonAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C26830E264BE310004ED054 /* BSAmazonAuthenticator.swift */; };
 		1C268319264BE7B4004ED054 /* BSAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C268318264BE7B4004ED054 /* BSAuthenticator.swift */; };
 		1C26831D264BE89D004ED054 /* BSAuthenticationStatusListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C26831C264BE89D004ED054 /* BSAuthenticationStatusListener.swift */; };
+		1C275EC827425846006404BF /* WalmartScrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C275EC727425846006404BF /* WalmartScrapper.swift */; };
+		1C275ECC27425A0F006404BF /* BSWalmartAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C275ECB27425A0F006404BF /* BSWalmartAuthenticator.swift */; };
 		1C2AD81126CA852400E394DE /* ScraperProgressListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2AD81026CA852400E394DE /* ScraperProgressListener.swift */; };
 		1C2F8DF4260B25870053E73A /* OrdersExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2F8DF3260B25870053E73A /* OrdersExtractor.swift */; };
+		1C3164DB2689E14200595915 /* AmazonLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C3164DA2689E14200595915 /* AmazonLogin.swift */; };
+		1C3164E3268A0BFD00595915 /* InstacartLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C3164E2268A0BFD00595915 /* InstacartLogin.swift */; };
+		1C3164E7268A0ED800595915 /* LoginView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C3164E6268A0ED800595915 /* LoginView.xib */; };
+		1C3164EB268A17ED00595915 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C3164EA268A17ED00595915 /* LoginView.swift */; };
+		1C3164EF268A355B00595915 /* BaseLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C3164EE268A355B00595915 /* BaseLoginViewController.swift */; };
 		1C33D53726CE59D000D6AB2B /* Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C33D53626CE59D000D6AB2B /* Actions.swift */; };
 		1C35B5D226D0DCC2001109E3 /* ScrappingType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C35B5D126D0DCC2001109E3 /* ScrappingType.swift */; };
 		1C414C532668DFA0009126E0 /* BSOrderDetailsScrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C414C522668DFA0009126E0 /* BSOrderDetailsScrapper.swift */; };
@@ -47,6 +54,7 @@
 		1C5133E6265D458F00BCAC2C /* BSHtmlScrappingStatusListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5133E5265D458F00BCAC2C /* BSHtmlScrappingStatusListener.swift */; };
 		1C563CB0272036A60061462A /* NetworkState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C563CAF272036A60061462A /* NetworkState.swift */; };
 		1C5B95B826CCEB8500FF0040 /* TimerHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5B95B726CCEB8500FF0040 /* TimerHandler.swift */; };
+		1C5BDAA426A832BF00729533 /* ConnectInstacartAccountVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5BDAA326A832BF00729533 /* ConnectInstacartAccountVC.swift */; };
 		1C5DE05F264EA76400275073 /* JSUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5DE05E264EA76400275073 /* JSUtils.swift */; };
 		1C65D32C26669DC200548A84 /* ScrapeResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C65D32B26669DC200548A84 /* ScrapeResponse.swift */; };
 		1C66CE30265EB0E700A5C7C1 /* ListingPageScriptInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C66CE2F265EB0E700A5C7C1 /* ListingPageScriptInput.swift */; };
@@ -69,10 +77,25 @@
 		1CEBA4CC266F580500F331C7 /* JSCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEBA4CB266F580500F331C7 /* JSCallback.swift */; };
 		1CEDD13B26038CAE00E7BAB4 /* UserAccountMO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEDD13A26038CAE00E7BAB4 /* UserAccountMO.swift */; };
 		1CFB487B265405A8007F949E /* BSBaseAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFB487A265405A8007F949E /* BSBaseAuthenticator.swift */; };
+		846E1F9026FA0E30009695C3 /* KrogerLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E1F8F26FA0E30009695C3 /* KrogerLogin.swift */; };
+		846E1FA226FA2D6B009695C3 /* ConnectKrogerAccountVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E1FA126FA2D6B009695C3 /* ConnectKrogerAccountVC.swift */; };
+		846E1FA626FA3265009695C3 /* KrogerAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E1FA526FA3265009695C3 /* KrogerAuthenticator.swift */; };
+		846F026726FC8E7F00A0E6DD /* KrogerScrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F026626FC8E7F00A0E6DD /* KrogerScrapper.swift */; };
+		846F026B26FC8F1200A0E6DD /* BSKrogerAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F026A26FC8F1200A0E6DD /* BSKrogerAuthenticator.swift */; };
+		9D08004C271808EC00355C9B /* WalmartLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D08004B271808EC00355C9B /* WalmartLogin.swift */; };
+		9D24D5662701F24D00473BA1 /* ScrappingQueueDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D24D5652701F24D00473BA1 /* ScrappingQueueDetails.swift */; };
 		9D35EF9626B3D84000272C27 /* BSTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D35EF9526B3D84000272C27 /* BSTimer.swift */; };
 		9D638A3C265BD2B200C412AC /* OrdersExtractorConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D638A3B265BD2B200C412AC /* OrdersExtractorConfig.swift */; };
 		9D812DA3265F7EC800629376 /* OrderDetailsMO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D812DA2265F7EC800629376 /* OrderDetailsMO.swift */; };
 		9D830BF526692A3C0081D4BD /* OrderData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D830BF426692A3C0081D4BD /* OrderData.swift */; };
+		9D83BCA827511DA60092762C /* OrderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D83BCA727511DA60092762C /* OrderState.swift */; };
+		9D84136B26BA520C00D237DC /* InstacartAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D84136A26BA520C00D237DC /* InstacartAuthenticator.swift */; };
+		9D84136F26BA526200D237DC /* OperationMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D84136E26BA526200D237DC /* OperationMode.swift */; };
+		9D86409F26A15E5B002FA8B8 /* AccountsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D86409E26A15E5B002FA8B8 /* AccountsManager.swift */; };
+		9D86AC3526F22BED00FE0731 /* InstacartScrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D86AC3426F22BED00FE0731 /* InstacartScrapper.swift */; };
+		9D8E1FA1271E882300AE9075 /* ConnectWalmartAccountVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D8E1FA0271E882300AE9075 /* ConnectWalmartAccountVC.swift */; };
+		9D8E1FA5271E9DB800AE9075 /* WalmartAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D8E1FA4271E9DB800AE9075 /* WalmartAuthenticator.swift */; };
+		9D9716A126A8209100A370E5 /* AccountInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9716A026A8209100A370E5 /* AccountInfo.swift */; };
 		9DA4FD132656A85C0091EE77 /* Alamofire.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF1092615A20400752507 /* Alamofire.xcframework */; };
 		9DA4FD172656A88E0091EE77 /* CSV.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF1082615A20400752507 /* CSV.xcframework */; };
 		9DA4FD1A2656A8B50091EE77 /* RNCryptor.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1EDF10A2615A20400752507 /* RNCryptor.xcframework */; };
@@ -83,12 +106,12 @@
 		9DAE9E6326CCE86400EBA357 /* FetchRequestSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DAE9E6226CCE86400EBA357 /* FetchRequestSource.swift */; };
 		9DB6749526D6964E00A6DA26 /* EventLogs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DB6749426D6964E00A6DA26 /* EventLogs.swift */; };
 		9DC2081226916DDD00F79807 /* Sentry.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DC2081126916DDD00F79807 /* Sentry.xcframework */; };
+		9DC677E326F3272F008D895D /* BSInstacartAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC677E226F3272F008D895D /* BSInstacartAuthenticator.swift */; };
 		9DF81DEC266A3A0F001CFCCF /* OrderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF81DEB266A3A0F001CFCCF /* OrderRequest.swift */; };
 		E1155D12261D9B2900739735 /* SF-Pro-Rounded-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E1155D04261D9B2600739735 /* SF-Pro-Rounded-Bold.otf */; };
 		E1155D15261D9B2900739735 /* SF-Pro-Rounded-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = E1155D07261D9B2700739735 /* SF-Pro-Rounded-Regular.otf */; };
 		E1155D28261DC1F200739735 /* GradientButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1155D27261DC1F200739735 /* GradientButton.swift */; };
 		E1155D34261DDC9100739735 /* UIFontExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1155D33261DDC9100739735 /* UIFontExtensions.swift */; };
-		E11F4160260F3BBF00E90848 /* RegisterAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F415F260F3BBF00E90848 /* RegisterAccountViewController.swift */; };
 		E11F4166260F3DE000E90848 /* ConnectAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F4165260F3DE000E90848 /* ConnectAccountViewController.swift */; };
 		E11F4174260F70C500E90848 /* NetworkErrorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E11F4173260F70C500E90848 /* NetworkErrorView.xib */; };
 		E11F4178260F7AF800E90848 /* NetworkErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F4177260F7AF800E90848 /* NetworkErrorView.swift */; };
@@ -137,8 +160,13 @@
 		E19D4CB72608FD29002C16A7 /* WebCacheCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D4CB62608FD29002C16A7 /* WebCacheCleaner.swift */; };
 		E19D4CBA2609A4A9002C16A7 /* OrderExtractionListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D4CB92609A4A9002C16A7 /* OrderExtractionListener.swift */; };
 		E19D4E08260DF055002C16A7 /* OSLibUI.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E19D4E07260DF055002C16A7 /* OSLibUI.storyboard */; };
+		E19D6AB826B3D53C004758A1 /* BaseAccountConnectVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D6AB726B3D53C004758A1 /* BaseAccountConnectVC.swift */; };
+		E19D6ABC26B3DB6C004758A1 /* ConnectAccountView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E19D6ABB26B3DB6B004758A1 /* ConnectAccountView.xib */; };
+		E19D6AC026B3DB97004758A1 /* ConnectAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19D6ABF26B3DB97004758A1 /* ConnectAccountView.swift */; };
 		E1A058CC2674A26500BC6687 /* OrderDetailsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A058CB2674A26500BC6687 /* OrderDetailsMapper.swift */; };
 		E1AAFF4F26274808000F5CD2 /* GetAccountsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AAFF4E26274808000F5CD2 /* GetAccountsResponse.swift */; };
+		F03CB42F27316C5300B1DFA3 /* KrogerSubsidiaries.swift in Sources */ = {isa = PBXBuildFile; fileRef = F03CB42E27316C5300B1DFA3 /* KrogerSubsidiaries.swift */; };
+		F08DF628272FE711005E473A /* KrogerSubsidiaryAccountVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08DF627272FE711005E473A /* KrogerSubsidiaryAccountVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -186,8 +214,15 @@
 		1C26830E264BE310004ED054 /* BSAmazonAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSAmazonAuthenticator.swift; sourceTree = "<group>"; };
 		1C268318264BE7B4004ED054 /* BSAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSAuthenticator.swift; sourceTree = "<group>"; };
 		1C26831C264BE89D004ED054 /* BSAuthenticationStatusListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSAuthenticationStatusListener.swift; sourceTree = "<group>"; };
+		1C275EC727425846006404BF /* WalmartScrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalmartScrapper.swift; sourceTree = "<group>"; };
+		1C275ECB27425A0F006404BF /* BSWalmartAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSWalmartAuthenticator.swift; sourceTree = "<group>"; };
 		1C2AD81026CA852400E394DE /* ScraperProgressListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScraperProgressListener.swift; sourceTree = "<group>"; };
 		1C2F8DF3260B25870053E73A /* OrdersExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrdersExtractor.swift; sourceTree = "<group>"; };
+		1C3164DA2689E14200595915 /* AmazonLogin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmazonLogin.swift; sourceTree = "<group>"; };
+		1C3164E2268A0BFD00595915 /* InstacartLogin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstacartLogin.swift; sourceTree = "<group>"; };
+		1C3164E6268A0ED800595915 /* LoginView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LoginView.xib; sourceTree = "<group>"; };
+		1C3164EA268A17ED00595915 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		1C3164EE268A355B00595915 /* BaseLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseLoginViewController.swift; sourceTree = "<group>"; };
 		1C33D53626CE59D000D6AB2B /* Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Actions.swift; sourceTree = "<group>"; };
 		1C35B5D126D0DCC2001109E3 /* ScrappingType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrappingType.swift; sourceTree = "<group>"; };
 		1C414C522668DFA0009126E0 /* BSOrderDetailsScrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSOrderDetailsScrapper.swift; sourceTree = "<group>"; };
@@ -206,6 +241,7 @@
 		1C5133E5265D458F00BCAC2C /* BSHtmlScrappingStatusListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSHtmlScrappingStatusListener.swift; sourceTree = "<group>"; };
 		1C563CAF272036A60061462A /* NetworkState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkState.swift; sourceTree = "<group>"; };
 		1C5B95B726CCEB8500FF0040 /* TimerHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerHandler.swift; sourceTree = "<group>"; };
+		1C5BDAA326A832BF00729533 /* ConnectInstacartAccountVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectInstacartAccountVC.swift; sourceTree = "<group>"; };
 		1C5DE05E264EA76400275073 /* JSUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSUtils.swift; sourceTree = "<group>"; };
 		1C65D32B26669DC200548A84 /* ScrapeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrapeResponse.swift; sourceTree = "<group>"; };
 		1C66CE2F265EB0E700A5C7C1 /* ListingPageScriptInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ListingPageScriptInput.swift; path = ../Models/ListingPageScriptInput.swift; sourceTree = "<group>"; };
@@ -242,11 +278,26 @@
 		1CEBA4CB266F580500F331C7 /* JSCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSCallback.swift; sourceTree = "<group>"; };
 		1CEDD13A26038CAE00E7BAB4 /* UserAccountMO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAccountMO.swift; sourceTree = "<group>"; };
 		1CFB487A265405A8007F949E /* BSBaseAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSBaseAuthenticator.swift; sourceTree = "<group>"; };
+		846E1F8F26FA0E30009695C3 /* KrogerLogin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KrogerLogin.swift; sourceTree = "<group>"; };
+		846E1FA126FA2D6B009695C3 /* ConnectKrogerAccountVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectKrogerAccountVC.swift; sourceTree = "<group>"; };
+		846E1FA526FA3265009695C3 /* KrogerAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KrogerAuthenticator.swift; sourceTree = "<group>"; };
+		846F026626FC8E7F00A0E6DD /* KrogerScrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KrogerScrapper.swift; sourceTree = "<group>"; };
+		846F026A26FC8F1200A0E6DD /* BSKrogerAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSKrogerAuthenticator.swift; sourceTree = "<group>"; };
+		9D08004B271808EC00355C9B /* WalmartLogin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalmartLogin.swift; sourceTree = "<group>"; };
+		9D24D5652701F24D00473BA1 /* ScrappingQueueDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrappingQueueDetails.swift; sourceTree = "<group>"; };
 		9D35EF9526B3D84000272C27 /* BSTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BSTimer.swift; path = Common/BSTimer.swift; sourceTree = "<group>"; };
 		9D638A3B265BD2B200C412AC /* OrdersExtractorConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrdersExtractorConfig.swift; sourceTree = "<group>"; };
 		9D812DA1265F791D00629376 /* CoreDataModel v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CoreDataModel v2.xcdatamodel"; sourceTree = "<group>"; };
 		9D812DA2265F7EC800629376 /* OrderDetailsMO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailsMO.swift; sourceTree = "<group>"; };
 		9D830BF426692A3C0081D4BD /* OrderData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderData.swift; sourceTree = "<group>"; };
+		9D83BCA727511DA60092762C /* OrderState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderState.swift; sourceTree = "<group>"; };
+		9D84136A26BA520C00D237DC /* InstacartAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstacartAuthenticator.swift; sourceTree = "<group>"; };
+		9D84136E26BA526200D237DC /* OperationMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationMode.swift; sourceTree = "<group>"; };
+		9D86409E26A15E5B002FA8B8 /* AccountsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountsManager.swift; sourceTree = "<group>"; };
+		9D86AC3426F22BED00FE0731 /* InstacartScrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstacartScrapper.swift; sourceTree = "<group>"; };
+		9D8E1FA0271E882300AE9075 /* ConnectWalmartAccountVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectWalmartAccountVC.swift; sourceTree = "<group>"; };
+		9D8E1FA4271E9DB800AE9075 /* WalmartAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalmartAuthenticator.swift; sourceTree = "<group>"; };
+		9D9716A026A8209100A370E5 /* AccountInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfo.swift; sourceTree = "<group>"; };
 		9DA8027826D790EF00AEBD0D /* SectionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionType.swift; sourceTree = "<group>"; };
 		9DA8027C26D79B4100AEBD0D /* FailureTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FailureTypes.swift; sourceTree = "<group>"; };
 		9DA8028026D7A4E900AEBD0D /* EventState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventState.swift; sourceTree = "<group>"; };
@@ -254,12 +305,12 @@
 		9DAE9E6226CCE86400EBA357 /* FetchRequestSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchRequestSource.swift; sourceTree = "<group>"; };
 		9DB6749426D6964E00A6DA26 /* EventLogs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventLogs.swift; sourceTree = "<group>"; };
 		9DC2081126916DDD00F79807 /* Sentry.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Sentry.xcframework; path = Carthage/Build/Sentry.xcframework; sourceTree = "<group>"; };
+		9DC677E226F3272F008D895D /* BSInstacartAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSInstacartAuthenticator.swift; sourceTree = "<group>"; };
 		9DF81DEB266A3A0F001CFCCF /* OrderRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderRequest.swift; sourceTree = "<group>"; };
 		E1155D04261D9B2600739735 /* SF-Pro-Rounded-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Rounded-Bold.otf"; sourceTree = "<group>"; };
 		E1155D07261D9B2700739735 /* SF-Pro-Rounded-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Rounded-Regular.otf"; sourceTree = "<group>"; };
 		E1155D27261DC1F200739735 /* GradientButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientButton.swift; sourceTree = "<group>"; };
 		E1155D33261DDC9100739735 /* UIFontExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIFontExtensions.swift; sourceTree = "<group>"; };
-		E11F415F260F3BBF00E90848 /* RegisterAccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterAccountViewController.swift; sourceTree = "<group>"; };
 		E11F4165260F3DE000E90848 /* ConnectAccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectAccountViewController.swift; sourceTree = "<group>"; };
 		E11F4173260F70C500E90848 /* NetworkErrorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NetworkErrorView.xib; sourceTree = "<group>"; };
 		E11F4177260F7AF800E90848 /* NetworkErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkErrorView.swift; sourceTree = "<group>"; };
@@ -308,11 +359,16 @@
 		E19D4CB62608FD29002C16A7 /* WebCacheCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebCacheCleaner.swift; sourceTree = "<group>"; };
 		E19D4CB92609A4A9002C16A7 /* OrderExtractionListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderExtractionListener.swift; sourceTree = "<group>"; };
 		E19D4E07260DF055002C16A7 /* OSLibUI.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = OSLibUI.storyboard; sourceTree = "<group>"; };
+		E19D6AB726B3D53C004758A1 /* BaseAccountConnectVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseAccountConnectVC.swift; sourceTree = "<group>"; };
+		E19D6ABB26B3DB6B004758A1 /* ConnectAccountView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConnectAccountView.xib; sourceTree = "<group>"; };
+		E19D6ABF26B3DB97004758A1 /* ConnectAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectAccountView.swift; sourceTree = "<group>"; };
 		E1A058CB2674A26500BC6687 /* OrderDetailsMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailsMapper.swift; sourceTree = "<group>"; };
 		E1AAFF4E26274808000F5CD2 /* GetAccountsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetAccountsResponse.swift; sourceTree = "<group>"; };
 		E1EDF1082615A20400752507 /* CSV.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = CSV.xcframework; path = Carthage/Build/CSV.xcframework; sourceTree = "<group>"; };
 		E1EDF1092615A20400752507 /* Alamofire.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Alamofire.xcframework; path = Carthage/Build/Alamofire.xcframework; sourceTree = "<group>"; };
 		E1EDF10A2615A20400752507 /* RNCryptor.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = RNCryptor.xcframework; path = Carthage/Build/RNCryptor.xcframework; sourceTree = "<group>"; };
+		F03CB42E27316C5300B1DFA3 /* KrogerSubsidiaries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KrogerSubsidiaries.swift; sourceTree = "<group>"; };
+		F08DF627272FE711005E473A /* KrogerSubsidiaryAccountVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KrogerSubsidiaryAccountVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -367,6 +423,12 @@
 				1C0ADB272664BED600989EDE /* BSScriptMessageHandler.swift */,
 				1C414C522668DFA0009126E0 /* BSOrderDetailsScrapper.swift */,
 				1C45AE36266DF22800166DDE /* BSDataUploader.swift */,
+				9D86AC3426F22BED00FE0731 /* InstacartScrapper.swift */,
+				9DC677E226F3272F008D895D /* BSInstacartAuthenticator.swift */,
+				846F026626FC8E7F00A0E6DD /* KrogerScrapper.swift */,
+				846F026A26FC8F1200A0E6DD /* BSKrogerAuthenticator.swift */,
+				1C275EC727425846006404BF /* WalmartScrapper.swift */,
+				1C275ECB27425A0F006404BF /* BSWalmartAuthenticator.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -490,8 +552,17 @@
 		E11F415E260F3B7000E90848 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				E11F415F260F3BBF00E90848 /* RegisterAccountViewController.swift */,
 				E11F4165260F3DE000E90848 /* ConnectAccountViewController.swift */,
+				1C5BDAA326A832BF00729533 /* ConnectInstacartAccountVC.swift */,
+				846E1FA126FA2D6B009695C3 /* ConnectKrogerAccountVC.swift */,
+				1C3164DA2689E14200595915 /* AmazonLogin.swift */,
+				1C3164E2268A0BFD00595915 /* InstacartLogin.swift */,
+				846E1F8F26FA0E30009695C3 /* KrogerLogin.swift */,
+				1C3164EE268A355B00595915 /* BaseLoginViewController.swift */,
+				E19D6AB726B3D53C004758A1 /* BaseAccountConnectVC.swift */,
+				9D08004B271808EC00355C9B /* WalmartLogin.swift */,
+				9D8E1FA0271E882300AE9075 /* ConnectWalmartAccountVC.swift */,
+				F08DF627272FE711005E473A /* KrogerSubsidiaryAccountVC.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -533,6 +604,10 @@
 				E148CA442610417100155B96 /* ProgressView.xib */,
 				E148CA482610481100155B96 /* HorizontalProgressBar.swift */,
 				E1155D27261DC1F200739735 /* GradientButton.swift */,
+				1C3164E6268A0ED800595915 /* LoginView.xib */,
+				1C3164EA268A17ED00595915 /* LoginView.swift */,
+				E19D6ABB26B3DB6B004758A1 /* ConnectAccountView.xib */,
+				E19D6ABF26B3DB97004758A1 /* ConnectAccountView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -566,6 +641,7 @@
 				1CB9A7A7262427B60085E494 /* OrderStatus.swift */,
 				1CB5FFE8263BEE710072F35C /* ErrorType.swift */,
 				1C5133D9265D0D1A00BCAC2C /* ScrappingPage.swift */,
+				9D84136E26BA526200D237DC /* OperationMode.swift */,
 				1C1BD79726C569AF00ED6C5D /* ScrapingMode.swift */,
 				1C35B5D126D0DCC2001109E3 /* ScrappingType.swift */,
 				9DAE9E6226CCE86400EBA357 /* FetchRequestSource.swift */,
@@ -573,6 +649,7 @@
 				9DA8027C26D79B4100AEBD0D /* FailureTypes.swift */,
 				9DA8028026D7A4E900AEBD0D /* EventState.swift */,
 				1C563CAF272036A60061462A /* NetworkState.swift */,
+				9D83BCA727511DA60092762C /* OrderState.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -621,6 +698,8 @@
 				1C65D32B26669DC200548A84 /* ScrapeResponse.swift */,
 				9D812DA2265F7EC800629376 /* OrderDetailsMO.swift */,
 				1C4177412667998B007D4EE4 /* OrderDetails.swift */,
+				9D9716A026A8209100A370E5 /* AccountInfo.swift */,
+				9D24D5652701F24D00473BA1 /* ScrappingQueueDetails.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -674,6 +753,7 @@
 				1CEBA4CB266F580500F331C7 /* JSCallback.swift */,
 				1C6D440A268EDDF2004A3165 /* Configs.swift */,
 				9DB6749426D6964E00A6DA26 /* EventLogs.swift */,
+				F03CB42E27316C5300B1DFA3 /* KrogerSubsidiaries.swift */,
 			);
 			path = Response;
 			sourceTree = "<group>";
@@ -700,8 +780,12 @@
 				E148DCC726063BE1001430BE /* NetworkMonitor.swift */,
 				1C4F89B92655502000925FAB /* ConfigManager.swift */,
 				1C0EC3C026568F8D000F278D /* BSScriptFileManager.swift */,
+				9D86409E26A15E5B002FA8B8 /* AccountsManager.swift */,
+				9D84136A26BA520C00D237DC /* InstacartAuthenticator.swift */,
+				846E1FA526FA3265009695C3 /* KrogerAuthenticator.swift */,
 				1C1BD79326C568B500ED6C5D /* BSCSVScrapper.swift */,
 				1C5B95B726CCEB8500FF0040 /* TimerHandler.swift */,
+				9D8E1FA4271E9DB800AE9075 /* WalmartAuthenticator.swift */,
 			);
 			name = Common;
 			sourceTree = "<group>";
@@ -802,8 +886,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				E19D4E08260DF055002C16A7 /* OSLibUI.storyboard in Resources */,
+				E19D6ABC26B3DB6C004758A1 /* ConnectAccountView.xib in Resources */,
 				E1155D12261D9B2900739735 /* SF-Pro-Rounded-Bold.otf in Resources */,
 				E1155D15261D9B2900739735 /* SF-Pro-Rounded-Regular.otf in Resources */,
+				1C3164E7268A0ED800595915 /* LoginView.xib in Resources */,
 				E148CA452610417100155B96 /* ProgressView.xib in Resources */,
 				E148DB6725FF2BFD001430BE /* Images.xcassets in Resources */,
 				E148DB5D25FF2BFD001430BE /* Assets.xcassets in Resources */,
@@ -873,6 +959,7 @@
 				E148DB8D25FF31B4001430BE /* NavigationHelper.swift in Sources */,
 				E148DC4E260338B0001430BE /* DateRange.swift in Sources */,
 				1C563CB0272036A60061462A /* NetworkState.swift in Sources */,
+				F08DF628272FE711005E473A /* KrogerSubsidiaryAccountVC.swift in Sources */,
 				E148DC7626048299001430BE /* PIIAttribute.swift in Sources */,
 				E148DB7E25FF313A001430BE /* AmazonNavigationHelper.swift in Sources */,
 				E148DB6425FF2BFD001430BE /* OrderSource.swift in Sources */,
@@ -880,6 +967,7 @@
 				1C006FBF2600D75D00F9263E /* ValidationUtil.swift in Sources */,
 				E148DCC826063BE1001430BE /* NetworkMonitor.swift in Sources */,
 				1CD2B51326031A710016F752 /* CoreDataModel.xcdatamodeld in Sources */,
+				1C3164EF268A355B00595915 /* BaseLoginViewController.swift in Sources */,
 				1C4F89BA2655502000925FAB /* ConfigManager.swift in Sources */,
 				1C26830F264BE310004ED054 /* BSAmazonAuthenticator.swift in Sources */,
 				1C414C572668E07B009126E0 /* Queue.swift in Sources */,
@@ -889,12 +977,16 @@
 				E148DC9A2605CB1E001430BE /* FileHelper.swift in Sources */,
 				9DA8027D26D79B4100AEBD0D /* FailureTypes.swift in Sources */,
 				1C65D32C26669DC200548A84 /* ScrapeResponse.swift in Sources */,
+				9D86409F26A15E5B002FA8B8 /* AccountsManager.swift in Sources */,
 				9DB6749526D6964E00A6DA26 /* EventLogs.swift in Sources */,
+				9D83BCA827511DA60092762C /* OrderState.swift in Sources */,
 				1C66CE30265EB0E700A5C7C1 /* ListingPageScriptInput.swift in Sources */,
 				1CE22FA6261EDC2A002B9902 /* AccountDetails.swift in Sources */,
+				9D84136B26BA520C00D237DC /* InstacartAuthenticator.swift in Sources */,
 				1CA1EDF1260E16110000C859 /* EventType.swift in Sources */,
 				1C45AE37266DF22800166DDE /* BSDataUploader.swift in Sources */,
 				E148DB6225FF2BFD001430BE /* IconNames.swift in Sources */,
+				9DC677E326F3272F008D895D /* BSInstacartAuthenticator.swift in Sources */,
 				1C07410B2604B5B10013067C /* RNCryptoUtil.swift in Sources */,
 				9D830BF526692A3C0081D4BD /* OrderData.swift in Sources */,
 				1C0ADB282664BED600989EDE /* BSScriptMessageHandler.swift in Sources */,
@@ -902,22 +994,30 @@
 				E148CA41261040B400155B96 /* ProgressView.swift in Sources */,
 				E148DB6C25FF2BFD001430BE /* Account.swift in Sources */,
 				1C72BFC22629B5D40029255C /* UIColorExtension.swift in Sources */,
+				1C5BDAA426A832BF00729533 /* ConnectInstacartAccountVC.swift in Sources */,
 				1C41772126676ED6007D4EE4 /* ScriptParam.swift in Sources */,
 				1C5DE05F264EA76400275073 /* JSUtils.swift in Sources */,
-				E11F4160260F3BBF00E90848 /* RegisterAccountViewController.swift in Sources */,
 				E11F4166260F3DE000E90848 /* ConnectAccountViewController.swift in Sources */,
+				846F026726FC8E7F00A0E6DD /* KrogerScrapper.swift in Sources */,
 				E148DC9B2605CB1E001430BE /* LibContext.swift in Sources */,
+				846E1FA226FA2D6B009695C3 /* ConnectKrogerAccountVC.swift in Sources */,
 				1C006FB72600BDA800F9263E /* Strings.swift in Sources */,
+				1C3164EB268A17ED00595915 /* LoginView.swift in Sources */,
 				E19D4CB72608FD29002C16A7 /* WebCacheCleaner.swift in Sources */,
+				F03CB42F27316C5300B1DFA3 /* KrogerSubsidiaries.swift in Sources */,
 				9D35EF9626B3D84000272C27 /* BSTimer.swift in Sources */,
 				1C268307264BE2B0004ED054 /* BSHeadlessWindowManager.swift in Sources */,
 				9D812DA3265F7EC800629376 /* OrderDetailsMO.swift in Sources */,
+				1C3164DB2689E14200595915 /* AmazonLogin.swift in Sources */,
 				E148DC6126038537001430BE /* DateUtils.swift in Sources */,
 				1CA1EDF4260E16EF0000C859 /* Event.swift in Sources */,
 				E1A058CC2674A26500BC6687 /* OrderDetailsMapper.swift in Sources */,
 				E148DB6D25FF2BFD001430BE /* AccountDisconnectedListener.swift in Sources */,
 				1C147C42264BA68E0003EDF7 /* JSFileUtils.swift in Sources */,
+				1C275EC827425846006404BF /* WalmartScrapper.swift in Sources */,
+				9D24D5662701F24D00473BA1 /* ScrappingQueueDetails.swift in Sources */,
 				E15343E8261466700074F3ED /* OrderFetchSuccessType.swift in Sources */,
+				9D84136F26BA526200D237DC /* OperationMode.swift in Sources */,
 				1CB08A892705E50B00FA65DF /* SentryConfigs.swift in Sources */,
 				E148DC9C2605CB1E001430BE /* FileDownloader.swift in Sources */,
 				1CAEB81A2705EE300028C1FE /* ScrapeConfigs.swift in Sources */,
@@ -925,22 +1025,32 @@
 				1C4F89AB2654EA0C00925FAB /* Configurations.swift in Sources */,
 				E1155D28261DC1F200739735 /* GradientButton.swift in Sources */,
 				E148DB6E25FF2BFD001430BE /* ASLException.swift in Sources */,
+				9D08004C271808EC00355C9B /* WalmartLogin.swift in Sources */,
+				9D9716A126A8209100A370E5 /* AccountInfo.swift in Sources */,
 				1C0EC3C126568F8D000F278D /* BSScriptFileManager.swift in Sources */,
 				1C5133D6265D03FD00BCAC2C /* BSHtmlScrapper.swift in Sources */,
 				1C5133E6265D458F00BCAC2C /* BSHtmlScrappingStatusListener.swift in Sources */,
+				E19D6AC026B3DB97004758A1 /* ConnectAccountView.swift in Sources */,
 				1C07411A2604F2540013067C /* String.swift in Sources */,
+				9D8E1FA5271E9DB800AE9075 /* WalmartAuthenticator.swift in Sources */,
 				E148DB5C25FF2BFD001430BE /* AmazonOrderScrapper.swift in Sources */,
 				1C5133D0265D038900BCAC2C /* ExecutableScriptBuilder.swift in Sources */,
 				1CB5FFE9263BEE710072F35C /* ErrorType.swift in Sources */,
 				1CEDD13B26038CAE00E7BAB4 /* UserAccountMO.swift in Sources */,
+				846E1FA626FA3265009695C3 /* KrogerAuthenticator.swift in Sources */,
 				9DAE9E6326CCE86400EBA357 /* FetchRequestSource.swift in Sources */,
 				E148DB9325FF3D8A001430BE /* AmazonAuthenticator.swift in Sources */,
 				1C006FBB2600C02700F9263E /* Colors.swift in Sources */,
+				1C3164E3268A0BFD00595915 /* InstacartLogin.swift in Sources */,
+				9D8E1FA1271E882300AE9075 /* ConnectWalmartAccountVC.swift in Sources */,
 				E148DCA02605CCEC001430BE /* Data.swift in Sources */,
+				846E1F9026FA0E30009695C3 /* KrogerLogin.swift in Sources */,
 				E148DC52260339EF001430BE /* AmazonService.swift in Sources */,
+				1C275ECC27425A0F006404BF /* BSWalmartAuthenticator.swift in Sources */,
 				E19A5B002657DE2D00591A1A /* BSWebNavigationDelegate.swift in Sources */,
 				E148DB6325FF2BFD001430BE /* AccountState.swift in Sources */,
 				E148DC5B26034D7F001430BE /* APIClient.swift in Sources */,
+				9D86AC3526F22BED00FE0731 /* InstacartScrapper.swift in Sources */,
 				1C6D440B268EDDF2004A3165 /* Configs.swift in Sources */,
 				1C1BD79426C568B500ED6C5D /* BSCSVScrapper.swift in Sources */,
 				1C1BD79826C569AF00ED6C5D /* ScrapingMode.swift in Sources */,
@@ -950,6 +1060,7 @@
 				1C5B95B826CCEB8500FF0040 /* TimerHandler.swift in Sources */,
 				E148CA702610AF2000155B96 /* UIViewExtensions.swift in Sources */,
 				1CB9A7A8262427B60085E494 /* OrderStatus.swift in Sources */,
+				E19D6AB826B3D53C004758A1 /* BaseAccountConnectVC.swift in Sources */,
 				1CEBA4CC266F580500F331C7 /* JSCallback.swift in Sources */,
 				E1AAFF4F26274808000F5CD2 /* GetAccountsResponse.swift in Sources */,
 				E148DC402603306E001430BE /* NetworkClient.swift in Sources */,
@@ -961,6 +1072,7 @@
 				E148DC992605CB1E001430BE /* PIIScrapper.swift in Sources */,
 				E11F4178260F7AF800E90848 /* NetworkErrorView.swift in Sources */,
 				1C4177422667998B007D4EE4 /* OrderDetails.swift in Sources */,
+				846F026B26FC8F1200A0E6DD /* BSKrogerAuthenticator.swift in Sources */,
 				E1155D34261DDC9100739735 /* UIFontExtensions.swift in Sources */,
 				1C33D53726CE59D000D6AB2B /* Actions.swift in Sources */,
 				E148DC0B26010D28001430BE /* Authenticator.swift in Sources */,

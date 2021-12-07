@@ -9,7 +9,7 @@ public enum FailureTypes: String {
     case timeout
     case other
     case pageNotLoded
-    case authenticaion
+    case authentication
     case csvDownload
     case notify
     case none

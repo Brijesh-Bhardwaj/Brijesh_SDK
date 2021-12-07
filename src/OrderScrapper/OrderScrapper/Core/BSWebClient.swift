@@ -30,7 +30,9 @@ class BSWebClient: WKWebView {
     func loadUrl(url: String) {
         if let url = URL(string: url) {
             let urlRequest = URLRequest(url: url)
-            self.load(urlRequest)
+            DispatchQueue.main.async {
+                self.load(urlRequest)
+            }
         }
     }
     
@@ -38,7 +40,9 @@ class BSWebClient: WKWebView {
         let encodedStr = url.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
         if let url = URL(string: encodedStr) {
             let urlRequest = URLRequest(url:url)
-            self.load(urlRequest)
+            DispatchQueue.main.async {
+                self.load(urlRequest)
+            }
         }
     }
 }

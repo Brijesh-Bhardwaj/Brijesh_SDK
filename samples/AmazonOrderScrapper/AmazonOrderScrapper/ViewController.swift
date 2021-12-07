@@ -68,7 +68,7 @@ class ViewController: UIViewController {
         let emailId = self.emailIdLabel.text!
         UserDefaults.standard.setValue(emailId, forKey: ViewController.UserEmail)
         let mainStoryboard: UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = mainStoryboard.instantiateViewController(withIdentifier: "AccountsVC") as! AccountsViewController
+        let vc = mainStoryboard.instantiateViewController(withIdentifier: "AccountListVC") as! AccountListViewController
         vc.panelistID = emailId
         vc.authToken = "1212121212"
         self.navigationController?.pushViewController(vc, animated: true)

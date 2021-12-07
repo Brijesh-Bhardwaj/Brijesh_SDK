@@ -10,5 +10,7 @@ struct Actions {
     static let DownloadReportJSInjection = "downloadReportJSInjection"
     static let ReportGenerationJSCallback = "reportGenerationJSCallback"
     static let GetOldestPossibleYearJSCallback = "getOldestPossibleYearJSCallback"
-    
+    static let LoadingURl = "loading_url_"
+    static let WalmartOrderListPageLoading = "walmart_order_list_page_loading"
+    static let ForegroundHtmlScrapping = "foreground_html_scrapping"
 }

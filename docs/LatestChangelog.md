@@ -1,3 +1,4 @@
-- Optimized code to handle multiple network callbacks simultaneously ensuring the webview doesn't reload the same login URL multiple times
-- Removed the cool-off condition check in case the scraping is requested after notification click
-- Optimized core data code to be thread safe using a synchronized thread handler ensuring the object is not accessed simultaneously by different threads
+ - Added Walmart connect, disconnect and reconenct operations. Also added scrapping operations in both foreground and background
+ - Added bug fixes related with the Walmart authentication
+ - For Kroger added bug fixed in case of getting 'adblocker' error message during connection flow   
+

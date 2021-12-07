@@ -5,7 +5,7 @@
 import Foundation
 
 struct OrderData: Codable {
-    let amazonId: String
+    let platformId: String
     let panelistId: String
     let orderData: [OrderId]?
 }

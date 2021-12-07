@@ -12,6 +12,16 @@ class FetchSuccessView: UIView {
     
     @IBOutlet var contentView: UIView!
     
+    @IBOutlet weak var fetchSuccessMessage: UILabel!
+    
+    var fetchSuccess: String {
+        get {
+            return ""
+        }
+        set {
+            self.fetchSuccessMessage.text = newValue
+        }
+    }
     override init(frame: CGRect) {
         super.init(frame: frame)
         initView()

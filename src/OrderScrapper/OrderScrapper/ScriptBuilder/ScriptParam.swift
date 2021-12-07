@@ -10,4 +10,5 @@ struct ScriptParam {
     let scrappingPage: ScrappingPage
     let urls: Urls?
     let orderId: String?
+    let orderDate: String?
 }

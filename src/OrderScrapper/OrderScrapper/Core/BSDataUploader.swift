@@ -21,7 +21,7 @@ class BSDataUploader {
         self.listener = listener
     }
     
-    func addData(data: Dictionary<String, Any>, orderDetail: OrderDetails) {
+    func addData(data: Dictionary<String, Any>, orderDetail: OrderDetails, orderState: String) {
         if !data.isEmpty {
             let uploadOperation = DataUploadOperation()
             uploadOperation.orderId = String(orderDetail.orderId)
@@ -30,6 +30,7 @@ class BSDataUploader {
             uploadOperation.orderSource = String(orderDetail.orderSource!)
             uploadOperation.data = data
             uploadOperation.dateRange = DateRange(fromDate: orderDetail.startDate, toDate: orderDetail.endDate, enableScraping: true, lastOrderId: nil, scrappingType: nil, showNotification: false)
+            uploadOperation.orderState = orderState
             
             uploadOperation.completionBlock = { [weak self] in
                 guard let self = self else {
@@ -55,6 +56,7 @@ class DataUploadOperation: Operation {
     var orderSource: String!
     var data: [String: Any]!
     var dateRange: DateRange!
+    var orderState: String?
     
     public override var isAsynchronous: Bool {
         return true
@@ -82,11 +84,12 @@ class DataUploadOperation: Operation {
             state = .finished
         } else {
             state = .executing
-            let orderRequest = OrderRequest(panelistId: self.panelistId, amazonId: self.userId, fromDate: dateRange.fromDate!, toDate: dateRange.toDate!, data: [data])
-            _ = AmazonService.uploadOrderHistory(orderRequest: orderRequest) { [self] response, error in
+            let orderRequest = OrderRequest(panelistId: self.panelistId, platformId: self.userId, fromDate: dateRange.fromDate!, toDate: dateRange.toDate!, status: self.orderState!, data: [data])
+            _ = AmazonService.uploadOrderHistory(orderRequest: orderRequest, orderSource: self.orderSource) { [self] response, error in
                 DispatchQueue.global().async {
                     var logEventAttributes:[String:String] = [:]
-                    logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
+
+                    logEventAttributes = [EventConstant.OrderSource:self.orderSource,
                                           EventConstant.PanelistID: self.panelistId,
                                           EventConstant.OrderSourceID: self.userId]
                     
@@ -94,6 +97,14 @@ class DataUploadOperation: Operation {
                         print("### uploadData() Response ", response)
                         CoreDataManager.shared.deleteOrderDetailsByOrderID(orderID: self.orderId,
                                                                            orderSource: self.orderSource)
+                    } else {
+                        logEventAttributes[EventConstant.Status] = EventStatus.Failure
+                        if let error = error {
+                            logEventAttributes[EventConstant.EventName] = EventType.UploadOrdersAPIFailed
+                            FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                        } else {
+                            FirebaseAnalyticsUtil.logEvent(eventType: EventType.UploadOrdersAPIFailed, eventAttributes: logEventAttributes)
+                        }
                     }
                     logEventAttributes[EventConstant.Status] = EventStatus.Failure
                     if let error = error {

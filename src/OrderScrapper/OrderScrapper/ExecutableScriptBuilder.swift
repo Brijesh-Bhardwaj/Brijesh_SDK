@@ -8,7 +8,7 @@ class ExecutableScriptBuilder {
     func getExecutableScript(param: ScriptParam) -> String {
         var inputData: String
         if param.scrappingPage == .details {
-            inputData = getInputDataForDetailPage(scrappingPage: param.scrappingPage, detailUrl: param.url, orderId: param.orderId!)
+            inputData = getInputDataForDetailPage(scrappingPage: param.scrappingPage, detailUrl: param.url, orderId: param.orderId!, orderDate: param.orderDate!)
         } else {
             inputData = getInputDataForListingPage(scrappingPage: param.scrappingPage, dateRange: param.dateRange!, urls: param.urls!)
         }
@@ -25,8 +25,8 @@ class ExecutableScriptBuilder {
         return jsonString
     }
     
-    func getInputDataForDetailPage(scrappingPage: ScrappingPage, detailUrl: String, orderId: String) -> String {
-        let input = DetailPageScriptInput(type: scrappingPage.rawValue, detailsUrl: detailUrl, orderId: orderId)
+    func getInputDataForDetailPage(scrappingPage: ScrappingPage, detailUrl: String, orderId: String, orderDate: String) -> String {
+        let input = DetailPageScriptInput(type: scrappingPage.rawValue, detailsUrl: detailUrl, orderId: orderId, orderDate: orderDate)
         let encoder = JSONEncoder()
         encoder.outputFormatting = .withoutEscapingSlashes
         let jsonData = try! encoder.encode(input)

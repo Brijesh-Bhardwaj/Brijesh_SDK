@@ -8,4 +8,5 @@ class PlatformSourceConfig: Codable {
     let platformSource: String
     let urls: Configurations
     let connections: Connection
+    let orderUpload: OrderUpload
 }

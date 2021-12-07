@@ -22,6 +22,8 @@ struct EventType {
     static let JSDetectOtherURL = "js_detect_other_url"
     static let JSDetectReportGeneration = "js_detected_report_generation"
     static let JSDetectReportDownload = "js_detected_report_download"
+    static let JSDetectSignIn = "js_detected_sign_in"
+    static let JSListnerAdded = "js_litsnet_added"
     
     //Event types in background
     static let BgAccountConnect = "bg_account_connect"
@@ -121,6 +123,14 @@ struct EventType {
     static let exception_while_reading_intent = "Exception while getting account object from Intent"
     static let get_accounts_response_parsing = "Exception while get accounts API response parsing"
 
+    // Sentry timer log events
+    static let timer_for_url_loading = "url_loading_event"
+    static let onDataUploadSuccess = "all_order_detail_scrapping"
+    static let onCompleteScrapping = "total_time_taken_for_scrapping"
+    static let onBGPageLoadigFailure = "page_loading_failure_time"
+    static let onSingleOrderDetailScrape = "scrapping_single_order_details_completion"
+    static let onSingleOrderDetailScrapeFilure = "order_detail_scrape_fail_time"
+    static let onOrderListingCompletion = "scrapping_order_list_completion"
 
 }
 

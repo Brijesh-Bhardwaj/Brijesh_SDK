@@ -10,7 +10,7 @@ public protocol Account {
     var userID: String { get }
     
     ///The current state of the connected account
-    var accountState: AccountState { get }
+    var accountState: AccountState { get set }
     
     /// The encrypted password associated with the account
     var userPassword: String { get }
@@ -20,6 +20,9 @@ public protocol Account {
     
     //The panelist associated with the account
     var panelistID: String { get set}
+    
+    //The platform source of the account
+    var source: OrderSource { get }
     
     /// Connects to the respective e-commerce site and fetches the receipts internally. If the account is
     /// not yet connected this method ensures to show the 'Connect Account' screen to connect the account
