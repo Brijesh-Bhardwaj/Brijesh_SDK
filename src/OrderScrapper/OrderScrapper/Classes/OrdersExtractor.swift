@@ -92,8 +92,14 @@ public class OrdersExtractor {
             _ = AmazonService.getAccounts() { response, error in
                 DispatchQueue.global().async {
                     let accountsInDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
-                    
+                    var logEventAttributes:[String:String] = [:]
+                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                          EventConstant.PanelistID: panelistId,
+                                          EventConstant.Status: EventStatus.Success]
                     if let response = response  {
+                        //TODO Add response in attributes
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIGetAccounts, eventAttributes: logEventAttributes)
+                        
                         hasNeverConnected = response.hasNeverConnected
                         guard let accountDetails = response.accounts else {
                             if !accountsInDB.isEmpty {
@@ -157,6 +163,11 @@ public class OrdersExtractor {
                         }
                     } else {
                         DispatchQueue.global().async {
+                            if let error = error {
+                                logEventAttributes[EventConstant.EventName] = EventType.GetAccountAPIFailed
+                                FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                            }
+                            
                             let accounts = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
                             DispatchQueue.main.async {
                                 completionHandler(accounts, hasNeverConnected)
@@ -168,7 +179,15 @@ public class OrdersExtractor {
             }
         } else {
             let error = ASLException(errorMessage: Strings.ErrorLibNotInitialized, errorType: nil)
-            FirebaseAnalyticsUtil.logSentryError(error: error)
+            let panelistId = LibContext.shared.authProvider.getPanelistID()
+            var logEventAttributes:[String:String] = [:]
+            logEventAttributes = [EventConstant.PanelistID: panelistId,
+                                  EventConstant.EventName: EventType.LibNotInit,
+                                  EventConstant.Status: EventStatus.Success]
+            if let orderSource = orderSource {
+                logEventAttributes[EventConstant.OrderSource] = orderSource.value
+            }
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.LibNotInit, eventAttributes: logEventAttributes)
             throw error
         }
     }
@@ -190,7 +209,13 @@ public class OrdersExtractor {
             account.connect(orderExtractionListener: orderExtractionListner)
         } else {
             let error =  ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
-            FirebaseAnalyticsUtil.logSentryError(error: error)
+            let panelistId = LibContext.shared.authProvider.getPanelistID()
+            var logEventAttributes:[String:String] = [:]
+            logEventAttributes = [EventConstant.OrderSource: orderSource.value,
+                                  EventConstant.PanelistID: panelistId,
+                                  EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                                  EventConstant.Status: EventStatus.Success]
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.ConfigsMissing, eventAttributes: logEventAttributes)
             throw error
         }
     }

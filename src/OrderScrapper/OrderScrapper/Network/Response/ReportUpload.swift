@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct ReportUpload: Decodable {
+struct ReportUpload: Codable {
     let id: Int?
     let fromDate: String?
     let amazonId: String?

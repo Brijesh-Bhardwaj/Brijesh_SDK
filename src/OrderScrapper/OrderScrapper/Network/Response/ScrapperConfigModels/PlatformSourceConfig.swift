@@ -4,7 +4,7 @@
 
 import Foundation
 
-class PlatformSourceConfig: Decodable {
+class PlatformSourceConfig: Codable {
     let platformSource: String
     let urls: Configurations
     let connections: Connection

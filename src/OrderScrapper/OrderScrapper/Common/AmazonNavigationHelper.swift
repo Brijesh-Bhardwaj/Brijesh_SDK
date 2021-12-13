@@ -28,6 +28,10 @@ public enum Step: Int16 {
          parseReport = 4,
          uploadReport = 5,
          complete = 6
+    
+    var value: String {
+        return String(describing: self)
+    }
 }
 
 class AmazonNavigationHelper: NavigationHelper {
@@ -66,7 +70,14 @@ class AmazonNavigationHelper: NavigationHelper {
         
         let urlString = url.absoluteString
         
-        FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_navigateWith() \(urlString)")
+        var logEventAttributes:[String:String] = [:]
+        logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
+                              EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                              EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                              EventConstant.ScrappingType: ScrappingType.report.rawValue,
+                              EventConstant.URL: urlString,
+                              EventConstant.Status: EventStatus.Success]
+        FirebaseAnalyticsUtil.logEvent(eventType: EventType.UrlLoadedReportScrapping, eventAttributes: logEventAttributes)
 
         if (urlString.contains(AmazonURL.signIn)) {
             if self.authenticator.isUserAuthenticated() {
@@ -96,12 +107,14 @@ class AmazonNavigationHelper: NavigationHelper {
             }
             logAuthEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                      EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                                      EventConstant.ScrappingType: ScrappingType.report.rawValue,
                                       EventConstant.Status: EventStatus.Success]
             FirebaseAnalyticsUtil.logEvent(eventType: eventType, eventAttributes: logAuthEventAttributes)
+            
             let eventLogs = EventLogs(panelistId: self.viewModel.userAccount.panelistID, platformId:self.viewModel.userAccount.userID, section: SectionType.connection.rawValue, type: FailureTypes.other.rawValue, status: EventState.success.rawValue, message: "Authentication challenge", fromDate: nil, toDate: nil, scrappingType: nil)
             logEvents(logEvents: eventLogs)
         } else if (urlString.contains(AmazonURL.generateReport)) {
-            FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_helper_generate_report_url \(urlString)")
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
                 guard let self = self else {return}
                 
@@ -114,6 +127,12 @@ class AmazonNavigationHelper: NavigationHelper {
                     if userAccountState == AccountState.NeverConnected {
                         let userId = self.viewModel.userAccount.userID
                         _ = AmazonService.registerConnection(amazonId: userId, status: AccountState.Connected.rawValue, message: AppConstants.msgAccountConnected, orderStatus: OrderStatus.Initiated.rawValue) { response, error in
+                            var logEventAttributes:[String:String] = [:]
+                            logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                                      EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                                      EventConstant.PanelistID: self.viewModel.userAccount.panelistID,
+                                                      EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                                                      EventConstant.ScrappingType: ScrappingType.report.rawValue]
                             if let response = response  {
                                 //On authentication add user account details to DB
                                 self.addUserAccountInDB()
@@ -121,10 +140,18 @@ class AmazonNavigationHelper: NavigationHelper {
                                 self.getDateRange()
                                 self.currentStep = .generateReport
                                 self.publishProgrssFor(step: .generateReport)
+                                
+                                //TODO Add response in attributes
+                                logEventAttributes[EventConstant.Status] = EventStatus.Success
+                                FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIRegisterUser, eventAttributes: logEventAttributes)
                             } else {
                                 self.viewModel.authError.send((isError: true, errorMsg: AppConstants.userAccountConnected))
+                                logEventAttributes[EventConstant.Status] = EventStatus.Failure
                                 if let error = error {
-                                    FirebaseAnalyticsUtil.logSentryError(error: error)
+                                    logEventAttributes[EventConstant.EventName] = EventType.UserRegistrationAPIFailed
+                                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                                } else {
+                                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.UserRegistrationAPIFailed, eventAttributes: logEventAttributes)
                                 }
                             }
                         }
@@ -156,10 +183,13 @@ class AmazonNavigationHelper: NavigationHelper {
             //Log event for getting other url
             var logOtherUrlEventAttributes:[String:String] = [:]
             logOtherUrlEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                          EventConstant.PanelistID: self.viewModel.userAccount.panelistID,
                                           EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                          EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                                          EventConstant.ScrappingType: ScrappingType.report.rawValue,
                                           EventConstant.Status: EventStatus.Success,
                                           EventConstant.URL: urlString]
-            FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectOtherURL, eventAttributes: logOtherUrlEventAttributes)
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.StepOtherURLLoaded, eventAttributes: logOtherUrlEventAttributes)
             
             let eventLogs = EventLogs(panelistId: self.viewModel.userAccount.panelistID, platformId:self.viewModel.userAccount.userID, section: SectionType.connection.rawValue, type: FailureTypes.other.rawValue, status: EventState.fail.rawValue, message: "unknow URL", fromDate: nil, toDate: nil, scrappingType: nil)
             logEvents(logEvents: eventLogs)
@@ -223,8 +253,8 @@ class AmazonNavigationHelper: NavigationHelper {
      * get progress value in the range 0 to 1 from step number
      **/
     private func publishProgrssFor(step : Step) {
+        var logEventAttributes:[String:String] = [:]
         let progressValue = Float(step.rawValue) / AppConstants.numberOfSteps
-        
         var progressMessage: String?
         var headerMessage: String?
         var stepMessage: String
@@ -234,10 +264,26 @@ class AmazonNavigationHelper: NavigationHelper {
             stepMessage = Utils.getString(key: Strings.Step1)
             headerMessage = Utils.getString(key: Strings.HeadingConnectAmazonAccount)
             progressMessage = Utils.getString(key: Strings.HeadingConnectingAmazonAccount)
+            
+            logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                  EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                  EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                                  EventConstant.ScrappingType: ScrappingType.report.rawValue,
+                                  EventConstant.ScrappingStep: Step.authentication.value,
+                                  EventConstant.Status: EventStatus.Success]
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.StepAuthentication, eventAttributes: logEventAttributes)
         case .generateReport:
             stepMessage = Utils.getString(key: Strings.Step2)
             headerMessage = Utils.getString(key: Strings.HeadingFetchingReceipts)
             progressMessage = Utils.getString(key: Strings.HeadingFetchingYourReceipts)
+            
+            logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                  EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                  EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                                  EventConstant.ScrappingType: ScrappingType.report.rawValue,
+                                  EventConstant.ScrappingStep: Step.generateReport.value,
+                                  EventConstant.Status: EventStatus.Success]
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.StepGenerateReport, eventAttributes: logEventAttributes)
         case .downloadReport:
             stepMessage = Utils.getString(key: Strings.Step3)
         case .parseReport:
@@ -277,8 +323,18 @@ class AmazonNavigationHelper: NavigationHelper {
                     self.viewModel.disableScrapping.send(true)
                 }
                 //Logging event for successful date range API call
+                var json: String
+                do {
+                    let jsonData = try JSONEncoder().encode(response)
+                    json = String(data: jsonData, encoding: .utf8)!
+                } catch {
+                    json = AppConstants.ErrorInJsonEncoding
+                }
                 logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                      EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                                      EventConstant.ScrappingType: ScrappingType.report.rawValue,
+                                      EventConstant.Data: json,
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIDateRange, eventAttributes: logEventAttributes)
             } else {
@@ -287,9 +343,16 @@ class AmazonNavigationHelper: NavigationHelper {
                 //Log event for failure of date range API call
                 logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                      EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                                      EventConstant.ScrappingType: ScrappingType.report.rawValue,
                                       EventConstant.ErrorReason: error.debugDescription,
+                                      EventConstant.EventName: EventType.ExceptionWhileDateRangeAPI,
                                       EventConstant.Status: EventStatus.Failure]
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIDateRange, eventAttributes: logEventAttributes)
+                if let error = error {
+                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                } else {
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.ExceptionWhileDateRangeAPI, eventAttributes: logEventAttributes)
+                }
             }
         }
     }

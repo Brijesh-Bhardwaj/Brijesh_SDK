@@ -44,7 +44,16 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
                         self.injectCaptchaIdentificationJS()
                     } else {
                         let error = ASLException(errorMessage: Strings.ErrorOccuredWhileInjectingJS, errorType: .authError)
-                        FirebaseAnalyticsUtil.logSentryError(error: error)
+                        var logEventAttributes:[String:String] = [:]
+                        guard let userId = self.account?.userID else {return}
+                        guard let panelistId = self.account?.panelistID else {return}
+                        logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                              EventConstant.OrderSourceID: userId,
+                                              EventConstant.PanelistID: panelistId,
+                                              EventConstant.ScrappingType: ScrappingType.html.rawValue,
+                                              EventConstant.Status: EventStatus.Failure]
+                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                        
                         self.completionHandler?(false,error)
                     }
                 } else {
@@ -70,11 +79,14 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
                         self.completionHandler?(false, error)
                         
                         guard let userId = self.account?.userID else {return}
+                        guard let panelistId = self.account?.panelistID else {return}
                         var logEventAttributes:[String:String] = [:]
                         logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                               EventConstant.OrderSourceID: userId,
+                                              EventConstant.PanelistID: panelistId,
+                                              EventConstant.ScrappingType: ScrappingType.html.rawValue,
                                               EventConstant.Status: EventStatus.Success]
-                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSDetectedCaptcha, eventAttributes: logEventAttributes)
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.EncounteredCaptcha, eventAttributes: logEventAttributes)
                     } else {
                         self.injectFieldIdentificationJS()
                     }

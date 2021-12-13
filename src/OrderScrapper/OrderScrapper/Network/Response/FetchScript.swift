@@ -3,7 +3,7 @@
 
 import Foundation
 
-class FetchScript: Decodable {
+class FetchScript: Codable {
     let jsVersion: String
     let jsUrl: String
 }

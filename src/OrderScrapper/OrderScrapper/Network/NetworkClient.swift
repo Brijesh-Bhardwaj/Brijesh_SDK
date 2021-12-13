@@ -19,7 +19,7 @@ class APIError: Error {
     }
 }
 
-class NetworkClient<T: Decodable>: APIClient {
+class NetworkClient<T: Codable>: APIClient {
     private let AuthErrorResponseCode = 401
     private let BaseURL = LibContext.shared.orderExtractorConfig.baseURL
     private let HeaderContentType = "Content-Type"
@@ -136,7 +136,14 @@ class NetworkClient<T: Decodable>: APIClient {
             case let .failure(error):
                 FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_APICall\(relativeURL) \(error)")
                 completionHandler(nil, error)
-                FirebaseAnalyticsUtil.logSentryError(error: error)
+                
+                let panelistId = LibContext.shared.authProvider.getPanelistID()
+                var logEventAttributes:[String:String] = [:]
+                logEventAttributes = [EventConstant.PanelistID: panelistId,
+                                      EventConstant.EventName: EventType.APIFailed,
+                                      EventConstant.URL: relativeURL,
+                                      EventConstant.Status: EventStatus.Failure]
+                FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
             }
         }
     }

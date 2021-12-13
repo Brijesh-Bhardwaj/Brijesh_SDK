@@ -167,6 +167,14 @@ class AmazonService {
                 }
             } else {
                 completionHandler(nil, nil)
+                
+                let panelistId = LibContext.shared.authProvider.getPanelistID()
+                let logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                           EventConstant.OrderSourceID: amazonId,
+                                           EventConstant.PanelistID: panelistId,
+                                           EventConstant.EventName: EventType.UpdateStatusAPIFailed,
+                                           EventConstant.Status: EventStatus.Failure]
+                FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error as! Error)
             }
         }
         return client

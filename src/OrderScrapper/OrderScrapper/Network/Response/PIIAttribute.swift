@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct PIIAttribute: Decodable {
+struct PIIAttribute: Codable {
     let id: Int
     let attributes: String
     let status: Bool

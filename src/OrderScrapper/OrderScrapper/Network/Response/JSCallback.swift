@@ -3,7 +3,7 @@
 
 import Foundation
 
-struct JSCallback<T: Decodable>: Decodable {
+struct JSCallback<T: Codable>: Codable {
     let type: String
     let status: String
     let isError: Bool

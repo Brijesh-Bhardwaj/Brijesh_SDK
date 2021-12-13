@@ -72,6 +72,12 @@ class PIIScrapper {
                                     
                                 } catch let error {
                                     print("invalid regex",error)
+                                    let panelistId = LibContext.shared.authProvider.getPanelistID()
+                                    let logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
+                                                             EventConstant.PanelistID: panelistId,
+                                                             EventConstant.Status: EventStatus.Failure,
+                                                             EventConstant.EventName: EventType.ExceptionWhileApplyingRegexCSV]
+                                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
                                 }
                             } else {
                                 try writer.write(field: attributeValue)

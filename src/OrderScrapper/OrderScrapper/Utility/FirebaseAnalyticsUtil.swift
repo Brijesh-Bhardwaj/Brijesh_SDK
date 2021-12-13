@@ -8,7 +8,6 @@ import Foundation
 //import FirebaseCore
 import Sentry
 
-
 class FirebaseAnalyticsUtil {
     
     static func configure() {
@@ -30,6 +29,7 @@ class FirebaseAnalyticsUtil {
         let event = Event()
         event.extra = eventAttributes
         event.message = SentryMessage(formatted: eventType)
+        event.platform = "iOS"
         
         let keyExists = eventAttributes[EventConstant.Status] != nil
         if keyExists {
@@ -63,8 +63,23 @@ class FirebaseAnalyticsUtil {
         SentrySDK.capture(error: error)
     }
     
+    static func logSentryError(eventAttributes: Dictionary<String, String>, error: Error) {
+        //eventAttributes[EventConstant.Platform] = AppConstants.iOS
+        SentrySDK.configureScope { scope in
+            scope.setContext(value: eventAttributes, key: "data")
+            FirebaseAnalyticsUtil.logSentryError(error: error)
+        }
+    }
+    
     static func logSentryException(exception: NSException) {
         SentrySDK.capture(exception: exception)
+    }
+    
+    static func logSentryException(eventAttributes: Dictionary<String, String>, exception: NSException) {
+        SentrySDK.configureScope{scope in
+            scope.setContext(value: eventAttributes, key: "data")
+            logSentryException(exception: exception)
+        }
     }
     
     static func logSentryMessage(message: String) {

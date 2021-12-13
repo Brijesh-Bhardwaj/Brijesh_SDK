@@ -3,6 +3,6 @@
 
 import Foundation
 
-class ScrapeResponse: Decodable {
+class ScrapeResponse: Codable {
     var data: [OrderDetails]?
 }

@@ -4,7 +4,7 @@
 
 import Foundation
 
-struct GetAccountsResponse: Decodable {
+struct GetAccountsResponse: Codable {
     let hasNeverConnected: Bool
     let accounts: [AccountDetails]?
 }
