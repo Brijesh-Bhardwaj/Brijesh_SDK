@@ -79,6 +79,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         super.viewDidLoad()
         self.headerLabel.text = getHeaderTitle()
         self.progressView.headerText = getHeaderMessage()
+        self.fetchSuccessView.imageView = getStatusImage()
         self.scraperListener = self
         
         self.timerCallback = self
@@ -531,7 +532,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                                            message: AppConstants.msgTimeout,
                                            orderStatus: OrderStatus.Failed.rawValue, orderSource: OrderSource.Amazon.value) { response, error in
             }
-            let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrappingType: ScrappingType.report.rawValue)
+            let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.report.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
             self.logEvents(logEvents: eventLogs)
             
             if action == Actions.ForegroundHtmlScrapping {
@@ -547,7 +548,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             }
         } else {
             self.timerHandler.stopTimer()
-            let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.success.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrappingType: nil)
+            let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.authentication.rawValue, status: EventState.success.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
             self.logEvents(logEvents: eventLogs)
             LibContext.shared.webAuthErrorPublisher.send((true, AppConstants.msgTimeout))
             WebCacheCleaner.clear(completionHandler: nil)
@@ -576,9 +577,26 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     private func getSuccessMessage() -> String {
         let source = self.fetchRequestSource ?? .general
         if source == .manual {
-            return String.init(format: Strings.FetchSuccessMessage, OrderSource.Amazon.value)
+            if isFetchSkipped || isFailureButAccountConnected {
+                return String.init(format: Strings.FetchFailureMessage, OrderSource.Amazon.value)
+            } else {
+                return String.init(format: Strings.FetchSuccessMessage, OrderSource.Amazon.value)
+            }
         } else {
             return AppConstants.amazonAccountConnectedSuccess
+        }
+    }
+    
+    private func getStatusImage() -> UIImage {
+        let source = self.fetchRequestSource ?? .general
+        if source == .manual {
+            if isFetchSkipped || isFailureButAccountConnected {
+                return Utils.getImage(named: IconNames.FailureScreen)!
+            } else {
+                return Utils.getImage(named: IconNames.SuccessScreen)!
+            }
+        } else {
+            return Utils.getImage(named: IconNames.SuccessScreen)!
         }
     }
 }

@@ -207,7 +207,7 @@ internal class AmazonAuthenticator: Authenticator {
                                        , message: message, orderStatus: orderStatus, orderSource: OrderSource.Amazon.value) { response, error in
             //Todo
         }
-        let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.captcha.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrappingType: nil)
+        let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.captcha.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
         _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource) { response, error in
                 //TODO
         }
@@ -241,7 +241,7 @@ internal class AmazonAuthenticator: Authenticator {
                     }
                 }
             }
-            let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrappingType: nil)
+            let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
             _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource) { response, error in
                 //TODO
             }

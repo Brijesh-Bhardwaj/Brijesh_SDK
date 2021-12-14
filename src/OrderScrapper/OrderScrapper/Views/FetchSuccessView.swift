@@ -14,12 +14,22 @@ class FetchSuccessView: UIView {
     
     @IBOutlet weak var fetchSuccessMessage: UILabel!
     
+    @IBOutlet weak var fetchView: UIImageView!
     var fetchSuccess: String {
         get {
             return ""
         }
         set {
             self.fetchSuccessMessage.text = newValue
+        }
+    }
+    
+    var imageView: UIImage {
+        get {
+            return UIImage(named: "")!
+        }
+        set {
+            self.fetchView.image = newValue
         }
     }
     override init(frame: CGRect) {

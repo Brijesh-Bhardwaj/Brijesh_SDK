@@ -95,6 +95,24 @@ class BaseLoginViewController: UIViewController, LoginViewDelegate {
         viewController.modalPresentationStyle = .fullScreen
         self.present(viewController, animated: true, completion: nil)        
     }
+    
+    func onClickLinkOpen(){
+        loginView.userAlertLabel.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(self.onLinkTapped))
+        loginView.userAlertLabel.addGestureRecognizer(tap)
+    }
+    
+    @objc func onLinkTapped(_ gestureRecognizer: UITapGestureRecognizer) {
+        print("!!!! clicked on the link")
+        self.openURL()
+    }
+    
+    func openURL() {
+        if let instacartURL = URL(string: Strings.InstacartURL),
+            UIApplication.shared.canOpenURL(instacartURL) {
+                UIApplication.shared.open(instacartURL)
+        }
+    }
 
     func onSubmit() {
         guard let userId = loginView.userIDTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) else {

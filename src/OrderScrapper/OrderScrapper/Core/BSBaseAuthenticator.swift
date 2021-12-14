@@ -86,6 +86,7 @@ extension BSBaseAuthenticator: BSWebNavigationObserver {
                         print("!!!! didStartPageNavigationcalled in bsBaseAuthenticator",url)
                         self.timerHandler.startTimer(action: Actions.LoadingURl + url.absoluteString)
                     }
+                    self.authenticationDelegate?.didReceiveAuthenticationChallenge(authError: false)
                 }
             }
         } else {

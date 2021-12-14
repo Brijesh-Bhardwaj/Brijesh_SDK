@@ -107,6 +107,7 @@
 		9DB6749526D6964E00A6DA26 /* EventLogs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DB6749426D6964E00A6DA26 /* EventLogs.swift */; };
 		9DC2081226916DDD00F79807 /* Sentry.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DC2081126916DDD00F79807 /* Sentry.xcframework */; };
 		9DC677E326F3272F008D895D /* BSInstacartAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC677E226F3272F008D895D /* BSInstacartAuthenticator.swift */; };
+		9DC9794727620678007FA9C0 /* RetailerScrapingStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC9794627620678007FA9C0 /* RetailerScrapingStatus.swift */; };
 		9DF81DEC266A3A0F001CFCCF /* OrderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF81DEB266A3A0F001CFCCF /* OrderRequest.swift */; };
 		E1155D12261D9B2900739735 /* SF-Pro-Rounded-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E1155D04261D9B2600739735 /* SF-Pro-Rounded-Bold.otf */; };
 		E1155D15261D9B2900739735 /* SF-Pro-Rounded-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = E1155D07261D9B2700739735 /* SF-Pro-Rounded-Regular.otf */; };
@@ -306,6 +307,7 @@
 		9DB6749426D6964E00A6DA26 /* EventLogs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventLogs.swift; sourceTree = "<group>"; };
 		9DC2081126916DDD00F79807 /* Sentry.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Sentry.xcframework; path = Carthage/Build/Sentry.xcframework; sourceTree = "<group>"; };
 		9DC677E226F3272F008D895D /* BSInstacartAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSInstacartAuthenticator.swift; sourceTree = "<group>"; };
+		9DC9794627620678007FA9C0 /* RetailerScrapingStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailerScrapingStatus.swift; sourceTree = "<group>"; };
 		9DF81DEB266A3A0F001CFCCF /* OrderRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderRequest.swift; sourceTree = "<group>"; };
 		E1155D04261D9B2600739735 /* SF-Pro-Rounded-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Rounded-Bold.otf"; sourceTree = "<group>"; };
 		E1155D07261D9B2700739735 /* SF-Pro-Rounded-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Rounded-Regular.otf"; sourceTree = "<group>"; };
@@ -650,6 +652,7 @@
 				9DA8028026D7A4E900AEBD0D /* EventState.swift */,
 				1C563CAF272036A60061462A /* NetworkState.swift */,
 				9D83BCA727511DA60092762C /* OrderState.swift */,
+				9DC9794627620678007FA9C0 /* RetailerScrapingStatus.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -1045,6 +1048,7 @@
 				9D8E1FA1271E882300AE9075 /* ConnectWalmartAccountVC.swift in Sources */,
 				E148DCA02605CCEC001430BE /* Data.swift in Sources */,
 				846E1F9026FA0E30009695C3 /* KrogerLogin.swift in Sources */,
+				9DC9794727620678007FA9C0 /* RetailerScrapingStatus.swift in Sources */,
 				E148DC52260339EF001430BE /* AmazonService.swift in Sources */,
 				1C275ECC27425A0F006404BF /* BSWalmartAuthenticator.swift in Sources */,
 				E19A5B002657DE2D00591A1A /* BSWebNavigationDelegate.swift in Sources */,

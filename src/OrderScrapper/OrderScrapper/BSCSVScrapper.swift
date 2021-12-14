@@ -407,9 +407,9 @@ class BSCSVScrapper: NSObject {
                 self.publishProgrssFor(step: .complete)
                 
                 if self.scrapingMode == .Background {
-                    self.logEvents(message: AppConstants.msgUploadCSVSuccess, section: SectionType.orderUpload.rawValue, status: EventState.success.rawValue, type: FailureTypes.other.rawValue)
+                    self.logEvents(message: AppConstants.msgUploadCSVSuccess, section: SectionType.orderUpload.rawValue, status: EventState.success.rawValue, type: FailureTypes.other.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
                 } else {
-                    self.logEvents(message: AppConstants.msgUploadCSVSuccess, section: SectionType.connection.rawValue, status: EventState.success.rawValue, type: FailureTypes.other.rawValue)
+                    self.logEvents(message: AppConstants.msgUploadCSVSuccess, section: SectionType.connection.rawValue, status: EventState.success.rawValue, type: FailureTypes.other.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
                 }
                 //Log event for successful uploading of csv
                 logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
@@ -434,9 +434,9 @@ class BSCSVScrapper: NSObject {
                 }
                 
                 if self.scrapingMode == .Background {
-                    self.logEvents(message: AppConstants.msgCSVUploadFailed, section: SectionType.orderUpload.rawValue, status: EventState.fail.rawValue, type: FailureTypes.other.rawValue)
+                    self.logEvents(message: AppConstants.msgCSVUploadFailed, section: SectionType.orderUpload.rawValue, status: EventState.fail.rawValue, type: FailureTypes.other.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
                 } else {
-                    self.logEvents(message: AppConstants.msgCSVUploadFailed, section: SectionType.connection.rawValue, status: EventState.fail.rawValue, type: FailureTypes.other.rawValue)
+                    self.logEvents(message: AppConstants.msgCSVUploadFailed, section: SectionType.connection.rawValue, status: EventState.fail.rawValue, type: FailureTypes.other.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
                 }
                 
                 //Log event for failure in csv upload
@@ -555,8 +555,8 @@ class BSCSVScrapper: NSObject {
         self.param!.listener.onHtmlScrappingFailure(error: error)
     }
     
-    private func logEvents(message: String, section: String, status: String, type: String) {
-        let eventLogs = EventLogs(panelistId: self.account!.panelistID, platformId: self.account!.userID, section: section, type: type , status: status, message: message, fromDate: self.dateRange!.fromDate!, toDate: self.dateRange!.toDate!, scrappingType: ScrappingType.report.rawValue)
+    private func logEvents(message: String, section: String, status: String, type: String, scrapingContext: String) {
+        let eventLogs = EventLogs(panelistId: self.account!.panelistID, platformId: self.account!.userID, section: section, type: type , status: status, message: message, fromDate: self.dateRange!.fromDate!, toDate: self.dateRange!.toDate!, scrapingType: ScrappingType.report.rawValue, scrapingContext: scrapingContext)
         _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.account!.source.value) { response, error in
                 //TODO
         }

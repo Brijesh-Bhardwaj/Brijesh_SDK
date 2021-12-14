@@ -164,6 +164,15 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
       if action == Actions.ForegroundHtmlScrapping {
             self.stopScrapping()
             self.onCompletion(isComplete: true)
+          
+        let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
+          self.logEvents(logEvents: eventLogs)
+        }
+    }
+    
+    private func logEvents(logEvents: EventLogs) {
+        _ = AmazonService.logEvents(eventLogs: logEvents, orderSource: self.account.source.value) { response, error in
+                //TODO
         }
     }
     
@@ -210,6 +219,7 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
                 self.connectAccountView.backButton.isHidden = true
                 self.connectAccountView.connectAccountTitle.text = self.getHeaderTitle()
                 self.connectAccountView.fetchSuccess = self.getSuccessMessage()
+                self.connectAccountView.statusImage = self.getStatusImage()
                 self.connectAccountView.bringSubviewToFront(self.connectAccountView.successView)
                 self.removeWebview()
             }
@@ -278,7 +288,7 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
         }
     }
     private func logEvent() {
-        let eventLog = EventLogs(panelistId: self.account.panelistID, platformId:  self.account.userID, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.success.rawValue, message: AppConstants.fgScrappingCompleted, fromDate: nil, toDate: nil, scrappingType: ScrappingType.html.rawValue)
+        let eventLog = EventLogs(panelistId: self.account.panelistID, platformId:  self.account.userID, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.success.rawValue, message: AppConstants.fgScrappingCompleted, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
         _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: self.account.source.value) { response, error in
             //TODO
         }
@@ -306,9 +316,27 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
     private func getSuccessMessage() -> String {
         let source = self.fetchRequestSource ?? .general
         if source == .manual {
-            return String.init(format: Strings.FetchSuccessMessage, OrderSource.Kroger.value)
+            if successType == .failureButAccountConnected || successType == .fetchSkipped {
+                return String.init(format: Strings.FetchFailureMessage, OrderSource.Kroger.value)
+            } else {
+                return String.init(format: Strings.FetchSuccessMessage, OrderSource.Kroger.value)
+            }
         } else {
             return Utils.getString(key: Strings.KrogerAccountConnectedSuccessMsg)
+        }
+    }
+    
+    private func getStatusImage() -> UIImage {
+        let source = self.fetchRequestSource ?? .general
+        if source == .manual {
+            if successType == .failureButAccountConnected || successType == .fetchSkipped {
+                return Utils.getImage(named: IconNames.FailureScreen)!
+            } else {
+                return Utils.getImage(named: IconNames.SuccessScreen)!
+            }
+         
+        } else {
+            return Utils.getImage(named: IconNames.SuccessScreen)!
         }
     }
 }

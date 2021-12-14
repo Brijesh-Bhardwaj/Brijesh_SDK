@@ -41,10 +41,12 @@ class InstacartLogin: BaseLoginViewController {
                NSAttributedString.Key.font: UIFont(name: Strings.UIFontLight, size: 17.0)!
            ]
            let alertMessage = Utils.getString(key: Strings.ICAlertUserMessage)
-           let alert = alertMessage + "."
-           let regularText = NSAttributedString(string: alert, attributes: regularMessage)
-           let newString = NSMutableAttributedString()
-           newString.append(regularText)
+           let nString = NSString(string: alertMessage)
+           let subString = nString.range(of: "instacart.com")
+           let newString = NSMutableAttributedString(string: alertMessage, attributes: regularMessage)
+           let path = Strings.InstacartURL
+           newString.addAttribute(.link, value: path, range: subString)
            loginView.userAlertLabel.attributedText = newString
+           self.onClickLinkOpen()
        }
 }

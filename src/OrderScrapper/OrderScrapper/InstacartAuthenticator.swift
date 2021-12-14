@@ -15,11 +15,10 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
     var isAuthenticated: Bool = false
     var timer: Timer? = nil
     var isNetworkDisconnect = false
-  
-
     
     override func onPageFinish(url: String) throws {
         print("####",url)
+        self.authenticationDelegate?.didReceiveAuthenticationChallenge(authError: false)
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
             guard let self = self else {return}
             
@@ -58,17 +57,30 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
     }
     
     override func onTimerTriggered(action: String) {
-            if action.contains(Actions.LoadingURl) {
-                if self.listnerAdded {
-                    self.webClient.scriptMessageHandler?.removeScriptMessageListener()
-                }
-                self.timerHandler.stopTimer()
-                self.timerHandler.removeCallbackListener()
-                DispatchQueue.main.async {
-                    self.webClient.stopLoading()
-                }
-                self.authenticationDelegate?.didReceiveLoginChallenge(error: AppConstants.msgTimeout)
+        if action.contains(Actions.LoadingURl) {
+            if self.listnerAdded {
+                self.webClient.scriptMessageHandler?.removeScriptMessageListener()
             }
+            self.timerHandler.stopTimer()
+            self.timerHandler.removeCallbackListener()
+            DispatchQueue.main.async {
+                self.webClient.stopLoading()
+            }
+            self.authenticationDelegate?.didReceiveLoginChallenge(error: AppConstants.msgTimeout)
+            
+            if let panelistId = self.account?.panelistID, let userId = self.account?.userID {
+                let eventLogs = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type: FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
+                self.logEvents(logEvents: eventLogs)
+            }
+        }
+    }
+    
+    private func logEvents(logEvents: EventLogs) {
+        if let orderSource = self.account?.source.value {
+            _ = AmazonService.logEvents(eventLogs: logEvents, orderSource: orderSource) { response, error in
+                //TODO
+            }
+        }
     }
     
     override func isForegroundAuthentication() -> Bool {
@@ -79,7 +91,7 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
         self.addScriptListener()
         let js = JSUtils.getInstacartIdentification()
         self.evaluateJS(javascript: js) { response, error in
-                print("Idnetification JS",response)
+            print("Idnetification JS",response)
         }
     }
     
@@ -105,17 +117,17 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
             return
         }
         let js = JSUtils.getICinjectLoginJS(email: email, password: password)
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
-            self!.evaluateJS(javascript: js) { respone, error in
-            if error != nil {
-                //TODO :- Authentication error
-            }
-        }
-        }
-        self.captchaClosed()
         let userId = self.account?.userID
         var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Instacart.value,
                                                   EventConstant.OrderSourceID: userId!]
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
+            self!.evaluateJS(javascript: js) { respone, error in
+                if let error = error {
+                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                }
+            }
+        }
+        self.captchaClosed()
         logEventAttributes[EventConstant.Status] = EventStatus.Success
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectSignIn, eventAttributes: logEventAttributes)
         
@@ -187,12 +199,21 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
         }
     }
     
+    func verificationCodeSuccess() {
+        let js = JSUtils.verificationCodeSuccess()
+        self.evaluateJS(javascript: js) { response, error in
+            print("verificationCodeSuccess",response)
+        }
+
+    }
 
     func authenticationChallenge() {
         let userId = self.account?.userID
         var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Instacart.value,
                                                   EventConstant.OrderSourceID: userId!]
+        self.timerHandler.stopTimer()
         self.authenticationDelegate?.didReceiveAuthenticationChallenge(authError: true)
+        self.verificationCodeSuccess()
         
         logEventAttributes[EventConstant.ErrorReason] = EventType.JSDetectedDeviceAuth
         logEventAttributes[EventConstant.Status] = EventStatus.Success
@@ -224,7 +245,7 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
                                                  message: errorMessage, orderStatus: OrderStatus.None.rawValue, orderSource: OrderSource.Instacart.value) { response, error in
                 //TODO
             }
-            let eventLog = EventLogs(panelistId: panelistId, platformId: userId!, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrappingType: nil)
+            let eventLog = EventLogs(panelistId: panelistId, platformId: userId!, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
             _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource!) { response, error in
                 //TODO
             }
@@ -262,7 +283,7 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
                                        , message: message, orderStatus: orderStatus, orderSource:  OrderSource.Instacart.value) { response, error in
             //Todo
         }
-        let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrappingType: nil)
+        let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
         _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource) { response, error in
             //TODO
         }
@@ -312,6 +333,13 @@ extension InstacartAuthenticator: ScriptMessageListener {
             } else if data.contains("Captcha_open") {
                 print("!!! data",data)
                 self.authenticationChallenge()
+            } else if data.contains("verification_closed") {
+                self.authenticationDelegate?.didReceiveLoginChallenge(error: Strings.authenticationFailed)
+                self.notifyAuthError(errorMessage: Strings.authenticationFailed)
+                self.webClient.scriptMessageHandler?.removeScriptMessageListener()
+            } else if data.contains("verification_success") {
+                print("!!! data",data)
+                self.authenticationDelegate?.didReceiveAuthenticationChallenge(authError: false)
             }
             
         }

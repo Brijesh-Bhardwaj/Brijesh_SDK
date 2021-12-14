@@ -38,5 +38,5 @@ public protocol Account {
     ///Fetches receipts for this account
     /// - Parameter orderExtractionListener: callback interface to notify the caller
     /// about the status of order extraction process
-    func fetchOrders(orderExtractionListener: OrderExtractionListener, source: FetchRequestSource)
+    func fetchOrders(orderExtractionListener: OrderExtractionListener, source: FetchRequestSource) -> RetailerScrapingStatus
 }

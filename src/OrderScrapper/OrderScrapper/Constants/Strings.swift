@@ -32,7 +32,7 @@ struct Strings {
     static let HeadingFetchingReceipts = "heading_fetching_receipts"
     static let AlertBoldMessage = "dont_be_alarmed"
     static let AlertUserMessage = "user_alert_message"
-    static let ICAlertUserMessage = "If you have not associated email-id or set password for your instacart account, kindly visit the instacart accounts page and set/reset it"
+    static let ICAlertUserMessage = "If you don\'t use an email ID/password combination to log into your Instacart account, you will need to visit instacart.com and set one up in order to connect your Instacart account to CoinOut. "
     static let KRAlertUserMessage = "If you have not associated email-id or set password for your kroger account, kindly visit the kroger accounts page and set/reset it"
     static let KRLoginHyperLinkLable = "Which Kroger subsidiary accounts can I link to my CoinOut account?"
     static let HeadingConnectInstacartAccount = "heading_connect_instacart_account"
@@ -107,6 +107,7 @@ struct Strings {
     static let JSVersionWalmart = "js_version_walmart"
     static let ErrorOnWebViewLoading = "An unexpected error occurred.Please try again"
     static let ErrorInFlashMessage = "error in authentication"
+    static let InstacartURL = "http://www.instacart.com"
 
     
     //Sentry error message
@@ -122,4 +123,5 @@ struct Strings {
     static let HeaderFetchOrders = "Fetch %@ Orders"
     static let HeaderFetchingOrders = "Fetching %@ Orders"
     static let FetchSuccessMessage = "%@ orders fetched successfully"
+    static let FetchFailureMessage = "%@ orders fetch failed"
 }

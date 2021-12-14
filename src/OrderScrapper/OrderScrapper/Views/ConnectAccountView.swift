@@ -63,6 +63,15 @@ class ConnectAccountView: UIView {
         }
     }
     
+    var statusImage: UIImage {
+        get {
+            return UIImage(named: "")!
+        }
+        set {
+            self.successView.fetchView.image = newValue
+        }
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         initView()

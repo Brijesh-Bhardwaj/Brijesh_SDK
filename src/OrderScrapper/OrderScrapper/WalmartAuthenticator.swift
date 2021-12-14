@@ -108,6 +108,19 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
             self.timerHandler.stopTimer()
             self.timerHandler.removeCallbackListener()
             self.authenticationDelegate?.didReceiveLoginChallenge(error: AppConstants.msgTimeout)
+            
+            if let panelistId = self.account?.panelistID, let userId = self.account?.userID {
+                let eventLogs = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type: FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
+                self.logEvents(logEvents: eventLogs)
+            }
+        }
+    }
+    
+    private func logEvents(logEvents: EventLogs) {
+        if let orderSource = self.account?.source.value {
+            _ = AmazonService.logEvents(eventLogs: logEvents, orderSource: orderSource) { response, error in
+                //TODO
+            }
         }
     }
     
@@ -155,6 +168,7 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
         self.evaluateJS(javascript: js) { response, error in
             if response != nil {
                 let response = response as? String
+                self.timerHandler.stopTimer()
                 self.authenticationDelegate?.didReceiveLoginChallenge(error: response!)
                 self.notifyAuthError(errorMessage: response!)
                 self.webClient.scriptMessageHandler?.removeScriptMessageListener()
@@ -191,7 +205,7 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
                                                  message: errorMessage, orderStatus: OrderStatus.None.rawValue, orderSource: OrderSource.Walmart.value) { response, error in
                 //TODO
             }
-            let eventLog = EventLogs(panelistId: panelistId, platformId: userId!, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrappingType: nil)
+            let eventLog = EventLogs(panelistId: panelistId, platformId: userId!, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
             _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource!) { response, error in
                 //TODO
             }
@@ -229,7 +243,7 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
                                        , message: message, orderStatus: orderStatus, orderSource:  OrderSource.Walmart.value) { response, error in
             //Todo
         }
-        let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrappingType: nil)
+        let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
         _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource.value) { response, error in
             //TODO
         }
@@ -250,6 +264,7 @@ extension WalmartAuthenticator: ScriptMessageListener {
                     logEventAttributes[EventConstant.Status] = EventStatus.Failure
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectSignIn, eventAttributes: logEventAttributes)
                 } else if data.contains("verify_identity") {
+                    self.timerHandler.stopTimer()
                     self.authenticationDelegate?.didReceiveAuthenticationChallenge(authError: true)
                     var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Walmart.value,
                                                               EventConstant.OrderSourceID: account!.userID]
@@ -263,6 +278,7 @@ extension WalmartAuthenticator: ScriptMessageListener {
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectSignIn, eventAttributes: logEventAttributes)
                 } else if data.contains("Captcha is open") {
                     print("!!!! Captcha is open")
+                    self.timerHandler.stopTimer()
                     self.authenticationDelegate?.didReceiveAuthenticationChallenge(authError: true)
                     var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Walmart.value,
                                                               EventConstant.OrderSourceID: account!.userID]

@@ -49,9 +49,14 @@ class JSUtils {
                    " const verifyEl = document.querySelector('[id*=\"code-\"]'); " +
                    " if (verifyEl && !isVerification) { " +
                       " console.log('Verification screen callback');" +
+                    "    [document.querySelector('[data-testid=\"mobile-close\"]'), document.querySelector('[data-testid=\"back\"]')].forEach(function (item) { " +
+                    "      item.addEventListener('click', function () { " +
+                    "      window.webkit.messageHandlers.iOS.postMessage(\"verification_closed\");" +
+                    "     });" +
+                    "     }); " +
                        " isVerification = true; " +
-                   " window.webkit.messageHandlers.iOS.postMessage(\"Verification screen callback\"); " +
-                 "  } " +
+                        " window.webkit.messageHandlers.iOS.postMessage(\"Verification screen callback\"); " +
+                        "  } " +
                    "if (mutation.addedNodes.length) {" +
                       " if (el && el.classList instanceof DOMTokenList) { " +
                           " if (document.querySelector('[data-testid=\"desktop-close\"]')) { " +
@@ -184,6 +189,30 @@ class JSUtils {
             "  };" +
             " var observer = new MutationObserver(callback1); " +
             " observer.observe(document.body, { attributes: true, childList: true, characterData: true, subtree: true }); "
+    }
+    
+    static func verificationCodeSuccess() -> String {
+        return "(function () {\n" +
+                       "    var isVerificationError = false;\n" +
+                       "    var verificationCallback = function (mutationsList) {\n" +
+                       "        for (const mutation of mutationsList) {\n" +
+                       "            if (mutation.removedNodes.length) {\n" +
+                       "                const removedEl = mutation.removedNodes[0];\n" +
+                       "                const verifyEl = removedEl.querySelector('input[id*=\"code-\"]');\n" +
+                       "                const errorEl = removedEl.querySelector('[id*=\"error_code-\"]');\n" +
+                       "                console.log('Verification code popup function call');\n" +
+                       "                if (verifyEl && verifyEl.value.length === 6 && !errorEl && !isVerificationError) {\n" +
+                       "                    console.log('Verification code popup is closed');\n" +
+                       "                     window.webkit.messageHandlers.iOS.postMessage(\"verification_success\");" +
+                       "                    isVerificationError = true;\n" +
+                       "                }\n" +
+                       "            }\n" +
+                       "        }\n" +
+                       "    }\n" +
+                       "    var verificationObserver = new MutationObserver(verificationCallback);\n" +
+                       "    verificationObserver.observe(document.querySelector('body#landing'), { attributes: true, childList: true, characterData: true, subtree: true });\n" +
+                       "})();"
+
     }
     
     static func getKRIdentifyJSAction() -> String {

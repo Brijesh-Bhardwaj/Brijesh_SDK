@@ -57,7 +57,20 @@ internal class KrogerAuthenticator: BSBaseAuthenticator {
                     self.webClient.stopLoading()
                 }
                 self.authenticationDelegate?.didReceiveLoginChallenge(error: AppConstants.msgTimeout)
+                
+                if let panelistId = self.account?.panelistID, let userId = self.account?.userID {
+                    let eventLogs = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type: FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
+                    self.logEvents(logEvents: eventLogs)
+                }
             }
+    }
+    
+    private func logEvents(logEvents: EventLogs) {
+        if let orderSource = self.account?.source.value {
+            _ = AmazonService.logEvents(eventLogs: logEvents, orderSource: orderSource) { response, error in
+                //TODO
+            }
+        }
     }
     
     override func isForegroundAuthentication() -> Bool {
@@ -151,7 +164,7 @@ internal class KrogerAuthenticator: BSBaseAuthenticator {
                                                  message: errorMessage, orderStatus: OrderStatus.None.rawValue, orderSource: OrderSource.Kroger.value) { response, error in
                 //TODO
             }
-            let eventLog = EventLogs(panelistId: panelistId, platformId: userId!, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrappingType: nil)
+            let eventLog = EventLogs(panelistId: panelistId, platformId: userId!, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
             _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource!) { response, error in
                 //TODO
             }
@@ -188,7 +201,7 @@ internal class KrogerAuthenticator: BSBaseAuthenticator {
                                        , message: message, orderStatus: orderStatus, orderSource:  OrderSource.Kroger.value) { response, error in
             //Todo
         }
-        let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrappingType: nil)
+        let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
         _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource) { response, error in
             //TODO
         }

@@ -8,6 +8,7 @@ import SwiftUI
 import Combine
 import WebKit
 import Sentry
+import Network
 
 class AmazonOrderScrapper {
     private var authProvider: AuthProvider!
@@ -16,6 +17,8 @@ class AmazonOrderScrapper {
     private var completionSubscriber: AnyCancellable?
     private var backgroundScrapper: BSScrapper!
     let timerValue = BSTimer()
+    
+    private let monitor = NWPathMonitor()
     
     private lazy var queue: Queue<ScrapingAccountInfo>! = {
         return Queue<ScrapingAccountInfo>(queue: [])
@@ -51,6 +54,7 @@ class AmazonOrderScrapper {
         self.authProvider = authProvider
         self.viewPresenter = viewPresenter
         self.analyticsProvider = analyticsProvider
+        self.setupNetworkMonitor()
         
         LibContext.shared.authProvider = self.authProvider
         LibContext.shared.viewPresenter = self.viewPresenter
@@ -58,6 +62,27 @@ class AmazonOrderScrapper {
     
     deinit {
         self.completionSubscriber?.cancel()
+    }
+    
+    private func setupNetworkMonitor() {
+        let queue = DispatchQueue(label: "BackgroundMonitor")
+        
+        monitor.pathUpdateHandler = { [weak self] path in
+            guard let self = self else { return }
+            // Monitor runs on a background thread so we need to publish
+            // on the main thread
+            DispatchQueue.main.async {
+                if path.status == .unsatisfied {
+                    if self.backgroundScrapper != nil {
+                        self.backgroundScrapper.stopScrapping()
+                        self.backgroundScrapper = nil
+                    }
+                    FirebaseAnalyticsUtil.logSentryMessage(message: "ON network disconnect in bg \(queue) \( self.queue.dataQueue.count)")
+                    self.queue.dataQueue.removeAll()
+                }
+            }
+        }
+        monitor.start(queue: queue)
     }
     
     func connectAccount(account: Account, orderExtractionListener: OrderExtractionListener) {
@@ -118,8 +143,8 @@ class AmazonOrderScrapper {
     
     func startOrderExtraction(account: Account,
                               orderExtractionListener: OrderExtractionListener,
-                              source: FetchRequestSource) {
-        
+                              source: FetchRequestSource) -> RetailerScrapingStatus {
+        var scrappingProcess = RetailerScrapingStatus.Other
         if source == .notification || source == .manual{
             self.terminateScrapping(account: account)
             if isScrappingGoingOn && self.backgroundScrapper != nil {
@@ -140,15 +165,21 @@ class AmazonOrderScrapper {
                 for data in dataQueue {
                     if data == details {
                         dataPresent = true
+                        scrappingProcess = RetailerScrapingStatus.InProgress
                         break
                     }
                 }
                 if !dataPresent {
                     self.queue.dataQueue.append(details)
                     self.scrappingQueue()
+                    scrappingProcess = RetailerScrapingStatus.Enqueued
                 }
+            } else {
+                scrappingProcess = RetailerScrapingStatus.Enqueued
             }
+            
         }
+        return scrappingProcess
     }
     
     private func scrappingQueue() {

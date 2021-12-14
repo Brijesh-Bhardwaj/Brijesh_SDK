@@ -11,6 +11,8 @@ import CoreData
 
 @objc(UserAccount)
 public class UserAccountMO: NSManagedObject, Account {
+  
+    
     @NSManaged var userId: String
     @NSManaged var password: String
     @NSManaged var accountStatus: String
@@ -97,11 +99,11 @@ public class UserAccountMO: NSManagedObject, Account {
     /// Use this method to fetch already connected account
     /// - Parameter orderExtractionListener: It is a listener which gives onOrderExtractionSuccess and onOrderExtractionFailure callback
     // TODO:- ScrappingMode - fs,bs
-    public func fetchOrders(orderExtractionListener: OrderExtractionListener, source: FetchRequestSource) {
+    public func fetchOrders(orderExtractionListener: OrderExtractionListener, source: FetchRequestSource) -> RetailerScrapingStatus {
         
-        AmazonOrderScrapper.shared.startOrderExtraction(account: self,
+        let isScrapping =  AmazonOrderScrapper.shared.startOrderExtraction(account: self,
                                                         orderExtractionListener: orderExtractionListener,source: source)
-        
+        return isScrapping
     }
     
     // MARK: - Private Methods
