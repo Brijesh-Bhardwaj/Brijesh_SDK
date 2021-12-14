@@ -376,6 +376,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 self.backButton.isEnabled = false
                 self.backButton.isHidden = true
                 self.fetchSuccessView.fetchSuccess = self.getSuccessMessage()
+                self.fetchSuccessView.imageView = self.getStatusImage()
                 self.contentView.bringSubviewToFront(self.fetchSuccessView)
             }
         })
@@ -386,6 +387,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 self.backButton.isEnabled = false
                 self.backButton.isHidden = true
                 self.fetchSuccessView.fetchSuccess = self.getSuccessMessage()
+                self.fetchSuccessView.imageView = self.getStatusImage()
                 self.contentView.bringSubviewToFront(self.fetchSuccessView)
             }
         })
@@ -487,6 +489,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 self.backButton.isEnabled = false
                 self.backButton.isHidden = true
                 self.fetchSuccessView.fetchSuccess = self.getSuccessMessage()
+                self.fetchSuccessView.imageView = self.getStatusImage()
                 self.contentView.bringSubviewToFront(self.fetchSuccessView)
             }
         }
@@ -544,6 +547,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 self.backButton.isEnabled = false
                 self.backButton.isHidden = true
                 self.fetchSuccessView.fetchSuccess = self.getSuccessMessage()
+                self.fetchSuccessView.imageView = self.getStatusImage()
                 self.contentView.bringSubviewToFront(self.fetchSuccessView)
             }
         } else {
