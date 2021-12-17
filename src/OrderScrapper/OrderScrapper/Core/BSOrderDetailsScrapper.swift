@@ -152,6 +152,11 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                         } else if status == "failed" {
                             let timerValue = self.timer.stop()
                             let message = "\(Strings.ScrappingPageListing) + \(timerValue) "
+                            
+                            //Update upload retry count in order details
+                            updateUploadRetryCount(orderDetails: orderDetail)
+                            
+                            //Scrape next order
                             self.scrapeNextOrder()
                             FirebaseAnalyticsUtil.logSentryMessage(message: message)
                             
@@ -198,6 +203,27 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
             FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
         } else {
             self.scrapeNextOrder()
+        }
+    }
+    
+    func updateUploadRetryCount(orderDetails: OrderDetails) {
+        var uploadRetryCount: Int16 = 0
+        if let count = orderDetail.uploadRetryCount {
+            uploadRetryCount = count
+        }
+        print("!!!! orderRetryCount failed",uploadRetryCount, orderDetail.orderId)
+        uploadRetryCount = uploadRetryCount + 1
+        if let userId = orderDetail.userID, let panelistId = orderDetail.panelistID {
+            do {
+                try CoreDataManager.shared.updateRetryCountInOrderDetails(userId: userId, panelistId: panelistId, orderSource: self.params.account.source.value, orderId: orderDetail.orderId, retryCount: uploadRetryCount)
+            } catch let error {
+                print(AppConstants.tag, "updateOrderDetailsWithExceptionState", error.localizedDescription)
+                let logEventAttributes:[String:String] = [EventConstant.PanelistID: panelistId,
+                                                          EventConstant.OrderSourceID: userId,
+                                                          EventConstant.OrderSource: self.params.account.source.value,
+                                                          EventConstant.Status: EventStatus.Failure]
+                FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+            }
         }
     }
 }

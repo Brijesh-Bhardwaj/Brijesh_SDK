@@ -14,8 +14,11 @@ public class OrderDetails: Codable {
     var date: Date?
     var startDate: String?
     var endDate: String?
+    var orderSectionType: String?
+    var uploadRetryCount: Int16?
+
     
-    init(orderID: String, orderDate: String?, orderSource: String, userID: String, panelistID: String, orderDeatilsURL: String, startDate: String, endDate: String) {
+    init(orderID: String, orderDate: String?, orderSource: String, userID: String, panelistID: String, orderDeatilsURL: String, startDate: String, endDate: String, orderSectionType: String, uploadRetryCount: Int16) {
         self.orderId = orderID
         self.orderDate = orderDate
         self.orderSource = orderSource
@@ -24,6 +27,8 @@ public class OrderDetails: Codable {
         self.detailsUrl = orderDeatilsURL
         self.startDate = startDate
         self.endDate = endDate
+        self.orderSectionType = orderSectionType
+        self.uploadRetryCount = uploadRetryCount
     }
     
 }

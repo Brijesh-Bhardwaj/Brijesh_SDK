@@ -34,6 +34,7 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
                     _ = AmazonService.registerConnection(platformId: userId, status: AccountState.Connected.rawValue, message: AppConstants.msgAccountConnected, orderStatus: OrderStatus.Initiated.rawValue, orderSource: OrderSource.Kroger.value) { response, error in
                         if let response = response  {
                             self.timerHandler.stopTimer()
+                            self.account.accountState = .Connected
                             self.addUserAccountInDB()
                             self.account.isFirstConnectedAccount = response.firstaccount
                             var logConnectAccountEventAttributes:[String:String] = [:]
@@ -56,6 +57,7 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
                         }
                     }
                 } else {
+                    self.account.accountState = .Connected
                     self.updateAccountStatusToConnected(orderStatus: OrderStatus.Initiated.rawValue)
                     self.addUserAccountInDB()
                     self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping)
@@ -70,6 +72,7 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
                         let userId = self.account.userID
                         _ = AmazonService.registerConnection(platformId: userId, status: AccountState.Connected.rawValue, message: AppConstants.msgAccountConnected, orderStatus: OrderStatus.Failed.rawValue, orderSource: OrderSource.Kroger.value) { response, error in
                             if let response = response  {
+                                self.account.accountState = .Connected
                                 self.addUserAccountInDB()
                                 self.account.isFirstConnectedAccount = response.firstaccount
                                 self.publishProgress(step: .complete)
@@ -91,6 +94,7 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
                         }
                     } else {
                         print("#### Reconnect State")
+                        self.account.accountState = .Connected
                         self.updateAccountStatusToConnected(orderStatus: OrderStatus.Initiated.rawValue)
                         self.addUserAccountInDB()
                         self.publishProgress(step: .complete)
@@ -161,12 +165,19 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
     }
     
     override func onTimerTriggered(action: String) {
-      if action == Actions.ForegroundHtmlScrapping {
+        if action == Actions.ForegroundHtmlScrapping {
             self.stopScrapping()
             self.onCompletion(isComplete: true)
-          
-        let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
-          self.logEvents(logEvents: eventLogs)
+            
+            _ = AmazonService.updateStatus(platformId: self.account.panelistID,
+                                           status: self.account.accountState.rawValue,
+                                           message: AppConstants.msgTimeout,
+                                           orderStatus: OrderStatus.Failed.rawValue,
+                                           orderSource: self.account.source.value) { response, error in
+            }
+            
+            let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
+            self.logEvents(logEvents: eventLogs)
         }
     }
     
@@ -237,13 +248,13 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
     private func addUserAccountInDB() {
         let account = self.account  as! UserAccountMO
         let panelistId = LibContext.shared.authProvider.getPanelistID()
-        CoreDataManager.shared.addAccount(userId: account.userID, password: account.password, accountStatus: AccountState.Connected.rawValue, orderSource: account.orderSource, panelistId: panelistId)
+        CoreDataManager.shared.addAccount(userId: account.userID, password: account.password, accountStatus: self.account.accountState.rawValue, orderSource: account.orderSource, panelistId: panelistId)
     }
     
     private func updateAccountStatusToConnected(orderStatus: String) {
         let userId = self.account.userID
         _ = AmazonService.updateStatus(platformId: userId,
-                                       status: AccountState.Connected.rawValue,
+                                       status: self.account.accountState.rawValue,
                                        message: AppConstants.msgConnected,
                                        orderStatus: orderStatus, orderSource:  OrderSource.Kroger.value) { response, error in
         }

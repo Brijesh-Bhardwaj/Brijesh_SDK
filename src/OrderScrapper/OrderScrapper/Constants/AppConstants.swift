@@ -29,6 +29,8 @@ struct AppConstants {
     static let orderDetailsColumnOrderUserID = "userID"
     static let orderDetailsColumnPanelistID = "panelistID"
     static let orderDetailsColumnOrderDeatilsURL = "orderDeatilsURL"
+    static let orderDetailsColumnOrderSectionType = "orderSectionType"
+    static let orderDetailsColumnsUplaodRetryCount = "uploadRetryCount"
     //Firebase Analytics
     static let resourceName = "GoogleService-Info"
     static let resourceOfType = "plist"
@@ -74,6 +76,8 @@ struct AppConstants {
     static let errorWrongCredentialsKroger = "The email or password entered is incorrect. Please try again or select Forgot Password."
     static let errorWrongEmailkroger = "There's a problem with the entered email address. Please check the spelling and try again."
     static let krogerRetryCount: Int = 3
+    static let deviceId = "\(LibContext.shared.orderExtractorConfig.deviceId)"
+    static let devicePlatform = "ios"
 
     static let ErrorInJsonEncoding = "Error in JSON encoding"
 }

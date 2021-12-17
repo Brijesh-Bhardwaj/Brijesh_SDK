@@ -238,6 +238,8 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
         case .ConnectedButScrappingFailed:
             status = AccountState.ConnectedButException.rawValue
             orderStatus = OrderStatus.Failed.rawValue
+        case .ConnectionInProgress:
+            print("")
         }
         _ = AmazonService.updateStatus(platformId: userId, status: status
                                        , message: message, orderStatus: orderStatus, orderSource:  OrderSource.Walmart.value) { response, error in

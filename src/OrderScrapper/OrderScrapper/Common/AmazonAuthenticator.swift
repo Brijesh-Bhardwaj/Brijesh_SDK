@@ -202,6 +202,8 @@ internal class AmazonAuthenticator: Authenticator {
         case .ConnectedButScrappingFailed:
             status = AccountState.ConnectedButException.rawValue
             orderStatus = OrderStatus.Failed.rawValue
+        case .ConnectionInProgress:
+            print("")
         }
         _ = AmazonService.updateStatus(platformId: userId, status: status
                                        , message: message, orderStatus: orderStatus, orderSource: OrderSource.Amazon.value) { response, error in

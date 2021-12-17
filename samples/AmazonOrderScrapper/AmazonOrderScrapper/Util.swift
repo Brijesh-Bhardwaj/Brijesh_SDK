@@ -4,6 +4,7 @@
 
 import Foundation
 import RNCryptor
+import UIKit
 
 class Util {
     static func getToken(username: String, password: String, constant: String)-> String {
@@ -29,4 +30,9 @@ class Util {
         let baseUrl = (infoDict?["SDK_BASE_ENDPOINT"] as? String)!
         return  baseUrl
     }
+    static func getDeviceIdentifier()-> String
+      {
+             let deviceId = UIDevice.current.identifierForVendor
+             return deviceId!.uuidString
+      }
 }

@@ -35,6 +35,7 @@ class AccountListViewController: UIViewController, UITableViewDataSource
             configValue.baseURL = Util.getBaseUrl()
             configValue.appName = "ReceiptStraw-Dev"
             configValue.appVersion = (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String)!
+            configValue.deviceId = Util.getDeviceIdentifier()
             try OrdersExtractor.initialize(authProvider: self, viewPresenter: self, analyticsProvider: self, orderExtractionConfig: configValue)
         } catch let error {
             debugPrint(error.localizedDescription)

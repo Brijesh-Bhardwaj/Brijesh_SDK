@@ -384,6 +384,9 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
             self.extractNewOrders()
         } else {
             if complete {
+                //For Walmart and Instacart update account state to Connected if all connection scrape orders uploaded
+                updateAccountAsConnected(account: self.account)
+                
                 if let listener = self.scraperListener {
                     listener.updateProgressStep(htmlScrappingStep: .complete)
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.StepComplete, eventAttributes: logEventAttributes)
@@ -447,6 +450,10 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                         }
                     } else {
                         self.stopScrapping()
+                        
+                        //For Walmart and Instacart update account state to Connected if all connection scrape orders uploaded
+                        updateAccountAsConnected(account: self.account)
+                        
                         if let listener = self.scraperListener {
                             listener.updateProgressStep(htmlScrappingStep: .complete)
                         }
@@ -518,6 +525,12 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     
     func insertOrderDetailsToDB(orderDetails: [OrderDetails], completion: @escaping (Bool) -> Void) {
         DispatchQueue.global().async {
+            var orderSectionType = ""
+            if self.scrappingMode == .Foreground {
+                orderSectionType = SectionType.connection.rawValue
+            } else {
+                orderSectionType = SectionType.orderUpload.rawValue
+            }
             for orderDetail in orderDetails {
                 orderDetail.userID = String(self.account!.userID)
                 orderDetail.panelistID = String(self.account!.panelistID)
@@ -525,6 +538,8 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                 orderDetail.startDate = self.dateRange?.fromDate
                 orderDetail.endDate = self.dateRange?.toDate
                 orderDetail.date = DateUtils.getDate(dateStr: orderDetail.orderDate)
+                orderDetail.orderSectionType = orderSectionType
+                orderDetail.uploadRetryCount = 0
             }
             CoreDataManager.shared.insertOrderDetails(orderDetails: orderDetails) { status in
                 DispatchQueue.main.async {
@@ -556,6 +571,19 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrappedOrderDetailsFromDB, eventAttributes: logEventAttributes)
         
         return orderDetails
+    }
+    
+    func getOrdersDetailsCountOnConnection() -> Int {
+        let orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: try! self.getOrderSource().value, panelistID: self.account!.panelistID, userID: self.account!.userID, orderSectionType: SectionType.connection.rawValue)
+        
+        var logEventAttributes:[String:String] = [:]
+        logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
+                              EventConstant.PanelistID: account!.panelistID,
+                              EventConstant.OrderSourceID: account!.userID,
+                              EventConstant.Status: EventStatus.Success]
+        FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrappedOrderDetailsFromDB, eventAttributes: logEventAttributes)
+        
+        return orderDetailsCount
     }
     
     private func didInsertToDB() {
@@ -595,6 +623,32 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
         let eventLogs = EventLogs(panelistId: self.account!.panelistID, platformId: self.account!.userID, section: SectionType.orderUpload.rawValue , type: FailureTypes.none.rawValue, status: status, message: AppConstants.bgScrappingCompleted, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
         _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.account!.source.value) { response, error in
                 //TODO
+        }
+    }
+    
+    private func updateAccountAsConnected(account: Account?) {
+        if let account = account {
+            let source = account.source
+            if source == .Walmart || source == .Instacart {
+                print("!!! updateAccountAsConnected")
+                let orderDetailsUploadCount = self.getOrdersDetailsCountOnConnection()
+                print("!!!! orderDetailsUploadCount",orderDetailsUploadCount)
+                let accountState = account.accountState
+                if accountState == .ConnectionInProgress && orderDetailsUploadCount == 0 {
+                    do {
+                        try CoreDataManager.shared.updateUserAccount(userId: self.account!.userID, accountStatus: AccountState.Connected.rawValue, panelistId: self.account!.panelistID, orderSource: self.account!.source.rawValue)
+                    } catch let error {
+                        print(AppConstants.tag, "updateAccountWithExceptionState", error.localizedDescription)
+                    }
+                    
+                    let amazonId = self.account!.userID
+                    _ = AmazonService.updateStatus(platformId: amazonId,
+                                                   status: AccountState.Connected.rawValue,
+                                                   message: AppConstants.msgConnected,
+                                                   orderStatus: OrderStatus.Completed.rawValue, orderSource:  self.account!.source.value) { response, error in
+                    }
+                }
+            }
         }
     }
 }

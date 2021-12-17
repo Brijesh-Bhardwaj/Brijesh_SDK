@@ -212,6 +212,8 @@ class CoreDataManager {
                     orderDetail.orderDetailsURL = orderData.detailsUrl
                     orderDetail.startDate = orderData.startDate!
                     orderDetail.endDate = orderData.endDate!
+                    orderDetail.orderSectionType = orderData.orderSectionType!
+                    orderDetail.uploadRetryCount = orderData.uploadRetryCount!
                     
                     do {
                         try context.save()
@@ -253,6 +255,50 @@ class CoreDataManager {
                 FirebaseAnalyticsUtil.logSentryError(error: error)
             }
             return orderDetails
+        }
+    }
+    
+    public func getCountForOrderDetailsByOrderSection(orderSource: String, panelistID: String, userID: String, orderSectionType: String) -> Int {
+        dispatchQueue.sync {
+            let context = persistentContainer.viewContext
+            let fetchRequest = NSFetchRequest<OrderDetailsMO>(entityName: AppConstants.orderDetailEntity)
+            
+            let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) == %@", orderSource)
+            let orderSectionIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSectionType) == [c] %@", orderSectionType)
+            let uploadOrderRetryPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnsUplaodRetryCount) <= %d", 2)
+            
+            let sortedOrderDate = NSSortDescriptor(key: "orderDate", ascending: true)
+            fetchRequest.sortDescriptors = [sortedOrderDate]
+            
+            fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderSourcePredicate, orderSectionIDPredicate, uploadOrderRetryPredicate])
+            
+            var orderDetails = [OrderDetailsMO]()
+            do {
+                orderDetails = try context.fetch(fetchRequest)
+            } catch let error {
+                print("Failed to fetch orderDetails",error)
+                FirebaseAnalyticsUtil.logSentryMessage(message:  AppConstants.fetchOrderDetails)
+                FirebaseAnalyticsUtil.logSentryError(error: error)
+            }
+            return orderDetails.count
+        }
+    }
+    
+    public func updateRetryCountInOrderDetails(userId: String, panelistId: String, orderSource: String, orderId: String, retryCount: Int16) throws {
+        try dispatchQueue.sync {
+            let context = persistentContainer.viewContext
+            let fetchRequest = NSFetchRequest<OrderDetailsMO>(entityName: AppConstants.orderDetailEntity)
+            
+            let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) = %@", orderSource)
+            let orderIdPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderID) = [c] %@", orderId)
+            fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderSourcePredicate, orderIdPredicate])
+            
+            let accounts = try context.fetch(fetchRequest)
+            if accounts.count > 0 {
+                let objectUpdate = accounts[0] as NSManagedObject
+                objectUpdate.setValue(retryCount, forKey: AppConstants.orderDetailsColumnsUplaodRetryCount)
+                try context.save()
+            }
         }
     }
     public func deleteOrderDetails(userID: String, panelistID: String, orderSource: String) {

@@ -35,8 +35,9 @@ class ConnectWalmartAccountVC: BaseAccountConnectVC {
                 if self.account.accountState == .NeverConnected {
                     self.publishProgress(steps: .scrape)
                     let userId = self.account.userID
-                    _ = AmazonService.registerConnection(platformId: userId, status: AccountState.Connected.rawValue, message: AppConstants.msgAccountConnected, orderStatus: OrderStatus.Initiated.rawValue, orderSource: OrderSource.Walmart.value) { response, error in
+                    _ = AmazonService.registerConnection(platformId: userId, status: AccountState.ConnectionInProgress.rawValue, message: AppConstants.msgAccountConnected, orderStatus: OrderStatus.Initiated.rawValue, orderSource: OrderSource.Walmart.value) { response, error in
                         if let response = response {
+                            self.account.accountState = .ConnectionInProgress
                             self.addUserAccountInDB()
                             self.account.isFirstConnectedAccount = response.firstaccount
                             self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping)
@@ -58,6 +59,7 @@ class ConnectWalmartAccountVC: BaseAccountConnectVC {
                         }
                     }
                 } else {
+                    self.account.accountState = .ConnectionInProgress
                     self.updateAccountStatusToConnected(orderStatus: OrderStatus.Initiated.rawValue)
                     self.addUserAccountInDB()
                     self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping)
@@ -121,6 +123,14 @@ class ConnectWalmartAccountVC: BaseAccountConnectVC {
             //TODO: - Review success type
             self.updateSuccessType(successType: .failureButAccountConnected)
             self.onCompletion(isComplete: true)
+            
+            _ = AmazonService.updateStatus(platformId: self.account.panelistID,
+                                           status: self.account.accountState.rawValue,
+                                           message: AppConstants.msgTimeout,
+                                           orderStatus: OrderStatus.Failed.rawValue,
+                                           orderSource: self.account.source.value) { response, error in
+            }
+            
             let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
             self.logEvents(logEvents: eventLogs)
         }
@@ -242,13 +252,13 @@ class ConnectWalmartAccountVC: BaseAccountConnectVC {
     private func addUserAccountInDB() {
         let account = self.account  as! UserAccountMO
         let panelistId = LibContext.shared.authProvider.getPanelistID()
-        CoreDataManager.shared.addAccount(userId: account.userID, password: account.password, accountStatus: AccountState.Connected.rawValue, orderSource: account.orderSource, panelistId: panelistId)
+        CoreDataManager.shared.addAccount(userId: account.userID, password: account.password, accountStatus: self.account.accountState.rawValue, orderSource: account.orderSource, panelistId: panelistId)
     }
     
     private func updateAccountStatusToConnected(orderStatus: String) {
         let userId = self.account.userID
         _ = AmazonService.updateStatus(platformId: userId,
-                                       status: AccountState.Connected.rawValue,
+                                       status: self.account.accountState.rawValue,
                                        message: AppConstants.msgConnected,
                                        orderStatus: orderStatus, orderSource:  OrderSource.Walmart.value) { response, error in
         }

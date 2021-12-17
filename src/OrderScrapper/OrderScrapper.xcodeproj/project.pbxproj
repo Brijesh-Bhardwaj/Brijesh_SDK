@@ -294,6 +294,7 @@
 		9D83BCA727511DA60092762C /* OrderState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderState.swift; sourceTree = "<group>"; };
 		9D84136A26BA520C00D237DC /* InstacartAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstacartAuthenticator.swift; sourceTree = "<group>"; };
 		9D84136E26BA526200D237DC /* OperationMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationMode.swift; sourceTree = "<group>"; };
+		9D847CDB276A03F500349958 /* CoreDataModel v3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CoreDataModel v3.xcdatamodel"; sourceTree = "<group>"; };
 		9D86409E26A15E5B002FA8B8 /* AccountsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountsManager.swift; sourceTree = "<group>"; };
 		9D86AC3426F22BED00FE0731 /* InstacartScrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstacartScrapper.swift; sourceTree = "<group>"; };
 		9D8E1FA0271E882300AE9075 /* ConnectWalmartAccountVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectWalmartAccountVC.swift; sourceTree = "<group>"; };
@@ -1420,10 +1421,11 @@
 		1CD2B51126031A710016F752 /* CoreDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				9D847CDB276A03F500349958 /* CoreDataModel v3.xcdatamodel */,
 				9D812DA1265F791D00629376 /* CoreDataModel v2.xcdatamodel */,
 				1CD2B51226031A710016F752 /* CoreDataModel.xcdatamodel */,
 			);
-			currentVersion = 9D812DA1265F791D00629376 /* CoreDataModel v2.xcdatamodel */;
+			currentVersion = 9D847CDB276A03F500349958 /* CoreDataModel v3.xcdatamodel */;
 			path = CoreDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

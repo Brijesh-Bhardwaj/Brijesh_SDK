@@ -105,6 +105,7 @@ All protocols needed to be implemented by the application are
   - ConnectedAndDisconnected - Account is in a disconnected state now and was successfully connected before the SDK encountered issues with the account.
   - ConnectedButException - Account connected before but SDK encountered issues with the account.
   - ConnectedButScrappingFailed - Account is connected but the order scrapping is failing
+  - ConnectionInProgress - Account is not connected and all connection time scrape orders are not uploaded
  - Use the `hasNeverConnected` flag, to check if the panelist has never connected any account before.
  
 - To initiate an order-extraction operation on a connected account silently i.e without any UI and without user-intervention, use instance method `fetchOrders` on account reference as below:
@@ -139,3 +140,9 @@ All protocols needed to be implemented by the application are
  > func onAccountDisconnectionFailed(account : Account, error: ASLException)
    
   This method is called when the account disconnection has failed  
+  
+- On calling fetchOrders() method from the application it will return RetailerScrapingStatus enum value
+- RetailerScrapingStatus has three enum values:
+  - InProgress : the retailer scraping is in progress
+  - Enqueued : the retailer scraping is in queue 
+  - Other : it is default value  

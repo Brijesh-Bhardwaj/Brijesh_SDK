@@ -196,6 +196,8 @@ internal class KrogerAuthenticator: BSBaseAuthenticator {
         case .ConnectedButScrappingFailed:
             status = AccountState.ConnectedButException.rawValue
             orderStatus = OrderStatus.Failed.rawValue
+        case .ConnectionInProgress:
+            print("")
         }
         _ = AmazonService.updateStatus(platformId: userId, status: status
                                        , message: message, orderStatus: orderStatus, orderSource:  OrderSource.Kroger.value) { response, error in

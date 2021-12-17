@@ -31,6 +31,8 @@ class BSDataUploader {
             uploadOperation.data = data
             uploadOperation.dateRange = DateRange(fromDate: orderDetail.startDate, toDate: orderDetail.endDate, enableScraping: true, lastOrderId: nil, scrappingType: nil, showNotification: false)
             uploadOperation.orderState = orderState
+            uploadOperation.orderSectionType = String(orderDetail.orderSectionType!)
+            uploadOperation.uploadRetryCount = orderDetail.uploadRetryCount
             
             uploadOperation.completionBlock = { [weak self] in
                 guard let self = self else {
@@ -57,6 +59,8 @@ class DataUploadOperation: Operation {
     var data: [String: Any]!
     var dateRange: DateRange!
     var orderState: String?
+    var orderSectionType: String?
+    var uploadRetryCount: Int16?
     
     public override var isAsynchronous: Bool {
         return true
@@ -98,6 +102,7 @@ class DataUploadOperation: Operation {
                         CoreDataManager.shared.deleteOrderDetailsByOrderID(orderID: self.orderId,
                                                                            orderSource: self.orderSource)
                     } else {
+                        self.updateUploadRetryCount()
                         logEventAttributes[EventConstant.Status] = EventStatus.Failure
                         if let error = error {
                             logEventAttributes[EventConstant.EventName] = EventType.UploadOrdersAPIFailed
@@ -105,13 +110,6 @@ class DataUploadOperation: Operation {
                         } else {
                             FirebaseAnalyticsUtil.logEvent(eventType: EventType.UploadOrdersAPIFailed, eventAttributes: logEventAttributes)
                         }
-                    }
-                    logEventAttributes[EventConstant.Status] = EventStatus.Failure
-                    if let error = error {
-                        logEventAttributes[EventConstant.EventName] = EventType.UploadOrdersAPIFailed
-                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
-                    } else {
-                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.UploadOrdersAPIFailed, eventAttributes: logEventAttributes)
                     }
                     
                     finish()
@@ -124,6 +122,23 @@ class DataUploadOperation: Operation {
         state = .finished
     }
     
+    func updateUploadRetryCount() {
+        var uploadRetryCount = self.uploadRetryCount ?? 0
+        print("!!!! orderRetryCount failed",uploadRetryCount)
+        uploadRetryCount = uploadRetryCount + 1
+        if let userId = self.userId, let panelistId = self.panelistId {
+            do {
+                try CoreDataManager.shared.updateRetryCountInOrderDetails(userId: userId, panelistId: panelistId, orderSource: self.orderSource, orderId: self.orderId, retryCount: uploadRetryCount)
+            } catch let error {
+                print(AppConstants.tag, "updateOrderDetailsWithExceptionState", error.localizedDescription)
+                let logEventAttributes:[String:String] = [EventConstant.PanelistID: panelistId,
+                                                          EventConstant.OrderSourceID: userId,
+                                                          EventConstant.OrderSource: self.orderSource,
+                                                          EventConstant.Status: EventStatus.Failure]
+                FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+            }
+        }
+    }
     // MARK: - State management
     
     public enum State: String {

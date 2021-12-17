@@ -93,10 +93,8 @@ class AccountsManager {
                 dictionary[orderSource.value] = accountInfo
             } else if !accountDetails.isEmpty && accountsInDB.isEmpty {
                 let account = accountDetails[0]
-                let statusToUpdate = (account.status == AccountState.Connected.rawValue) ? AccountState.ConnectedButException.rawValue : account.status
-                
                 CoreDataManager.shared.addAccount(userId: account.platformId, password: "",
-                                                  accountStatus:statusToUpdate,
+                                                  accountStatus: AccountState.ConnectedButException.rawValue,
                                                   orderSource: orderSource.rawValue, panelistId: panelistId)
                 var accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
                 accountsFromDB.first?.isFirstConnectedAccount = account.firstaccount
