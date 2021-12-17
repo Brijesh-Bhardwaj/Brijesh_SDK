@@ -10,12 +10,37 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
 
+## [1.2.0] - 2021-12-15
+  ### Added
+   - Added new enum value connectionInProgress in AccountState enum. During connection flow on authentication completed updated account state as connectionInProgress  
+   - In foreground scrapping on uploading all scrape orders updated account state as connected in DB and backend through API call
+
+## [1.1.9] - 2021-12-14
+  ### Added
+   - Sending input to API for switching scrapping type during manual scrapping/foreground scrapping
+   - Instacart screen get visible for some time if we get any popup(like verification code and capcha) on screen
+   - Instacart home screen get visible if we click on close or cancel button from the popup
+   - Show error screen on getting failure for manual scrapping. Considering it will need UI changes for showing error screen. 
+
+## [1.1.8] - 2021-12-10
+  ### Added
+   - Email validation updated which allows multiple dots after @ symbol
+   - SDK provided an enum in the return value for the `fetchOrders()` method to the app stating the state of the scraping such as enqueued, in-progress etc. 
+   - Static message updated on the Instacart login screen
+   - Fixed added for the Instacart home screen get visible if we click on the close or cancel from the popup
+
+## [1.1.7] - 2021-12-07
+  ### Added
+   - Added manual value in FetchRequestSource enum for manual scrapping. On receiving manual value as fetch request source in fetchOrders() from the app we are   doing foreground scrapping for all orders.
+   - Labels and success messages updated on progress screen and success screen
+
 ## [1.1.6] - 2021-11-17
 
   ### Added
    - Added Walmart connect, disconnect and reconenct operations. Also added scrapping operations in both foreground and background
    - Added bug fixes related with the Walmart authentication
    - For Kroger added bug fixed in case of getting 'adblocker' error message during connection flow   
+   - Added enhanced sentry logs which includes some additional attribute information and error logged as events 
 
 ## [1.1.5] - 2021-10-25
  
