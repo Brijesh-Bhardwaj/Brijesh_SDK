@@ -273,6 +273,7 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
             DispatchQueue.main.async {
                 self.timerHandler.stopTimer()
                 self.timerHandler.removeCallbackListener()
+                self.backgroundScrapper.stopScrapping()
                 self.backgroundScrapper.scraperListener = nil
                 self.backgroundScrapper = nil
                 self.logEvent()

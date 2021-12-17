@@ -155,6 +155,7 @@ class ConnectWalmartAccountVC: BaseAccountConnectVC {
             guard let self = self else {return}
             let (completed, successType) = result
             DispatchQueue.main.async {
+                self.backgroundScrapper.stopScrapping()
                 self.backgroundScrapper.scraperListener = nil
                 self.logEvent()
                 self.timerHandler.stopTimer()

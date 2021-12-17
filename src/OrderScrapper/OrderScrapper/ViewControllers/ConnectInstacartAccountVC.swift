@@ -249,6 +249,7 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
             DispatchQueue.main.async {
                 self.timerHandler.stopTimer()
                 self.timerHandler.removeCallbackListener()
+                self.backgroundScrapper.stopScrapping()
                 self.backgroundScrapper.scraperListener = nil
                 self.logEvent()
                 if completed {

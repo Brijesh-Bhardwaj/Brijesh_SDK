@@ -73,8 +73,33 @@ class BSOrderDetailsScrapper {
                 self.htmlScrapper.extractOrders(script: executableScript, url: detailUrl)
             }
         } else {
-            print("### Queue empty")
             onDataUploadComplete()
+        }
+    }
+    
+    private func scrapeOrder(orderDetail: OrderDetails) {
+        if queue!.isEmpty() {
+            var logEventAttributes:[String:String] = [:]
+            logEventAttributes = [EventConstant.OrderSource: orderDetail.orderSource ?? "",
+                                  EventConstant.PanelistID: orderDetail.panelistID ?? "",
+                                  EventConstant.OrderSourceID: orderDetail.userID ?? "",
+                                  EventConstant.ScrappingType: ScrappingType.html.rawValue,
+                                  EventConstant.Status: EventStatus.Success]
+            if let scrappingMode = scrappingMode {
+                logEventAttributes[EventConstant.ScrappingMode] = scrappingMode.rawValue
+            }
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResultSuccess, eventAttributes: logEventAttributes)
+        }
+        
+        if let script = script {
+            let detailUrl = orderDetail.detailsUrl
+            //Param for order detail page scrapping
+            timer.start()
+            // TODO :- check the orderDate as it optional value
+            let scriptParam = ScriptParam(script: script, dateRange: nil, url: detailUrl, scrappingPage: .details, urls: nil, orderId: orderDetail.orderId, orderDate: orderDetail.orderDate)
+            let executableScript = ExecutableScriptBuilder().getExecutableScript(param: scriptParam)
+            self.scrapeQueue.append(orderDetail.orderId)
+            self.htmlScrapper.extractOrders(script: executableScript, url: detailUrl)
         }
     }
     
@@ -89,32 +114,51 @@ class BSOrderDetailsScrapper {
     }
     
     private func scrapeNextOrder() {
-        ConfigManager.shared.getConfigurations(orderSource: self.params.account.source) { (configurations, error) in
-            if let configuration = configurations {
-                let orderDetailDelay = configuration.orderDetailDelay ?? 1
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(orderDetailDelay)) { [weak self] in
-                    guard let self = self else { return }
-                    self.scrapeQueue.remove(at: 0)
-                    self.scrapeOrder()
-                }
-            } else {
-                if let error = error {
-                    var logEventAttributes:[String:String] = [:]
-                    
-                    logEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
-                                          EventConstant.PanelistID: self.params.account.panelistID,
-                                          EventConstant.OrderSourceID: self.params.account.userID,
-                                          EventConstant.EventName: EventType.ExceptionWhileGettingConfiguration,
-                                          EventConstant.Status: EventStatus.Failure]
-                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
-                    guard let self = self else { return }
-                    self.scrapeQueue.remove(at: 0)
-                    self.scrapeOrder()
+        if !self.scrapeQueue.isEmpty {
+            self.scrapeQueue.remove(at: 0)
+        }
+        
+        let shouldScrape = self.shouldScrapeNextOrder()
+        if shouldScrape {
+            ConfigManager.shared.getConfigurations(orderSource: self.params.account.source) { (configurations, error) in
+                if let configuration = configurations {
+                    let orderDetailDelay = configuration.orderDetailDelay ?? 1
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(orderDetailDelay)) { [weak self] in
+                        guard let self = self else { return }
+                        self.scrapeOrder()
+                    }
+                } else {
+                    if let error = error {
+                        var logEventAttributes:[String:String] = [:]
+                        
+                        logEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
+                                              EventConstant.PanelistID: self.params.account.panelistID,
+                                              EventConstant.OrderSourceID: self.params.account.userID,
+                                              EventConstant.EventName: EventType.ExceptionWhileGettingConfiguration,
+                                              EventConstant.Status: EventStatus.Failure]
+                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
+                        guard let self = self else { return }
+                        self.scrapeOrder()
+                    }
                 }
             }
+        } else {
+            self.queue.resetQueue()
+            self.onDataUploadComplete()
         }
+    }
+    
+    private func shouldScrapeNextOrder() -> Bool {
+        if let mode = self.scrappingMode, mode == .Foreground {
+            if let source = self.fetchRequestSource, source == .manual {
+                return true
+            } else {
+                return false
+            }
+        }
+        return true
     }
 }
 
@@ -233,23 +277,11 @@ extension BSOrderDetailsScrapper: DataUploadListener {
         guard let queue = self.queue else {
             return
         }
-        if let mode = self.scrappingMode, mode == .Foreground {
-            if let source = self.fetchRequestSource, source == .manual {
-                doDataUploading(queue: queue)
-            } else {
-                self.params.listener.onScrapeDataUploadCompleted(complete: true, error: nil)
-            }
-        } else {
-            doDataUploading(queue: queue)
-        }
-    }
-    
-    func doDataUploading(queue: Queue<OrderDetails>) {
         let completed = queue.isEmpty() && self.scrapeQueue.count == 0
         && !self.dataUploader.hasDataForUpload()
         if completed {
             let detailsTimer = orderDetailsTimer.stop()
-            var logEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
+            let logEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
                                       EventConstant.PanelistID: self.params.account.panelistID,
                                       EventConstant.OrderSourceID: self.params.account.userID,
                                       EventConstant.ScrappingTime: detailsTimer]

@@ -106,8 +106,8 @@ extension BSBaseAuthenticator: BSWebNavigationObserver {
                               EventConstant.Status: EventStatus.Failure]
         if let url = url {
             if self.isForegroundAuthentication() {
-                let account = account?.source
-                if account != OrderSource.Walmart {
+                let source = account?.source
+                if source != OrderSource.Walmart {
                     self.timerHandler.stopTimer()
                     self.timerHandler.removeCallbackListener()
                     if listnerAdded {

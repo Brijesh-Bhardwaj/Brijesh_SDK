@@ -27,4 +27,8 @@ class Queue<T> {
         }
         return nil
     }
+    
+    func resetQueue() {
+        self.dataQueue.removeAll()
+    }
 }
