@@ -11,6 +11,7 @@ class Configurations: Codable {
     var loginRetries: Int?
     var cooloffPeriodCaptcha: Double?
     var orderDetailDelay: Int?
+    var orderUploadRetryCount: Int?
     
     init(login: String) {
         self.login = login
@@ -27,4 +28,5 @@ class Connection: Codable {
 
 class OrderUpload: Codable {
     var orderDetailDelay: Int?
+    var orderUploadRetryCount: Int?
 }

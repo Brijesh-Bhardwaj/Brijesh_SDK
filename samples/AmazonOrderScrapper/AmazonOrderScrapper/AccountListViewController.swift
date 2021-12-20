@@ -143,7 +143,7 @@ class AccountListViewController: UIViewController, UITableViewDataSource
     }
     
     func backgroundScrapping(account: Account) {
-        if account.accountState == .Connected {
+        if account.accountState == .Connected || account.accountState == .ConnectionInProgress {
             account.fetchOrders(orderExtractionListener: self.backgroundOrderExtractionListner, source: .general)
         }
     }

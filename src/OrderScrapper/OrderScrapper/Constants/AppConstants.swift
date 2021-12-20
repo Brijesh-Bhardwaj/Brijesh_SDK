@@ -78,6 +78,7 @@ struct AppConstants {
     static let krogerRetryCount: Int = 3
     static let deviceId = "\(LibContext.shared.orderExtractorConfig.deviceId)"
     static let devicePlatform = "ios"
+    static let orderUploadRetryCount = 2
 
     static let ErrorInJsonEncoding = "Error in JSON encoding"
 }

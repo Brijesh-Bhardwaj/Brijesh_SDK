@@ -9,7 +9,7 @@ import Sentry
 
 private enum JSONKeys: String, CodingKey {
 
-    case panelistId, panelist_id, amazonId, file, fromDate, toDate, status, message, orderStatus, data, configDetails, orderSource, platformSources, platformId
+    case panelistId, panelist_id, amazonId, file, fromDate, toDate, status, message, orderStatus, data, configDetails, orderSource, platformSources, platformId, forceScrape
 }
 
 class AmazonService {
@@ -27,13 +27,14 @@ class AmazonService {
     private static let PostEvents = "scrapping/push_events"
     
     
-    static func getDateRange(platformId: String, orderSource: String,
+    static func getDateRange(platformId: String, orderSource: String, forceScrape: Bool,
                              completionHandler: @escaping (DateRange?, Error?) -> Void) -> APIClient {
         let relativeURL = DateRangeURL + "/" + orderSource
         let client = NetworkClient<APIResponse<DateRange>>(relativeURL: relativeURL, requestMethod: .post)
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         
-        client.body = [JSONKeys.panelistId.rawValue: panelistId.lowercased(), JSONKeys.platformId.rawValue: platformId.lowercased()]
+        client.body = [JSONKeys.panelistId.rawValue: panelistId.lowercased(), JSONKeys.platformId.rawValue: platformId.lowercased(),
+                       JSONKeys.forceScrape.rawValue: forceScrape]
         
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<DateRange> {

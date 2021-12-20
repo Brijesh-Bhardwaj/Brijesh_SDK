@@ -310,8 +310,14 @@ class AmazonNavigationHelper: NavigationHelper {
     }
     
     private func getDateRange() {
+        var forceScrape = false
+        if let source = self.fetchRequestSource, source == .manual {
+            //For manual scraping send forcescrape as true to date range API
+            forceScrape = true
+        }
         var logEventAttributes:[String:String] = [:]
-        _ = AmazonService.getDateRange(platformId: self.viewModel.userAccount.userID, orderSource: OrderSource.Amazon.value) { response, error in
+        _ = AmazonService.getDateRange(platformId: self.viewModel.userAccount.userID,
+                                       orderSource: OrderSource.Amazon.value, forceScrape: forceScrape) { response, error in
             if let response = response {
                 if response.enableScraping {
                     

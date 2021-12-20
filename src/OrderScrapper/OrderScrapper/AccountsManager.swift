@@ -113,6 +113,19 @@ class AccountsManager {
                     if account.platformId.caseInsensitiveCompare(accountInDb.userID) == ComparisonResult.orderedSame {
                         accountsInDB.first?.isFirstConnectedAccount = account.firstaccount
                         
+                        //Update connected account state from backend to DB if db has connectionInProgress state
+                        if account.status == AccountState.Connected.rawValue
+                            && accountInDb.accountState == .ConnectionInProgress {
+                            do {
+                                try CoreDataManager.shared.updateUserAccount(userId: accountInDb.userID, accountStatus: account.status, panelistId: accountInDb.panelistID, orderSource: accountInDb.source.rawValue)
+                                if !accountsInDB.isEmpty {
+                                    accountsInDB[0].accountState = .Connected
+                                }
+                            } catch {
+                                print("updateAccountWithExceptionState")
+                            }
+                        }
+                        
                         self.shouldShowAlert(showNotification: showNotification, orderSource: orderSource) { boolValue in
                             if boolValue {
                                 accountsInDB = self.updateAccountState(boolValue: boolValue, accounts: accountsInDB)

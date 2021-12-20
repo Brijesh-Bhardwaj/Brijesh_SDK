@@ -42,6 +42,7 @@ class ConfigManager {
                             scrapperConfig.urls.loginRetries = scrapperConfig.connections.loginRetries
                             scrapperConfig.urls.cooloffPeriodCaptcha = scrapperConfig.connections.cooloffPeriodCaptcha
                             scrapperConfig.urls.orderDetailDelay = scrapperConfig.orderUpload.orderDetailDelay
+                            scrapperConfig.urls.orderUploadRetryCount = scrapperConfig.orderUpload.orderUploadRetryCount
                             self.configs[orderSource] = scrapperConfig.urls
                             break
                         }

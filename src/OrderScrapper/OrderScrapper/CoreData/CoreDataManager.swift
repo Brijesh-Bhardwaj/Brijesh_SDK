@@ -258,14 +258,14 @@ class CoreDataManager {
         }
     }
     
-    public func getCountForOrderDetailsByOrderSection(orderSource: String, panelistID: String, userID: String, orderSectionType: String) -> Int {
+    public func getCountForOrderDetailsByOrderSection(orderSource: String, panelistID: String, userID: String, orderSectionType: String, orderUploadRetryCount: Int) -> Int {
         dispatchQueue.sync {
             let context = persistentContainer.viewContext
             let fetchRequest = NSFetchRequest<OrderDetailsMO>(entityName: AppConstants.orderDetailEntity)
             
             let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) == %@", orderSource)
             let orderSectionIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSectionType) == [c] %@", orderSectionType)
-            let uploadOrderRetryPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnsUplaodRetryCount) <= %d", 2)
+            let uploadOrderRetryPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnsUplaodRetryCount) <= %d", orderUploadRetryCount)
             
             let sortedOrderDate = NSSortDescriptor(key: "orderDate", ascending: true)
             fetchRequest.sortDescriptors = [sortedOrderDate]

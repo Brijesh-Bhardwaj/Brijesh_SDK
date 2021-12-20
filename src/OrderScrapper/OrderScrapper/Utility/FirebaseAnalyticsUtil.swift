@@ -83,7 +83,12 @@ class FirebaseAnalyticsUtil {
     }
     
     static func logSentryMessage(message: String) {
-        SentrySDK.capture(message: message)
+        let panelistId = LibContext.shared.authProvider.getPanelistID()
+        var logEventAttributes:[String:String] = [:]
+        logEventAttributes = [EventConstant.PanelistID: panelistId,
+                              EventConstant.Status: EventStatus.Success]
+        //SentrySDK.capture(message: message)
+        self.logEvent(eventType: message, eventAttributes: logEventAttributes)
     }
  
     static func initSentrySDK(scrapeConfigs: ScrapeConfigs) {
