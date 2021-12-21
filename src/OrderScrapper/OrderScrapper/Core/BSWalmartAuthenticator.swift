@@ -14,16 +14,28 @@ class BSWalmartAuthenticator: BSBaseAuthenticator {
     
     override func onPageFinish(url: String) throws {
         print("#### walmart",url)
-       if url.contains(configurations!.login) {
-            self.injectWalmartAuthentication()
-        } else if url.contains(WalmartOrderPage) {
+        if let configurations = configurations {
+            if url.contains(configurations.login) {
+                 self.injectWalmartAuthentication()
+             } else if url.contains(WalmartOrderPage) {
+                 if let completionHandler = self.completionHandler {
+                     completionHandler(true, nil)
+                 } else {
+                    self.completionHandler?(true, nil)
+                 }
+             } else if url.contains(WalmartHomePage) {
+                 DispatchQueue.main.async {
+                     self.webClient.load(URLRequest(url: URL(string: self.WalmartOrderPage)!))
+                 }
+             }
+        } else {
+            let error = ASLException(errorMessage: Strings.ErrorNoConfigurationsFound, errorType: .authChallenge)
             if let completionHandler = self.completionHandler {
-                completionHandler(true, nil)
+                completionHandler(false, error)
+            } else {
+                self.completionHandler?(false, error)
             }
-        } else if url.contains(WalmartHomePage) {
-            DispatchQueue.main.async {
-                self.webClient.load(URLRequest(url: URL(string: self.WalmartOrderPage)!))
-            }
+            FirebaseAnalyticsUtil.logSentryMessage(message: Strings.ErrorNoConfigurationsFound)
         }
     }
     
@@ -56,6 +68,12 @@ class BSWalmartAuthenticator: BSBaseAuthenticator {
                                       EventConstant.ErrorReason: error.debugDescription,
                                       EventConstant.Status: EventStatus.Failure]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAuthentication, eventAttributes: logEventAttributes)
+            } else {
+                if let error = error {
+                    FirebaseAnalyticsUtil.logSentryError(error: error)
+                }
+                let authError = ASLException(errorMessages: Strings.ErrorScriptNotFound, errorTypes: .authError, errorEventLog: .authentication, errorScrappingType: .html)
+                self.completionHandler?(false, nil)
             }
         }
     }
@@ -77,7 +95,7 @@ class BSWalmartAuthenticator: BSBaseAuthenticator {
         }
         let js = JSUtils.getWalmartIdentificationJS(email: email, password: password)
         self.evaluateJS(javascript: js) { response, error in
-            print("!!!! getIdentificationJS",response)
+            print("$$$$ getIdentificationJS",response)
         }
     }
     
@@ -85,7 +103,7 @@ class BSWalmartAuthenticator: BSBaseAuthenticator {
         self.webClient.scriptMessageHandler?.addScriptMessageListener(listener: self)
         let userId = self.account?.userID
         var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Walmart.value,
-                                                  EventConstant.OrderSourceID: userId!]
+                                                  EventConstant.OrderSourceID: userId ?? ""]
         logEventAttributes[EventConstant.Status] = EventStatus.Success
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSListnerAdded, eventAttributes: logEventAttributes)
         
@@ -121,29 +139,29 @@ extension BSWalmartAuthenticator: ScriptMessageListener {
                 let data = message.body as! String
                 print("######## MessageReceive ", data)
                 if data.contains("Validation error is shown") {
-                    print("!!!! Validation error is shown")
+                    print("$$$$ Validation error is shown")
                     self.checkError(data: data)
                     var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Walmart.value,
-                                                              EventConstant.OrderSourceID: account!.userID]
+                                                              EventConstant.OrderSourceID: account?.userID ?? ""]
                     logEventAttributes[EventConstant.Status] = EventStatus.Failure
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectSignIn, eventAttributes: logEventAttributes)
                 } else if data.contains("verify_identity") {
                     self.authChallenge()
                     var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Walmart.value,
-                                                              EventConstant.OrderSourceID: account!.userID]
+                                                              EventConstant.OrderSourceID: account?.userID ?? ""]
                     logEventAttributes[EventConstant.Status] = EventStatus.Failure
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedCaptcha, eventAttributes: logEventAttributes)
                 }else if data.contains("sign_in") {
-                    print("!!!!sign_in")
+                    print("$$$$sign_in")
                     var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Walmart.value,
-                                                              EventConstant.OrderSourceID: account!.userID]
+                                                              EventConstant.OrderSourceID: account?.userID ?? ""]
                     logEventAttributes[EventConstant.Status] = EventStatus.Success
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectSignIn, eventAttributes: logEventAttributes)
                 } else if data.contains("Captcha is open") {
-                    print("!!!! Captcha is open")
+                    print("$$$$ Captcha is open")
                     self.authChallenge()
                     var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Walmart.value,
-                                                              EventConstant.OrderSourceID: account!.userID]
+                                                              EventConstant.OrderSourceID: account?.userID ?? ""]
                     logEventAttributes[EventConstant.Status] = EventStatus.Failure
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedCaptcha, eventAttributes: logEventAttributes)
                 }

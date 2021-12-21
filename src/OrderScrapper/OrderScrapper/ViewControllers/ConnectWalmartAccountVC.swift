@@ -93,11 +93,15 @@ class ConnectWalmartAccountVC: BaseAccountConnectVC {
     }
     
     override func didFinishPageNavigation(url: URL?) {
-        print("!!!! didFinishPageNavigation :: ",url?.absoluteString)
+        if let url = url {
+            print("$$$$ didFinishPageNavigation :: ",url.absoluteString)
+        }
     }
     
     override func didStartPageNavigation(url: URL?) {
-        print("!!!! didStartPageNavigation",url?.absoluteString)
+        if let url = url {
+            print("$$$$ didStartPageNavigation",url.absoluteString)
+        }
     }
     
     override func didFailPageNavigation(for url: URL?, withError error: Error) {
@@ -117,7 +121,7 @@ class ConnectWalmartAccountVC: BaseAccountConnectVC {
     }
     
     override func onTimerTriggered(action: String) {
-        print("!!!! onTimerTriggered base class called ",action)
+        print("$$$$ onTimerTriggered base class called ",action)
         if action == Actions.ForegroundHtmlScrapping {
             self.stopScrapping()
             //TODO: - Review success type

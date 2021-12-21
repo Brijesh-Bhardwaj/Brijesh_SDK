@@ -11,25 +11,39 @@ class BSKrogerAuthenticator: BSBaseAuthenticator {
     
     override func onPageFinish(url: String) throws {
         print("####",url)
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
-            guard let self = self else {return}
-            
-            let loginSubURL = Utils.getSubUrl(url: self.configurations!.login, delimeter: self.LoginURLDelimiter)
-            let subURL = AppConstants.KRLoginSuccessURL
-            if url == subURL{
-                if let completionHandler = self.completionHandler {
-                    completionHandler(true, nil)
-                }
-            } else if (url.contains(loginSubURL) || loginSubURL.contains(url)) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
-                    self?.injectIdentificationJS()
-                }
-            } else {
-                self.authenticationDelegate = nil
-                if let completionHandler = self.completionHandler {
-                    completionHandler(true, nil)
+        if let configurations = configurations {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
+                guard let self = self else {return}
+                
+                let loginSubURL = Utils.getSubUrl(url: configurations.login, delimeter: self.LoginURLDelimiter)
+                let subURL = AppConstants.KRLoginSuccessURL
+                if url == subURL{
+                    if let completionHandler = self.completionHandler {
+                        completionHandler(true, nil)
+                    } else {
+                        self.completionHandler?(true, nil)
+                    }
+                } else if (url.contains(loginSubURL) || loginSubURL.contains(url)) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
+                        self?.injectIdentificationJS()
+                    }
+                } else {
+                    self.authenticationDelegate = nil
+                    if let completionHandler = self.completionHandler {
+                        completionHandler(true, nil)
+                    } else {
+                        self.completionHandler?(true, nil)
+                    }
                 }
             }
+        } else {
+            let error = ASLException(errorMessage: Strings.ErrorNoConfigurationsFound, errorType: .authChallenge)
+            if let completionHandler = self.completionHandler {
+                completionHandler(false, error)
+            } else {
+                self.completionHandler?(false, error)
+            }
+            FirebaseAnalyticsUtil.logSentryMessage(message: Strings.ErrorNoConfigurationsFound)
         }
     }
     
@@ -91,9 +105,8 @@ class BSKrogerAuthenticator: BSBaseAuthenticator {
         DispatchQueue.main.async {
             self.webClient.evaluateJavaScript(js) { [weak self] (response, error) in
                 var logEventAttributes:[String:String] = [:]
-                if let response = response {
-                    let errorMessage = response as? String
-                    self?.completionHandler?(false, ASLException(errorMessage: errorMessage!,errorType: .authError))
+                if let response = response as? String {
+                    self?.completionHandler?(false, ASLException(errorMessage: response,errorType: .authError))
                     
                     logEventAttributes = [EventConstant.OrderSource: OrderSource.Kroger.value,
                                           EventConstant.OrderSourceID: userId,

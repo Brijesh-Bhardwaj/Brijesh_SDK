@@ -47,9 +47,14 @@ class BaseLoginViewController: UIViewController, LoginViewDelegate {
     }
     
     private func setLabelText(loginView: LoginView) {
-        loginView.titleTextField.text = try! getScreenTitle()
-        loginView.headerTextField.text = try! getHeading()
-        loginView.userIDTextField.placeholder = try! getUserIdPlaceHolder()
+        do {
+            loginView.titleTextField.text = try getScreenTitle()
+            loginView.headerTextField.text = try getHeading()
+            loginView.userIDTextField.placeholder = try getUserIdPlaceHolder()
+        } catch {
+            FirebaseAnalyticsUtil.logSentryMessage(message: "setLableText not found")
+        }
+  
     }
     
     private func setupSubscribers(loginView: LoginView) {
@@ -103,7 +108,7 @@ class BaseLoginViewController: UIViewController, LoginViewDelegate {
     }
     
     @objc func onLinkTapped(_ gestureRecognizer: UITapGestureRecognizer) {
-        print("!!!! clicked on the link")
+        print("$$$$ clicked on the link")
         self.openURL()
     }
     
@@ -153,11 +158,16 @@ class BaseLoginViewController: UIViewController, LoginViewDelegate {
     }
     
     private func presentConnectVC(userID: String, password: String) {
-        self.account.userID = userID
-        self.account.userPassword = password
-        let viewController = try! getViewController(account: self.account)
-        viewController.modalPresentationStyle = .fullScreen
-        self.present(viewController, animated: true, completion: nil)
+        do {
+            self.account.userID = userID
+            self.account.userPassword = password
+            let viewController = try getViewController(account: self.account)
+            viewController.modalPresentationStyle = .fullScreen
+            self.present(viewController, animated: true, completion: nil)
+        } catch {
+            FirebaseAnalyticsUtil.logSentryMessage(message: "ViewController not found")
+        }
+        
     }
     
     func getScreenTitle() throws -> String {

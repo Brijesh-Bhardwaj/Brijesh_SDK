@@ -126,7 +126,7 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
     }
     
     override func loadWebContent() {
-        print("!!! loadWebContent called")
+        print("$$$ loadWebContent called")
         webClient.loadUrl(url: self.configurations.login)
         self.networkReconnct = true
         self.connectAccountView.bringSubviewToFront(self.connectAccountView.progressView)

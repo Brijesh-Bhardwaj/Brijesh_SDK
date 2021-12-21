@@ -20,6 +20,7 @@ class CoreDataManager {
     private let dispatchQueue = DispatchQueue(label:"CoreDataQueue")
     
     lazy var persistentContainer: NSPersistentContainer = {
+        //TODO:- Do we need to handle this
         let messageKitBundle = Bundle(identifier: AppConstants.identifier)
         let modelURL = messageKitBundle!.url(forResource: AppConstants.resource, withExtension: AppConstants.extensionName)!
         let managedObjectModel =  NSManagedObjectModel(contentsOf: modelURL)

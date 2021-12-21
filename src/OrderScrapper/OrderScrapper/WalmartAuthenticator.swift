@@ -16,24 +16,35 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
     
     override func onPageFinish(url: String) throws {
         print("#### walmart",url)
-        if url.contains(configurations!.login) {
-            self.injectWalmartAuthentication()
-        } else if url.contains(WalmartOrderPage) {
+        if let configurations = configurations {
+            if url.contains(configurations.login) {
+                self.injectWalmartAuthentication()
+            } else if url.contains(WalmartOrderPage) {
+                if let completionHandler = self.completionHandler {
+                    completionHandler(true, nil)
+                } else {
+                    self.completionHandler?(true, nil)
+                }
+                self.timerHandler.stopTimer()
+                var logConnectAccountEventAttributes:[String:String] = [:]
+                logConnectAccountEventAttributes = [EventConstant.OrderSource: String(OrderSource.Walmart.rawValue),
+                                                    EventConstant.OrderSourceID: account!.userID,
+                                                    EventConstant.Status: EventStatus.Connected]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.AccountConnect, eventAttributes: logConnectAccountEventAttributes)
+            } else if url.contains(WalmartHomePage) {
+                DispatchQueue.main.async {
+                    self.webClient.load(URLRequest(url: URL(string: self.WalmartOrderPage)!))
+                }
+            }
+        } else {
+            let error = ASLException(errorMessage: Strings.ErrorNoConfigurationsFound, errorType: .authChallenge)
             if let completionHandler = self.completionHandler {
-                completionHandler(true, nil)
+                completionHandler(false, error)
+            } else {
+                self.completionHandler?(false, error)
             }
-            self.timerHandler.stopTimer()
-            var logConnectAccountEventAttributes:[String:String] = [:]
-            logConnectAccountEventAttributes = [EventConstant.OrderSource: String(OrderSource.Walmart.rawValue),
-                                                EventConstant.OrderSourceID: account!.userID,
-                                                EventConstant.Status: EventStatus.Connected]
-            FirebaseAnalyticsUtil.logEvent(eventType: EventType.AccountConnect, eventAttributes: logConnectAccountEventAttributes)
-        } else if url.contains(WalmartHomePage) {
-            DispatchQueue.main.async {
-                self.webClient.load(URLRequest(url: URL(string: self.WalmartOrderPage)!))
-            }
+            FirebaseAnalyticsUtil.logSentryMessage(message: Strings.ErrorNoConfigurationsFound)
         }
-        
     }
     
     override func onStartPageNavigation(url: String) {
@@ -63,7 +74,7 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
     }
     
     override func onNetworkDisconnected() {
-        print("!!!! onNetworkDisconnected called ")
+        print("$$$ onNetworkDisconnected called ")
         self.webClient.scriptMessageHandler?.removeScriptMessageListener()
     }
     
@@ -148,32 +159,36 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
         }
         let js = JSUtils.getWalmartIdentificationJS(email: email, password: password)
         self.evaluateJS(javascript: js) { response, error in
-            print("!!!! getIdentificationJS",response)
+            print("$$$$$ getIdentificationJS",response)
         }
     }
     
     func addScriptListener() {
         self.webClient.scriptMessageHandler?.addScriptMessageListener(listener: self)
         self.listnerAdded = true
-        let userId = self.account?.userID
+        if let userId = self.account?.userID {
         var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Walmart.value,
-                                                  EventConstant.OrderSourceID: userId!]
-        logEventAttributes[EventConstant.Status] = EventStatus.Success
-        FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSListnerAdded, eventAttributes: logEventAttributes)
+                                                      EventConstant.OrderSourceID: userId]
+            logEventAttributes[EventConstant.Status] = EventStatus.Success
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSListnerAdded, eventAttributes: logEventAttributes)
+        }
+        
         
     }
     func checkError() {
         print("@@@@ check error called")
         let js = JSUtils.getWACheckErrorJS()
         self.evaluateJS(javascript: js) { response, error in
-            if response != nil {
-                let response = response as? String
+            if let response = response as? String {
+                // TODO: check for the response
                 self.timerHandler.stopTimer()
-                self.authenticationDelegate?.didReceiveLoginChallenge(error: response!)
-                self.notifyAuthError(errorMessage: response!)
+                self.authenticationDelegate?.didReceiveLoginChallenge(error: response)
+                self.notifyAuthError(errorMessage: response)
                 self.webClient.scriptMessageHandler?.removeScriptMessageListener()
             } else {
-                
+                self.timerHandler.stopTimer()
+                self.webClient.scriptMessageHandler?.removeScriptMessageListener()
+                self.completionHandler?(false,ASLException(errorMessage: Strings.ErrorInInjectingScript, errorType: .authError))
             }
         }
     }
@@ -198,17 +213,19 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         let accountState = account?.accountState.rawValue
         if accountState == AccountState.NeverConnected.rawValue {
-            let userId = account?.userID
-            let orderSource = account?.source.value
-            _ = AmazonService.registerConnection(platformId: userId!,
-                                                 status: AccountState.NeverConnected.rawValue,
-                                                 message: errorMessage, orderStatus: OrderStatus.None.rawValue, orderSource: OrderSource.Walmart.value) { response, error in
-                //TODO
+            
+            if let userId = account?.userID, let orderSource = account?.source.value {
+                _ = AmazonService.registerConnection(platformId: userId,
+                                                     status: AccountState.NeverConnected.rawValue,
+                                                     message: errorMessage, orderStatus: OrderStatus.None.rawValue, orderSource: OrderSource.Walmart.value) { response, error in
+                    //TODO
+                }
+                let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
+                _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource) { response, error in
+                    //TODO
+                }
             }
-            let eventLog = EventLogs(panelistId: panelistId, platformId: userId!, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
-            _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource!) { response, error in
-                //TODO
-            }
+           
         } else {
             self.updateAccountWithExceptionState(message: AppConstants.msgAuthError)
         }
@@ -259,7 +276,7 @@ extension WalmartAuthenticator: ScriptMessageListener {
                 let data = message.body as! String
                 print("######## MessageReceive ", data)
                 if data.contains("Validation error is shown") {
-                    print("!!!! Validation error is shown")
+                    print("#### Validation error is shown")
                     self.checkError()
                     var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Walmart.value,
                                                               EventConstant.OrderSourceID: account!.userID]
@@ -273,13 +290,13 @@ extension WalmartAuthenticator: ScriptMessageListener {
                     logEventAttributes[EventConstant.Status] = EventStatus.Success
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedCaptcha, eventAttributes: logEventAttributes)
                 }else if data.contains("sign_in") {
-                    print("!!!! ## sign_in")
+                    print("##### sign_in")
                     var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Walmart.value,
                                                               EventConstant.OrderSourceID: account!.userID]
                     logEventAttributes[EventConstant.Status] = EventStatus.Success
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectSignIn, eventAttributes: logEventAttributes)
                 } else if data.contains("Captcha is open") {
-                    print("!!!! Captcha is open")
+                    print("#### Captcha is open")
                     self.timerHandler.stopTimer()
                     self.authenticationDelegate?.didReceiveAuthenticationChallenge(authError: true)
                     var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Walmart.value,
@@ -287,7 +304,7 @@ extension WalmartAuthenticator: ScriptMessageListener {
                     logEventAttributes[EventConstant.Status] = EventStatus.Success
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedCaptcha, eventAttributes: logEventAttributes)
                 } else if data.contains("Captcha is closed") {
-                    print("!!!! Captcha is closed")
+                    print("#### Captcha is closed")
                     self.authenticationDelegate?.didReceiveLoginChallenge(error: Strings.authenticationFailed)
                     self.notifyAuthError(errorMessage: Strings.authenticationFailed)
                 }

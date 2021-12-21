@@ -323,8 +323,7 @@ class AmazonNavigationHelper: NavigationHelper {
                     
                     //Clear order details from DB while doing foreground scrapping
                     let account = self.viewModel.userAccount as! UserAccountMO
-                    let source: OrderSource = OrderSource(rawValue: account.orderSource)!
-                    CoreDataManager.shared.deleteOrderDetails(userID: account.userID, panelistID: account.panelistID, orderSource: source.value)
+                    CoreDataManager.shared.deleteOrderDetails(userID: account.userID, panelistID: account.panelistID, orderSource: account.source.value)
                     
                     if response.scrappingType == ScrappingType.report.rawValue {
                         self.scrapeReport(response: response)
@@ -373,8 +372,9 @@ class AmazonNavigationHelper: NavigationHelper {
     }
     
     private func scrapeReport(response: DateRange) {
-        let account = self.viewModel.userAccount
-        self.CSVScrapper.scrapeOrders(response: response, account: account!, timerHandler: self.timerHandler, param: nil)
+        if let account = self.viewModel.userAccount {
+            self.CSVScrapper.scrapeOrders(response: response, account: account, timerHandler: self.timerHandler, param: nil)
+        }
     }
     
     private func scrapeHtml() {
@@ -399,7 +399,9 @@ class AmazonNavigationHelper: NavigationHelper {
             DispatchQueue.main.async {
                 self.timerHandler.stopTimer()
                 if completed {
-                    self.scraperListener.updateSuccessType(successType: successType!)
+                    if let successType = successType {
+                        self.scraperListener.updateSuccessType(successType: successType)
+                    }
                     self.scraperListener.onCompletion(isComplete: true)
                     UserDefaults.standard.setValue(0, forKey: Strings.AmazonOnNumberOfCaptchaRetry)
                 } else {

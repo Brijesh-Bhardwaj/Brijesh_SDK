@@ -193,9 +193,9 @@ class AmazonOrderScrapper {
                         FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_background_scrapping \((scrappingData?.account.source)!)")
                         self.performBackgroundScraping((scrappingData?.account)!, (scrappingData?.orderExtractionListner)!)
                     } else {
-                        let logEventAttributes:[String:String] = [EventConstant.OrderSource: (scrappingData?.account.source.value)!,
-                                                                  EventConstant.PanelistID: (scrappingData?.account.panelistID)!,
-                                                                  EventConstant.OrderSourceID: (scrappingData?.account.userID)!,
+                        let logEventAttributes:[String:String] = [EventConstant.OrderSource: (scrappingData?.account.source.value) ?? "",
+                                                                  EventConstant.PanelistID: (scrappingData?.account.panelistID) ?? "",
+                                                                  EventConstant.OrderSourceID: (scrappingData?.account.userID) ?? "",
                                                                   EventConstant.ScrappingMode: ScrapingMode.Background.rawValue,
                                                                   EventConstant.Status: EventStatus.Success]
                         let error = ASLException(errorMessage: "bg process in cool off period" , errorType: nil)
@@ -222,7 +222,7 @@ class AmazonOrderScrapper {
                 if let error = error {
                     let panelistId = LibContext.shared.authProvider.getPanelistID()
                     var logEventAttributes:[String:String] = [:]
-
+                    
                     logEventAttributes = [EventConstant.OrderSource: orderSource.value,
                                           EventConstant.PanelistID: panelistId,
                                           EventConstant.ScrappingMode: ScrapingMode.Background.rawValue,
@@ -359,14 +359,22 @@ class AmazonOrderScrapper {
                 DispatchQueue.main.async {
                     var accountDetail: Account = account
                     if completed {
-                        orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
+                        if let successType = successType {
+                            orderExtractionListener.onOrderExtractionSuccess(successType: successType, account: account)
+                        } else {
+                            orderExtractionListener.onOrderExtractionSuccess(successType: .fetchCompleted, account: account)
+                        }
                         UserDefaults.standard.setValue(0, forKey: Strings.AmazonOnNumberOfCaptchaRetry)
                     } else {
                         if error?.errorMessage == Strings.ErrorOnAuthenticationChallenge {
                             accountDetail.accountState = .ConnectedButScrappingFailed
                             orderExtractionListener.showNotification(account: accountDetail)
                         } else {
-                            orderExtractionListener.onOrderExtractionFailure(error: error!, account: accountDetail)
+                            if let error = error {
+                                orderExtractionListener.onOrderExtractionFailure(error: error, account: account)
+                            } else {
+                                orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil), account: account)
+                            }
                         }
                     }
                     self.scrapeNextAccount(account: account)
@@ -381,14 +389,22 @@ class AmazonOrderScrapper {
                 DispatchQueue.main.async {
                     var accountDetail: Account = account
                     if completed {
-                        orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
+                        if let successType = successType {
+                            orderExtractionListener.onOrderExtractionSuccess(successType: successType, account: account)
+                        } else {
+                            orderExtractionListener.onOrderExtractionSuccess(successType: .fetchCompleted, account: account)
+                        }
                         UserDefaults.standard.setValue(0, forKey: Strings.InstacartOnNumberOfCaptchaRetry)
                     } else {
                         if error?.errorMessage == Strings.ErrorOnAuthenticationChallenge {
                             accountDetail.accountState = .ConnectedButScrappingFailed
                             orderExtractionListener.showNotification(account: accountDetail)
                         } else {
-                            orderExtractionListener.onOrderExtractionFailure(error: error!, account: account)
+                            if let error = error {
+                                orderExtractionListener.onOrderExtractionFailure(error: error, account: account)
+                            } else {
+                                orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil), account: account)
+                            }
                         }
                     }
                     self.scrapeNextAccount(account: account)
@@ -403,14 +419,24 @@ class AmazonOrderScrapper {
                 DispatchQueue.main.async {
                     var accountDetail: Account = account
                     if completed {
-                        orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
+                        
+                        if let successType = successType {
+                            orderExtractionListener.onOrderExtractionSuccess(successType: successType, account: account)
+                        } else {
+                            orderExtractionListener.onOrderExtractionSuccess(successType: .fetchCompleted, account: account)
+                        }
+                        
                         UserDefaults.standard.setValue(0, forKey: Strings.KrogerOnNumberOfCaptchaRetry)
                     } else {
                         if error?.errorMessage == Strings.ErrorOnAuthenticationChallenge {
                             accountDetail.accountState = .ConnectedButScrappingFailed
                             orderExtractionListener.showNotification(account: account)
                         } else {
-                            orderExtractionListener.onOrderExtractionFailure(error: error!, account: account)
+                            if let error = error {
+                                orderExtractionListener.onOrderExtractionFailure(error: error, account: account)
+                            } else {
+                                orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil), account: account)
+                            }
                         }
                     }
                     self.scrapeNextAccount(account: account)
@@ -424,13 +450,23 @@ class AmazonOrderScrapper {
                 let (completed, successType) = result
                 DispatchQueue.main.async {
                     if completed {
-                        orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
+                        if let successType = successType {
+                            orderExtractionListener.onOrderExtractionSuccess(successType: successType, account: account)
+                        } else {
+                            orderExtractionListener.onOrderExtractionSuccess(successType: .fetchCompleted, account: account)
+                        }
+                        
                         UserDefaults.standard.setValue(0, forKey: Strings.KrogerOnNumberOfCaptchaRetry)
                     } else {
                         if error?.errorMessage == Strings.ErrorOnAuthenticationChallenge {
                             orderExtractionListener.showNotification(account: account)
                         } else {
-                            orderExtractionListener.onOrderExtractionFailure(error: error!, account: account)
+                            if let error = error {
+                                orderExtractionListener.onOrderExtractionFailure(error: error, account: account)
+                            } else {
+                                orderExtractionListener.onOrderExtractionFailure(error: ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil), account: account)
+                            }
+                            
                         }
                     }
                     self.scrapeNextAccount(account: account)

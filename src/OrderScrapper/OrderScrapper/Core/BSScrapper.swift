@@ -28,6 +28,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     public var scraperListener: ScraperProgressListener?
     public var scrappingMode: ScrapingMode?
     var fetchRequestSource: FetchRequestSource?
+    let panelistID = LibContext.shared.authProvider.getPanelistID()
     
     private lazy var bsHtmlScrapper: BSHtmlScrapper = {
         return BSHtmlScrapper(params: self.scrapperParams)
@@ -86,9 +87,9 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     func getAuthenticator() throws -> BSAuthenticator {
         let error = ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource: self.account!.source.value,
-                              EventConstant.PanelistID: self.account!.panelistID,
-                              EventConstant.OrderSourceID: self.account!.userID,
+        logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
+                              EventConstant.PanelistID: panelistID,
+                              EventConstant.OrderSourceID: self.account?.userID ?? "",
                               EventConstant.ScrappingType: scrappingType,
                               EventConstant.EventName: EventType.ExceptionWhileGettingAuthenticator,
                               EventConstant.Status: EventStatus.Failure]
@@ -102,9 +103,9 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     func getOrderSource() throws -> OrderSource {
         let error = ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource: self.account!.source.value,
-                              EventConstant.PanelistID: self.account!.panelistID,
-                              EventConstant.OrderSourceID: self.account!.userID,
+        logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
+                              EventConstant.PanelistID: panelistID,
+                              EventConstant.OrderSourceID: self.account?.userID ?? "",
                               EventConstant.ScrappingType: scrappingType,
                               EventConstant.EventName: EventType.ExceptionWhileGettingOrderSource,
                               EventConstant.Status: EventStatus.Failure]
@@ -129,9 +130,9 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
                 self.stopScrapping()
                 if let error = error {
                     var logEventAttributes:[String:String] = [:]
-                    logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
-                                          EventConstant.PanelistID: self.account!.panelistID,
-                                          EventConstant.OrderSourceID: self.account!.userID,
+                    logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
+                                          EventConstant.PanelistID: self.panelistID,
+                                          EventConstant.OrderSourceID: self.account?.userID ?? "",
                                           EventConstant.EventName: EventType.ExceptionWhileGettingConfiguration,
                                           EventConstant.Status: EventStatus.Failure]
                     if let scrappingMode = self.scrappingMode {
@@ -157,9 +158,9 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
             listener.updateProgressStep(htmlScrappingStep: .startScrapping)
             var logEventAttributes:[String:String] = [:]
             
-            logEventAttributes = [EventConstant.OrderSource:self.account!.source.value,
-                                  EventConstant.PanelistID: self.account!.panelistID,
-                                  EventConstant.OrderSourceID: self.account!.userID,
+            logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
+                                  EventConstant.PanelistID: panelistID,
+                                  EventConstant.OrderSourceID: self.account?.userID ?? "",
                                   EventConstant.ScrappingStep: HtmlScrappingStep.startScrapping.value,
                                   EventConstant.Status: EventStatus.Success]
             if let scrappingMode = self.scrappingMode {
@@ -185,9 +186,9 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
                 }
                 var logEventAttributes:[String:String] = [:]
                 
-                logEventAttributes = [EventConstant.OrderSource: self.account!.source.value,
-                                      EventConstant.PanelistID: self.account!.panelistID,
-                                      EventConstant.OrderSourceID: self.account!.userID,
+                logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
+                                      EventConstant.PanelistID: self.panelistID,
+                                      EventConstant.OrderSourceID: self.account?.userID ?? "",
                                       EventConstant.ScrappingStep: HtmlScrappingStep.startScrapping.value,
                                       EventConstant.Data: json,
                                       EventConstant.Status: EventStatus.Success]
@@ -195,9 +196,9 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
             } else {
                 var logEventAttributes:[String:String] = [:]
                 
-                logEventAttributes = [EventConstant.OrderSource:self.account!.source.value,
-                                      EventConstant.PanelistID: self.account!.panelistID,
-                                      EventConstant.OrderSourceID: self.account!.userID,
+                logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
+                                      EventConstant.PanelistID: self.panelistID,
+                                      EventConstant.OrderSourceID: self.account?.userID ?? "",
                                       EventConstant.ScrappingStep: HtmlScrappingStep.startScrapping.value,
                                       EventConstant.EventName: EventType.ExceptionWhileDateRangeAPI,
                                       EventConstant.Status: EventStatus.Failure]
@@ -228,10 +229,10 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
                     
                     if let error = error {
                         var logEventAttributes:[String:String] = [:]
-                        logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
-                                              EventConstant.PanelistID: self.account!.panelistID,
-                                              EventConstant.OrderSourceID: self.account!.userID,
-                                              EventConstant.ScrappingType: dateRange.scrappingType!,
+                        logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
+                                              EventConstant.PanelistID: self.panelistID,
+                                              EventConstant.OrderSourceID: self.account?.userID ?? "",
+                                              EventConstant.ScrappingType: dateRange.scrappingType ?? "",
                                               EventConstant.EventName: EventType.ExceptionWhileGettingConfiguration,
                                               EventConstant.Status: EventStatus.Failure]
                         if let scrappingMode = self.scrappingMode {
@@ -249,10 +250,10 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
             self.stopScrapping()
             
             var logEventAttributes:[String:String] = [:]
-            logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
-                                  EventConstant.PanelistID: self.account!.panelistID,
-                                  EventConstant.OrderSourceID: self.account!.userID,
-                                  EventConstant.ScrappingType: dateRange.scrappingType!,
+            logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
+                                  EventConstant.PanelistID: self.panelistID,
+                                  EventConstant.OrderSourceID: self.account?.userID ?? "",
+                                  EventConstant.ScrappingType: dateRange.scrappingType ?? "",
                                   EventConstant.Status: EventStatus.Success]
             if let scrappingMode = self.scrappingMode {
                 logEventAttributes[EventConstant.ScrappingMode] = scrappingMode.rawValue
@@ -284,11 +285,13 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
                     self.bsHtmlScrapper.extractOrders(script: executableScript, url: self.configuration.listing)
                     
                     var logEventAttributes:[String:String] = [:]
-                    logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
-                                          EventConstant.PanelistID: self.account!.panelistID,
-                                          EventConstant.OrderSourceID: self.account!.userID,
+                    logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
+                                          EventConstant.PanelistID: self.panelistID,
+                                          EventConstant.OrderSourceID: self.account?.userID ?? "",
                                           EventConstant.ScrappingType: ScrappingType.html.rawValue,
                                           EventConstant.Status: EventStatus.Success]
+                    
+                    
                     if let scrappingMode = self.scrappingMode {
                         logEventAttributes[EventConstant.ScrappingMode] = scrappingMode.rawValue
                     }
@@ -298,11 +301,13 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
                 self.stopScrapping()
                 
                 var logEventAttributes:[String:String] = [:]
-                logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
-                                      EventConstant.PanelistID: self.account!.panelistID,
-                                      EventConstant.OrderSourceID: self.account!.userID,
+                logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
+                                      EventConstant.PanelistID: self.panelistID,
+                                      EventConstant.OrderSourceID: self.account?.userID ?? "",
                                       EventConstant.ScrappingType: ScrappingType.html.rawValue,
                                       EventConstant.Status: EventStatus.Success]
+                
+                
                 if let scrappingMode = self.scrappingMode {
                     logEventAttributes[EventConstant.ScrappingMode] = scrappingMode.rawValue
                 }
@@ -327,9 +332,9 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
         let error = ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil)
         
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource:  self.orderSource.value,
-                              EventConstant.PanelistID: self.account!.panelistID,
-                              EventConstant.OrderSourceID: self.account!.userID,
+        logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
+                              EventConstant.PanelistID: self.panelistID,
+                              EventConstant.OrderSourceID: self.account?.userID ?? "",
                               EventConstant.ScrappingType: ScrappingType.html.rawValue,
                               EventConstant.EventName: EventType.TimeoutOccurred,
                               EventConstant.Status: EventStatus.Failure]
@@ -378,9 +383,9 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
         print("### onScrapeDataUploadCompleted ", complete)
         
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource:  self.orderSource.value,
-                              EventConstant.PanelistID: self.account!.panelistID,
-                              EventConstant.OrderSourceID: self.account!.userID,
+        logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
+                              EventConstant.PanelistID: self.panelistID,
+                              EventConstant.OrderSourceID: self.account?.userID ?? "",
                               EventConstant.ScrappingType: ScrappingType.html.rawValue]
         if let scrappingMode = self.scrappingMode {
             logEventAttributes[EventConstant.ScrappingMode] = scrappingMode.rawValue
@@ -413,8 +418,8 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     }
     
     func onHtmlScrappingSucess(response: String) {
-        let jsonData = response.data(using: .utf8)!
         do {
+            let jsonData = response.data(using: .utf8)!
             let scrapeResponse = try JSONDecoder().decode(JSCallback<[OrderDetails]>.self, from: jsonData)
             print("#### onHtmlScrappingSucess BSCrapper ", response)
             if scrapeResponse.type == "order\(ScrappingPage.details.rawValue)" {
@@ -422,8 +427,8 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
             }
             
             var logEventAttributes:[String:String] = [EventConstant.OrderSource: self.orderSource.value,
-                                                      EventConstant.PanelistID: self.account!.panelistID,
-                                                      EventConstant.OrderSourceID: self.account!.userID,
+                                                      EventConstant.PanelistID: self.panelistID,
+                                                      EventConstant.OrderSourceID: self.account?.userID ?? "",
                                                       EventConstant.ScrappingStep: HtmlScrappingStep.listing.value,
                                                       EventConstant.ScrappingType: ScrappingType.html.rawValue]
             if let scrappingMode = self.scrappingMode {
@@ -465,7 +470,8 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                         }
                         self.completionHandler((true, .fetchCompleted), nil)
                     }
-                    let amazonLogs = EventLogs(panelistId:account!.panelistID , platformId: account!.userID, section: SectionType.orderUpload.rawValue, type: FailureTypes.none.rawValue, status: EventState.success.rawValue, message: AppConstants.msgOrderListSuccess, fromDate: dateRange?.fromDate, toDate: dateRange?.toDate, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
+                    let userId = account!.userID
+                    let amazonLogs = EventLogs(panelistId:self.panelistID , platformId: userId, section: SectionType.orderUpload.rawValue, type: FailureTypes.none.rawValue, status: EventState.success.rawValue, message: AppConstants.msgOrderListSuccess, fromDate: dateRange?.fromDate, toDate: dateRange?.toDate, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
                     _ = AmazonService.logEvents(eventLogs: amazonLogs, orderSource: self.account!.source.value) { response, error in
                         
                     }
@@ -488,10 +494,9 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     let message = "\(Strings.ScrappingPageListing) + \(timerValue) + \(String(describing: scrapeResponse.data?.count)) + \(error) "
                     FirebaseAnalyticsUtil.logSentryMessage(message: message)
                     
-                    let panelistId = account!.panelistID
                     let userId = account!.userID
-                    let amazonLogs = EventLogs(panelistId: panelistId , platformId: userId, section: SectionType.orderUpload.rawValue, type: FailureTypes.jsFailed.rawValue, status: EventState.fail.rawValue, message: error, fromDate: dateRange?.fromDate, toDate: dateRange?.toDate, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
-                    _ = AmazonService.logEvents(eventLogs: amazonLogs, orderSource: self.account!.source.value) { response, error in
+                    let amazonLogs = EventLogs(panelistId: self.panelistID , platformId: userId, section: SectionType.orderUpload.rawValue, type: FailureTypes.jsFailed.rawValue, status: EventState.fail.rawValue, message: error, fromDate: dateRange?.fromDate, toDate: dateRange?.toDate, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
+                    _ = AmazonService.logEvents(eventLogs: amazonLogs, orderSource: self.orderSource.value) { response, error in
                         
                     }
                     logEventAttributes[EventConstant.ErrorReason] =  error
@@ -510,16 +515,17 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     
     func onHtmlScrappingFailure(error: ASLException) {
         self.stopScrapping()
-        let eventLogs = EventLogs(panelistId: self.account!.panelistID, platformId: self.account!.userID, section: SectionType.orderUpload.rawValue , type: error.errorEventLog!.rawValue, status: EventState.fail.rawValue, message: error.errorMessage, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrapingType: error.errorScrappingType?.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
-        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.account!.source.value) { response, error in
+        let userId = account!.userID
+        let eventLogs = EventLogs(panelistId: self.panelistID, platformId: userId, section: SectionType.orderUpload.rawValue , type: error.errorEventLog!.rawValue, status: EventState.fail.rawValue, message: error.errorMessage, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrapingType: error.errorScrappingType?.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
+        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.orderSource.value) { response, error in
             //TODO
         }
         self.completionHandler((false, nil), error)
         // API call
         
         var logEventAttributes:[String:String] = [EventConstant.OrderSource: self.orderSource.value,
-                                                  EventConstant.PanelistID: self.account!.panelistID,
-                                                  EventConstant.OrderSourceID: self.account!.userID,
+                                                  EventConstant.PanelistID: self.panelistID,
+                                                  EventConstant.OrderSourceID: self.account?.userID ?? "",
                                                   EventConstant.ScrappingType: ScrappingType.html.rawValue,
                                                   EventConstant.EventName: EventType.HtmlScrapingFailed,
                                                   EventConstant.Status: EventStatus.Failure]
@@ -553,8 +559,8 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     
                     var logEventAttributes:[String:String] = [:]
                     logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
-                                          EventConstant.PanelistID: self.account!.panelistID,
-                                          EventConstant.OrderSourceID: self.account!.userID,
+                                          EventConstant.PanelistID: self.panelistID,
+                                          EventConstant.OrderSourceID: self.account?.userID ?? "",
                                           EventConstant.ScrappingType: ScrappingType.html.rawValue,
                                           EventConstant.Status: EventStatus.Success]
                     if let scrappingMode = self.scrappingMode {
@@ -567,12 +573,16 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     }
     
     func getOrderDetails() -> [OrderDetailsMO] {
-        let orderDetails = CoreDataManager.shared.fetchOrderDetails(orderSource: try! self.getOrderSource().value, panelistID: self.account!.panelistID, userID: self.account!.userID)
+        var orderDetails: [OrderDetailsMO] = []
+        if let userID = self.account?.userID {
+            orderDetails = CoreDataManager.shared.fetchOrderDetails(orderSource: self.orderSource.value, panelistID: self.panelistID, userID: userID)
+            
+        }
         
         var logEventAttributes:[String:String] = [:]
-        logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
-                              EventConstant.PanelistID: account!.panelistID,
-                              EventConstant.OrderSourceID: account!.userID,
+        logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
+                              EventConstant.PanelistID: self.panelistID,
+                              EventConstant.OrderSourceID: account?.userID ?? "",
                               EventConstant.Status: EventStatus.Success]
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrappedOrderDetailsFromDB, eventAttributes: logEventAttributes)
         
@@ -580,26 +590,25 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     }
     
     func getOrdersDetailsCountOnConnection() -> Int {
-        let orderSource = self.account?.source
         var orderDetailsCount = 0
-        ConfigManager.shared.getConfigurations(orderSource: orderSource!) { (configurations, error) in
+        ConfigManager.shared.getConfigurations(orderSource: self.orderSource) { (configurations, error) in
             if let configuration = configurations {
                 let orderUploadRetryCount = configuration.orderUploadRetryCount ?? AppConstants.orderUploadRetryCount
-                orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: try! self.getOrderSource().value, panelistID: self.account!.panelistID, userID: self.account!.userID, orderSectionType: SectionType.connection.rawValue, orderUploadRetryCount: orderUploadRetryCount)
+                orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: self.orderSource.value, panelistID: self.account!.panelistID, userID: self.account!.userID, orderSectionType: SectionType.connection.rawValue, orderUploadRetryCount: orderUploadRetryCount)
                 
                 var logEventAttributes:[String:String] = [:]
-                logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
-                                      EventConstant.PanelistID: self.account!.panelistID,
-                                      EventConstant.OrderSourceID: self.account!.userID,
+                logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
+                                      EventConstant.PanelistID: self.panelistID,
+                                      EventConstant.OrderSourceID: self.account?.userID ?? "",
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrappedOrderDetailsFromDB, eventAttributes: logEventAttributes)
             } else {
                 if let error = error {
                     var logEventAttributes:[String:String] = [:]
                     
-                    logEventAttributes = [EventConstant.OrderSource: self.account!.source.value,
-                                          EventConstant.PanelistID: self.account!.panelistID,
-                                          EventConstant.OrderSourceID: self.account!.userID,
+                    logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
+                                          EventConstant.PanelistID: self.panelistID,
+                                          EventConstant.OrderSourceID: self.account?.userID ?? "",
                                           EventConstant.EventName: EventType.ExceptionWhileGettingConfiguration,
                                           EventConstant.Status: EventStatus.Failure]
                     FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
@@ -617,8 +626,8 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                 let orderDetails = OrderDetailsMapper.mapFromDBObject(dbOrderDetails: self.getOrderDetails())
                 
                 var logEventAttributes:[String:String] = [:]
-                logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
-                                      EventConstant.PanelistID: self.account!.panelistID,
+                logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
+                                      EventConstant.PanelistID: self.panelistID,
                                       EventConstant.OrderSourceID: self.account!.userID,
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgInjectJSForOrderDetail, eventAttributes: logEventAttributes)
@@ -628,12 +637,13 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                 
             } else {
                 self.stopScrapping()
-                self.completionHandler((false, nil), nil)
+                let error = ASLException(errorMessage: Strings.ErrorScriptNotFound, errorType: nil)
+                self.completionHandler((false, nil), error)
                 
                 var logEventAttributes:[String:String] = [:]
-                logEventAttributes = [EventConstant.OrderSource: try! self.getOrderSource().value,
-                                      EventConstant.PanelistID: self.account!.panelistID,
-                                      EventConstant.OrderSourceID: self.account!.userID,
+                logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
+                                      EventConstant.PanelistID: self.panelistID,
+                                      EventConstant.OrderSourceID: self.account?.userID ?? "",
                                       EventConstant.ScrappingType: ScrappingType.html.rawValue,
                                       EventConstant.Status: EventStatus.Success]
                 if let scrappingMode = self.scrappingMode {
@@ -645,8 +655,8 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     }
     
     private func logEvent(status: String) {
-        let eventLogs = EventLogs(panelistId: self.account!.panelistID, platformId: self.account!.userID, section: SectionType.orderUpload.rawValue , type: FailureTypes.none.rawValue, status: status, message: AppConstants.bgScrappingCompleted, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
-        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.account!.source.value) { response, error in
+        let eventLogs = EventLogs(panelistId: self.panelistID, platformId: self.account!.userID, section: SectionType.orderUpload.rawValue , type: FailureTypes.none.rawValue, status: status, message: AppConstants.bgScrappingCompleted, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
+        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.orderSource.value) { response, error in
             //TODO
         }
     }
@@ -661,7 +671,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                 let accountState = account.accountState
                 if accountState == .ConnectionInProgress && orderDetailsUploadCount == 0 {
                     do {
-                        try CoreDataManager.shared.updateUserAccount(userId: self.account!.userID, accountStatus: AccountState.Connected.rawValue, panelistId: self.account!.panelistID, orderSource: self.account!.source.rawValue)
+                        try CoreDataManager.shared.updateUserAccount(userId: self.account!.userID, accountStatus: AccountState.Connected.rawValue, panelistId: self.panelistID, orderSource: self.account!.source.rawValue)
                     } catch let error {
                         print(AppConstants.tag, "updateAccountWithExceptionState", error.localizedDescription)
                     }

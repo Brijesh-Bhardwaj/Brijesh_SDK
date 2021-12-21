@@ -124,7 +124,7 @@ class DataUploadOperation: Operation {
     
     func updateUploadRetryCount() {
         var uploadRetryCount = self.uploadRetryCount ?? 0
-        print("!!!! orderRetryCount failed",uploadRetryCount)
+        print("$$$$ orderRetryCount failed",uploadRetryCount)
         uploadRetryCount = uploadRetryCount + 1
         if let userId = self.userId, let panelistId = self.panelistId {
             do {

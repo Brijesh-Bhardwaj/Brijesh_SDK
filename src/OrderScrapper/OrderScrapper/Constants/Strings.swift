@@ -108,6 +108,7 @@ struct Strings {
     static let ErrorOnWebViewLoading = "An unexpected error occurred.Please try again"
     static let ErrorInFlashMessage = "error in authentication"
     static let InstacartURL = "http://www.instacart.com"
+    static let ErrorInInjectingScript = "An error in injecting script"
 
     
     //Sentry error message

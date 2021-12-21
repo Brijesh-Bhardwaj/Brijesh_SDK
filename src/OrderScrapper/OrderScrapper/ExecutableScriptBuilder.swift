@@ -17,20 +17,31 @@ class ExecutableScriptBuilder {
     }
     
     func getInputDataForListingPage(scrappingPage: ScrappingPage, dateRange: DateRange, urls: Urls) -> String {
-        let input = ListingPageScriptInput(type: scrappingPage.rawValue, urls: urls, startDate: dateRange.fromDate!, endDate: dateRange.toDate!, lastOrderId: dateRange.lastOrderId ?? "")
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .withoutEscapingSlashes
-        let jsonData = try! encoder.encode(input)
-        let jsonString = String(data: jsonData, encoding: .utf8)!
+        var jsonString = ""
+        do {
+            let input = ListingPageScriptInput(type: scrappingPage.rawValue, urls: urls, startDate: dateRange.fromDate!, endDate: dateRange.toDate!, lastOrderId: dateRange.lastOrderId ?? "")
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .withoutEscapingSlashes
+            let jsonData = try encoder.encode(input)
+            jsonString = String(data: jsonData, encoding: .utf8)!
+        } catch {
+            FirebaseAnalyticsUtil.logSentryMessage(message: "error getting getInputDataForListingPage")
+        }
+       
         return jsonString
     }
     
     func getInputDataForDetailPage(scrappingPage: ScrappingPage, detailUrl: String, orderId: String, orderDate: String) -> String {
-        let input = DetailPageScriptInput(type: scrappingPage.rawValue, detailsUrl: detailUrl, orderId: orderId, orderDate: orderDate)
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .withoutEscapingSlashes
-        let jsonData = try! encoder.encode(input)
-        let jsonString = String(data: jsonData, encoding: .utf8)!
+        var jsonString = ""
+        do {
+            let input = DetailPageScriptInput(type: scrappingPage.rawValue, detailsUrl: detailUrl, orderId: orderId, orderDate: orderDate)
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .withoutEscapingSlashes
+            let jsonData = try encoder.encode(input)
+            jsonString = String(data: jsonData, encoding: .utf8)!
+        } catch {
+            FirebaseAnalyticsUtil.logSentryMessage(message: "error getting getInputDataForDetailPage")
+        }
         return jsonString
     }
 }

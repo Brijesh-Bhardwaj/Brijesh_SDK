@@ -110,17 +110,21 @@ class BSCSVScrapper: NSObject {
                     let year = Int(strResult) ?? 0
                     let startYear = Int(reportConfig.startYear)
                     let endYear = Int(reportConfig.endYear)
-                    if year > startYear! {
-                        reportConfig.startYear = String(year)
-                        reportConfig.startDate = AppConstants.firstDayOfJan
-                        reportConfig.startMonth =  AppConstants.monthJan
-                        let startDate = AppConstants.firstDayOfJan + "-" + AppConstants.monthJan + "-" + String(year)
-                        reportConfig.fullStartDate = DateUtils.getFormattedDate(dateStr: startDate)
+                    if let startYear = startYear {
+                        if year > startYear {
+                            reportConfig.startYear = String(year)
+                            reportConfig.startDate = AppConstants.firstDayOfJan
+                            reportConfig.startMonth =  AppConstants.monthJan
+                            let startDate = AppConstants.firstDayOfJan + "-" + AppConstants.monthJan + "-" + String(year)
+                            reportConfig.fullStartDate = DateUtils.getFormattedDate(dateStr: startDate)
+                        }
                     }
-                    if year > endYear! {
-                        reportConfig.endYear = String(year)
-                        let endDate = reportConfig.endDate + "-" + reportConfig.endMonth + "-" + String(year)
-                        reportConfig.fullStartDate = DateUtils.getFormattedDate(dateStr: endDate)
+                    if let endYear = endYear {
+                        if year > endYear {
+                            reportConfig.endYear = String(year)
+                            let endDate = reportConfig.endDate + "-" + reportConfig.endMonth + "-" + String(year)
+                            reportConfig.fullStartDate = DateUtils.getFormattedDate(dateStr: endDate)
+                        }
                     }
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in

@@ -164,7 +164,7 @@ extension BaseAccountConnectVC: ConnectAccountViewDelegate {
     
     func didTapRetryOnNetworkError() {
         if self.hasNetwork() {
-            print("!!!! didTapRetryOnNetworkError hasNetwork ")
+            print("$$$$ didTapRetryOnNetworkError hasNetwork ")
             loadWebContent()
             self.shouldAllowBack = false
         }

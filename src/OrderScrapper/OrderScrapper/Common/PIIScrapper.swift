@@ -63,7 +63,7 @@ class PIIScrapper {
                             }
                             if let searchedValue = searchedValue, let regex = searchedValue.regex {
                                 do {
-                                    let regex = try! NSRegularExpression(pattern: regex, options: [])
+                                    let regex = try NSRegularExpression(pattern: regex, options: [])
                                     let result = regex.firstMatch(in: attributeValue, options: [],  range: NSRange(attributeValue.startIndex..., in: attributeValue))
                                     try result.map {
                                            let pValue = String(attributeValue[Range($0.range, in: attributeValue)!])

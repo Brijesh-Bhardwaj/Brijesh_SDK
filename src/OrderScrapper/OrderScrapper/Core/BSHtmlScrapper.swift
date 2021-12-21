@@ -116,7 +116,7 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                         let authTimer = self.authTimer.stop()
                         self.params.webNavigationDelegate.setObserver(observer: self)
                         self.params.webClient.scriptMessageHandler?.addScriptMessageListener(listener: self)
-                        print("!!! didFinishPageNavigation ",self.url)
+                        print("$$$$ didFinishPageNavigation ",self.url)
                         self.params.webClient.loadListingUrl(url: self.url)
                         
                         var logEventAttributes:[String:String] = [:]
@@ -146,8 +146,7 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                     DispatchQueue.main.async {
                         self.params.webClient.evaluateJavaScript(js) { response, error in
                             print("#### evaluateJavaScript ", response)
-                            if let response = response {
-                                let doSignIn = response as! Bool
+                            if let doSignIn = response as? Bool {
                                 if doSignIn {
                                     print("##### Load login again")
                                     self.params.webClient.loadUrl(url: self.params.configuration.login)
@@ -262,9 +261,9 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                 let numberOfCapchaRetry = Utils.getKeyForNumberOfCaptchaRetry(orderSorce: orderSource)
                 
                 let showNotification = self.dateRange?.showNotification ?? false
-                let captchaRetries = configuration.captchaRetries
+                let captchaRetries = configuration.captchaRetries ?? 3
                 let failureCount = UserDefaults.standard.integer(forKey: numberOfCapchaRetry)
-                completion(showNotification || failureCount > captchaRetries!)
+                completion(showNotification || failureCount > captchaRetries)
             } else {
                 if let error = error {
                     var logEventAttributes:[String:String] = [:]

@@ -37,12 +37,17 @@ class BSWebClient: WKWebView {
     }
     
     func loadListingUrl(url: String) {
-        let encodedStr = url.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
-        if let url = URL(string: encodedStr) {
-            let urlRequest = URLRequest(url:url)
-            DispatchQueue.main.async {
-                self.load(urlRequest)
+        do {
+            let encodedStr = url.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
+            if let url = URL(string: encodedStr) {
+                let urlRequest = URLRequest(url:url)
+                DispatchQueue.main.async {
+                    self.load(urlRequest)
+                }
             }
+        } catch {
+            print("loadListingUrl failed")
         }
+     
     }
 }

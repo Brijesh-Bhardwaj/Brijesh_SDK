@@ -22,7 +22,7 @@ public class ScrapingAccountInfo: Equatable {
     }
     
     public static func == (lhs: ScrapingAccountInfo, rhs: ScrapingAccountInfo) -> Bool {
-        print("!!! isEquals")
+        print("$$$ isEquals")
        return lhs.account.userID == rhs.account.userID &&
               lhs.account.source == rhs.account.source
     }

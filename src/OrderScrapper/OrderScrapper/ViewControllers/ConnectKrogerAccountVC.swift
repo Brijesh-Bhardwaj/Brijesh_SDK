@@ -136,7 +136,10 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
     }
     
     override func didFinishPageNavigation(url: URL?) {
-        print("@@@ didFinishPageNavigation",url!)
+        if let url = url {
+            print("@@@ didFinishPageNavigation",url)
+        }
+       
     }
     
     override func didStartPageNavigation(url: URL?) {

@@ -196,9 +196,9 @@ class AccountsManager {
                 let numberOfCapchaRetry = Utils.getKeyForNumberOfCaptchaRetry(orderSorce: orderSource)
                 
                 let showNotification = showNotification
-                let captchaRetries = configuration.captchaRetries
+                let captchaRetries = configuration.captchaRetries ?? AppConstants.captchaRetryCount
                 let failureCount = UserDefaults.standard.integer(forKey: numberOfCapchaRetry)
-                completion(showNotification || failureCount > captchaRetries!)
+                completion(showNotification || failureCount > captchaRetries)
             } else {
                 completion(false)
             }

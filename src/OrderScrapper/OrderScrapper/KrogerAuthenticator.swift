@@ -20,18 +20,30 @@ internal class KrogerAuthenticator: BSBaseAuthenticator {
     }
     override func onPageFinish(url: String) throws {
         print("#### Kroger Authenticator",url)
-        if url.contains(configurations!.login) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
-                self?.injectIdentificationJS()
+        if let configurations = configurations {
+            if url.contains(configurations.login) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
+                    self?.injectIdentificationJS()
+                }
+            } else if url == (KrogerHomePage) {
+                DispatchQueue.main.async {
+                    self.webClient.load(URLRequest(url: URL(string: self.KrogerOrderPage)!))
+                }
+            } else if url.contains(KrogerOrderPage) {
+                if let completionHandler = self.completionHandler {
+                    completionHandler(true, nil)
+                } else {
+                    self.completionHandler?(true, nil)
+                }
             }
-        } else if url == (KrogerHomePage) {
-            DispatchQueue.main.async {
-                self.webClient.load(URLRequest(url: URL(string: self.KrogerOrderPage)!))
-            }
-        } else if url.contains(KrogerOrderPage) {
+        } else {
+            let error = ASLException(errorMessage: Strings.ErrorNoConfigurationsFound, errorType: .authChallenge)
             if let completionHandler = self.completionHandler {
-                completionHandler(true, nil)
+                completionHandler(false, error)
+            } else {
+                self.completionHandler?(false, error)
             }
+            FirebaseAnalyticsUtil.logSentryMessage(message: Strings.ErrorNoConfigurationsFound)
         }
     }
     override func onStartPageNavigation(url: String) {
@@ -81,10 +93,10 @@ internal class KrogerAuthenticator: BSBaseAuthenticator {
         let js = JSUtils.getKRCheckErrorJS()
         DispatchQueue.main.async {
             self.webClient.evaluateJavaScript(js) { [weak self] (response, error) in
-                if let response = response {
-                    self!.authenticationDelegate?.didReceiveLoginChallenge(error: response as! String)
-                    let errorMessage = response as? String
-                    self?.notifyAuthError(errorMessage: errorMessage!)
+                guard let self = self else {return}
+                if let response = response as? String {
+                    self.authenticationDelegate?.didReceiveLoginChallenge(error: response)
+                    self.notifyAuthError(errorMessage: response)
                 }
             }
         }
@@ -93,10 +105,10 @@ internal class KrogerAuthenticator: BSBaseAuthenticator {
         let js = JSUtils.getKRCheckError2JS()
         DispatchQueue.main.async {
             self.webClient.evaluateJavaScript(js) { [weak self] (response, error) in
-                if let response = response {
-                    self!.authenticationDelegate?.didReceiveLoginChallenge(error: response as! String)
-                    let errorMessage = response as? String
-                    self?.notifyAuthError(errorMessage: errorMessage!)
+                guard let self = self else {return}
+                if let response = response as? String {
+                    self.authenticationDelegate?.didReceiveLoginChallenge(error: response)
+                    self.notifyAuthError(errorMessage: response)
                 }
             }
         }
@@ -106,7 +118,7 @@ internal class KrogerAuthenticator: BSBaseAuthenticator {
         self.listnerAdded = true
         let userId = self.account?.userID
         var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Kroger.value,
-                                                  EventConstant.OrderSourceID: userId!]
+                                                  EventConstant.OrderSourceID: userId ?? "" ]
         logEventAttributes[EventConstant.Status] = EventStatus.Failure
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSInjectUserName, eventAttributes: logEventAttributes)
         
@@ -158,16 +170,18 @@ internal class KrogerAuthenticator: BSBaseAuthenticator {
         let accountState = account?.accountState.rawValue
         if accountState == AccountState.NeverConnected.rawValue {
             let userId = account?.userID
-            let orderSource = account?.source.value
-            _ = AmazonService.registerConnection(platformId: userId!,
+            _ = AmazonService.registerConnection(platformId: userId ?? "" ,
                                                  status: AccountState.NeverConnected.rawValue,
                                                  message: errorMessage, orderStatus: OrderStatus.None.rawValue, orderSource: OrderSource.Kroger.value) { response, error in
                 //TODO
             }
-            let eventLog = EventLogs(panelistId: panelistId, platformId: userId!, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
-            _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource!) { response, error in
-                //TODO
+            let eventLog = EventLogs(panelistId: panelistId, platformId: userId ?? "", section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
+            if let orderSource = account?.source.value {
+                _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource) { response, error in
+                    //TODO
+                }
             }
+            
         } else {
             self.updateAccountWithExceptionState(message: AppConstants.msgAuthError)
         }

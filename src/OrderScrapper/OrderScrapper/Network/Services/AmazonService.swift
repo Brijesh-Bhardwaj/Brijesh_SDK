@@ -184,7 +184,9 @@ class AmazonService {
                                            EventConstant.PanelistID: panelistId,
                                            EventConstant.EventName: EventType.UpdateStatusAPIFailed,
                                            EventConstant.Status: EventStatus.Failure]
-                FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error as! Error)
+                if let error = error {
+                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                }
             }
         }
         return client

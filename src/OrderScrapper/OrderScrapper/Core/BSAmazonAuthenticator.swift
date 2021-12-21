@@ -11,17 +11,29 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
     
     override func onPageFinish(url: String) throws {
         print("### didFinish", url)
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
-            guard let self = self else {return}
-            
-            let loginSubURL = self.getSubURL(from: self.configurations!.login, delimeter: self.LoginURLDelimiter)
-            if (url.contains(loginSubURL) || loginSubURL.contains(url)) {
-                self.injectAuthErrorVerificationJS()
-            } else {
-                if let completionHandler = self.completionHandler {
-                    completionHandler(true, nil)
+        if let configurations = configurations {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
+                guard let self = self else {return}
+                
+                let loginSubURL = self.getSubURL(from: configurations.login, delimeter: self.LoginURLDelimiter)
+                if (url.contains(loginSubURL) || loginSubURL.contains(url)) {
+                    self.injectAuthErrorVerificationJS()
+                } else {
+                    if let completionHandler = self.completionHandler {
+                        completionHandler(true, nil)
+                    } else {
+                        self.completionHandler?(true, nil)
+                    }
                 }
             }
+        } else {
+            let error = ASLException(errorMessage: Strings.ErrorNoConfigurationsFound, errorType: .authChallenge)
+            if let completionHandler = self.completionHandler {
+                completionHandler(false, error)
+            } else {
+                self.completionHandler?(false, error)
+            }
+            FirebaseAnalyticsUtil.logSentryMessage(message: Strings.ErrorNoConfigurationsFound)
         }
     }
     

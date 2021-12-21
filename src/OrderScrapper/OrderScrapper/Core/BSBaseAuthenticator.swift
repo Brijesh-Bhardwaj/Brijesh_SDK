@@ -20,6 +20,7 @@ class BSBaseAuthenticator: NSObject, BSAuthenticator, TimerCallbacks {
     var completionHandler: ((Bool, ASLException?) -> Void)?
     var authenticationDelegate: BSAuthenticaorDelegate?
     var listnerAdded = false
+    let panelistID = LibContext.shared.authProvider.getPanelistID()
     
     lazy var timerHandler: TimerHandler = {
         return TimerHandler(timerCallback: self)
@@ -47,7 +48,7 @@ class BSBaseAuthenticator: NSObject, BSAuthenticator, TimerCallbacks {
         throw error
     }
     func onStartPageNavigation(url: String) {
-        print("!!!! onStartPageNavigation ")
+        print("$$$$ onStartPageNavigation ")
     }
     
     func onFailPageNavigation(for url: String, withError error: Error) {
@@ -75,7 +76,12 @@ extension BSBaseAuthenticator: BSWebNavigationObserver {
             return
         }
         self.timerHandler.stopTimer()
-        try! self.onPageFinish(url: url)
+        do {
+            try self.onPageFinish(url: url)
+        } catch {
+            print("failed to call the onPageFinish")
+        }
+      
     }
     
     func didStartPageNavigation(url: URL?) {
@@ -83,7 +89,7 @@ extension BSBaseAuthenticator: BSWebNavigationObserver {
             if self.isForegroundAuthentication() {
                 if let account = account?.source {
                     if account != OrderSource.Walmart {
-                        print("!!!! didStartPageNavigationcalled in bsBaseAuthenticator",url)
+                        print("$$$$ didStartPageNavigationcalled in bsBaseAuthenticator",url)
                         self.timerHandler.startTimer(action: Actions.LoadingURl + url.absoluteString)
                     }
                     self.authenticationDelegate?.didReceiveAuthenticationChallenge(authError: false)
@@ -96,11 +102,11 @@ extension BSBaseAuthenticator: BSWebNavigationObserver {
     
     func didFailPageNavigation(for url: URL?, withError error: Error) {
         var logEventAttributes:[String:String] = [:]
-        print("!!!! didStartPageNavigation called in bsBaseAuthenticator",url)
+        print("$$$$ didStartPageNavigation called in bsBaseAuthenticator",url)
         FirebaseAnalyticsUtil.logSentryMessage(message: "did Fail page navigation \(url)")
-        logEventAttributes = [EventConstant.OrderSource: self.account!.source.value,
-                              EventConstant.PanelistID: self.account!.panelistID,
-                              EventConstant.OrderSourceID: self.account!.userID,
+        logEventAttributes = [EventConstant.OrderSource: self.account?.source.value ?? "",
+                              EventConstant.PanelistID: panelistID,
+                              EventConstant.OrderSourceID: self.account?.userID ?? "",
                               EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
                               EventConstant.EventName: EventType.DidFailPageNavigation,
                               EventConstant.Status: EventStatus.Failure]

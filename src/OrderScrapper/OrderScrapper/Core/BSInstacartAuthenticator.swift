@@ -12,24 +12,38 @@ class BSInstacartAuthenticator: BSBaseAuthenticator {
     
     override func onPageFinish(url: String) throws {
         print("####",url)
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
-            guard let self = self else {return}
-            
-            let loginSubURL = Utils.getSubUrl(url: self.configurations!.login, delimeter: self.LoginURLDelimiter)
-            // TODO -: Check the hardcoded URL
-            let subURL = AppConstants.ICLoginSuccessURL
-            if url.contains(subURL){
-                if let completionHandler = self.completionHandler {
-                    completionHandler(true, nil)
-                }
-            } else if (url.contains(loginSubURL) || loginSubURL.contains(url)) {
-                self.onContinueBrowser()
-            } else {
-                self.authenticationDelegate = nil
-                if let completionHandler = self.completionHandler {
-                    completionHandler(true, nil)
+        if let configurations = configurations {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
+                guard let self = self else {return}
+                
+                let loginSubURL = Utils.getSubUrl(url: configurations.login, delimeter: self.LoginURLDelimiter)
+                // TODO -: Check the hardcoded URL
+                let subURL = AppConstants.ICLoginSuccessURL
+                if url.contains(subURL){
+                    if let completionHandler = self.completionHandler {
+                        completionHandler(true, nil)
+                    } else {
+                        self.completionHandler?(true, nil)
+                    }
+                } else if (url.contains(loginSubURL) || loginSubURL.contains(url)) {
+                    self.onContinueBrowser()
+                } else {
+                    self.authenticationDelegate = nil
+                    if let completionHandler = self.completionHandler {
+                        completionHandler(true, nil)
+                    } else {
+                        self.completionHandler?(true, nil)
+                    }
                 }
             }
+        } else {
+            let error = ASLException(errorMessage: Strings.ErrorNoConfigurationsFound, errorType: .authChallenge)
+            if let completionHandler = self.completionHandler {
+                completionHandler(false, error)
+            } else {
+                self.completionHandler?(false, error)
+            }
+            FirebaseAnalyticsUtil.logSentryMessage(message: Strings.ErrorNoConfigurationsFound)
         }
     }
     
@@ -87,6 +101,12 @@ class BSInstacartAuthenticator: BSBaseAuthenticator {
                                       EventConstant.ErrorReason: Strings.ErrorJSICAuthenticationResposne,
                                       EventConstant.Status: EventStatus.Failure]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSInjectPassword, eventAttributes: logEventAttributes)
+            } else {
+                if let error = error {
+                    FirebaseAnalyticsUtil.logSentryError(error: error )
+                    print("error",error)
+                }
+             
             }
         }
     }
@@ -106,6 +126,11 @@ class BSInstacartAuthenticator: BSBaseAuthenticator {
                 logEventAttributes[EventConstant.ErrorReason] = Strings.ErrorJSICAuthenticationResposne
                 logEventAttributes[EventConstant.Status] = EventStatus.Failure
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSInjectPassword, eventAttributes: logEventAttributes)
+            } else {
+                if let error = error {
+                    FirebaseAnalyticsUtil.logSentryError(error: error )
+                    print("error",error)
+                }
             }
         }
         
@@ -123,15 +148,16 @@ class BSInstacartAuthenticator: BSBaseAuthenticator {
                 let error = ASLException(errorMessages: response ?? Strings.ErrorInFlashMessage , errorTypes: .authChallenge, errorEventLog: .authentication, errorScrappingType: .html)
                 self.completionHandler?(false, error)
             } else {
-                let error = error as? String
-                FirebaseAnalyticsUtil.logSentryError(error: error as! Error)
-                print("error",error)
+                if let error = error {
+                    FirebaseAnalyticsUtil.logSentryError(error: error)
+                    print("error",error)
+                }
             }
         }
     }
     
     func onSignIn() {
-        print("!!!! signIn called")
+        print("$$$$ signIn called")
         guard let password = self.account?.userPassword else {
             self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorPasswordIsNil, errorType: .authError))
             return
@@ -147,6 +173,8 @@ class BSInstacartAuthenticator: BSBaseAuthenticator {
                     let error = ASLException(errorMessage: Strings.ErrorOccuredWhileInjectingJS + error.debugDescription, errorType: .authChallenge)
                     self?.completionHandler!(false,error)
                     //TODO :- Authentication error
+                } else {
+                    print("#### Valid SignIn JS")
                 }
             }
         }
@@ -160,7 +188,7 @@ class BSInstacartAuthenticator: BSBaseAuthenticator {
     }
     
     func captchaClosed() {
-        print("!!!! captchaClosed called")
+        print("$$$$ captchaClosed called")
         let js = JSUtils.captchaClosed()
         self.evaluateJS(javascript: js) { response, error in
         }
@@ -222,10 +250,10 @@ extension BSInstacartAuthenticator: ScriptMessageListener {
                 self.onFlashMessage()
                 self.webClient.scriptMessageHandler?.removeScriptMessageListener()
             } else if data.contains("Email field Availablity callback") {
-                print("!!! data",data)
+                print("$$$ data",data)
                 self.onSignIn()
             } else if data.contains("Captcha_open") {
-                print("!!! data",data)
+                print("$$$ data",data)
                 self.authenticationChallenge(data: data)
             }
             

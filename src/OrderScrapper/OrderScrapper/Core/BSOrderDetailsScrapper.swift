@@ -105,11 +105,15 @@ class BSOrderDetailsScrapper {
     
     private func uploadScrapeData(data: Dictionary<String, Any>) {
         if !queue.isEmpty() {
-            print("!!!! scrapeQueue",OrderState.Inprogress.rawValue)
-            self.dataUploader.addData(data: data, orderDetail: orderDetail!, orderState: OrderState.Inprogress.rawValue)
+            print("$$$$ scrapeQueue",OrderState.Inprogress.rawValue)
+            if let orderDetail = orderDetail {
+                self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue)
+            }
         } else {
-            print("!!!! scrapeQueue",OrderState.Completed.rawValue)
-            self.dataUploader.addData(data: data, orderDetail: orderDetail!,orderState: OrderState.Completed.rawValue)
+            print("$$$$ scrapeQueue",OrderState.Completed.rawValue)
+            if let orderDetail = orderDetail {
+            self.dataUploader.addData(data: data, orderDetail: orderDetail,orderState: OrderState.Completed.rawValue)
+            }
         }
     }
     
@@ -255,7 +259,7 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
         if let count = orderDetail.uploadRetryCount {
             uploadRetryCount = count
         }
-        print("!!!! orderRetryCount failed",uploadRetryCount, orderDetail.orderId)
+        print("### orderRetryCount failed",uploadRetryCount, orderDetail.orderId)
         uploadRetryCount = uploadRetryCount + 1
         if let userId = orderDetail.userID, let panelistId = orderDetail.panelistID {
             do {
