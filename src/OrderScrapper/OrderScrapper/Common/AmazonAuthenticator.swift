@@ -21,11 +21,12 @@ internal class AmazonAuthenticator: Authenticator {
     
     private var isPasswordInjected: Bool = false
     private var isAuthenticated: Bool = false
-
+    private let scraperListener: ScraperProgressListener
     var jsResultSubscriber: AnyCancellable? = nil
     
-    required init(_ viewModel: WebViewModel) {
+    required init(_ viewModel: WebViewModel,_ scraperListener: ScraperProgressListener) {
         self.viewModel = viewModel
+        self.scraperListener = scraperListener
     }
     
     deinit {
@@ -201,11 +202,15 @@ internal class AmazonAuthenticator: Authenticator {
         }
         _ = AmazonService.updateStatus(amazonId: userId, status: status
                                        , message: message, orderStatus: orderStatus) { response, error in
-            //Todo
+            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                self.sendServicesDownCallback()
+            }
         }
         let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.captcha.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrappingType: nil)
         _ = AmazonService.logEvents(eventLogs: eventLog) { response, error in
-                //TODO
+            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                self.sendServicesDownCallback()
+            }
         }
     }
     
@@ -228,7 +233,9 @@ internal class AmazonAuthenticator: Authenticator {
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIRegisterUser, eventAttributes: logEventAttributes)
                 } else {
                     logEventAttributes[EventConstant.Status] = EventStatus.Failure
-                    if let error = error {
+                    if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                        self.sendServicesDownCallback()
+                    } else if let error = error {
                         logEventAttributes[EventConstant.EventName] = EventType.UserRegistrationAPIFailed
                         FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
                     } else {
@@ -238,7 +245,9 @@ internal class AmazonAuthenticator: Authenticator {
             }
             let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authenticaion.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrappingType: nil)
             _ = AmazonService.logEvents(eventLogs: eventLog) { response, error in
-                    //TODO
+                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                    self.sendServicesDownCallback()
+                }
             }
         } else {
             self.updateAccountWithExceptionState(message: AppConstants.msgAuthError)
@@ -253,5 +262,9 @@ internal class AmazonAuthenticator: Authenticator {
     
     func isUserAuthenticated() -> Bool {
         return isAuthenticated
+    }
+    func sendServicesDownCallback() {
+        let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
+        self.scraperListener.onServicesDown(error: error)
     }
 }

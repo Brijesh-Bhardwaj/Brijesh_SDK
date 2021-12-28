@@ -40,7 +40,7 @@ class AccountsViewController: UIViewController, UNUserNotificationCenterDelegate
             configValue.baseURL = Util.getBaseUrl()
             configValue.appName = "ReceiptStraw-Dev"
             configValue.appVersion = (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String)!
-            try OrdersExtractor.initialize(authProvider: self, viewPresenter: self, analyticsProvider: self, orderExtractionConfig: configValue)
+            try OrdersExtractor.initialize(authProvider: self, viewPresenter: self, analyticsProvider: self, orderExtractionConfig: configValue, servicesStatusListener: self)
         } catch let error {
             debugPrint(error.localizedDescription)
         }
@@ -299,6 +299,11 @@ extension UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
             self.present(alert, animated: true, completion: nil)
         }
+    }
+}
+extension AccountsViewController: ServicesStatusListener {
+    func onServicesFailure(exception: ASLException) {
+        
     }
 }
 

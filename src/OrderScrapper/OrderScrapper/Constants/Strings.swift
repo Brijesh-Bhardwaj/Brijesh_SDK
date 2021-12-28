@@ -68,7 +68,9 @@ struct Strings {
     static let OnBackgroundScrappingTimeOfPeriod = "Cool oof Time period"
     static let OnNumberOfCaptchaRetry = "Captcha retry count"
     static let BGScrappingCoolOffTime = 300.0
-    
+    static let ErrorServicesDown = "Service Not Available"
+    static let OnAuthenticationChallenegeRetryCount = "Amazon error retry count"
+
     //Sentry error message
     static let ErrorAPIReponseDateRange = "Error while getting date range"
     static let ErrorAPIReposneUplodFile = "Error while uploading file"

@@ -14,4 +14,5 @@ public enum FailureTypes: String {
     case notify
     case none
     case jsFailed
+    case servicesDown
 }

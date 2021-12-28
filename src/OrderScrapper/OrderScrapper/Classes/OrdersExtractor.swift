@@ -23,7 +23,8 @@ public class OrdersExtractor {
     public static func initialize(authProvider: AuthProvider,
                                   viewPresenter: ViewPresenter,
                                   analyticsProvider: AnalyticsProvider?,
-                                  orderExtractionConfig: OrderExtractorConfig) throws {
+                                  orderExtractionConfig: OrderExtractorConfig,
+                                  servicesStatusListener: ServicesStatusListener) throws {
         
         let authToken = authProvider.getAuthToken()
         let panelistId = authProvider.getPanelistID()
@@ -46,7 +47,8 @@ public class OrdersExtractor {
         
         AmazonOrderScrapper.shared.initialize(authProvider: authProvider,
                                               viewPresenter: viewPresenter,
-                                              analyticsProvider: analyticsProvider)
+                                              analyticsProvider: analyticsProvider,
+                                              servicesStatusListener: servicesStatusListener)
         
         //Configure firebase analytics
         if analyticsProvider == nil {
@@ -73,6 +75,10 @@ public class OrdersExtractor {
                 }
             } else {
                 LibContext.shared.timeoutValue = AppConstants.timeoutCounter
+                if let error = error, error.errorEventLog == .servicesDown {
+                    let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
+                    LibContext.shared.servicesStatusListener.onServicesFailure(exception: error)
+                }
             }
         }
         
@@ -162,15 +168,20 @@ public class OrdersExtractor {
                             }
                         }
                     } else {
-                        DispatchQueue.global().async {
-                            if let error = error {
-                                logEventAttributes[EventConstant.EventName] = EventType.GetAccountAPIFailed
-                                FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
-                            }
-                            
-                            let accounts = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
-                            DispatchQueue.main.async {
-                                completionHandler(accounts, hasNeverConnected)
+                        if let error = error, error.errorEventLog == .servicesDown {
+                            let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
+                            LibContext.shared.servicesStatusListener.onServicesFailure(exception: error)
+                        } else {
+                            DispatchQueue.global().async {
+                                if let error = error {
+                                    logEventAttributes[EventConstant.EventName] = EventType.GetAccountAPIFailed
+                                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                                }
+                                
+                                let accounts = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
+                                DispatchQueue.main.async {
+                                    completionHandler(accounts, hasNeverConnected)
+                                }
                             }
                         }
                     }
@@ -224,12 +235,4 @@ public class OrdersExtractor {
         UIFont.registerFont(withFilenameString: "SF-Pro-Rounded-Bold.otf")
         UIFont.registerFont(withFilenameString: "SF-Pro-Rounded-Regular.otf")
     }
-    
-    private static func updateStatus(amazonId: String, status: String, message: String, orderStatus: String) {
-        _ = AmazonService.updateStatus(amazonId: amazonId, status: status, message: message, orderStatus: orderStatus) { response, error in
-            //Todo
-        }
-    }
-    
-    
 }

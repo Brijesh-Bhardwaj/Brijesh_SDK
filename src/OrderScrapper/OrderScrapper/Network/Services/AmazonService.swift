@@ -25,7 +25,7 @@ class AmazonService {
     private static let PostEvents = "scrapping/push_events"
     
     static func getDateRange(amazonId: String,
-                             completionHandler: @escaping (DateRange?, Error?) -> Void) -> APIClient {
+                             completionHandler: @escaping (DateRange?, ASLException?) -> Void) -> APIClient {
         let client = NetworkClient<APIResponse<DateRange>>(relativeURL: DateRangeURL, requestMethod: .post)
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         
@@ -34,7 +34,8 @@ class AmazonService {
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<DateRange> {
                 if response.isError {
-                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    let aslException = ASLException(error: nil, errorMessage: response.error ?? "Error", failureType: nil)
+                    completionHandler(nil, aslException)
                     print(AppConstants.tag, "getDateRange", response.error ?? "Error")
                     FirebaseAnalyticsUtil.logSentryError(error: APIError(error: response.error ?? Strings.ErrorAPIReponseDateRange))
                 } else {
@@ -43,7 +44,7 @@ class AmazonService {
                 }
             } else {
                 FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_daterange_api_fail")
-                completionHandler(nil, nil)
+                completionHandler(nil, error)
             }
         }
         
@@ -52,7 +53,7 @@ class AmazonService {
     
     static func uploadFile(fileURL: URL, amazonId: String,
                            fromDate: String, toDate: String,
-                           _ completionHandler: @escaping (ReportUpload?, Error?) -> Void) -> APIClient {
+                           _ completionHandler: @escaping (ReportUpload?, ASLException?) -> Void) -> APIClient {
         let client = NetworkClient<APIResponse<ReportUpload>>(relativeURL: UploadReportURL, requestMethod: .multipart)
         
         let panelistId = LibContext.shared.authProvider.getPanelistID()
@@ -67,7 +68,8 @@ class AmazonService {
         client.executeAPI() { response, error in
             if let response = response as? APIResponse<ReportUpload> {
                 if response.isError {
-                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    let aslException = ASLException(error: nil, errorMessage: response.error ?? "Error", failureType: nil)
+                    completionHandler(nil, aslException)
                     print(AppConstants.tag, "uploadFile", response.error ?? "Error")
                     FirebaseAnalyticsUtil.logSentryError(error: APIError(error: response.error ?? Strings.ErrorAPIReposneUplodFile))
                 } else {
@@ -76,55 +78,57 @@ class AmazonService {
                 }
             } else {
                 FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_uploadfile_api_fail")
-                completionHandler(nil, nil)
+                completionHandler(nil, error)
             }
         }
         
         return client
     }
     
-    static func getPIIList(completionHandler: @escaping ([PIIAttribute]?, Error?) -> Void) -> APIClient {
+    static func getPIIList(completionHandler: @escaping ([PIIAttribute]?, ASLException?) -> Void) -> APIClient {
         let client = NetworkClient<APIResponse<[PIIAttribute]>>(relativeURL: PIIListURL, requestMethod: .get)
         
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<[PIIAttribute]> {
                 if response.isError {
-                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    let aslException = ASLException(error: nil, errorMessage: response.error ?? "Error", failureType: nil)
+                    completionHandler(nil, aslException)
                     print(AppConstants.tag, "getPIIList", response.error ?? "Error")
                     FirebaseAnalyticsUtil.logSentryError(error: APIError(error: response.error ?? Strings.ErrorAPIReposnePIIList))
                 } else {
                     completionHandler(response.data, nil)
                 }
             } else {
-                completionHandler(nil, nil)
+                completionHandler(nil, error)
             }
         }
         
         return client
     }
     
-    static func getAccounts(completionHandler: @escaping (GetAccountsResponse?, Error?) -> Void) -> APIClient {
+    static func getAccounts(completionHandler: @escaping (GetAccountsResponse?, ASLException?) -> Void) -> APIClient {
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         let relativeUrl = GetAccounts + "/" + panelistId
         let client = NetworkClient<APIResponse<GetAccountsResponse>>(relativeURL: relativeUrl, requestMethod: .get)
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<GetAccountsResponse> {
                 if response.isError {
-                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    let aslException = ASLException(error: nil, errorMessage: response.error ?? "Error", failureType: nil)
+                    completionHandler(nil, aslException)
                     print(AppConstants.tag, "getAccounts", response.error ?? "Error")
                     FirebaseAnalyticsUtil.logSentryError(error:  APIError(error: response.error ?? Strings.ErrorAPIReposneGetAccount))
                 } else {
                     completionHandler(response.data, nil)
                 }
             } else {
-                completionHandler(nil, nil)
+                completionHandler(nil, error)
             }
         }
         
         return client
     }
     
-    static func registerConnection(amazonId: String, status: String, message: String, orderStatus: String, completionHandler: @escaping (AccountDetails?, Error?) -> Void) -> APIClient {
+    static func registerConnection(amazonId: String, status: String, message: String, orderStatus: String, completionHandler: @escaping (AccountDetails?, ASLException?) -> Void) -> APIClient {
         let client = NetworkClient<APIResponse<AccountDetails>>(relativeURL: CreateConnection, requestMethod: .post)
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         
@@ -134,14 +138,15 @@ class AmazonService {
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<AccountDetails> {
                 if response.isError {
-                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    let aslException = ASLException(error: nil, errorMessage: response.error ?? "Error", failureType: nil)
+                    completionHandler(nil, aslException)
                     print(AppConstants.tag, "registerConnection", response.error ?? "Error")
                     FirebaseAnalyticsUtil.logSentryError(error:  APIError(error: response.error ?? Strings.ErrorAPIReposneRegisterConnection))
                 } else {
                     completionHandler(response.data, nil)
                 }
             } else {
-                completionHandler(nil, nil)
+                completionHandler(nil, error)
             }
         }
         
@@ -149,7 +154,7 @@ class AmazonService {
     }
     
     static func updateStatus(amazonId: String, status: String, message: String, orderStatus: String,
-                             completionHandler: @escaping (AccountDetails?, Error?) -> Void) -> APIClient {
+                             completionHandler: @escaping (AccountDetails?, ASLException?) -> Void) -> APIClient {
         let relativeUrl = UpdateStatus
         let client = NetworkClient<APIResponse<AccountDetails>>(relativeURL: relativeUrl, requestMethod: .put)
         let panelistId = LibContext.shared.authProvider.getPanelistID()
@@ -159,14 +164,15 @@ class AmazonService {
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<AccountDetails> {
                 if response.isError {
-                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    let aslException = ASLException(error: nil, errorMessage: response.error ?? "Error", failureType: nil)
+                    completionHandler(nil, aslException)
                     print(AppConstants.tag, "updateStatus", response.error ?? "Error")
                     FirebaseAnalyticsUtil.logSentryError(error: APIError(error: response.error ?? Strings.ErrorAPIResponseUpdateStatus))
                 } else {
                     completionHandler(response.data, nil)
                 }
             } else {
-                completionHandler(nil, nil)
+                completionHandler(nil, error)
                 
                 let panelistId = LibContext.shared.authProvider.getPanelistID()
                 let logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
@@ -180,7 +186,7 @@ class AmazonService {
         return client
     }
     
-   static func getScrapperConfig(orderSource: [String], completionHandler: @escaping (ScrapeConfigs?, Error?) -> Void) -> APIClient {
+   static func getScrapperConfig(orderSource: [String], completionHandler: @escaping (ScrapeConfigs?, ASLException?) -> Void) -> APIClient {
         
         let client = NetworkClient<APIResponse<ScrapeConfigs>>(relativeURL: ScrapperConfigURL, requestMethod: .post)
         client.body = [JSONKeys.configDetails.rawValue: orderSource]
@@ -188,88 +194,93 @@ class AmazonService {
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<ScrapeConfigs> {
                 if response.isError {
-                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    let aslException = ASLException(error: nil, errorMessage: response.error ?? "Error", failureType: nil)
+                    completionHandler(nil, aslException)
                     print(AppConstants.tag, "getScrapperConfig", response.error ?? "Error")
                 } else {
                     completionHandler(response.data, nil)
                 }
             } else {
-                completionHandler(nil, nil)
+                completionHandler(nil, error)
             }
         }
         return client
     }
     
-    static func fetchScript(orderSource: OrderSource, completionHandler: @escaping (FetchScript?, Error?) -> Void) -> APIClient {
+    static func fetchScript(orderSource: OrderSource, completionHandler: @escaping (FetchScript?, ASLException?) -> Void) -> APIClient {
         let relativeUrl = FetchScript + "/" + orderSource.value
         let client = NetworkClient<APIResponse<FetchScript>>(relativeURL: relativeUrl, requestMethod: .get)
         
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<FetchScript> {
                 if response.isError {
-                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    let aslException = ASLException(error: nil, errorMessage: response.error ?? "Error", failureType: nil)
+                    completionHandler(nil, aslException)
                     print(AppConstants.tag, "fetchScript", response.error ?? "Error")
                 } else {
                     completionHandler(response.data, nil)
                 }
             } else {
-                completionHandler(nil, nil)
+                completionHandler(nil, error)
             }
         }
         return client
     }
     
    static func uploadOrderHistory(orderRequest: OrderRequest, completionHandler:
-                                    @escaping (OrderData?, Error?) -> Void) -> APIClient {
+                                    @escaping (OrderData?, ASLException?) -> Void) -> APIClient {
         let client = NetworkClient<APIResponse<OrderData>>(relativeURL: orderUpload, requestMethod: .post)
         client.body = orderRequest.toDictionary()
         
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<OrderData> {
                 if response.isError {
-                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    let aslException = ASLException(error: nil, errorMessage: response.error ?? "Error", failureType: nil)
+                    completionHandler(nil, aslException)
                     print(AppConstants.tag, "uploadOrderHistory error",response.error ?? "Error")
                 } else {
                     completionHandler(response.data!, nil)
                 }
             } else {
-                completionHandler(nil, nil)
+                completionHandler(nil, error)
             }
         }
         return client
     }
 
-   static func getConfigs(completionHandler: @escaping (Configs?, Error?) -> Void) -> APIClient {
+   static func getConfigs(completionHandler: @escaping (Configs?, ASLException?) -> Void) -> APIClient {
         let client = NetworkClient<APIResponse<Configs>>(relativeURL: GetConfigs, requestMethod: .get)
         
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<Configs> {
                 if response.isError {
-                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    let aslException = ASLException(error: nil, errorMessage: response.error ?? "Error", failureType: nil)
+                    completionHandler(nil, aslException)
                     print(AppConstants.tag, "getConfigs", response.error ?? "Error")
                 } else {
                     completionHandler(response.data, nil)
                 }
             } else {
-                completionHandler(nil, nil)
+                completionHandler(nil, error)
             }
         }
         return client
     }
     
-    static func logEvents(eventLogs: EventLogs, completionHandler: @escaping (EventLogs?, Error?) -> Void) -> APIClient {
+    static func logEvents(eventLogs: EventLogs, completionHandler: @escaping (EventLogs?, ASLException?) -> Void) -> APIClient {
         let client = NetworkClient<APIResponse<EventLogs>>(relativeURL: PostEvents, requestMethod: .post)
         client.body = eventLogs.toDictionary()
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<EventLogs> {
                 if response.isError {
-                    completionHandler(nil, APIError(error: response.error ?? "Error"))
+                    let aslException = ASLException(error: nil, errorMessage: response.error ?? "Error", failureType: nil)
+                    completionHandler(nil, aslException)
                     print(AppConstants.tag, "pushEvents", response.error ?? "Error")
                 } else {
                     completionHandler(response.data, nil)
                 }
             } else {
-                completionHandler(nil, nil)
+                completionHandler(nil, error)
             }
         }
         return client

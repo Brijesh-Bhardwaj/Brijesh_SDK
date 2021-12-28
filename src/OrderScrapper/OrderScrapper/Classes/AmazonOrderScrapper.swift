@@ -33,13 +33,14 @@ class AmazonOrderScrapper {
     }
     
     func initialize(authProvider: AuthProvider, viewPresenter: ViewPresenter,
-                    analyticsProvider: AnalyticsProvider?) -> Void {
+                    analyticsProvider: AnalyticsProvider?, servicesStatusListener: ServicesStatusListener) -> Void {
         self.authProvider = authProvider
         self.viewPresenter = viewPresenter
         self.analyticsProvider = analyticsProvider
         
         LibContext.shared.authProvider = self.authProvider
         LibContext.shared.viewPresenter = self.viewPresenter
+        LibContext.shared.servicesStatusListener = servicesStatusListener
     }
     
     deinit {
@@ -75,24 +76,29 @@ class AmazonOrderScrapper {
                 }
                 UserDefaults.standard.setValue(0, forKey: Strings.OnNumberOfCaptchaRetry)
             } else {
-                var logEventAttributes:[String:String] = [:]
-                logEventAttributes = [EventConstant.OrderSource: orderSource,
-                                      EventConstant.PanelistID: panelistId,
-                                      EventConstant.OrderSourceID: account.userID]
-                if let error = error {
-                    logEventAttributes[EventConstant.EventName] = EventType.UpdateStatusAPIFailedWhileDisconnect
-                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                if let error = error, error.errorEventLog == .servicesDown {
+                    let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
+                    LibContext.shared.servicesStatusListener.onServicesFailure(exception: error)
                 } else {
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.UpdateStatusAPIFailedWhileDisconnect, eventAttributes: logEventAttributes)
-                }
-                
-                var errorMsg: String = "Failed while disconnecting account"
-                if let error = error as? APIError{
-                    errorMsg = error.errorMessage
-                }
-                let error = ASLException(errorMessage: errorMsg, errorType: nil)
-                DispatchQueue.main.async {
-                    accountDisconnectedListener.onAccountDisconnectionFailed(account: account, error: error)
+                    var logEventAttributes:[String:String] = [:]
+                    logEventAttributes = [EventConstant.OrderSource: orderSource,
+                                          EventConstant.PanelistID: panelistId,
+                                          EventConstant.OrderSourceID: account.userID]
+                    if let error = error {
+                        logEventAttributes[EventConstant.EventName] = EventType.UpdateStatusAPIFailedWhileDisconnect
+                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                    } else {
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.UpdateStatusAPIFailedWhileDisconnect, eventAttributes: logEventAttributes)
+                    }
+                    
+                    var errorMsg: String = "Failed while disconnecting account"
+                    if let error = error as? APIError{
+                        errorMsg = error.errorMessage
+                    }
+                    let error = ASLException(errorMessage: errorMsg, errorType: nil)
+                    DispatchQueue.main.async {
+                        accountDisconnectedListener.onAccountDisconnectionFailed(account: account, error: error)
+                    }
                 }
             }
         }
@@ -213,6 +219,7 @@ class AmazonOrderScrapper {
                 if completed {
                     orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
                     UserDefaults.standard.setValue(0, forKey: Strings.OnNumberOfCaptchaRetry)
+                    UserDefaults.standard.setValue(0, forKey: Strings.OnAuthenticationChallenegeRetryCount)
                 } else {
                     let error = ASLException(errorMessage: error?.errorMessage ?? "", errorType: error?.errorType)
                     orderExtractionListener.onOrderExtractionFailure(error: error, account: account)

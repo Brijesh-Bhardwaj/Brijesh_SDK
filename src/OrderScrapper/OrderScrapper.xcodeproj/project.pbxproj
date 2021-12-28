@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0FA79EA127799D2000BAD0FD /* ServicesStatusListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FA79EA027799D2000BAD0FD /* ServicesStatusListener.swift */; };
 		1C006FAA26009BE500F9263E /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FA926009BE500F9263E /* AppConstants.swift */; };
 		1C006FB12600B7DA00F9263E /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FB02600B7DA00F9263E /* Utils.swift */; };
 		1C006FB72600BDA800F9263E /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FB62600BDA800F9263E /* Strings.swift */; };
@@ -166,6 +167,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0FA79EA027799D2000BAD0FD /* ServicesStatusListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServicesStatusListener.swift; sourceTree = "<group>"; };
 		1C006FA926009BE500F9263E /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
 		1C006FB02600B7DA00F9263E /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		1C006FB62600BDA800F9263E /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
@@ -593,6 +595,7 @@
 				1C5133E5265D458F00BCAC2C /* BSHtmlScrappingStatusListener.swift */,
 				1C2AD81026CA852400E394DE /* ScraperProgressListener.swift */,
 				9DACB06D26C5200B004ED440 /* AccountReconnectListener.swift */,
+				0FA79EA027799D2000BAD0FD /* ServicesStatusListener.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -941,6 +944,7 @@
 				E19A5B002657DE2D00591A1A /* BSWebNavigationDelegate.swift in Sources */,
 				E148DB6325FF2BFD001430BE /* AccountState.swift in Sources */,
 				E148DC5B26034D7F001430BE /* APIClient.swift in Sources */,
+				0FA79EA127799D2000BAD0FD /* ServicesStatusListener.swift in Sources */,
 				1C6D440B268EDDF2004A3165 /* Configs.swift in Sources */,
 				1C1BD79426C568B500ED6C5D /* BSCSVScrapper.swift in Sources */,
 				1C1BD79826C569AF00ED6C5D /* ScrapingMode.swift in Sources */,

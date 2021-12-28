@@ -65,4 +65,6 @@ struct AppConstants {
     static let msgUploadCSVSuccess = "CSV uploaded successfully"
     static let msgOrderListSuccess = "List scrapping success"
     static let ErrorInJsonEncoding = "Error in JSON encoding"
+    static let AmazonErrorMessage = "Enter your email or mobile phone number"
+
 }

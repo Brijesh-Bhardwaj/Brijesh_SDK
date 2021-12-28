@@ -426,7 +426,10 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     
     private func logEvents(logEvents: EventLogs) {
         _ = AmazonService.logEvents(eventLogs: logEvents) { response, error in
-                //TODO
+            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                print("#### servicesDown")
+                self.handleServicesDown()
+            }
         }
     }
     
@@ -521,6 +524,10 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                                            status: AccountState.Connected.rawValue,
                                            message: AppConstants.msgTimeout,
                                            orderStatus: OrderStatus.Failed.rawValue) { response, error in
+                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                    print("#### servicesDown")
+                    self.handleServicesDown()
+                }
             }
             let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrappingType: ScrappingType.report.rawValue)
             self.logEvents(logEvents: eventLogs)
@@ -537,6 +544,21 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             WebCacheCleaner.clear(completionHandler: nil)
             self.dismiss(animated: true, completion: nil)
         }
+    }
+    
+    func onServicesDown(error: ASLException?) {
+        self.handleServicesDown()
+    }
+    
+    func handleServicesDown() {
+        self.webContentView.stopLoading()
+        let isError: (Bool, String) = (true, Strings.ErrorServicesDown)
+        LibContext.shared.webAuthErrorPublisher.send((isError.0, isError.1))
+        WebCacheCleaner.clear(completionHandler: nil)
+        self.dismiss(animated: true, completion: nil)
+        self.timerHandler.stopTimer()
+        let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
+        LibContext.shared.servicesStatusListener.onServicesFailure(exception: error)
     }
 }
 
