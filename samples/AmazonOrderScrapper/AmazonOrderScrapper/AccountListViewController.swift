@@ -36,7 +36,7 @@ class AccountListViewController: UIViewController, UITableViewDataSource
             configValue.appName = "ReceiptStraw-Dev"
             configValue.appVersion = (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String)!
             configValue.deviceId = Util.getDeviceIdentifier()
-            try OrdersExtractor.initialize(authProvider: self, viewPresenter: self, analyticsProvider: self, orderExtractionConfig: configValue)
+            try OrdersExtractor.initialize(authProvider: self, viewPresenter: self, analyticsProvider: self, orderExtractionConfig: configValue, servicesStatusListener: self)
         } catch let error {
             debugPrint(error.localizedDescription)
         }
@@ -318,6 +318,11 @@ extension AccountListViewController: AnalyticsProvider {
     }
 }
 
+extension AccountListViewController: ServicesStatusListener {
+    func onServicesFailure(exception: ASLException) {
+        print("##### onServicesFailure")
+    }
+}
 class ForegroundOrderExtractionListener: OrderExtractionListener {
     
     private weak var accountListViewController: AccountListViewController?

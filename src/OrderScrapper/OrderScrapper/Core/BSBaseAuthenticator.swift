@@ -21,14 +21,16 @@ class BSBaseAuthenticator: NSObject, BSAuthenticator, TimerCallbacks {
     var authenticationDelegate: BSAuthenticaorDelegate?
     var listnerAdded = false
     let panelistID = LibContext.shared.authProvider.getPanelistID()
+    var scraperListener: ScraperProgressListener?
     
     lazy var timerHandler: TimerHandler = {
         return TimerHandler(timerCallback: self)
     }()
     
-    init(webClient: BSWebClient, delegate: BSWebNavigationDelegate) {
+    init(webClient: BSWebClient, delegate: BSWebNavigationDelegate, scraperListener: ScraperProgressListener?) {
         self.webClient = webClient
         self.webClientDelegate = delegate
+        self.scraperListener = scraperListener
     }
     
     func authenticate(account: Account,

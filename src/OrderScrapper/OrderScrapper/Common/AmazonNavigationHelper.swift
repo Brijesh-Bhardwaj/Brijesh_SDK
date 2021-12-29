@@ -54,7 +54,7 @@ class AmazonNavigationHelper: NavigationHelper {
     required init(_ viewModel: WebViewModel, webView: WKWebView, scraperListener: ScraperProgressListener,
                   timerHandler: TimerHandler, fetchRequestSource: FetchRequestSource?) {
         self.viewModel = viewModel
-        self.authenticator = AmazonAuthenticator(viewModel)
+        self.authenticator = AmazonAuthenticator(viewModel, scraperListener)
         self.webView = webView
         self.scraperListener = scraperListener
         self.timerHandler = timerHandler
@@ -147,13 +147,17 @@ class AmazonNavigationHelper: NavigationHelper {
                                 logEventAttributes[EventConstant.Status] = EventStatus.Success
                                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIRegisterUser, eventAttributes: logEventAttributes)
                             } else {
-                                self.viewModel.authError.send((isError: true, errorMsg: AppConstants.userAccountConnected))
-                                logEventAttributes[EventConstant.Status] = EventStatus.Failure
-                                if let error = error {
-                                    logEventAttributes[EventConstant.EventName] = EventType.UserRegistrationAPIFailed
-                                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                                    self.sendServicesDownCallback()
                                 } else {
-                                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.UserRegistrationAPIFailed, eventAttributes: logEventAttributes)
+                                    self.viewModel.authError.send((isError: true, errorMsg: AppConstants.userAccountConnected))
+                                    logEventAttributes[EventConstant.Status] = EventStatus.Failure
+                                    if let error = error {
+                                        logEventAttributes[EventConstant.EventName] = EventType.UserRegistrationAPIFailed
+                                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                                    } else {
+                                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.UserRegistrationAPIFailed, eventAttributes: logEventAttributes)
+                                    }
                                 }
                             }
                         }
@@ -177,7 +181,7 @@ class AmazonNavigationHelper: NavigationHelper {
                 }
             }
             self.viewModel.authError.send((isError: true, errorMsg: AppConstants.msgResetPassword))
-            self.timerHandler.stopTimer()
+            self.timerHandler?.stopTimer()
         } else if (urlString.contains(AmazonURL.reportSuccess)) {
             //No handling required
         } else {
@@ -204,7 +208,7 @@ class AmazonNavigationHelper: NavigationHelper {
             } else {
                 self.viewModel.authError.send((isError: true, errorMsg: AppConstants.msgUnknownURL))
             }
-            self.timerHandler.stopTimer()
+            self.timerHandler?.stopTimer()
         }
         
         //Timer handling for each step
@@ -212,9 +216,9 @@ class AmazonNavigationHelper: NavigationHelper {
         case .authentication:
             if (urlString.contains(AmazonURL.authApproval) &&
                     urlString.contains(AmazonURL.twoFactorAuth)) {
-                self.timerHandler.stopTimer()
+                self.timerHandler?.stopTimer()
             } else {
-                self.timerHandler.startTimer(action: Actions.DoingAuthentication)
+                self.timerHandler?.startTimer(action: Actions.DoingAuthentication)
             }
         case .downloadReport:
             print("### Do nothing")
@@ -328,8 +332,8 @@ class AmazonNavigationHelper: NavigationHelper {
                     if response.scrappingType == ScrappingType.report.rawValue {
                         self.scrapeReport(response: response)
                     } else {
-                        self.timerHandler.stopTimer()
-                        self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping)
+                        self.timerHandler?.stopTimer()
+                        self.timerHandler?.startTimer(action: Actions.ForegroundHtmlScrapping)
                         self.scrapeHtml()
                     }
                 } else {
@@ -352,20 +356,24 @@ class AmazonNavigationHelper: NavigationHelper {
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIDateRange, eventAttributes: logEventAttributes)
             } else {
-                self.updateOrderStatusFor(error: AppConstants.msgDateRangeAPIFailed, accountStatus: AccountState.Connected.rawValue)
-                self.viewModel.webviewError.send(true)
-                //Log event for failure of date range API call
-                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
-                                      EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                      EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
-                                      EventConstant.ScrappingType: ScrappingType.report.rawValue,
-                                      EventConstant.ErrorReason: error.debugDescription,
-                                      EventConstant.EventName: EventType.ExceptionWhileDateRangeAPI,
-                                      EventConstant.Status: EventStatus.Failure]
-                if let error = error {
-                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                    self.sendServicesDownCallback()
                 } else {
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.ExceptionWhileDateRangeAPI, eventAttributes: logEventAttributes)
+                    self.updateOrderStatusFor(error: AppConstants.msgDateRangeAPIFailed, accountStatus: AccountState.Connected.rawValue)
+                    self.viewModel.webviewError.send(true)
+                    //Log event for failure of date range API call
+                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                          EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                          EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                                          EventConstant.ScrappingType: ScrappingType.report.rawValue,
+                                          EventConstant.ErrorReason: error.debugDescription,
+                                          EventConstant.EventName: EventType.ExceptionWhileDateRangeAPI,
+                                          EventConstant.Status: EventStatus.Failure]
+                    if let error = error {
+                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                    } else {
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.ExceptionWhileDateRangeAPI, eventAttributes: logEventAttributes)
+                    }
                 }
             }
         }
@@ -397,7 +405,7 @@ class AmazonNavigationHelper: NavigationHelper {
             guard let self = self else {return}
             let (completed, successType) = result
             DispatchQueue.main.async {
-                self.timerHandler.stopTimer()
+                self.timerHandler?.stopTimer()
                 if completed {
                     if let successType = successType {
                         self.scraperListener.updateSuccessType(successType: successType)
@@ -409,7 +417,7 @@ class AmazonNavigationHelper: NavigationHelper {
                     self.scraperListener.onCompletion(isComplete: true)
                 }
                 
-                self.backgroundScrapper.scraperListener = nil
+                self.backgroundScrapper?.scraperListener = nil
                 self.backgroundScrapper = nil
             }
         }
@@ -437,6 +445,9 @@ class AmazonNavigationHelper: NavigationHelper {
                                        status: accountStatus,
                                        message: error,
                                        orderStatus: OrderStatus.Failed.rawValue, orderSource:  OrderSource.Amazon.value) { response, error in
+            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                self.sendServicesDownCallback()
+            }
         }
     }
     
@@ -446,12 +457,22 @@ class AmazonNavigationHelper: NavigationHelper {
                                        status: AccountState.Connected.rawValue,
                                        message: AppConstants.msgConnected,
                                        orderStatus: orderStatus, orderSource:  OrderSource.Amazon.value) { response, error in
+            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                self.sendServicesDownCallback()
+            }
         }
     }
     
     private func logEvents(logEvents: EventLogs) {
         _ = AmazonService.logEvents(eventLogs: logEvents, orderSource: self.viewModel.userAccount.source.value) { respose, error in
-            
+             if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                self.sendServicesDownCallback()
+            }
         }
+    }
+    
+    private func sendServicesDownCallback() {
+        let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
+        self.scraperListener.onServicesDown(error: error)
     }
 }

@@ -20,13 +20,13 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.connectAccountView.connectAccountTitle.text = getHeaderTitle()
-        self.connectAccountView.progressView.headerText = getHeaderMessage()
+        self.connectAccountView?.connectAccountTitle.text = getHeaderTitle()
+        self.connectAccountView?.progressView.headerText = getHeaderMessage()
         self.shouldAllowBack = false
-        self.baseAuthenticator = KrogerAuthenticator(webClient: self.webClient, delegate: self.webClientDelegate)
-        self.baseAuthenticator.authenticationDelegate = self
+        self.baseAuthenticator = KrogerAuthenticator(webClient: self.webClient, delegate: self.webClientDelegate, scraperListener: self)
+        self.baseAuthenticator?.authenticationDelegate = self
         self.publishProgress(step: .authentication)
-        self.baseAuthenticator.authenticate(account: self.account, configurations: self.configurations) { authenticated, error in
+        self.baseAuthenticator?.authenticate(account: self.account, configurations: self.configurations) { authenticated, error in
             if authenticated  {
                 self.publishProgress(step: .scrape)
                 if self.account.accountState == .NeverConnected {
@@ -45,13 +45,17 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
                             self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping)
                             self.scrapeHtml()
                         } else {
-                            if self.networkReconnct {
-                                self.scrapeHtml()
-                                self.networkReconnct = false
+                            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                                self.handleServicesDown()
                             } else {
-                                self.didReceiveLoginChallenge(error: AppConstants.userAccountConnected)
-                                if let error = error {
-                                    FirebaseAnalyticsUtil.logSentryError(error: error)
+                                if self.networkReconnct {
+                                    self.scrapeHtml()
+                                    self.networkReconnct = false
+                                } else {
+                                    self.didReceiveLoginChallenge(error: AppConstants.userAccountConnected)
+                                    if let error = error {
+                                        FirebaseAnalyticsUtil.logSentryError(error: error)
+                                    }
                                 }
                             }
                         }
@@ -77,18 +81,22 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
                                 self.account.isFirstConnectedAccount = response.firstaccount
                                 self.publishProgress(step: .complete)
                             } else {
-                                if self.networkReconnct {
-                                    print("#### Network Reconnect")
-                                    self.publishProgress(step: .complete)
-                                    self.networkReconnct = false
+                                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                                    self.handleServicesDown()
                                 } else {
-                                    print("#### Account Register Error")
-                                    self.didReceiveLoginChallenge(error: AppConstants.userAccountConnected)
-                                    if let error = error {
-                                        FirebaseAnalyticsUtil.logSentryError(error: error)
+                                    if self.networkReconnct {
+                                        print("#### Network Reconnect")
+                                        self.publishProgress(step: .complete)
+                                        self.networkReconnct = false
+                                    } else {
+                                        print("#### Account Register Error")
+                                        self.didReceiveLoginChallenge(error: AppConstants.userAccountConnected)
+                                        if let error = error {
+                                            FirebaseAnalyticsUtil.logSentryError(error: error)
+                                        }
+                                        //Remove webview in case error occured while register so it won't reload in case of network off
+                                        self.removeWebview()
                                     }
-                                    //Remove webview in case error occured while register so it won't reload in case of network off
-                                    self.removeWebview()
                                 }
                             }
                         }
@@ -124,8 +132,8 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
         } else {
             print("#### Network not available")
             //No network
-            self.baseAuthenticator.onNetworkDisconnected()
-            self.connectAccountView.bringSubviewToFront(self.connectAccountView.networkErrorView)
+            self.baseAuthenticator?.onNetworkDisconnected()
+            self.connectAccountView?.bringSubviewToFront(self.connectAccountView.networkErrorView)
             self.shouldAllowBack = true
         }
     }
@@ -160,10 +168,10 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
     override func loadWebContent() {
         print("#### loadWebContent called")
         self.networkReconnct = true;
-        webClient.loadUrl(url: self.configurations.login)
-        self.connectAccountView.bringSubviewToFront(self.connectAccountView.progressView)
-        self.connectAccountView.progressView.progress = 1/3
-        self.connectAccountView.progressView.stepText = Utils.getString(key: Strings.Step1)
+        webClient?.loadUrl(url: self.configurations.login)
+        self.connectAccountView?.bringSubviewToFront(self.connectAccountView.progressView)
+        self.connectAccountView?.progressView.progress = 1/3
+        self.connectAccountView?.progressView.stepText = Utils.getString(key: Strings.Step1)
         self.shouldAllowBack = false
     }
     
@@ -177,6 +185,9 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
                                            message: AppConstants.msgTimeout,
                                            orderStatus: OrderStatus.Failed.rawValue,
                                            orderSource: self.account.source.value) { response, error in
+                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                    self.handleServicesDown()
+                }
             }
             
             let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
@@ -186,7 +197,9 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
     
     private func logEvents(logEvents: EventLogs) {
         _ = AmazonService.logEvents(eventLogs: logEvents, orderSource: self.account.source.value) { response, error in
-                //TODO
+            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                self.handleServicesDown()
+            }
         }
     }
     
@@ -196,16 +209,16 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
                 self.backgroundScrapper.scraperListener = nil
                 self.backgroundScrapper = nil
                 }
-            self.webClient.navigationDelegate = nil
+            self.webClient?.navigationDelegate = nil
             DispatchQueue.main.async {
-                self.webClient.stopLoading()
+                self.webClient?.stopLoading()
             }
         }
     }
     // MARK: - Public Methods
     func publishProgress(step: Steps) {
         let progressValue = Float(step.rawValue) / AppConstants.steps
-        self.connectAccountView.progress = CGFloat(progressValue)
+        self.connectAccountView?.progress = CGFloat(progressValue)
         
         var stepMessage: String
         
@@ -221,7 +234,7 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
         }
         self.connectAccountView.progressView.stepText = stepMessage
         self.shouldAllowBack = false
-        self.connectAccountView.bringSubviewToFront(self.connectAccountView.progressView)
+        self.connectAccountView?.bringSubviewToFront(self.connectAccountView.progressView)
         if step == .complete {
             onCompletion(isComplete: true)
         }
@@ -230,21 +243,23 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
     func onCompletion(isComplete: Bool) {
         DispatchQueue.main.async {
             if isComplete {
-                self.connectAccountView.backButton.isHidden = true
-                self.connectAccountView.connectAccountTitle.text = self.getHeaderTitle()
-                self.connectAccountView.fetchSuccess = self.getSuccessMessage()
-                self.connectAccountView.statusImage = self.getStatusImage()
-                self.connectAccountView.bringSubviewToFront(self.connectAccountView.successView)
+                self.connectAccountView?.backButton.isHidden = true
+                self.connectAccountView?.connectAccountTitle.text = self.getHeaderTitle()
+                self.connectAccountView?.fetchSuccess = self.getSuccessMessage()
+                if let statusImage = self.getStatusImage() {
+                    self.connectAccountView?.statusImage = statusImage
+                }
+                self.connectAccountView?.bringSubviewToFront(self.connectAccountView.successView)
                 self.removeWebview()
             }
         }
     }
     
     func removeWebview() {
-        self.webClient.navigationDelegate = nil
+        self.webClient?.navigationDelegate = nil
         DispatchQueue.main.async {
-            self.webClient.stopLoading()
-            self.webClient.removeFromSuperview()
+            self.webClient?.stopLoading()
+            self.webClient?.removeFromSuperview()
         }
     }
     // MARK: - Private Methods
@@ -260,6 +275,9 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
                                        status: self.account.accountState.rawValue,
                                        message: AppConstants.msgConnected,
                                        orderStatus: orderStatus, orderSource:  OrderSource.Kroger.value) { response, error in
+            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                self.handleServicesDown()
+            }
         }
     }
     
@@ -276,8 +294,8 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
             DispatchQueue.main.async {
                 self.timerHandler.stopTimer()
                 self.timerHandler.removeCallbackListener()
-                self.backgroundScrapper.stopScrapping()
-                self.backgroundScrapper.scraperListener = nil
+                self.backgroundScrapper?.stopScrapping()
+                self.backgroundScrapper?.scraperListener = nil
                 self.backgroundScrapper = nil
                 self.logEvent()
                 if completed {
@@ -293,19 +311,21 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
                 self.publishProgress(step: .complete)
             }
         }
-        backgroundScrapper.scraperListener = self
-        backgroundScrapper.scrappingMode = .Foreground
+        backgroundScrapper?.scraperListener = self
+        backgroundScrapper?.scrappingMode = .Foreground
         if let fetchRequestSource = self.fetchRequestSource {
-            backgroundScrapper.fetchRequestSource = fetchRequestSource
+            backgroundScrapper?.fetchRequestSource = fetchRequestSource
         }
         if let account = self.account {
-            backgroundScrapper.startScrapping(account: account)
+            backgroundScrapper?.startScrapping(account: account)
         }
     }
     private func logEvent() {
         let eventLog = EventLogs(panelistId: self.account.panelistID, platformId:  self.account.userID, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.success.rawValue, message: AppConstants.fgScrappingCompleted, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
         _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: self.account.source.value) { response, error in
-            //TODO
+            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                self.handleServicesDown()
+            }
         }
         
     }
@@ -341,17 +361,17 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
         }
     }
     
-    private func getStatusImage() -> UIImage {
+    private func getStatusImage() -> UIImage? {
         let source = self.fetchRequestSource ?? .general
         if source == .manual {
             if successType == .failureButAccountConnected || successType == .fetchSkipped {
-                return Utils.getImage(named: IconNames.FailureScreen)!
+                return Utils.getImage(named: IconNames.FailureScreen)
             } else {
-                return Utils.getImage(named: IconNames.SuccessScreen)!
+                return Utils.getImage(named: IconNames.SuccessScreen)
             }
          
         } else {
-            return Utils.getImage(named: IconNames.SuccessScreen)!
+            return Utils.getImage(named: IconNames.SuccessScreen)
         }
     }
 }
@@ -359,10 +379,10 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
 extension ConnectKrogerAccountVC: BSAuthenticaorDelegate {
     func didReceiveAuthenticationChallenge(authError: Bool) {
         if authError {
-            self.webClient.isHidden = false
+            self.webClient?.isHidden = false
             self.view.bringSubviewToFront(self.webClient)
         } else {
-            self.webClient.isHidden = true
+            self.webClient?.isHidden = true
             self.view.bringSubviewToFront(self.webClient)
         }
     }
@@ -386,9 +406,20 @@ extension ConnectKrogerAccountVC: BSAuthenticaorDelegate {
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectSignIn, eventAttributes: logEventAttributes)
 
     }
+    private func handleServicesDown() {
+        self.webClient?.stopLoading()
+        let isError: (Bool, String) = (true,Strings.ErrorServicesDown)
+        LibContext.shared.webAuthErrorPublisher.send((isError.0, isError.1))
+        WebCacheCleaner.clear(completionHandler: nil)
+        self.dismiss(animated: true, completion: nil)
+        self.timerHandler.stopTimer()
+        let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
+        LibContext.shared.servicesStatusListener.onServicesFailure(exception: error)
+    }
 }
 
-extension  ConnectKrogerAccountVC: ScraperProgressListener   {
+extension ConnectKrogerAccountVC: ScraperProgressListener {
+    
     func onWebviewError(isError: Bool) {
         
     }
@@ -398,7 +429,7 @@ extension  ConnectKrogerAccountVC: ScraperProgressListener   {
     }
     
     func updateStepMessage(stepMessage: String) {
-        self.connectAccountView.stepText = stepMessage
+        self.connectAccountView?.stepText = stepMessage
     }
     
     func updateProgressStep(htmlScrappingStep: HtmlScrappingStep) {
@@ -409,5 +440,9 @@ extension  ConnectKrogerAccountVC: ScraperProgressListener   {
         
         self.successType = successType
         
+    }
+    
+    func onServicesDown(error: ASLException?) {
+        self.handleServicesDown()
     }
 }

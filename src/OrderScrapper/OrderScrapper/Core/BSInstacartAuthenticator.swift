@@ -19,7 +19,9 @@ class BSInstacartAuthenticator: BSBaseAuthenticator {
                 let loginSubURL = Utils.getSubUrl(url: configurations.login, delimeter: self.LoginURLDelimiter)
                 // TODO -: Check the hardcoded URL
                 let subURL = AppConstants.ICLoginSuccessURL
-                if url.contains(subURL){
+                if  url.contains(AppConstants.InstacartOnBoardingURL) {
+                    self.webClient.scriptMessageHandler?.removeScriptMessageListener()
+                } else if url.contains(subURL) {
                     if let completionHandler = self.completionHandler {
                         completionHandler(true, nil)
                     } else {

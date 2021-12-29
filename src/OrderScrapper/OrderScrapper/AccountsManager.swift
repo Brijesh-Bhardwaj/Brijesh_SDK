@@ -34,21 +34,26 @@ class AccountsManager {
                         completionHandler(dictionary)
                     }
                 } else {
-                    for orderSource in orderSources {
-                        var accounts = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
-                        let showNotification: Bool = false
-                        self.shouldShowAlert(showNotification: showNotification, orderSource: orderSource) { boolValue in
-                            if boolValue {
-                                accounts = self.updateAccountState(boolValue: boolValue, accounts:accounts)
-                                let accountInfo = AccountInfo(accounts: accounts, hasNeverConnected: false)
-                                dictionary[orderSource.value] = accountInfo
-                            } else {
-                                let accountInfo = AccountInfo(accounts: accounts, hasNeverConnected: false)
-                                dictionary[orderSource.value] = accountInfo
+                    if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                        let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
+                        LibContext.shared.servicesStatusListener.onServicesFailure(exception: error)
+                    } else {
+                        for orderSource in orderSources {
+                            var accounts = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
+                            let showNotification: Bool = false
+                            self.shouldShowAlert(showNotification: showNotification, orderSource: orderSource) { boolValue in
+                                if boolValue {
+                                    accounts = self.updateAccountState(boolValue: boolValue, accounts:accounts)
+                                    let accountInfo = AccountInfo(accounts: accounts, hasNeverConnected: false)
+                                    dictionary[orderSource.value] = accountInfo
+                                } else {
+                                    let accountInfo = AccountInfo(accounts: accounts, hasNeverConnected: false)
+                                    dictionary[orderSource.value] = accountInfo
+                                }
                             }
                         }
+                        completionHandler(dictionary)
                     }
-                    completionHandler(dictionary)
                 }
             }
         }

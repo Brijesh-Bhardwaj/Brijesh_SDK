@@ -109,8 +109,9 @@ struct Strings {
     static let ErrorInFlashMessage = "error in authentication"
     static let InstacartURL = "http://www.instacart.com"
     static let ErrorInInjectingScript = "An error in injecting script"
+    static let ErrorServicesDown = "Service Not Available"
+    static let OnAuthenticationChallenegeRetryCount = "Amazon error retry count"
 
-    
     //Sentry error message
     static let ErrorAPIReponseDateRange = "Error while getting date range"
     static let ErrorAPIReposneUplodFile = "Error while uploading file"

@@ -77,9 +77,11 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.headerLabel.text = getHeaderTitle()
-        self.progressView.headerText = getHeaderMessage()
-        self.fetchSuccessView.imageView = getStatusImage()
+        self.headerLabel?.text = getHeaderTitle()
+        self.progressView?.headerText = getHeaderMessage()
+        if let statusImage = self.getStatusImage() {
+            self.fetchSuccessView?.imageView = statusImage
+        }
         self.scraperListener = self
         
         self.timerCallback = self
@@ -117,8 +119,8 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             }
             self.webContentView.customUserAgent = userAgent
             if let url = URL(string: self.baseURL) {
-                self.timerHandler.startTimer(action: Actions.BaseURLLoading)
-                self.webContentView.load(URLRequest(url: url))
+                self.timerHandler?.startTimer(action: Actions.BaseURLLoading)
+                self.webContentView?.load(URLRequest(url: url))
                 FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_ejs_loadurl \(url)")
             }
         }
@@ -145,7 +147,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     // MARK: - IBActions
     @IBAction func didClickBackButton(_ sender: Any) {
         if self.shouldAllowBack {
-            self.webContentView.stopLoading()
+            self.webContentView?.stopLoading()
             LibContext.shared.scrapeCompletionPublisher.send(((false, nil), ASLException(errorMessage: Strings.ErrorUserAbortedProcess, errorType: ErrorType.userAborted)))
             WebCacheCleaner.clear(completionHandler: nil)
             self.dismiss(animated: true, completion: nil)
@@ -227,12 +229,12 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     }
     
     private func hideWebContents(hide: Bool) {
-        self.webContentView.isHidden = hide
+        self.webContentView?.isHidden = hide
         if hide {
-            self.containerView.isHidden = false
+            self.containerView?.isHidden = false
             self.view.bringSubviewToFront(self.containerView)
         } else {
-            self.containerView.isHidden = true
+            self.containerView?.isHidden = true
             self.view.bringSubviewToFront(self.webContentView)
         }
     }
@@ -293,7 +295,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                                               EventConstant.Status: status]
                         FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedCaptcha, eventAttributes: logEventAttributes)
                     case .generateReport:
-                        self.timerHandler.stopTimer()
+                        self.timerHandler?.stopTimer()
                         //Logging event for report generation
                         var logEventAttributes:[String:String] = [:]
                         logEventAttributes = [EventConstant.OrderSource:              OrderSource.Amazon.value,
@@ -301,7 +303,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                                               EventConstant.Status: status]
                         FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportGeneration, eventAttributes: logEventAttributes)
                     case .downloadReport:
-                        self.timerHandler.stopTimer()
+                        self.timerHandler?.stopTimer()
                         //Logging event for report download
                         var logEventAttributes:[String:String] = [:]
                         logEventAttributes = [EventConstant.OrderSource:                    OrderSource.Amazon.value,
@@ -320,7 +322,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             switch navigation {
             case .reload:
                 if let url = URL(string: self.baseURL) {
-                    self.webContentView.load(URLRequest(url: url))
+                    self.webContentView?.load(URLRequest(url: url))
                     FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_reload_url \(url)")
                 }
             }
@@ -330,7 +332,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             guard let self = self else { return }
             self.hideWebContents(hide: !showWeb)
             if showWeb {
-                self.timerHandler.stopTimer()
+                self.timerHandler?.stopTimer()
             }
         })
         webViewErrorSubscriber = self.viewModel.webviewError.receive(on: RunLoop.main).sink(receiveValue: { [weak self] isWebError in
@@ -347,7 +349,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         authErrorSubscriber = self.viewModel.authError.receive(on: RunLoop.main).sink(receiveValue: { [weak self] isError in
             guard let self = self else { return }
             if isError.0 {
-                self.timerHandler.stopTimer()
+                self.timerHandler?.stopTimer()
                 LibContext.shared.webAuthErrorPublisher.send((isError.0, isError.1))
                 WebCacheCleaner.clear(completionHandler: nil)
                 self.dismiss(animated: true, completion: nil)
@@ -355,8 +357,8 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         })
         progressValueSubscriber = self.viewModel.progressValue.receive(on: RunLoop.main).sink(receiveValue: { [weak self] progress in
             guard let self = self else { return }
-            self.contentView.bringSubviewToFront(self.progressView)
-            self.progressView.progress = CGFloat(progress)
+            self.contentView?.bringSubviewToFront(self.progressView)
+            self.progressView?.progress = CGFloat(progress)
             //Progress
         })
         progressMessageSubscriber = self.viewModel.progressMessage.receive(on: RunLoop.main).sink(receiveValue: { message in
@@ -366,36 +368,40 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         stepMessageSubscriber = self.viewModel.stepMessage.receive(on: RunLoop.main).sink(receiveValue: { [weak self] stepMessage in
             guard let self = self else { return }
             if !stepMessage.elementsEqual(self.progressView.stepText) {
-                self.contentView.bringSubviewToFront(self.progressView)
-                self.progressView.stepText = stepMessage
+                self.contentView?.bringSubviewToFront(self.progressView)
+                self.progressView?.stepText = stepMessage
             }
         })
         completionSubscriber = self.viewModel.completionPublisher.receive(on: RunLoop.main).sink(receiveValue: { [weak self] complete in
             guard let self = self else { return }
             if complete {
-                self.backButton.isEnabled = false
-                self.backButton.isHidden = true
-                self.fetchSuccessView.fetchSuccess = self.getSuccessMessage()
-                self.fetchSuccessView.imageView = self.getStatusImage()
-                self.contentView.bringSubviewToFront(self.fetchSuccessView)
+                self.backButton?.isEnabled = false
+                self.backButton?.isHidden = true
+                self.fetchSuccessView?.fetchSuccess = self.getSuccessMessage()
+                if let statusImage = self.getStatusImage() {
+                    self.fetchSuccessView?.imageView = statusImage
+                }
+                self.contentView?.bringSubviewToFront(self.fetchSuccessView)
             }
         })
         stopScrappingSubscriber = self.viewModel.disableScrapping.receive(on: RunLoop.main).sink(receiveValue: { [weak self] disable in
             guard let self = self else { return }
             self.isFetchSkipped = disable
             if disable {
-                self.backButton.isEnabled = false
-                self.backButton.isHidden = true
-                self.fetchSuccessView.fetchSuccess = self.getSuccessMessage()
-                self.fetchSuccessView.imageView = self.getStatusImage()
-                self.contentView.bringSubviewToFront(self.fetchSuccessView)
+                self.backButton?.isEnabled = false
+                self.backButton?.isHidden = true
+                self.fetchSuccessView?.fetchSuccess = self.getSuccessMessage()
+                if let statusImage = self.getStatusImage() {
+                    self.fetchSuccessView?.imageView = statusImage
+                }
+                self.contentView?.bringSubviewToFront(self.fetchSuccessView)
             }
         })
         authenticationCompleteSubscriber = self.viewModel.authenticationComplete.receive(on: RunLoop.main).sink(receiveValue: { [weak self] authenticated in
             guard let self = self else { return }
             if authenticated {
                 if let url = URL(string: self.reportUrl) {
-                    self.webContentView.load(URLRequest(url: url))
+                    self.webContentView?.load(URLRequest(url: url))
                 }
             }
         })
@@ -403,12 +409,12 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     
     private func loadWebContent() {
         if let url = URL(string: self.baseURL) {
-            self.webContentView.load(URLRequest(url: url))
+            self.webContentView?.load(URLRequest(url: url))
             FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_loadWebContent() \(url)")
         }
-        self.contentView.bringSubviewToFront(self.progressView)
-        self.progressView.progress = 1/6
-        self.progressView.stepText = Utils.getString(key: Strings.Step1)
+        self.contentView?.bringSubviewToFront(self.progressView)
+        self.progressView?.progress = 1/6
+        self.progressView?.stepText = Utils.getString(key: Strings.Step1)
         self.shouldAllowBack = false
     }
     
@@ -435,21 +441,24 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     
     private func logEvents(logEvents: EventLogs) {
         _ = AmazonService.logEvents(eventLogs: logEvents, orderSource: self.viewModel.userAccount.source.value) { response, error in
-                //TODO
+            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                print("#### servicesDown")
+                self.handleServicesDown()
+            }
         }
     }
     
     func removeNavigationDelegate() {
-        self.webContentView.navigationDelegate = nil
+        self.webContentView?.navigationDelegate = nil
     }
     
     func onWebviewError(isError: Bool) {
         DispatchQueue.main.async {
             if isError {
                 if self.hasNetwork() {
-                    self.contentView.bringSubviewToFront(self.errorView)
+                    self.contentView?.bringSubviewToFront(self.errorView)
                 } else {
-                    self.contentView.bringSubviewToFront(self.networkErrorView)
+                    self.contentView?.bringSubviewToFront(self.networkErrorView)
                 }
                 self.shouldAllowBack = true
             }
@@ -458,16 +467,16 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     
     func updateProgressValue(progressValue: Float) {
         DispatchQueue.main.async {
-            self.contentView.bringSubviewToFront(self.progressView)
-            self.progressView.progress = CGFloat(progressValue)
+            self.contentView?.bringSubviewToFront(self.progressView)
+            self.progressView?.progress = CGFloat(progressValue)
         }
     }
     
     func updateStepMessage(stepMessage: String) {
         DispatchQueue.main.async {
             if !stepMessage.elementsEqual(self.progressView.stepText) {
-                self.contentView.bringSubviewToFront(self.progressView)
-                self.progressView.stepText = stepMessage
+                self.contentView?.bringSubviewToFront(self.progressView)
+                self.progressView?.stepText = stepMessage
             }
         }
     }
@@ -486,11 +495,13 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     func onCompletion(isComplete: Bool) {
         if isComplete {
             DispatchQueue.main.async {
-                self.backButton.isEnabled = false
-                self.backButton.isHidden = true
-                self.fetchSuccessView.fetchSuccess = self.getSuccessMessage()
-                self.fetchSuccessView.imageView = self.getStatusImage()
-                self.contentView.bringSubviewToFront(self.fetchSuccessView)
+                self.backButton?.isEnabled = false
+                self.backButton?.isHidden = true
+                self.fetchSuccessView?.fetchSuccess = self.getSuccessMessage()
+                if let statusImage = self.getStatusImage() {
+                    self.fetchSuccessView?.imageView = statusImage
+                }
+                self.contentView?.bringSubviewToFront(self.fetchSuccessView)
             }
         }
     }
@@ -534,24 +545,30 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                                            status: AccountState.Connected.rawValue,
                                            message: AppConstants.msgTimeout,
                                            orderStatus: OrderStatus.Failed.rawValue, orderSource: OrderSource.Amazon.value) { response, error in
+                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                    print("#### servicesDown")
+                    self.handleServicesDown()
+                }
             }
             let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.report.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
             self.logEvents(logEvents: eventLogs)
             
             if action == Actions.ForegroundHtmlScrapping {
-                self.webContentView.stopLoading()
-                self.webContentView.navigationDelegate = nil
+                self.webContentView?.stopLoading()
+                self.webContentView?.navigationDelegate = nil
             }
             
             DispatchQueue.main.async {
-                self.backButton.isEnabled = false
-                self.backButton.isHidden = true
-                self.fetchSuccessView.fetchSuccess = self.getSuccessMessage()
-                self.fetchSuccessView.imageView = self.getStatusImage()
-                self.contentView.bringSubviewToFront(self.fetchSuccessView)
+                self.backButton?.isEnabled = false
+                self.backButton?.isHidden = true
+                self.fetchSuccessView?.fetchSuccess = self.getSuccessMessage()
+                if let statusImage = self.getStatusImage() {
+                    self.fetchSuccessView?.imageView = statusImage
+                }
+                self.contentView?.bringSubviewToFront(self.fetchSuccessView)
             }
         } else {
-            self.timerHandler.stopTimer()
+            self.timerHandler?.stopTimer()
             let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.authentication.rawValue, status: EventState.success.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
             self.logEvents(logEvents: eventLogs)
             LibContext.shared.webAuthErrorPublisher.send((true, AppConstants.msgTimeout))
@@ -591,17 +608,31 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         }
     }
     
-    private func getStatusImage() -> UIImage {
+    private func getStatusImage() -> UIImage? {
         let source = self.fetchRequestSource ?? .general
         if source == .manual {
             if isFetchSkipped || isFailureButAccountConnected {
-                return Utils.getImage(named: IconNames.FailureScreen)!
+                return Utils.getImage(named: IconNames.FailureScreen)
             } else {
-                return Utils.getImage(named: IconNames.SuccessScreen)!
+                return Utils.getImage(named: IconNames.SuccessScreen)
             }
         } else {
-            return Utils.getImage(named: IconNames.SuccessScreen)!
+            return Utils.getImage(named: IconNames.SuccessScreen)
         }
+    }
+    func onServicesDown(error: ASLException?) {
+        self.handleServicesDown()
+    }
+    
+    func handleServicesDown() {
+        self.webContentView.stopLoading()
+        let isError: (Bool, String) = (true, Strings.ErrorServicesDown)
+        LibContext.shared.webAuthErrorPublisher.send((isError.0, isError.1))
+        WebCacheCleaner.clear(completionHandler: nil)
+        self.dismiss(animated: true, completion: nil)
+        self.timerHandler?.stopTimer()
+        let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
+        LibContext.shared.servicesStatusListener.onServicesFailure(exception: error)
     }
 }
 
@@ -615,7 +646,7 @@ extension ConnectAccountViewController: WKNavigationDelegate {
         // Shows loader
         let showWebView = self.navigationHelper.shouldShowWebViewFor(url: webView.url)
         self.viewModel.showWebView.send(showWebView)
-        self.timerHandler.startTimer(action: Actions.DidStartProvisionalNavigation)
+        self.timerHandler?.startTimer(action: Actions.DidStartProvisionalNavigation)
         
         FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_didStartProvisionalNavigation- \(webView.url as Any)")
     }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0FA79EA127799D2000BAD0FD /* ServicesStatusListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FA79EA027799D2000BAD0FD /* ServicesStatusListener.swift */; };
 		1C006FAA26009BE500F9263E /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FA926009BE500F9263E /* AppConstants.swift */; };
 		1C006FB12600B7DA00F9263E /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FB02600B7DA00F9263E /* Utils.swift */; };
 		1C006FB72600BDA800F9263E /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C006FB62600BDA800F9263E /* Strings.swift */; };
@@ -195,6 +196,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0FA79EA027799D2000BAD0FD /* ServicesStatusListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServicesStatusListener.swift; sourceTree = "<group>"; };
 		1C006FA926009BE500F9263E /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
 		1C006FB02600B7DA00F9263E /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		1C006FB62600BDA800F9263E /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
@@ -674,6 +676,7 @@
 				1C5133E5265D458F00BCAC2C /* BSHtmlScrappingStatusListener.swift */,
 				1C2AD81026CA852400E394DE /* ScraperProgressListener.swift */,
 				9DACB06D26C5200B004ED440 /* AccountReconnectListener.swift */,
+				0FA79EA027799D2000BAD0FD /* ServicesStatusListener.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -949,7 +952,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which sentry-cli >/dev/null; then\nexport SENTRY_ORG=blackstraw-tw\nexport SENTRY_PROJECT=order-scrapper-android\nexport SENTRY_AUTH_TOKEN=d48a43fb631b46ff8ab957d37bee61cbff1f9fb336294386a73c39460a3b6998\nERROR=$(sentry-cli upload-dif \"$DWARF_DSYM_FOLDER_PATH\" 2>&1 >/dev/null)\nif [ ! $? -eq 0 ]; then\necho \"warning: sentry-cli - $ERROR\"\nfi\nelse\necho \"warning: sentry-cli not installed, download from https://github.com/getsentry/sentry-cli/releases\"\nfi\n";
+			shellScript = "if which sentry-cli >/dev/null; then\nexport SENTRY_ORG=blackstraw\nexport SENTRY_PROJECT=coinout-ios\nexport SENTRY_AUTH_TOKEN=220812aa8d294c4d9ca1044249947c152e96e7e0ee744eb18165dcd9ccf59b26\nERROR=$(sentry-cli upload-dif \"$DWARF_DSYM_FOLDER_PATH\" 2>&1 >/dev/null)\nif [ ! $? -eq 0 ]; then\necho \"warning: sentry-cli - $ERROR\"\nfi\nelse\necho \"warning: sentry-cli not installed, download from https://github.com/getsentry/sentry-cli/releases\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1056,6 +1059,7 @@
 				E148DB6325FF2BFD001430BE /* AccountState.swift in Sources */,
 				E148DC5B26034D7F001430BE /* APIClient.swift in Sources */,
 				9D86AC3526F22BED00FE0731 /* InstacartScrapper.swift in Sources */,
+				0FA79EA127799D2000BAD0FD /* ServicesStatusListener.swift in Sources */,
 				1C6D440B268EDDF2004A3165 /* Configs.swift in Sources */,
 				1C1BD79426C568B500ED6C5D /* BSCSVScrapper.swift in Sources */,
 				1C1BD79826C569AF00ED6C5D /* ScrapingMode.swift in Sources */,

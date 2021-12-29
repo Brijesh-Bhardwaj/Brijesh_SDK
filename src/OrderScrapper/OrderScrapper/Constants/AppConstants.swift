@@ -67,6 +67,7 @@ struct AppConstants {
     static let generateReportUrl = "https://www.amazon.com/gp/b2b/reports/"
     static let msgUploadCSVSuccess = "CSV uploaded successfully"
     static let ICLoginSuccessURL = "https://www.instacart.com/store"
+    static let InstacartOnBoardingURL = "https://www.instacart.com/onboarding"
     static let KRLoginSuccessURL = "https://www.kroger.com/"
     static let amazonAccountConnectedSuccess = "Amazon Account Connected Successfully"
     static let instacartAccountConnectedSuccess = "Instacart Account Connected Successfully"
@@ -81,4 +82,6 @@ struct AppConstants {
     static let orderUploadRetryCount = 2
     static let captchaRetryCount = 3
     static let ErrorInJsonEncoding = "Error in JSON encoding"
+    static let AmazonErrorMessage = "Enter your email or mobile phone number"
+
 }

@@ -55,14 +55,19 @@ class ConfigManager {
                 logEventAttributes[EventConstant.Status] = EventStatus.Success
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIConfigDetails, eventAttributes: logEventAttributes)
             } else {
-                completion(nil, APIError(error: Strings.ErrorNoConfigurationsFound))
-                
-                if let error = error {
-                    logEventAttributes[EventConstant.Status] = EventStatus.Failure
-                    logEventAttributes[EventConstant.EventName] = EventType.GetScraperConfigAPIFailed
-                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                    let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
+                    LibContext.shared.servicesStatusListener.onServicesFailure(exception: error)
                 } else {
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.GetScraperConfigAPIFailed, eventAttributes: logEventAttributes)
+                    completion(nil, APIError(error: Strings.ErrorNoConfigurationsFound))
+                    
+                    if let error = error {
+                        logEventAttributes[EventConstant.Status] = EventStatus.Failure
+                        logEventAttributes[EventConstant.EventName] = EventType.GetScraperConfigAPIFailed
+                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                    } else {
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.GetScraperConfigAPIFailed, eventAttributes: logEventAttributes)
+                    }
                 }
             }
         }

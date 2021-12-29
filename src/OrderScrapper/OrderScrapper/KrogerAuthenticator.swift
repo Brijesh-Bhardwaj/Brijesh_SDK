@@ -80,7 +80,9 @@ internal class KrogerAuthenticator: BSBaseAuthenticator {
     private func logEvents(logEvents: EventLogs) {
         if let orderSource = self.account?.source.value {
             _ = AmazonService.logEvents(eventLogs: logEvents, orderSource: orderSource) { response, error in
-                //TODO
+                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                    self.sendServicesDownCallback()
+                }
             }
         }
     }
@@ -173,12 +175,16 @@ internal class KrogerAuthenticator: BSBaseAuthenticator {
             _ = AmazonService.registerConnection(platformId: userId ?? "" ,
                                                  status: AccountState.NeverConnected.rawValue,
                                                  message: errorMessage, orderStatus: OrderStatus.None.rawValue, orderSource: OrderSource.Kroger.value) { response, error in
-                //TODO
+                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                    self.sendServicesDownCallback()
+                }
             }
             let eventLog = EventLogs(panelistId: panelistId, platformId: userId ?? "", section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
             if let orderSource = account?.source.value {
                 _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource) { response, error in
-                    //TODO
+                    if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                        self.sendServicesDownCallback()
+                    }
                 }
             }
             
@@ -215,11 +221,20 @@ internal class KrogerAuthenticator: BSBaseAuthenticator {
         }
         _ = AmazonService.updateStatus(platformId: userId, status: status
                                        , message: message, orderStatus: orderStatus, orderSource:  OrderSource.Kroger.value) { response, error in
-            //Todo
+            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                self.sendServicesDownCallback()
+            }
         }
         let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
         _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource) { response, error in
-            //TODO
+            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                self.sendServicesDownCallback()
+            }
+        }
+    }
+    private func sendServicesDownCallback() {
+        if let scraperListener = scraperListener {
+            scraperListener.onServicesDown(error: nil)
         }
     }
 }

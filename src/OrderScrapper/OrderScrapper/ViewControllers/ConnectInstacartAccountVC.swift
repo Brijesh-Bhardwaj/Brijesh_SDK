@@ -27,13 +27,13 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.connectAccountView.connectAccountTitle.text = getHeaderTitle()
-        self.connectAccountView.headerText = getHeaderMessage()
-        self.baseAuthenticator = InstacartAuthenticator(webClient: self.webClient, delegate: self.webClientDelegate)
+        self.connectAccountView?.connectAccountTitle.text = getHeaderTitle()
+        self.connectAccountView?.headerText = getHeaderMessage()
+        self.baseAuthenticator = InstacartAuthenticator(webClient: self.webClient, delegate: self.webClientDelegate, scraperListener: self)
         self.shouldAllowBack = false
-        self.baseAuthenticator.authenticationDelegate = self
+        self.baseAuthenticator?.authenticationDelegate = self
         self.publishProgress(step: .authentication)
-        self.baseAuthenticator.authenticate(account: self.account, configurations: self.configurations) { authenticated, error in
+        self.baseAuthenticator?.authenticate(account: self.account, configurations: self.configurations) { authenticated, error in
             if authenticated  {
                 self.publishProgress(step: .scrape)
                 if self.account.accountState == .NeverConnected {
@@ -53,23 +53,29 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
                             self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping)
                             self.scrapeHtml()
                         } else {
-                            if self.networkReconnct {
-                                print("#### Network Reconnect")
-                                self.scrapeHtml()
-                                self.networkReconnct = false
+                            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                                self.handleServicesDown()
                             } else {
-                                print("#### Account Register Error")
-                                self.didReceiveLoginChallenge(error: AppConstants.userAccountConnected)
-                                if let error = error {
-                                    FirebaseAnalyticsUtil.logSentryError(error: error)
+                                if self.networkReconnct {
+                                    print("#### Network Reconnect")
+                                    self.scrapeHtml()
+                                    self.networkReconnct = false
+                                } else {
+                                    print("#### Account Register Error")
+                                    self.didReceiveLoginChallenge(error: AppConstants.userAccountConnected)
+                                    if let error = error {
+                                        FirebaseAnalyticsUtil.logSentryError(error: error)
+                                    }
+                                    //Remove webview in case error occured while register so it won't reload in case of network off
+                                    self.removeWebview()
                                 }
-                                //Remove webview in case error occured while register so it won't reload in case of network off
-                                self.removeWebview()
                             }
                         }
                     }
                 } else {
-                    self.account.accountState = .ConnectionInProgress
+                    if self.account.accountState != .Connected {
+                        self.account.accountState = .ConnectionInProgress
+                    }
                     self.updateAccountStatusToConnected(orderStatus: OrderStatus.Initiated.rawValue)
                     self.addUserAccountInDB()
                     self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping)
@@ -93,8 +99,8 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
             }
         } else {
             //No network
-            self.baseAuthenticator.onNetworkDisconnected()
-            self.connectAccountView.bringSubviewToFront(self.connectAccountView.networkErrorView)
+            self.baseAuthenticator?.onNetworkDisconnected()
+            self.connectAccountView?.bringSubviewToFront(self.connectAccountView.networkErrorView)
             self.shouldAllowBack = true
         }
     }
@@ -127,11 +133,11 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
     
     override func loadWebContent() {
         print("$$$ loadWebContent called")
-        webClient.loadUrl(url: self.configurations.login)
+        webClient?.loadUrl(url: self.configurations.login)
         self.networkReconnct = true
-        self.connectAccountView.bringSubviewToFront(self.connectAccountView.progressView)
-        self.connectAccountView.progressView.progress = 1/3
-        self.connectAccountView.progressView.stepText = Utils.getString(key: Strings.Step1)
+        self.connectAccountView?.bringSubviewToFront(self.connectAccountView.progressView)
+        self.connectAccountView?.progressView.progress = 1/3
+        self.connectAccountView?.progressView.stepText = Utils.getString(key: Strings.Step1)
         self.shouldAllowBack = false
     }
     
@@ -146,6 +152,9 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
                                            message: AppConstants.msgTimeout,
                                            orderStatus: OrderStatus.Failed.rawValue,
                                            orderSource: self.account.source.value) { response, error in
+                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                    self.handleServicesDown()
+                }
             }
             
             let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
@@ -155,7 +164,9 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
     
     private func logEvents(logEvents: EventLogs) {
         _ = AmazonService.logEvents(eventLogs: logEvents, orderSource: self.account.source.value) { response, error in
-                //TODO
+            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                self.handleServicesDown()
+            }
         }
     }
     
@@ -165,9 +176,9 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
                 self.backgroundScrapper.scraperListener = nil
                 self.backgroundScrapper = nil
                 }
-            self.webClient.navigationDelegate = nil
+            self.webClient?.navigationDelegate = nil
             DispatchQueue.main.async {
-                self.webClient.stopLoading()
+                self.webClient?.stopLoading()
             }
         }
     }
@@ -175,16 +186,16 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
     // MARK: - Public Methods
     
     func removeWebview() {
-        self.webClient.navigationDelegate = nil
+        self.webClient?.navigationDelegate = nil
         DispatchQueue.main.async {
-            self.webClient.stopLoading()
-            self.webClient.removeFromSuperview()
+            self.webClient?.stopLoading()
+            self.webClient?.removeFromSuperview()
         }
     }
     
     func publishProgress(step: Steps) {
         let progressValue = Float(step.rawValue) / AppConstants.steps
-        self.connectAccountView.progress = CGFloat(progressValue)
+        self.connectAccountView?.progress = CGFloat(progressValue)
         
         var stepMessage: String
         
@@ -199,8 +210,8 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
             stepMessage = Utils.getString(key: Strings.Step3)
         }
         
-        self.connectAccountView.progressView.stepText = stepMessage
-        self.connectAccountView.bringSubviewToFront(self.connectAccountView.progressView)
+        self.connectAccountView?.progressView.stepText = stepMessage
+        self.connectAccountView?.bringSubviewToFront(self.connectAccountView.progressView)
         
         if step == .complete {
             onCompletion(isComplete: true)
@@ -210,11 +221,13 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
     func onCompletion(isComplete: Bool) {
         DispatchQueue.main.async {
             if isComplete {
-                self.connectAccountView.backButton.isHidden = true
-                self.connectAccountView.connectAccountTitle.text = self.getHeaderTitle()
-                self.connectAccountView.fetchSuccess = self.getSuccessMessage()
-                self.connectAccountView.statusImage = self.getStatusImage()
-                self.connectAccountView.bringSubviewToFront(self.connectAccountView.successView)
+                self.connectAccountView?.backButton.isHidden = true
+                self.connectAccountView?.connectAccountTitle.text = self.getHeaderTitle()
+                self.connectAccountView?.fetchSuccess = self.getSuccessMessage()
+                if let statusImage = self.getStatusImage() {
+                    self.connectAccountView?.statusImage = statusImage
+                }
+                self.connectAccountView?.bringSubviewToFront(self.connectAccountView.successView)
                 self.removeWebview()
             }
         }
@@ -233,6 +246,9 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
                                        status: self.account.accountState.rawValue,
                                        message: AppConstants.msgConnected,
                                        orderStatus: orderStatus, orderSource:  OrderSource.Instacart.value) { response, error in
+            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                self.handleServicesDown()
+            }
         }
     }
     
@@ -249,8 +265,9 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
             DispatchQueue.main.async {
                 self.timerHandler.stopTimer()
                 self.timerHandler.removeCallbackListener()
-                self.backgroundScrapper.stopScrapping()
-                self.backgroundScrapper.scraperListener = nil
+                self.backgroundScrapper?.stopScrapping()
+                self.backgroundScrapper?.scraperListener = nil
+                self.backgroundScrapper = nil
                 self.logEvent()
                 if completed {
                     if let successType = successType {
@@ -263,20 +280,22 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
                 self.publishProgress(step: .complete)
             }
         }
-        backgroundScrapper.scraperListener = self
-        backgroundScrapper.scrappingMode = .Foreground
+        backgroundScrapper?.scraperListener = self
+        backgroundScrapper?.scrappingMode = .Foreground
         if let fetchRequestSource = self.fetchRequestSource {
-            backgroundScrapper.fetchRequestSource = fetchRequestSource
+            backgroundScrapper?.fetchRequestSource = fetchRequestSource
         }
         if let account = self.account {
-            backgroundScrapper.startScrapping(account: account)
+            backgroundScrapper?.startScrapping(account: account)
         }
     }
     
     private func logEvent() {
         let eventLog = EventLogs(panelistId: self.account.panelistID, platformId:  self.account.userID, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.success.rawValue, message: AppConstants.fgScrappingCompleted, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
         _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: self.account.source.value) { response, error in
-            //TODO
+            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                self.handleServicesDown()
+            }
         }
         
     }
@@ -312,28 +331,39 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
         }
     }
     
-    private func getStatusImage() -> UIImage {
+    private func getStatusImage() -> UIImage? {
         let source = self.fetchRequestSource ?? .general
         if source == .manual {
             if successType == .failureButAccountConnected || successType == .fetchSkipped {
-                return Utils.getImage(named: IconNames.FailureScreen)!
+                return Utils.getImage(named: IconNames.FailureScreen)
             } else {
-                return Utils.getImage(named: IconNames.SuccessScreen)!
+                return Utils.getImage(named: IconNames.SuccessScreen)
             }
          
         } else {
-            return Utils.getImage(named: IconNames.SuccessScreen)!
+            return Utils.getImage(named: IconNames.SuccessScreen)
         }
+    }
+    
+    private func handleServicesDown() {
+        self.webClient?.stopLoading()
+        let isError: (Bool, String) = (true,Strings.ErrorServicesDown)
+        LibContext.shared.webAuthErrorPublisher.send((isError.0, isError.1))
+        WebCacheCleaner.clear(completionHandler: nil)
+        self.dismiss(animated: true, completion: nil)
+        self.timerHandler.stopTimer()
+        let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
+        LibContext.shared.servicesStatusListener.onServicesFailure(exception: error)
     }
 }
 
 extension ConnectInstacartAccountVC: BSAuthenticaorDelegate {
     func didReceiveAuthenticationChallenge(authError: Bool) {
         if authError {
-            self.webClient.isHidden = false
+            self.webClient?.isHidden = false
             self.view.bringSubviewToFront(self.webClient)
         } else {
-            self.webClient.isHidden = true
+            self.webClient?.isHidden = true
             self.view.bringSubviewToFront(self.webClient)
         }
     }
@@ -368,7 +398,7 @@ extension  ConnectInstacartAccountVC: ScraperProgressListener   {
     }
     
     func updateStepMessage(stepMessage: String) {
-        self.connectAccountView.stepText = stepMessage
+        self.connectAccountView?.stepText = stepMessage
     }
     
     func updateProgressStep(htmlScrappingStep: HtmlScrappingStep) {
@@ -379,5 +409,9 @@ extension  ConnectInstacartAccountVC: ScraperProgressListener   {
         
         self.successType = successType
         
+    }
+    
+    func onServicesDown(error: ASLException?) {
+        self.handleServicesDown()
     }
 }

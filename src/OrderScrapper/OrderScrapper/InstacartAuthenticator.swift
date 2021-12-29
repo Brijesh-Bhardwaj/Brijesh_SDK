@@ -26,14 +26,17 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
                 let loginSubURL = Utils.getSubUrl(url: configurations.login, delimeter: self.LoginURLDelimiter)
                 // TODO -: Check the hardcoded URL
                 let subURL = AppConstants.ICLoginSuccessURL
-                if url.contains(subURL){
+                
+                if  url.contains(AppConstants.InstacartOnBoardingURL) {
+                    self.webClient.scriptMessageHandler?.removeScriptMessageListener()
+                } else if url.contains(subURL) {
                     print("@@ subURL",subURL)
+                    self.webClient.scriptMessageHandler?.removeScriptMessageListener()
                     if let completionHandler = self.completionHandler {
                         completionHandler(true, nil)
                     } else {
                         self.completionHandler?(true, nil)
                     }
-                    self.webClient.scriptMessageHandler?.removeScriptMessageListener()
                 } else if (url.contains(loginSubURL) || loginSubURL.contains(url)) {
                     self.onContinueBrowser()
                 } else {
@@ -92,7 +95,9 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
     private func logEvents(logEvents: EventLogs) {
         if let orderSource = self.account?.source.value {
             _ = AmazonService.logEvents(eventLogs: logEvents, orderSource: orderSource) { response, error in
-                //TODO
+                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                    self.sendServicesDownCallback()
+                }
             }
         }
     }
@@ -271,12 +276,16 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
             _ = AmazonService.registerConnection(platformId: userId!,
                                                  status: AccountState.NeverConnected.rawValue,
                                                  message: errorMessage, orderStatus: OrderStatus.None.rawValue, orderSource: OrderSource.Instacart.value) { response, error in
-                //TODO
+                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                    self.sendServicesDownCallback()
+                }
             }
             let eventLog = EventLogs(panelistId: panelistId, platformId: userId! , section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
             if let orderSource = account?.source.value {
                 _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource) { response, error in
-                    //TODO
+                    if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                        self.sendServicesDownCallback()
+                    }
                 }
             }
            
@@ -314,11 +323,15 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
         }
         _ = AmazonService.updateStatus(platformId: userId, status: status
                                        , message: message, orderStatus: orderStatus, orderSource:  OrderSource.Instacart.value) { response, error in
-            //Todo
+            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                self.sendServicesDownCallback()
+            }
         }
         let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
         _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource) { response, error in
-            //TODO
+            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                self.sendServicesDownCallback()
+            }
         }
     }
     
@@ -331,6 +344,12 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
         logEventAttributes[EventConstant.Status] = EventStatus.Failure
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedCaptcha, eventAttributes: logEventAttributes)
         
+    }
+    
+    private func sendServicesDownCallback() {
+        if let scraperListener = scraperListener {
+            scraperListener.onServicesDown(error: nil)
+        }
     }
 }
 

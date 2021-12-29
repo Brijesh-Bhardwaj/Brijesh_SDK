@@ -21,6 +21,7 @@ class APIError: Error {
 
 class NetworkClient<T: Codable>: APIClient {
     private let AuthErrorResponseCode = 401
+    private let ServiceDownResponseCode = 500
     private let BaseURL = LibContext.shared.orderExtractorConfig.baseURL
     private let HeaderContentType = "Content-Type"
     
@@ -42,7 +43,7 @@ class NetworkClient<T: Codable>: APIClient {
         self.ContentTypeJSON = type
     }
     
-    func executeAPI(completionHandler: @escaping (Any?, Error?) -> Void) {
+    func executeAPI(completionHandler: @escaping (Any?, ASLException?) -> Void) {
         let url = BaseURL + self.relativeURL
         var httpHeaders = HTTPHeaders()
         if let headers = self.headers {
@@ -73,7 +74,7 @@ class NetworkClient<T: Codable>: APIClient {
     
     private func executeGet(_ url: String,
                             _ headers: HTTPHeaders?,
-                            _ completionHandler: @escaping (Any?, Error?) -> Void) {
+                            _ completionHandler: @escaping (Any?, ASLException?) -> Void) {
         _ = AF.request(url, headers: headers)
             .validate(statusCode: 200..<300)
             .responseDecodable(of: T.self) { response in
@@ -83,7 +84,7 @@ class NetworkClient<T: Codable>: APIClient {
     
     private func executePost(_ url: String,
                              _ headers: HTTPHeaders?,
-                             _ completionHandler: @escaping (Any?, Error?) -> Void) {
+                             _ completionHandler: @escaping (Any?, ASLException?) -> Void) {
         guard let body = self.body else { return }
         
         _ = AF.request(url, method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
@@ -95,7 +96,7 @@ class NetworkClient<T: Codable>: APIClient {
     
     private func executeMultipartPost(_ url: String,
                                       _ headers: HTTPHeaders?,
-                                      _ completionHandler: @escaping (Any?, Error?) -> Void) {
+                                      _ completionHandler: @escaping (Any?, ASLException?) -> Void) {
         guard let multipartData = self.multipartFormClosure else { return }
         
         _ = AF.upload(multipartFormData:multipartData, to: url, headers: headers)
@@ -107,7 +108,7 @@ class NetworkClient<T: Codable>: APIClient {
     
     private func executePut(_ url: String,
                             _ headers: HTTPHeaders?,
-                            _ completionHandler: @escaping (Any?, Error?) -> Void) {
+                            _ completionHandler: @escaping (Any?, ASLException?) -> Void) {
         
         guard let body = self.body else { return }
         
@@ -119,7 +120,7 @@ class NetworkClient<T: Codable>: APIClient {
     }
     
     private func onResponse(_ response:DataResponse<T, AFError>,
-                            _ completionHandler: @escaping (Any?, Error?) -> Void) {
+                            _ completionHandler: @escaping (Any?, ASLException?) -> Void) {
         debugPrint("On Response:", response)
         let httpResponseCode = response.response?.statusCode
         if httpResponseCode == AuthErrorResponseCode {
@@ -127,13 +128,17 @@ class NetworkClient<T: Codable>: APIClient {
                 if authToken != nil {
                     self.executeAPI(completionHandler: completionHandler)
                 } else {
-                    completionHandler(nil, error)
+                    let asl = ASLException(error: error, errorMessage: "", failureType: .servicesDown)
+                    completionHandler(nil, asl)
                     if let error = error {
                         FirebaseAnalyticsUtil.logSentryError(error: error)
                     }
                 }
             }
-        } else {
+        } else if let httpResponseCode = httpResponseCode, httpResponseCode >= ServiceDownResponseCode {
+            let error = ASLException(error: nil, errorMessage: "", failureType: .servicesDown)
+            completionHandler(nil, error)
+        }else {
             switch response.result {
             case let .success(result):
                 FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_APICall\(relativeURL)")
@@ -141,7 +146,8 @@ class NetworkClient<T: Codable>: APIClient {
                 completionHandler(result, nil)
             case let .failure(error):
                 FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_APICall\(relativeURL) \(error)")
-                completionHandler(nil, error)
+                let asl = ASLException(error: error, errorMessage: "", failureType: nil)
+                completionHandler(nil, asl)
                 
                 let panelistId = LibContext.shared.authProvider.getPanelistID()
                 var logEventAttributes:[String:String] = [:]

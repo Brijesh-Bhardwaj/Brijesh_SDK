@@ -194,24 +194,27 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIDateRange, eventAttributes: logEventAttributes)
             } else {
-                var logEventAttributes:[String:String] = [:]
-                
-                logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
-                                      EventConstant.PanelistID: self.panelistID,
-                                      EventConstant.OrderSourceID: self.account?.userID ?? "",
-                                      EventConstant.ScrappingStep: HtmlScrappingStep.startScrapping.value,
-                                      EventConstant.EventName: EventType.ExceptionWhileDateRangeAPI,
-                                      EventConstant.Status: EventStatus.Failure]
-                if let error = error {
-                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                    self.sendServicesDownCallback(error: error)
                 } else {
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.ExceptionWhileDateRangeAPI, eventAttributes: logEventAttributes)
+                    var logEventAttributes:[String:String] = [:]
+                    logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
+                                          EventConstant.PanelistID: self.account!.panelistID,
+                                          EventConstant.OrderSourceID: self.account!.userID,
+                                          EventConstant.ScrappingStep: HtmlScrappingStep.startScrapping.value,
+                                          EventConstant.EventName: EventType.ExceptionWhileDateRangeAPI,
+                                          EventConstant.Status: EventStatus.Failure]
+                    if let error = error {
+                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                    } else {
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.ExceptionWhileDateRangeAPI, eventAttributes: logEventAttributes)
+                    }
+                    
+                    self.stopScrapping()
+                    let error = ASLException(
+                        errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil)
+                    self.completionHandler((false, nil),error )
                 }
-                
-                self.stopScrapping()
-                let error = ASLException(
-                    errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil)
-                self.completionHandler((false, nil),error )
             }
         }
     }
@@ -327,7 +330,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
         let orderSource = self.account?.source.value ?? ""
         let eventLogs = EventLogs(panelistId: panelistID, platformId:platformId, section: SectionType.orderUpload.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: self.dateRange?.fromDate, toDate: self.dateRange?.toDate, scrapingType: ScrappingType.report.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
         _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: orderSource) { response, error in
-            
+            self.sendServicesDownCallback(error: error)
         }
         let error = ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil)
         
@@ -374,6 +377,26 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
         if isComplete {
             self.stopScrapping()
             self.completionHandler((true, .fetchCompleted), nil)
+        }
+    }
+    
+    func onServicesDown(error: ASLException?) {
+        stopScrapping()
+        if let error = error {
+            LibContext.shared.servicesStatusListener.onServicesFailure(exception: error)
+            self.completionHandler((false, nil), error)
+        } else {
+            let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
+            LibContext.shared.servicesStatusListener.onServicesFailure(exception: error)
+            self.completionHandler((false, nil), error)
+        }
+    }
+    
+    func sendServicesDownCallback(error: ASLException?) {
+        if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+            if let scrappingMode = scrappingMode, scrappingMode == .Foreground {
+                onServicesDown(error: nil)
+            }
         }
     }
 }
@@ -473,7 +496,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     let userId = account!.userID
                     let amazonLogs = EventLogs(panelistId:self.panelistID , platformId: userId, section: SectionType.orderUpload.rawValue, type: FailureTypes.none.rawValue, status: EventState.success.rawValue, message: AppConstants.msgOrderListSuccess, fromDate: dateRange?.fromDate, toDate: dateRange?.toDate, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
                     _ = AmazonService.logEvents(eventLogs: amazonLogs, orderSource: self.account!.source.value) { response, error in
-                        
+                        self.sendServicesDownCallback(error: error)
                     }
                     logEventAttributes[EventConstant.Status] =  EventStatus.Success
                     logEventAttributes[EventConstant.Message] = message
@@ -497,7 +520,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     let userId = account!.userID
                     let amazonLogs = EventLogs(panelistId: self.panelistID , platformId: userId, section: SectionType.orderUpload.rawValue, type: FailureTypes.jsFailed.rawValue, status: EventState.fail.rawValue, message: error, fromDate: dateRange?.fromDate, toDate: dateRange?.toDate, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
                     _ = AmazonService.logEvents(eventLogs: amazonLogs, orderSource: self.orderSource.value) { response, error in
-                        
+                        self.sendServicesDownCallback(error: error)
                     }
                     logEventAttributes[EventConstant.ErrorReason] =  error
                     logEventAttributes[EventConstant.Status] =  EventStatus.Failure
@@ -518,7 +541,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
         let userId = account!.userID
         let eventLogs = EventLogs(panelistId: self.panelistID, platformId: userId, section: SectionType.orderUpload.rawValue , type: error.errorEventLog!.rawValue, status: EventState.fail.rawValue, message: error.errorMessage, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrapingType: error.errorScrappingType?.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
         _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.orderSource.value) { response, error in
-            //TODO
+            self.sendServicesDownCallback(error: error)
         }
         self.completionHandler((false, nil), error)
         // API call
@@ -538,7 +561,8 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     func insertOrderDetailsToDB(orderDetails: [OrderDetails], completion: @escaping (Bool) -> Void) {
         DispatchQueue.global().async {
             var orderSectionType = ""
-            if self.scrappingMode == .Foreground {
+            let source = self.fetchRequestSource ?? .general
+            if self.scrappingMode == .Foreground && source != .manual {
                 orderSectionType = SectionType.connection.rawValue
             } else {
                 orderSectionType = SectionType.orderUpload.rawValue
@@ -657,7 +681,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     private func logEvent(status: String) {
         let eventLogs = EventLogs(panelistId: self.panelistID, platformId: self.account!.userID, section: SectionType.orderUpload.rawValue , type: FailureTypes.none.rawValue, status: status, message: AppConstants.bgScrappingCompleted, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
         _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.orderSource.value) { response, error in
-            //TODO
+            self.sendServicesDownCallback(error: error)
         }
     }
     
@@ -669,7 +693,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                 let orderDetailsUploadCount = self.getOrdersDetailsCountOnConnection()
                 print("!!!! orderDetailsUploadCount",orderDetailsUploadCount)
                 let accountState = account.accountState
-                if accountState == .ConnectionInProgress && orderDetailsUploadCount == 0 {
+                if (accountState == .ConnectionInProgress || accountState == .Connected) && orderDetailsUploadCount == 0 {
                     do {
                         try CoreDataManager.shared.updateUserAccount(userId: self.account!.userID, accountStatus: AccountState.Connected.rawValue, panelistId: self.panelistID, orderSource: self.account!.source.rawValue)
                     } catch let error {
@@ -681,6 +705,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                                                    status: AccountState.Connected.rawValue,
                                                    message: AppConstants.msgConnected,
                                                    orderStatus: OrderStatus.Completed.rawValue, orderSource:  self.account!.source.value) { response, error in
+                        self.sendServicesDownCallback(error: error)
                     }
                 }
             }

@@ -23,7 +23,8 @@ public class OrdersExtractor {
     public static func initialize(authProvider: AuthProvider,
                                   viewPresenter: ViewPresenter,
                                   analyticsProvider: AnalyticsProvider?,
-                                  orderExtractionConfig: OrderExtractorConfig) throws {
+                                  orderExtractionConfig: OrderExtractorConfig,
+                                  servicesStatusListener: ServicesStatusListener) throws {
         
         let authToken = authProvider.getAuthToken()
         let panelistId = authProvider.getPanelistID()
@@ -46,8 +47,9 @@ public class OrdersExtractor {
         
         AmazonOrderScrapper.shared.initialize(authProvider: authProvider,
                                               viewPresenter: viewPresenter,
-                                              analyticsProvider: analyticsProvider)
-
+                                              analyticsProvider: analyticsProvider,
+                                              servicesStatusListener: servicesStatusListener)
+        
         //Configure firebase analytics
         if analyticsProvider == nil {
             FirebaseAnalyticsUtil.configure()
@@ -71,6 +73,10 @@ public class OrdersExtractor {
                 }
             } else {
                 LibContext.shared.timeoutValue = AppConstants.timeoutCounter
+                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                    let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
+                    LibContext.shared.servicesStatusListener.onServicesFailure(exception: error)
+                }
             }
         }
         

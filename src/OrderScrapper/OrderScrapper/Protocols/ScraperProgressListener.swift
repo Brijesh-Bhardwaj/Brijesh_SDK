@@ -10,5 +10,6 @@ protocol ScraperProgressListener {
     func updateStepMessage(stepMessage: String)
     func updateProgressStep(htmlScrappingStep: HtmlScrappingStep)
     func updateSuccessType(successType: OrderFetchSuccessType)
+    func onServicesDown(error: ASLException?)
 }
 

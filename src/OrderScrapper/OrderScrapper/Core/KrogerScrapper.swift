@@ -10,7 +10,7 @@ import Foundation
 class KrogerScrapper: BSScrapper {
     
     override func getAuthenticator() throws -> BSAuthenticator {
-        return BSKrogerAuthenticator(webClient: webClient, delegate: webClientDelegate)
+        return BSKrogerAuthenticator(webClient: webClient, delegate: webClientDelegate, scraperListener: nil)
     }
     
     override func getOrderSource() throws -> OrderSource {

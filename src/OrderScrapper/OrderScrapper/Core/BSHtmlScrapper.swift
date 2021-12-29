@@ -133,6 +133,9 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                                                   EventConstant.ScrappingTime: authTimer,
                                                   EventConstant.Status: EventStatus.Failure]
                             FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAuthentication, eventAttributes: logEventAttributes)
+                        } else if(error?.errorType == ErrorType.authChallenge && error?.errorMessage == AppConstants.AmazonErrorMessage) {
+                            let errorMessage = ASLException(errorMessages: error!.errorMessage, errorTypes: .authChallenge, errorEventLog: .authentication, errorScrappingType: ScrappingType.html)
+                            self.onAmazonAuthFailure(error: errorMessage)
                         } else {
                             let errorMessage = ASLException(errorMessages: error!.errorMessage, errorTypes: .authChallenge, errorEventLog: .authentication, errorScrappingType: ScrappingType.html)
                             self.onAuthenticationFailure(error: errorMessage, orderSource: self.params.account.source)
@@ -292,6 +295,57 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
         DispatchQueue.main.async {
             self.params.webClient.evaluateJavaScript(script) { response, error in
                 print("#### evaluate Script")
+            }
+        }
+    }
+                
+    func onAmazonAuthFailure(error: ASLException) {
+        var logEventAttributes:[String:String] = [:]
+        logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
+                              EventConstant.PanelistID: self.params.account.panelistID,
+                              EventConstant.OrderSourceID: self.params.account.userID,
+                              EventConstant.EventName: EventType.UserAuthenticationFailed,
+                              EventConstant.Status: EventStatus.Failure]
+        if let scrappingType = self.params.scrappingType {
+            logEventAttributes[EventConstant.ScrappingMode] = scrappingType
+        }
+        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+        
+        let failureCount = UserDefaults.standard.integer(forKey: Strings.OnAuthenticationChallenegeRetryCount)
+        UserDefaults.standard.setValue(failureCount + 1, forKey: Strings.OnAuthenticationChallenegeRetryCount)
+        let currentDate = Date().timeIntervalSince1970
+        UserDefaults.standard.setValue(currentDate, forKey: Utils.getKeyForCoolOfTime(orderSorce: .Amazon))
+        
+        self.shouldAmazonRetryCount { boolValue in
+            if boolValue {
+                let error = ASLException(errorMessages: Strings.ErrorOnAuthenticationChallenge, errorTypes: error.errorType, errorEventLog: .notify, errorScrappingType: error.errorScrappingType)
+                self.params.listener.onHtmlScrappingFailure(error: error)
+            } else {
+                self.params.listener.onHtmlScrappingFailure(error: error)
+            }
+        }
+    }
+    
+    func shouldAmazonRetryCount(completion: @escaping (Bool) -> Void) {
+        
+        //TODO:- Add orderSource
+        ConfigManager.shared.getConfigurations(orderSource: .Amazon) { (configurations, error) in
+            if let configuration = configurations {
+                let showNotification = self.dateRange?.showNotification ?? false
+                let otherRetryCount = configuration.otherRetryCount ?? 15
+                let failureCount = UserDefaults.standard.integer(forKey: Strings.OnAuthenticationChallenegeRetryCount)
+                completion(showNotification || failureCount > otherRetryCount)
+            } else {
+                if let error = error {
+                    var logEventAttributes:[String:String] = [:]
+                    logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
+                                          EventConstant.PanelistID: self.params.account.panelistID,
+                                          EventConstant.OrderSourceID: self.params.account.userID,
+                                          EventConstant.EventName: EventType.ExceptionWhileGettingConfiguration,
+                                          EventConstant.Status: EventStatus.Failure]
+                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                }
+                completion(false)
             }
         }
     }

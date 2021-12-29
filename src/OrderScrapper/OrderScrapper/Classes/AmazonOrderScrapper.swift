@@ -50,7 +50,7 @@ class AmazonOrderScrapper {
     }
     
     func initialize(authProvider: AuthProvider, viewPresenter: ViewPresenter,
-                    analyticsProvider: AnalyticsProvider?) -> Void {
+                    analyticsProvider: AnalyticsProvider?, servicesStatusListener: ServicesStatusListener) -> Void {
         self.authProvider = authProvider
         self.viewPresenter = viewPresenter
         self.analyticsProvider = analyticsProvider
@@ -58,6 +58,7 @@ class AmazonOrderScrapper {
         
         LibContext.shared.authProvider = self.authProvider
         LibContext.shared.viewPresenter = self.viewPresenter
+        LibContext.shared.servicesStatusListener = servicesStatusListener
     }
     
     deinit {
@@ -116,31 +117,34 @@ class AmazonOrderScrapper {
                 let numberOfCapchaRetry = Utils.getKeyForNumberOfCaptchaRetry(orderSorce: source)
                 UserDefaults.standard.setValue(0, forKey: numberOfCapchaRetry)
             } else {
-                var logEventAttributes:[String:String] = [:]
-                logEventAttributes = [EventConstant.OrderSource: orderSource,
-                                      EventConstant.PanelistID: panelistId,
-                                      EventConstant.OrderSourceID: account.userID]
-                if let error = error {
-                    logEventAttributes[EventConstant.EventName] = EventType.UpdateStatusAPIFailedWhileDisconnect
-                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
-                } else {
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.UpdateStatusAPIFailedWhileDisconnect, eventAttributes: logEventAttributes)
+                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                    let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
+                    LibContext.shared.servicesStatusListener.onServicesFailure(exception: error)
+                } else {var logEventAttributes:[String:String] = [:]
+                    logEventAttributes = [EventConstant.OrderSource: orderSource,
+                                          EventConstant.PanelistID: panelistId,
+                                          EventConstant.OrderSourceID: account.userID]
+                    if let error = error {
+                        logEventAttributes[EventConstant.EventName] = EventType.UpdateStatusAPIFailedWhileDisconnect
+                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                    } else {
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.UpdateStatusAPIFailedWhileDisconnect, eventAttributes: logEventAttributes)
+                    }
+                    
+                    var errorMsg: String = "Failed while disconnecting account"
+                    if let error = error as? APIError{
+                        errorMsg = error.errorMessage
+                    }
+                    let error = ASLException(errorMessage: errorMsg, errorType: nil)
+                    if let accountDisconnectListener = self.disconnectOperation[source] {
+                        accountDisconnectListener.onAccountDisconnectionFailed(account: account, error: error)
+                        self.disconnectOperation.removeValue(forKey: source)
+                    }
+                    FirebaseAnalyticsUtil.logSentryError(error: error)
                 }
-                
-                var errorMsg: String = "Failed while disconnecting account"
-                if let error = error as? APIError{
-                    errorMsg = error.errorMessage
-                }
-                let error = ASLException(errorMessage: errorMsg, errorType: nil)
-                if let accountDisconnectListener = self.disconnectOperation[source] {
-                    accountDisconnectListener.onAccountDisconnectionFailed(account: account, error: error)
-                    self.disconnectOperation.removeValue(forKey: source)
-                }
-                FirebaseAnalyticsUtil.logSentryError(error: error)
             }
         }
     }
-    
     func startOrderExtraction(account: Account,
                               orderExtractionListener: OrderExtractionListener,
                               source: FetchRequestSource) -> RetailerScrapingStatus {
