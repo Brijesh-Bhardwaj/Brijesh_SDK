@@ -75,6 +75,7 @@ class AmazonOrderScrapper {
                     accountDisconnectedListener.onAccountDisconnected(account: account)
                 }
                 UserDefaults.standard.setValue(0, forKey: Strings.OnNumberOfCaptchaRetry)
+                UserDefaults.standard.setValue(0, forKey: Strings.OnAuthenticationChallenegeRetryCount)
             } else {
                 if let error = error, error.errorEventLog == .servicesDown {
                     let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
@@ -194,6 +195,7 @@ class AmazonOrderScrapper {
                     if completed {
                         orderExtractionListener.onOrderExtractionSuccess(successType: successType!, account: account)
                         UserDefaults.standard.setValue(0, forKey: Strings.OnNumberOfCaptchaRetry)
+                        UserDefaults.standard.setValue(0, forKey: Strings.OnAuthenticationChallenegeRetryCount)
                     } else {
                         if error?.errorMessage == Strings.ErrorOnAuthenticationChallenge {
                             orderExtractionListener.showNotification(account: account)

@@ -402,6 +402,7 @@ class BSCSVScrapper: NSObject {
             if response != nil {
                 self.currentStep = .complete
                 self.publishProgrssFor(step: .complete)
+                UserDefaults.standard.setValue(0, forKey: Strings.OnAuthenticationChallenegeRetryCount)
                 
                 if self.scrapingMode == .Background {
                     self.logEvents(message: AppConstants.msgUploadCSVSuccess, section: SectionType.orderUpload.rawValue, status: EventState.success.rawValue, type: FailureTypes.other.rawValue)

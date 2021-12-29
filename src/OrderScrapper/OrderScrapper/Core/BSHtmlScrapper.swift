@@ -276,9 +276,9 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
         ConfigManager.shared.getConfigurations(orderSource: .Amazon) { (configurations, error) in
             if let configuration = configurations {
                 let showNotification = self.dateRange?.showNotification ?? false
-                let captchaRetries = configuration.otherRetryCount ?? 3
-                let failureCount = UserDefaults.standard.integer(forKey: Strings.OnNumberOfCaptchaRetry)
-                completion(showNotification || failureCount > captchaRetries)
+                let otherRetryCount = configuration.otherRetryCount ?? 15
+                let failureCount = UserDefaults.standard.integer(forKey: Strings.OnAuthenticationChallenegeRetryCount)
+                completion(showNotification || failureCount > otherRetryCount)
             } else {
                 if let error = error {
                     var logEventAttributes:[String:String] = [:]
