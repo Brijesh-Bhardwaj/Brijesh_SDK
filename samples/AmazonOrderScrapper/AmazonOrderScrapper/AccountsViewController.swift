@@ -303,7 +303,7 @@ extension UIViewController {
 }
 extension AccountsViewController: ServicesStatusListener {
     func onServicesFailure(exception: ASLException) {
-        
+        print("####### onServicesFailure")
     }
 }
 

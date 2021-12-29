@@ -49,7 +49,7 @@ class ConfigManager {
                 logEventAttributes[EventConstant.Status] = EventStatus.Success
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIConfigDetails, eventAttributes: logEventAttributes)
             } else {
-                if let error = error, error.errorEventLog == .servicesDown {
+                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
                     let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
                     LibContext.shared.servicesStatusListener.onServicesFailure(exception: error)
                 } else {

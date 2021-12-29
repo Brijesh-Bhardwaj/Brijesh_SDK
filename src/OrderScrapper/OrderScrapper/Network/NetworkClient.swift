@@ -140,7 +140,7 @@ class NetworkClient<T: Codable>: APIClient {
                 completionHandler(result, nil)
             case let .failure(error):
                 FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_APICall\(relativeURL) \(error)")
-                let asl = ASLException(error: error, errorMessage: "", failureType: .servicesDown)
+                let asl = ASLException(error: error, errorMessage: "", failureType: nil)
                 completionHandler(nil, asl)
                 
                 let panelistId = LibContext.shared.authProvider.getPanelistID()
