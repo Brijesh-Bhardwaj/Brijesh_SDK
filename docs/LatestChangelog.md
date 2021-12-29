@@ -1,3 +1,2 @@
-- Optimized code to handle multiple network callbacks simultaneously ensuring the webview doesn't reload the same login URL multiple times
-- Removed the cool-off condition check in case the scraping is requested after notification click
-- Optimized core data code to be thread safe using a synchronized thread handler ensuring the object is not accessed simultaneously by different threads
+- Issue fix for the account state changing to connectedButException in backgroundAuthentication (RPA-662)
+- Added ServicesStatusListener to handle the API down scenario from the SDK side. A callback given to the Application when the services are down.

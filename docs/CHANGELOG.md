@@ -10,6 +10,12 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
   
+  ## [1.1.6] - 2021-12-29
+   
+    ### Fixed
+    - Issue fix for the account state changing to connectedButException in backgroundAuthentication (RPA-662)
+    - Added ServicesStatusListener to handle the API down scenario from the SDK side. A callback given to the Application when the services are down.
+    
 ## [1.1.5] - 2021-10-25
  
   ### Fixed
