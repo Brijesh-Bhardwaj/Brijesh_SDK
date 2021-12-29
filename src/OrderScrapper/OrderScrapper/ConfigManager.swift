@@ -37,6 +37,7 @@ class ConfigManager {
                     if scrapperConfig.platformSource == orderSource.value {
                         scrapperConfig.urls.captchaRetries = scrapperConfig.connections.captchaRetries
                         scrapperConfig.urls.cooloffPeriodCaptcha = scrapperConfig.connections.cooloffPeriodCaptcha
+                        scrapperConfig.urls.otherRetryCount = scrapperConfig.connections.otherRetryCount
                         self.configs[OrderSource.Amazon] = scrapperConfig.urls
                         break
                     }

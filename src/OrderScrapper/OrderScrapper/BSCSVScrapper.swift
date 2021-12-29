@@ -158,6 +158,9 @@ class BSCSVScrapper: NSObject {
                         if error?.errorMessage == "Captcha page loaded" || error?.errorMessage == "Other url loaded" {
                             let errorMessage = ASLException(errorMessages: Strings.ErrorOtherUrlLoaded, errorTypes: .authError, errorEventLog: .unknownURL, errorScrappingType: ScrappingType.report)
                             self.bsScrapper!.onAuthenticationFailure(error: errorMessage)
+                        } else if error?.errorMessage == AppConstants.AmazonErrorMessage {
+                            let errorMessage = ASLException(errorMessages: error!.errorMessage, errorTypes: .authError, errorEventLog: .unknownURL, errorScrappingType: ScrappingType.html)
+                            self.bsScrapper!.onAmazonAuthFailure(error: errorMessage)
                         } else {
                             // Call this method when only in scrapping mode is background
                             let errorMessage = ASLException(errorMessages: Strings.ErrorOtherUrlLoaded, errorTypes: .authError, errorEventLog: .unknownURL, errorScrappingType: ScrappingType.report)
@@ -398,6 +401,7 @@ class BSCSVScrapper: NSObject {
             if response != nil {
                 self.currentStep = .complete
                 self.publishProgrssFor(step: .complete)
+                UserDefaults.standard.setValue(0, forKey: Strings.OnAuthenticationChallenegeRetryCount)
                 
                 if self.scrapingMode == .Background {
                     self.logEvents(message: AppConstants.msgUploadCSVSuccess, section: SectionType.orderUpload.rawValue, status: EventState.success.rawValue, type: FailureTypes.other.rawValue)

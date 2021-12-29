@@ -113,8 +113,11 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                     } else {
                         if error?.errorMessage == "Captcha page loaded" || error?.errorMessage == "Other url loaded" {
 //                            let errorMessage = ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError)
-                            let errorMessage = ASLException(errorMessages: Strings.ErrorOtherUrlLoaded, errorTypes: .authError, errorEventLog: .unknownURL, errorScrappingType: ScrappingType.html)
+                            let errorMessage = ASLException(errorMessages: error!.errorMessage, errorTypes: .authError, errorEventLog: .unknownURL, errorScrappingType: ScrappingType.html)
                             self.onAuthenticationFailure(error: errorMessage)
+                        } else if error?.errorMessage == AppConstants.AmazonErrorMessage {
+                            let errorMessage = ASLException(errorMessages: error!.errorMessage, errorTypes: .authError, errorEventLog: .unknownURL, errorScrappingType: ScrappingType.html)
+                            self.onAmazonAuthFailure(error: errorMessage)
                         } else {
                             let errorMessage = ASLException(errorMessages: Strings.ErrorPasswordJSInjectionFailed, errorTypes: .authError, errorEventLog: .other, errorScrappingType: ScrappingType.html)
                             self.didFinishWith(error: errorMessage)
@@ -225,6 +228,57 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                 let captchaRetries = configuration.captchaRetries
                 let failureCount = UserDefaults.standard.integer(forKey: Strings.OnNumberOfCaptchaRetry)
                 completion(showNotification || failureCount > captchaRetries!)
+            } else {
+                if let error = error {
+                    var logEventAttributes:[String:String] = [:]
+                    logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
+                                          EventConstant.PanelistID: self.params.account.panelistID,
+                                          EventConstant.OrderSourceID: self.params.account.userID,
+                                          EventConstant.EventName: EventType.ExceptionWhileGettingConfiguration,
+                                          EventConstant.Status: EventStatus.Failure]
+                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                }
+                completion(false)
+            }
+        }
+    }
+    
+    func onAmazonAuthFailure(error: ASLException) {
+        var logEventAttributes:[String:String] = [:]
+        logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
+                              EventConstant.PanelistID: self.params.account.panelistID,
+                              EventConstant.OrderSourceID: self.params.account.userID,
+                              EventConstant.EventName: EventType.UserAuthenticationFailed,
+                              EventConstant.Status: EventStatus.Failure]
+        if let scrappingType = self.params.scrappingType {
+            logEventAttributes[EventConstant.ScrappingMode] = scrappingType
+        }
+        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+        
+        let failureCount = UserDefaults.standard.integer(forKey: Strings.OnAuthenticationChallenegeRetryCount)
+        UserDefaults.standard.setValue(failureCount + 1, forKey: Strings.OnAuthenticationChallenegeRetryCount)
+        let currentDate = Date().timeIntervalSince1970
+        UserDefaults.standard.setValue(currentDate, forKey: Strings.OnBackgroundScrappingTimeOfPeriod)
+        
+        self.shouldAmazonRetryCount { boolValue in
+            if boolValue {
+                let error = ASLException(errorMessages: Strings.ErrorOnAuthenticationChallenge, errorTypes: error.errorType, errorEventLog: .notify, errorScrappingType: error.errorScrappingType)
+                self.params.listener.onHtmlScrappingFailure(error: error)
+            } else {
+                self.params.listener.onHtmlScrappingFailure(error: error)
+            }
+        }
+    }
+    
+    func shouldAmazonRetryCount(completion: @escaping (Bool) -> Void) {
+        
+        //TODO:- Add orderSource
+        ConfigManager.shared.getConfigurations(orderSource: .Amazon) { (configurations, error) in
+            if let configuration = configurations {
+                let showNotification = self.dateRange?.showNotification ?? false
+                let otherRetryCount = configuration.otherRetryCount ?? 15
+                let failureCount = UserDefaults.standard.integer(forKey: Strings.OnAuthenticationChallenegeRetryCount)
+                completion(showNotification || failureCount > otherRetryCount)
             } else {
                 if let error = error {
                     var logEventAttributes:[String:String] = [:]
