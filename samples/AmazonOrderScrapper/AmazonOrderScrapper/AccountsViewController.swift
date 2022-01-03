@@ -23,7 +23,6 @@ class AccountsViewController: UIViewController, UNUserNotificationCenterDelegate
     @IBOutlet weak var tickImage: UIImageView!
     
     var currentAccount: Account!
-    private let userNotificationCenter = UNUserNotificationCenter.current()
     lazy var foregroundOrderExtractionListner: ForegroundOrderExtractionListner = {
         return ForegroundOrderExtractionListner(accountViewController: self)
     }()
@@ -34,8 +33,6 @@ class AccountsViewController: UIViewController, UNUserNotificationCenterDelegate
     override func viewDidLoad() {
         super.viewDidLoad()
         do {
-            self.userNotificationCenter.delegate = self
-            self.requestNotificationAuthorization()
             let configValue = OrderExtractorConfig()
             configValue.baseURL = Util.getBaseUrl()
             configValue.appName = "ReceiptStraw-Dev"
@@ -59,63 +56,21 @@ class AccountsViewController: UIViewController, UNUserNotificationCenterDelegate
         parentView.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
     }
     
-    func requestNotificationAuthorization() {
-        let authOptions = UNAuthorizationOptions.init(arrayLiteral: .alert, .badge, .sound)
-        
-        self.userNotificationCenter.requestAuthorization(options: authOptions) { (success, error) in
-            if let error = error {
-                print("Error: ", error)
-            }
-        }
-    }
+   
     
     func loadAccounts() {
         do {
-            try OrdersExtractor.getAccounts(orderSource: nil) { accounts, hasNeverConnected in
-                let connectedAccounts = accounts.filter() { $0.accountState != .ConnectedAndDisconnected }
-                if connectedAccounts.isEmpty {
-                    self.showViewForNoAccount()
-                } else {
-                    self.showViewFor(account: connectedAccounts[0])
-                }
+            try OrdersExtractor.getAccounts(orderSource: .Amazon) { (response) in
+//                let connectedAccounts = accounts.filter() { $0.accountState != .ConnectedAndDisconnected }
+//                if connectedAccounts.isEmpty {
+//                    self.showViewForNoAccount()
+//                } else {
+//                    self.showViewFor(account: connectedAccounts[0])
+//                }
             }
         } catch {
             let message = "An error occurred while loading accounts"
             showAlert(title: "Alert", message: message, completionHandler: nil)
-        }
-    }
-    
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        if response.actionIdentifier == UNNotificationDismissActionIdentifier {
-            // The user dismissed the notification without taking action
-            //            sendNotification()
-            print("dismmised the notification")
-        } else if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
-            // The user launched the app
-            print("Tapped the notification")
-            self.currentAccount.fetchOrders(orderExtractionListener: self.backgroundOrderExtractionListner, source: .notification)
-        }
-        completionHandler()
-    }
-    
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.alert, .badge, .sound])
-    }
-    
-    func sendNotification() {
-        let content = UNMutableNotificationContent()
-        content.title = "Authorization needed"
-        content.subtitle = "Coinout"
-        content.body = "You are missing some extra credit points in application"
-        
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1.0, repeats: false)
-        let request = UNNotificationRequest(identifier: "ai.blackstraw.receiptstraw.dev", content: content, trigger: trigger)
-        
-        let center = UNUserNotificationCenter.current()
-        center.add(request) { (error : Error?) in
-            if let theError = error {
-                print(theError.localizedDescription)
-            }
         }
     }
     
@@ -190,7 +145,13 @@ class ForegroundOrderExtractionListner: OrderExtractionListener {
         }
         
         if account.isFirstConnectedAccount {
-            accountViewController?.showAlert(title: "Alert", message: "You've received 1000 points for connecting your first Amazon account!", completionHandler: nil)
+            if account.source == .Amazon {
+                accountViewController?.showAlert(title: "Alert", message: "You've received 1000 points for connecting your first Amazon account!", completionHandler: nil)
+            }else if account.source == .Instacart{
+                accountViewController?.showAlert(title: "Alert", message: "You've received 1000 points for connecting your first Instacart account!", completionHandler: nil)
+            }else if account.source == .Kroger{
+                accountViewController?.showAlert(title: "Alert", message: "You've received 1000 points for connecting your first Kroger account!", completionHandler: nil)
+            }
         }
         
         if let accountViewController = self.accountViewController {
@@ -206,7 +167,6 @@ class ForegroundOrderExtractionListner: OrderExtractionListener {
     }
     
     func showNotification(account: Account) {
-        // TODO
     }
     
    
@@ -234,7 +194,6 @@ class BackgroundOrderExtractionListner: OrderExtractionListener {
     }
     
     func showNotification(account: Account) {
-        self.accountViewController?.sendNotification()
 
     }
 }

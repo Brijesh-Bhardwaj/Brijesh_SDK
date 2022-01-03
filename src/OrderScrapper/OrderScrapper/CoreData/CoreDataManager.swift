@@ -20,6 +20,7 @@ class CoreDataManager {
     private let dispatchQueue = DispatchQueue(label:"CoreDataQueue")
     
     lazy var persistentContainer: NSPersistentContainer = {
+        //TODO:- Do we need to handle this
         let messageKitBundle = Bundle(identifier: AppConstants.identifier)
         let modelURL = messageKitBundle!.url(forResource: AppConstants.resource, withExtension: AppConstants.extensionName)!
         let managedObjectModel =  NSManagedObjectModel(contentsOf: modelURL)
@@ -39,10 +40,11 @@ class CoreDataManager {
         dispatchQueue.sync {
             let context = persistentContainer.viewContext
             let fetchRequest = NSFetchRequest<UserAccountMO>(entityName: AppConstants.entityName)
-            let userIdPredicate = NSPredicate(format: "\(AppConstants.userAccountColumnUserId) = %@", userId)
-            let panelistIdPredicate = NSPredicate(format: "\(AppConstants.userAcccountColumnPanelistId) = %@", panelistId)
+            let userIdPredicate = NSPredicate(format: "\(AppConstants.userAccountColumnUserId) == [c] %@", userId)
+            let panelistIdPredicate = NSPredicate(format: "\(AppConstants.userAcccountColumnPanelistId) == [c] %@", panelistId)
+            let orderSourcePredicate = NSPredicate(format: "\(AppConstants.userAccountColumnOrderSource) = %d", orderSource)
             
-            fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [userIdPredicate, panelistIdPredicate])
+            fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [userIdPredicate, panelistIdPredicate, orderSourcePredicate])
             var account: UserAccountMO?
             do {
                 let accounts = try context.fetch(fetchRequest)
@@ -82,7 +84,7 @@ class CoreDataManager {
                 let orderSourcePredicate = NSPredicate(format: "\(AppConstants.userAccountColumnOrderSource) == \(orderSource.rawValue)")
                 predicates.append(orderSourcePredicate)
             }
-            let panelistIdPredicate = NSPredicate(format: "\(AppConstants.userAcccountColumnPanelistId) == %@", panelistId)
+            let panelistIdPredicate = NSPredicate(format: "\(AppConstants.userAcccountColumnPanelistId) == [c] %@", panelistId)
             predicates.append(panelistIdPredicate)
             fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: predicates)
             
@@ -100,32 +102,57 @@ class CoreDataManager {
     /*
      * Update user account status using userId
      */
-    public func updateUserAccount(userId: String, accountStatus: String, panelistId: String) throws {
+    public func updateUserAccount(userId: String, accountStatus: String, panelistId: String, orderSource: Int16) throws {
         try dispatchQueue.sync {
             let context = persistentContainer.viewContext
             let fetchRequest = NSFetchRequest<UserAccountMO>(entityName: AppConstants.entityName)
             
-            let userIdPredicate = NSPredicate(format: "\(AppConstants.userAccountColumnUserId) = %@", userId)
-            let panelistIdPredicate = NSPredicate(format: "\(AppConstants.userAcccountColumnPanelistId) = %@", panelistId)
-            fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [userIdPredicate, panelistIdPredicate])
+            let userIdPredicate = NSPredicate(format: "\(AppConstants.userAccountColumnUserId) = [c] %@", userId)
+            let panelistIdPredicate = NSPredicate(format: "\(AppConstants.userAcccountColumnPanelistId) = [c] %@", panelistId)
+            let orderSourcePredicate = NSPredicate(format: "\(AppConstants.userAccountColumnOrderSource) = %d", orderSource)
+            fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [userIdPredicate, panelistIdPredicate, orderSourcePredicate])
+            
             let accounts = try context.fetch(fetchRequest)
             if accounts.count > 0 {
                 let objectUpdate = accounts[0] as NSManagedObject
-                
                 objectUpdate.setValue(accountStatus, forKey: AppConstants.userAccountColumnAccountStatus)
                 try context.save()
             }
         }
     }
-    public func deleteAccounts(userId: String, panelistId: String) {
+    
+    public func deleteAccounts(userId: String, panelistId: String, orderSource: Int16) {
         dispatchQueue.sync {
             let context = persistentContainer.viewContext
             let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.entityName)
             
-            let userIdPredicate = NSPredicate(format: "\(AppConstants.userAccountColumnUserId) = %@", userId)
-            let panelistIdPredicate = NSPredicate(format: "\(AppConstants.userAcccountColumnPanelistId) = %@", panelistId)
+            let userIdPredicate = NSPredicate(format: "\(AppConstants.userAccountColumnUserId) == [c] %@", userId)
+            let panelistIdPredicate = NSPredicate(format: "\(AppConstants.userAcccountColumnPanelistId) == [c] %@", panelistId)
+            let orderSourceIdPredicate = NSPredicate(format: "\(AppConstants.userAccountColumnOrderSource) = %d", orderSource)
             
-            fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [userIdPredicate, panelistIdPredicate])
+            fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [userIdPredicate, panelistIdPredicate, orderSourceIdPredicate])
+            let result = try? context.fetch(fetchRequest)
+            let resultData = result as! [UserAccountMO]
+            
+            for object in resultData {
+                context.delete(object)
+            }
+            do {
+                try context.save()
+            } catch let error as NSError  {
+                print(error.userInfo)
+                FirebaseAnalyticsUtil.logSentryError(error: error)
+            }
+        }
+    }
+    public func deleteAccountsByPanelistId(panelistId: String) {
+        dispatchQueue.sync {
+            let context = persistentContainer.viewContext
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.entityName)
+            
+            let panelistIdPredicate = NSPredicate(format: "\(AppConstants.userAcccountColumnPanelistId) == [c] %@", panelistId)
+            
+            fetchRequest.predicate = panelistIdPredicate
             let result = try? context.fetch(fetchRequest)
             let resultData = result as! [UserAccountMO]
             
@@ -141,14 +168,15 @@ class CoreDataManager {
         }
     }
     
-    public func deleteAccountsByPanelistId(panelistId: String) {
+    public func deleteAccountByOrderSource(orderSource: Int16, panelistId: String) {
         dispatchQueue.sync {
             let context = persistentContainer.viewContext
             let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.entityName)
             
-            let panelistIdPredicate = NSPredicate(format: "\(AppConstants.userAcccountColumnPanelistId) = %@", panelistId)
+            let panelistIdPredicate = NSPredicate(format: "\(AppConstants.userAcccountColumnPanelistId) == [c] %@", panelistId)
+            let orderSourceIdPredicate = NSPredicate(format: "\(AppConstants.userAccountColumnOrderSource) = %d", orderSource)
+            fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderSourceIdPredicate, panelistIdPredicate])
             
-            fetchRequest.predicate = panelistIdPredicate
             let result = try? context.fetch(fetchRequest)
             let resultData = result as! [UserAccountMO]
             
@@ -185,6 +213,8 @@ class CoreDataManager {
                     orderDetail.orderDetailsURL = orderData.detailsUrl
                     orderDetail.startDate = orderData.startDate!
                     orderDetail.endDate = orderData.endDate!
+                    orderDetail.orderSectionType = orderData.orderSectionType!
+                    orderDetail.uploadRetryCount = orderData.uploadRetryCount!
                     
                     do {
                         try context.save()
@@ -209,8 +239,8 @@ class CoreDataManager {
             let fetchRequest = NSFetchRequest<OrderDetailsMO>(entityName: AppConstants.orderDetailEntity)
             
             let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) == %@", orderSource)
-            let panelistIdPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnPanelistID) == %@", panelistID)
-            let orderSourceIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderUserID) == %@", userID)
+            let panelistIdPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnPanelistID) == [c] %@", panelistID)
+            let orderSourceIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderUserID) == [c] %@", userID)
             
             let sortedOrderDate = NSSortDescriptor(key: "orderDate", ascending: true)
             fetchRequest.sortDescriptors = [sortedOrderDate]
@@ -228,15 +258,59 @@ class CoreDataManager {
             return orderDetails
         }
     }
+    
+    public func getCountForOrderDetailsByOrderSection(orderSource: String, panelistID: String, userID: String, orderSectionType: String, orderUploadRetryCount: Int) -> Int {
+        dispatchQueue.sync {
+            let context = persistentContainer.viewContext
+            let fetchRequest = NSFetchRequest<OrderDetailsMO>(entityName: AppConstants.orderDetailEntity)
+            
+            let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) == %@", orderSource)
+            let orderSectionIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSectionType) == [c] %@", orderSectionType)
+            let uploadOrderRetryPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnsUplaodRetryCount) <= %d", orderUploadRetryCount)
+            
+            let sortedOrderDate = NSSortDescriptor(key: "orderDate", ascending: true)
+            fetchRequest.sortDescriptors = [sortedOrderDate]
+            
+            fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderSourcePredicate, orderSectionIDPredicate, uploadOrderRetryPredicate])
+            
+            var orderDetails = [OrderDetailsMO]()
+            do {
+                orderDetails = try context.fetch(fetchRequest)
+            } catch let error {
+                print("Failed to fetch orderDetails",error)
+                FirebaseAnalyticsUtil.logSentryMessage(message:  AppConstants.fetchOrderDetails)
+                FirebaseAnalyticsUtil.logSentryError(error: error)
+            }
+            return orderDetails.count
+        }
+    }
+    
+    public func updateRetryCountInOrderDetails(userId: String, panelistId: String, orderSource: String, orderId: String, retryCount: Int16) throws {
+        try dispatchQueue.sync {
+            let context = persistentContainer.viewContext
+            let fetchRequest = NSFetchRequest<OrderDetailsMO>(entityName: AppConstants.orderDetailEntity)
+            
+            let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) = %@", orderSource)
+            let orderIdPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderID) = [c] %@", orderId)
+            fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderSourcePredicate, orderIdPredicate])
+            
+            let accounts = try context.fetch(fetchRequest)
+            if accounts.count > 0 {
+                let objectUpdate = accounts[0] as NSManagedObject
+                objectUpdate.setValue(retryCount, forKey: AppConstants.orderDetailsColumnsUplaodRetryCount)
+                try context.save()
+            }
+        }
+    }
     public func deleteOrderDetails(userID: String, panelistID: String, orderSource: String) {
         dispatchQueue.sync {
             let context = persistentContainer.viewContext
             context.perform {
                 let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.orderDetailEntity)
                 
-                let userIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderUserID) = %@", userID)
-                let panelistIdPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnPanelistID) = %@", panelistID)
-                let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) = %@", orderSource)
+                let userIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderUserID) == [c] %@", userID)
+                let panelistIdPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnPanelistID) == [c] %@", panelistID)
+                let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) == %@", orderSource)
                 
                 fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [userIDPredicate, panelistIdPredicate, orderSourcePredicate])
                 let results = try? context.fetch(fetchRequest)
@@ -261,7 +335,7 @@ class CoreDataManager {
                 let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.orderDetailEntity)
                 
                 let orderIDPredicate =  NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderID) = %@", orderID)
-                let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) = %@", orderSource)
+                let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) == %@", orderSource)
                 
                 fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderIDPredicate,  orderSourcePredicate])
                 let result = try? context.fetch(fetchRequest)
@@ -277,13 +351,5 @@ class CoreDataManager {
                 }
             }
         }
-    }
-    public func addJSUrls(urls: [String]) {
-        
-    }
-    
-    public func getJSUrls() -> [String] {
-        
-        return []
     }
 }

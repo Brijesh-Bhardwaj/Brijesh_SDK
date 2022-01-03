@@ -11,6 +11,8 @@ import CoreData
 
 @objc(UserAccount)
 public class UserAccountMO: NSManagedObject, Account {
+  
+    
     @NSManaged var userId: String
     @NSManaged var password: String
     @NSManaged var accountStatus: String
@@ -38,7 +40,12 @@ public class UserAccountMO: NSManagedObject, Account {
     
     public var accountState: AccountState {
         get {
-            return AccountState(rawValue: accountStatus)!
+            if let accountState = AccountState(rawValue: accountStatus) {
+                return accountState
+            } else {
+                //Return default state as ConnectedButException if accountState not available or nil
+                return AccountState.ConnectedButException
+            }
         }
         set {
             accountStatus = newValue.rawValue
@@ -62,6 +69,13 @@ public class UserAccountMO: NSManagedObject, Account {
             panelistId = newValue
         }
     }
+    
+    public var source: OrderSource {
+        get {
+            return OrderSource(rawValue: self.orderSource)!
+        }
+    }
+    
     /// Use this method to change  account state as connected. If already connected it returns from the methods.
     /// - Parameter orderExtractionListener: It is a listener which gives onOrderExtractionSuccess and onOrderExtractionFailure callback
     public func connect(orderExtractionListener: OrderExtractionListener) {
@@ -70,34 +84,26 @@ public class UserAccountMO: NSManagedObject, Account {
             return
         }
         
-        let orderSource = getOrderSource()
-        switch orderSource {
-        case .Amazon:
-            AmazonOrderScrapper.shared.connectAccount(account: self, orderExtractionListener: orderExtractionListener)
-        }
+        AmazonOrderScrapper.shared.connectAccount(account: self, orderExtractionListener: orderExtractionListener)
     }
+    
     /// Use this method to change account state as ConnectedAndDisconnected  and if already connected it returns from the methods.
     /// - Parameter accountDisconnectedListener: It is a listener which gives onAccountDisconnected and onAccountDisconnectionFailed callback
     public func disconnect(accountDisconnectedListener: AccountDisconnectedListener) {
         let orderSource = getOrderSource()
-        switch orderSource {
-        case .Amazon:
-            AmazonOrderScrapper.shared.disconnectAccount(account: self,
-                                                         accountDisconnectedListener: accountDisconnectedListener, orderSource: orderSource.value)
-            
-        }
+        
+        AmazonOrderScrapper.shared.disconnectAccount(account: self,
+                                                     accountDisconnectedListener: accountDisconnectedListener, orderSource: orderSource.value)
     }
+    
     /// Use this method to fetch already connected account
     /// - Parameter orderExtractionListener: It is a listener which gives onOrderExtractionSuccess and onOrderExtractionFailure callback
     // TODO:- ScrappingMode - fs,bs
-    public func fetchOrders(orderExtractionListener: OrderExtractionListener, source: FetchRequestSource) {
-        let orderSource = getOrderSource()
-        switch orderSource {
-        case .Amazon:
-            AmazonOrderScrapper.shared.startOrderExtraction(account: self,
-                                                            orderExtractionListener: orderExtractionListener,
-                                                            source: source)
-        }
+    public func fetchOrders(orderExtractionListener: OrderExtractionListener, source: FetchRequestSource) -> RetailerScrapingStatus {
+        
+        let isScrapping =  AmazonOrderScrapper.shared.startOrderExtraction(account: self,
+                                                        orderExtractionListener: orderExtractionListener,source: source)
+        return isScrapping
     }
     
     // MARK: - Private Methods

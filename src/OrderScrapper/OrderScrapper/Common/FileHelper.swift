@@ -54,6 +54,12 @@ class FileHelper {
             downloadDirectoryURL = documentsURL
                 .appendingPathComponent(Directories.Reports)
                 .appendingPathComponent(Directories.Amazon)
+        case .Instacart:
+            downloadDirectoryURL = documentsURL
+        case .Kroger:
+            downloadDirectoryURL = documentsURL
+        case .Walmart:
+            downloadDirectoryURL = documentsURL
         }
         try? FileManager.default.createDirectory(at: downloadDirectoryURL, withIntermediateDirectories: true, attributes: nil)
         return downloadDirectoryURL
@@ -96,6 +102,12 @@ class FileHelper {
             downloadDirectoryURL = documentsURL
                 .appendingPathComponent(Directories.Scripts)
                 .appendingPathComponent(Directories.Amazon)
+        case .Instacart:
+            downloadDirectoryURL = documentsURL
+        case .Kroger:
+            downloadDirectoryURL = documentsURL
+        case .Walmart:
+            downloadDirectoryURL = documentsURL
         }
         try? FileManager.default.createDirectory(at: downloadDirectoryURL, withIntermediateDirectories: true, attributes: nil)
         return downloadDirectoryURL

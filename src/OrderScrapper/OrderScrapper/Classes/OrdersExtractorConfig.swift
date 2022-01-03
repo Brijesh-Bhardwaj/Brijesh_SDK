@@ -9,5 +9,6 @@ public class OrderExtractorConfig {
     public var baseURL : String = ""
     public var appName : String = ""
     public var appVersion : String = ""
+    public var deviceId: String = ""
     
 }

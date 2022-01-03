@@ -17,13 +17,15 @@ class ConfigManager {
         return instance
     }()
     
-    func loadConfigs(orderSource: OrderSource, completion: @escaping (ScrapeConfigs?, Error?) -> Void) {
-        //get Scrapper config details
-        _ = AmazonService.getScrapperConfig(orderSource: [orderSource.value]) { response, error in
+    func loadConfigs(orderSources: [OrderSource], completion: @escaping (ScrapeConfigs?, Error?) -> Void) {
+        var sourceArray : [String] = []
+        for orderSource in orderSources {
+            sourceArray.append(orderSource.value)
+        }
+        _ = AmazonService.getScrapperConfig(orderSource: sourceArray) { response, error in
             var logEventAttributes:[String:String] = [:]
             let panelistId = LibContext.shared.authProvider.getPanelistID()
-            logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
-                                  EventConstant.PanelistID: panelistId]
+            logEventAttributes = [EventConstant.PanelistID: panelistId]
             
             if let platformSourceConfigs = response?.configurations {
                 var json: String
@@ -33,13 +35,18 @@ class ConfigManager {
                 } catch {
                     json = AppConstants.ErrorInJsonEncoding
                 }
-                for scrapperConfig in platformSourceConfigs {
-                    if scrapperConfig.platformSource == orderSource.value {
-                        scrapperConfig.urls.captchaRetries = scrapperConfig.connections.captchaRetries
-                        scrapperConfig.urls.cooloffPeriodCaptcha = scrapperConfig.connections.cooloffPeriodCaptcha
-                        scrapperConfig.urls.otherRetryCount = scrapperConfig.connections.otherRetryCount
-                        self.configs[OrderSource.Amazon] = scrapperConfig.urls
-                        break
+                
+                for orderSource in orderSources {
+                    for scrapperConfig in platformSourceConfigs {
+                        if scrapperConfig.platformSource == orderSource.value {
+                            scrapperConfig.urls.captchaRetries = scrapperConfig.connections.captchaRetries
+                            scrapperConfig.urls.loginRetries = scrapperConfig.connections.loginRetries
+                            scrapperConfig.urls.cooloffPeriodCaptcha = scrapperConfig.connections.cooloffPeriodCaptcha
+                            scrapperConfig.urls.orderDetailDelay = scrapperConfig.orderUpload.orderDetailDelay
+                            scrapperConfig.urls.orderUploadRetryCount = scrapperConfig.orderUpload.orderUploadRetryCount
+                            self.configs[orderSource] = scrapperConfig.urls
+                            break
+                        }
                     }
                 }
                 
@@ -66,7 +73,6 @@ class ConfigManager {
             }
         }
     }
-    
     func getConfigurations(orderSource: OrderSource, completion: @escaping (Configurations?, Error?) -> Void) {
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         var logEventAttributes:[String:String] = [EventConstant.OrderSource: orderSource.value,
@@ -85,7 +91,7 @@ class ConfigManager {
                 completion(nil, error)
             }
         } else {
-            self.loadConfigs(orderSource: orderSource) { [self] configurations, error in
+            self.loadConfigs(orderSources: [.Amazon,.Instacart,.Kroger,.Walmart]) { [self] configurations, error in
                 let configs = getConfigDetails(orderSource: orderSource)
                 if let configs = configs {
                     completion(configs, nil)
@@ -105,7 +111,24 @@ class ConfigManager {
             } else {
                 return nil
             }
+        case .Instacart:
+            if let configs = configs[orderSource] {
+                return configs
+            } else {
+                return nil
+            }
+        case .Kroger:
+            if let configs = configs[orderSource] {
+                return configs
+            } else {
+                return nil
+            }
+        case .Walmart:
+            if let configs = configs[orderSource] {
+                return configs
+            } else {
+                return nil
+            }
         }
     }
 }
-

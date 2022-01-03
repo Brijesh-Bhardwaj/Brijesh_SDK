@@ -12,6 +12,7 @@
 		1C1B209026122BB700214946 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1B208F26122BB700214946 /* Util.swift */; };
 		1C1B209526122C4200214946 /* AppConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1B209426122C4200214946 /* AppConstant.swift */; };
 		1C1B209E26122DBD00214946 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1B209D26122DBD00214946 /* String.swift */; };
+		1C26E5D2269DB99200E72BB9 /* AccountActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C26E5D1269DB99200E72BB9 /* AccountActionCell.swift */; };
 		1C59ED0226135731004ACE38 /* ValidationUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C59ED0126135731004ACE38 /* ValidationUtil.swift */; };
 		1CBF6CFA25F5FE6F001A801B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6CF925F5FE6F001A801B /* AppDelegate.swift */; };
 		1CBF6CFC25F5FE6F001A801B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6CFB25F5FE6F001A801B /* SceneDelegate.swift */; };
@@ -21,11 +22,14 @@
 		1CBF6D0925F5FE70001A801B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1CBF6D0725F5FE70001A801B /* LaunchScreen.storyboard */; };
 		1CBF6D1425F5FE71001A801B /* AmazonOrderScrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D1325F5FE71001A801B /* AmazonOrderScrapperTests.swift */; };
 		1CBF6D1F25F5FE71001A801B /* AmazonOrderScrapperUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBF6D1E25F5FE71001A801B /* AmazonOrderScrapperUITests.swift */; };
+		1CC3BA22269C74B0008D002D /* AccountListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC3BA21269C74B0008D002D /* AccountListViewController.swift */; };
+		1CC3BA26269C7760008D002D /* HeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC3BA25269C7760008D002D /* HeaderCell.swift */; };
+		1CD1967C269C8EF000BED229 /* ConnectAccountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CD1967B269C8EF000BED229 /* ConnectAccountCell.swift */; };
 		1CE8507025F7B646000A7158 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE8506F25F7B646000A7158 /* ContentView.swift */; };
+		846E1F8726F9ED26009695C3 /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15343B2261386ED0074F3ED /* OrderScrapper.framework */; };
+		846E1F8826F9ED26009695C3 /* OrderScrapper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E15343B2261386ED0074F3ED /* OrderScrapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9D81CE3826A0660500D35C60 /* Sentry.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DC2081626916EC000F79807 /* Sentry.xcframework */; };
 		9D81CE3926A0660500D35C60 /* Sentry.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9DC2081626916EC000F79807 /* Sentry.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		E15343BB26138B270074F3ED /* OrderScrapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15343B2261386ED0074F3ED /* OrderScrapper.framework */; };
-		E15343BC26138B270074F3ED /* OrderScrapper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E15343B2261386ED0074F3ED /* OrderScrapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E1793950261F355D001E4E39 /* FIRAnalyticsConnector.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1793945261F355C001E4E39 /* FIRAnalyticsConnector.framework */; };
 		E1793951261F355D001E4E39 /* GoogleUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1793946261F355C001E4E39 /* GoogleUtilities.framework */; };
 		E1793952261F355D001E4E39 /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1793947261F355C001E4E39 /* FirebaseCoreDiagnostics.framework */; };
@@ -73,7 +77,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				E1EDF12E2615A65000752507 /* Alamofire.xcframework in Embed Frameworks */,
-				E15343BC26138B270074F3ED /* OrderScrapper.framework in Embed Frameworks */,
+				846E1F8826F9ED26009695C3 /* OrderScrapper.framework in Embed Frameworks */,
 				E1EDF1302615A65000752507 /* CSV.xcframework in Embed Frameworks */,
 				9D81CE3926A0660500D35C60 /* Sentry.xcframework in Embed Frameworks */,
 				E1EDF1322615A65000752507 /* RNCryptor.xcframework in Embed Frameworks */,
@@ -89,6 +93,7 @@
 		1C1B208F26122BB700214946 /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 		1C1B209426122C4200214946 /* AppConstant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstant.swift; sourceTree = "<group>"; };
 		1C1B209D26122DBD00214946 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
+		1C26E5D1269DB99200E72BB9 /* AccountActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountActionCell.swift; sourceTree = "<group>"; };
 		1C5208F4269822AC002AC6BA /* Sentry.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Sentry.xcframework; path = ../../bin/Sentry.xcframework; sourceTree = "<group>"; };
 		1C59ED0126135731004ACE38 /* ValidationUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationUtil.swift; sourceTree = "<group>"; };
 		1CBF6CF625F5FE6F001A801B /* ReceiptStraw-Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ReceiptStraw-Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -105,6 +110,9 @@
 		1CBF6D1A25F5FE71001A801B /* AmazonOrderScrapperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AmazonOrderScrapperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CBF6D1E25F5FE71001A801B /* AmazonOrderScrapperUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmazonOrderScrapperUITests.swift; sourceTree = "<group>"; };
 		1CBF6D2025F5FE71001A801B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1CC3BA21269C74B0008D002D /* AccountListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListViewController.swift; sourceTree = "<group>"; };
+		1CC3BA25269C7760008D002D /* HeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderCell.swift; sourceTree = "<group>"; };
+		1CD1967B269C8EF000BED229 /* ConnectAccountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectAccountCell.swift; sourceTree = "<group>"; };
 		1CE8506F25F7B646000A7158 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		9DC2081626916EC000F79807 /* Sentry.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Sentry.xcframework; path = ../../src/OrderScrapper/Carthage/Build/Sentry.xcframework; sourceTree = "<group>"; };
 		E15343B2261386ED0074F3ED /* OrderScrapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OrderScrapper.framework; path = ../../bin/OrderScrapper.framework; sourceTree = "<group>"; };
@@ -144,10 +152,10 @@
 				E1793959261F355D001E4E39 /* PromisesObjC.framework in Frameworks */,
 				E179395A261F355D001E4E39 /* FirebaseCore.framework in Frameworks */,
 				E1EDF12D2615A65000752507 /* Alamofire.xcframework in Frameworks */,
-				E15343BB26138B270074F3ED /* OrderScrapper.framework in Frameworks */,
 				E1EDF12F2615A65000752507 /* CSV.xcframework in Frameworks */,
 				9D81CE3826A0660500D35C60 /* Sentry.xcframework in Frameworks */,
 				E1EDF1312615A65000752507 /* RNCryptor.xcframework in Frameworks */,
+				846E1F8726F9ED26009695C3 /* OrderScrapper.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -209,6 +217,16 @@
 			path = Extension;
 			sourceTree = "<group>";
 		};
+		1C520901269890A8002AC6BA /* View */ = {
+			isa = PBXGroup;
+			children = (
+				1CC3BA25269C7760008D002D /* HeaderCell.swift */,
+				1CD1967B269C8EF000BED229 /* ConnectAccountCell.swift */,
+				1C26E5D1269DB99200E72BB9 /* AccountActionCell.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		1CBF6CED25F5FE6F001A801B = {
 			isa = PBXGroup;
 			children = (
@@ -234,6 +252,7 @@
 		1CBF6CF825F5FE6F001A801B /* AmazonOrderScrapper */ = {
 			isa = PBXGroup;
 			children = (
+				1C520901269890A8002AC6BA /* View */,
 				1C1B209C26122D9600214946 /* Extension */,
 				1C1B209326122C3400214946 /* Constant */,
 				1C1B207826121B0200214946 /* Network */,
@@ -249,6 +268,7 @@
 				E19D4CB12608A1D0002C16A7 /* AccountsViewController.swift */,
 				1C1B208F26122BB700214946 /* Util.swift */,
 				1C59ED0126135731004ACE38 /* ValidationUtil.swift */,
+				1CC3BA21269C74B0008D002D /* AccountListViewController.swift */,
 			);
 			path = AmazonOrderScrapper;
 			sourceTree = "<group>";
@@ -428,16 +448,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				1CBF6D0425F5FE6F001A801B /* AmazonOrderScrapper.xcdatamodeld in Sources */,
+				1CC3BA26269C7760008D002D /* HeaderCell.swift in Sources */,
 				1C1B207C26121BA700214946 /* APIService.swift in Sources */,
+				1C26E5D2269DB99200E72BB9 /* AccountActionCell.swift in Sources */,
 				1CE8507025F7B646000A7158 /* ContentView.swift in Sources */,
 				1C1B209E26122DBD00214946 /* String.swift in Sources */,
 				1C59ED0226135731004ACE38 /* ValidationUtil.swift in Sources */,
 				1CBF6CFE25F5FE6F001A801B /* ViewController.swift in Sources */,
 				1CBF6CFA25F5FE6F001A801B /* AppDelegate.swift in Sources */,
 				1C1B209026122BB700214946 /* Util.swift in Sources */,
+				1CD1967C269C8EF000BED229 /* ConnectAccountCell.swift in Sources */,
 				E19D4CB22608A1D0002C16A7 /* AccountsViewController.swift in Sources */,
 				1C1B20822612207100214946 /* LoginResponse.swift in Sources */,
 				1C1B209526122C4200214946 /* AppConstant.swift in Sources */,
+				1CC3BA22269C74B0008D002D /* AccountListViewController.swift in Sources */,
 				1CBF6CFC25F5FE6F001A801B /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -564,10 +588,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 88;
+				CURRENT_PROJECT_VERSION = 98;
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_BITCODE = NO;
-				EXCLUDED_ARCHS = "";
+				EXCLUDED_ARCHS = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -582,7 +606,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACH_O_TYPE = mh_execute;
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = 1.2.5;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.receiptstraw.dev;
@@ -706,10 +730,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 88;
+				CURRENT_PROJECT_VERSION = 98;
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_BITCODE = NO;
-				EXCLUDED_ARCHS = "";
+				EXCLUDED_ARCHS = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -724,7 +748,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACH_O_TYPE = mh_execute;
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = 1.2.5;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.receiptstraw.dev;
@@ -848,10 +872,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 88;
+				CURRENT_PROJECT_VERSION = 98;
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_BITCODE = NO;
-				EXCLUDED_ARCHS = "";
+				EXCLUDED_ARCHS = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -866,13 +890,13 @@
 					"@executable_path/Frameworks",
 				);
 				MACH_O_TYPE = mh_execute;
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = 1.2.5;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.receiptstraw.dev;
 				PRODUCT_NAME = "ReceiptStraw-Dev";
 				PROVISIONING_PROFILE_SPECIFIER = receiptstraw_dev_profile;
-				SDK_BASE_ENDPOINT = "https://dev-order-scraping.blackstrawlab.com/";
+				SDK_BASE_ENDPOINT = "https://dev-order-scraping.blackstrawlab.com/v2/";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_WORKSPACE = YES;
@@ -990,10 +1014,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 88;
+				CURRENT_PROJECT_VERSION = 98;
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_BITCODE = NO;
-				EXCLUDED_ARCHS = "";
+				EXCLUDED_ARCHS = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1008,7 +1032,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACH_O_TYPE = mh_execute;
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = 1.2.5;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.receiptstraw.dev;
@@ -1132,10 +1156,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 88;
+				CURRENT_PROJECT_VERSION = 98;
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_BITCODE = NO;
-				EXCLUDED_ARCHS = "";
+				EXCLUDED_ARCHS = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1150,7 +1174,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACH_O_TYPE = mh_execute;
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = 1.2.5;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.receiptstraw.dev;
@@ -1274,10 +1298,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 88;
+				CURRENT_PROJECT_VERSION = 98;
 				DEVELOPMENT_TEAM = VDW9VXMJBR;
 				ENABLE_BITCODE = NO;
-				EXCLUDED_ARCHS = "";
+				EXCLUDED_ARCHS = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1292,7 +1316,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACH_O_TYPE = mh_execute;
-				MARKETING_VERSION = 1.1.4;
+				MARKETING_VERSION = 1.2.5;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.receiptstraw.dev;

@@ -9,6 +9,7 @@ struct AppConstants {
     static let bundle: Bundle! = Bundle(identifier: "ai.blackstraw.orderscrapper")
     static let identifier: String  = "ai.blackstraw.orderscrapper"
     static let numberOfSteps: Float = 6
+    static let steps: Float = 3
     static let timeoutCounter: Double = 15
     static let entityName = "UserAccount"
     static let orderDetailEntity = "OrderDetails"
@@ -28,6 +29,8 @@ struct AppConstants {
     static let orderDetailsColumnOrderUserID = "userID"
     static let orderDetailsColumnPanelistID = "panelistID"
     static let orderDetailsColumnOrderDeatilsURL = "orderDeatilsURL"
+    static let orderDetailsColumnOrderSectionType = "orderSectionType"
+    static let orderDetailsColumnsUplaodRetryCount = "uploadRetryCount"
     //Firebase Analytics
     static let resourceName = "GoogleService-Info"
     static let resourceOfType = "plist"
@@ -56,14 +59,30 @@ struct AppConstants {
     static let fetchOrderDetails = "Failed to fetch orderDetails"
     static let userAccountConnected = "This account is already associated with an existing user. Please try with another account."
     static let bgScrappingCompleted = "Background scrapping completed"
+    static let fgScrappingCompleted = "Foreground scrapping completed"
     //Sentry Variables
     static let dsnURL = "https://6ad6390802f44f3fa71739de94424310@o915046.ingest.sentry.io/5854887"
     static let tracesSampleRate: NSNumber = 1.0
     static let bsOrderFailed = NSExceptionName("BS Other URL loaded")
-    
     static let generateReportUrl = "https://www.amazon.com/gp/b2b/reports/"
     static let msgUploadCSVSuccess = "CSV uploaded successfully"
+    static let ICLoginSuccessURL = "https://www.instacart.com/store"
+    static let InstacartOnBoardingURL = "https://www.instacart.com/onboarding"
+    static let KRLoginSuccessURL = "https://www.kroger.com/"
+    static let amazonAccountConnectedSuccess = "Amazon Account Connected Successfully"
+    static let instacartAccountConnectedSuccess = "Instacart Account Connected Successfully"
+    static let walmartAccountConnectedSuccess = "Walmart Account Connected Successfully"
     static let msgOrderListSuccess = "List scrapping success"
+
+    static let errorEmailWrongKroger = "Please enter a valid email address"
+    static let errorWrongCredentialsKroger = "The email or password entered is incorrect. Please try again or select Forgot Password."
+    static let errorWrongEmailkroger = "There's a problem with the entered email address. Please check the spelling and try again."
+    static let krogerRetryCount: Int = 3
+    static let deviceId = "\(LibContext.shared.orderExtractorConfig.deviceId)"
+    static let devicePlatform = "ios"
+    static let orderUploadRetryCount = 2
+    static let captchaRetryCount = 3
+
     static let ErrorInJsonEncoding = "Error in JSON encoding"
     static let AmazonErrorMessage = "Enter your email or mobile phone number"
 

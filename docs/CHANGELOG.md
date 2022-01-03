@@ -9,13 +9,45 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Added : This section to enlist the additions/implementations 
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
-  
-  ## [1.1.6] - 2021-12-29
+
+## [1.2.0] - 2021-12-15
+  ### Added
+   - Added new enum value connectionInProgress in AccountState enum. During connection flow on authentication completed updated account state as connectionInProgress  
+   - In foreground scrapping on uploading all scrape orders updated account state as connected in DB and backend through API call
    
-    ### Fixed
-    - Issue fix for the account state changing to connectedButException in backgroundAuthentication (RPA-662)
-    - Added ServicesStatusListener to handle the API down scenario from the SDK side. A callback given to the Application when the services are down.
-    
+   ### Fixed
+   - Issue fix for the account state changing to connectedButException in backgroundAuthentication (RPA-662)
+   - Added ServicesStatusListener to handle the API down scenario from the SDK side. A callback given to the Application when the services are down.
+
+
+## [1.1.9] - 2021-12-14
+  ### Added
+   - Sending input to API for switching scrapping type during manual scrapping/foreground scrapping
+   - Instacart screen get visible for some time if we get any popup(like verification code and capcha) on screen
+   - Instacart home screen get visible if we click on close or cancel button from the popup
+   - Show error screen on getting failure for manual scrapping. Considering it will need UI changes for showing error screen. 
+
+## [1.1.8] - 2021-12-10
+  ### Added
+   - Email validation updated which allows multiple dots after @ symbol
+   - SDK provided an enum in the return value for the `fetchOrders()` method to the app stating the state of the scraping such as enqueued, in-progress etc. 
+   - Static message updated on the Instacart login screen
+   - Fixed added for the Instacart home screen get visible if we click on the close or cancel from the popup
+
+## [1.1.7] - 2021-12-07
+  ### Added
+   - Added manual value in FetchRequestSource enum for manual scrapping. On receiving manual value as fetch request source in fetchOrders() from the app we are   doing foreground scrapping for all orders.
+   - Labels and success messages updated on progress screen and success screen
+
+## [1.1.6] - 2021-11-17
+
+  ### Added
+   - Added Walmart connect, disconnect and reconenct operations. Also added scrapping operations in both foreground and background
+   - Added bug fixes related with the Walmart authentication
+   - For Kroger added bug fixed in case of getting 'adblocker' error message during connection flow   
+   - Added enhanced sentry logs which includes some additional attribute information and error logged as events 
+
+
 ## [1.1.5] - 2021-10-25
  
   ### Fixed
@@ -26,6 +58,8 @@ All notable changes to OrderScrapper iOS project will be documented in this file
 ## [1.1.4] - 2021-10-07
  
   ### Fixed
+  - Sentry configs changes added such that if Sentry is enable in get_config API response then only Sentry will log the errors and events
+  - Account state return as ConnectedButScrappingFailed to the app if account state is connected and scrapping is failing
   - Sentry configs changes added such that if Sentry is enable in get_config API response then only Sentry will log the errors and events
 
 ## [1.1.3] - 2021-09-17
@@ -44,8 +78,8 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   
   ### Added
   - Static message on login screen for alerting the panelists for the csv file they will be sent after they connect their account.
-  
-## [1.1.0] - 2021-07-21
+
+## [1.1.0] - 2021-07-08
 
   ### Added
  - SDK developed with background scrapping, navigation code, amazon connection and order scrapping support.
@@ -98,6 +132,12 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   
 ### Changed
 - Modified the error message for AuthProvider
+
+## [0.3.6] - 2021-07-15
+
+### Added
+- Sample app UI updated with the list of accounts of order source type amazon and instacart
+- User can open login page of amazon and instacart by clicking respective button from the listing cell 
 
 ## [0.3.5] - 2021-06-07
 

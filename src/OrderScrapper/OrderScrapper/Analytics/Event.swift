@@ -26,4 +26,6 @@ struct EventConstant {
     static let Data = "data"
     static let EventName = "event_name"
     static let JSInjectType = "js_inject_type"
+    
+    static let ScrappingTime = "scrapping_time" // time logging for specific task
 }

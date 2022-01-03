@@ -36,6 +36,9 @@ SDK connects to the provided amazon account credentials as below
 
 Currently supported order sources are 
 - Amazon
+- Instacart
+- Kroger
+- Walmart
 
 SDK provides order fetch feature through :
 - Order report generation page by downloading the order items in a CSV format

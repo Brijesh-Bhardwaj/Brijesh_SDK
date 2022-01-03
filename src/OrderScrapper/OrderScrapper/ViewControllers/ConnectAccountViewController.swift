@@ -25,6 +25,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     private var networkState: NetworkState = .available
     let monitor = NWPathMonitor()
     var account: Account!
+    var fetchRequestSource: FetchRequestSource?
     
     // MARK: - Subscribers
     private var jsSubscriber: AnyCancellable? = nil
@@ -76,7 +77,11 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.headerLabel?.text = getHeaderTitle()
+        self.progressView?.headerText = getHeaderMessage()
+        if let statusImage = self.getStatusImage() {
+            self.fetchSuccessView?.imageView = statusImage
+        }
         self.scraperListener = self
         
         self.timerCallback = self
@@ -90,7 +95,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         self.timerHandler = TimerHandler(timerCallback: self.timerCallback)
         
         self.navigationHelper = AmazonNavigationHelper(self.viewModel, webView: self.webContentView
-                                                       , scraperListener: scraperListener, timerHandler: self.timerHandler)
+                                                       , scraperListener: scraperListener, timerHandler: self.timerHandler, fetchRequestSource: fetchRequestSource)
         
         self.webContentView.evaluateJavaScript("navigator.userAgent") { [weak self] (agent, error) in
             guard let self = self else { return }
@@ -114,8 +119,8 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             }
             self.webContentView.customUserAgent = userAgent
             if let url = URL(string: self.baseURL) {
-                self.timerHandler.startTimer(action: Actions.BaseURLLoading)
-                self.webContentView.load(URLRequest(url: url))
+                self.timerHandler?.startTimer(action: Actions.BaseURLLoading)
+                self.webContentView?.load(URLRequest(url: url))
                 FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_ejs_loadurl \(url)")
             }
         }
@@ -142,7 +147,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     // MARK: - IBActions
     @IBAction func didClickBackButton(_ sender: Any) {
         if self.shouldAllowBack {
-            self.webContentView.stopLoading()
+            self.webContentView?.stopLoading()
             LibContext.shared.scrapeCompletionPublisher.send(((false, nil), ASLException(errorMessage: Strings.ErrorUserAbortedProcess, errorType: ErrorType.userAborted)))
             WebCacheCleaner.clear(completionHandler: nil)
             self.dismiss(animated: true, completion: nil)
@@ -198,7 +203,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     }
     
     private func hasNetwork() -> Bool {
-        if let path = self.path {
+         if let path = self.path {
             if path.status == NWPath.Status.satisfied {
                 FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_hasNetwork()_satisfied")
                 return true
@@ -224,12 +229,12 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     }
     
     private func hideWebContents(hide: Bool) {
-        self.webContentView.isHidden = hide
+        self.webContentView?.isHidden = hide
         if hide {
-            self.containerView.isHidden = false
+            self.containerView?.isHidden = false
             self.view.bringSubviewToFront(self.containerView)
         } else {
-            self.containerView.isHidden = true
+            self.containerView?.isHidden = true
             self.view.bringSubviewToFront(self.webContentView)
         }
     }
@@ -247,64 +252,66 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         jsSubscriber = viewModel.jsPublisher.receive(on: RunLoop.main).sink(receiveValue: {
             [weak self] (authState, javascript) in
             guard let self = self else { return }
-            self.webContentView.evaluateJavaScript(javascript) {
-                [weak self] (response, error) in
-                guard let self = self else { return }
-                self.viewModel.jsResultPublisher.send((authState, (response, error)))
-                
-                //Log events for JS injection
-                var logEventAttributes:[String:String] = [:]
-                var status: String
-                if error == nil {
-                    status = EventStatus.Success
-                } else {
-                    status = EventStatus.Failure
-                    print(AppConstants.tag, "evaluateJavaScript", error.debugDescription)
-                    if let error = error {
-                        var logErrorEventAttributes:[String:String] = [:]
-                        logErrorEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
-                                              EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                              EventConstant.PanelistID: self.viewModel.userAccount.panelistID,
-                                              EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
-                                              EventConstant.Status: status,
-                                              EventConstant.JSInjectType: authState.value,
-                                              EventConstant.EventName: EventType.ErrorWhileEvaluatingJS]
-                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logErrorEventAttributes, error: error)
+            DispatchQueue.main.async {
+                self.webContentView.evaluateJavaScript(javascript) {
+                    [weak self] (response, error) in
+                    guard let self = self else { return }
+                    self.viewModel.jsResultPublisher.send((authState, (response, error)))
+                    
+                    //Log events for JS injection
+                    var logEventAttributes:[String:String] = [:]
+                    var status: String
+                    if error == nil {
+                        status = EventStatus.Success
+                    } else {
+                        status = EventStatus.Failure
+                        print(AppConstants.tag, "evaluateJavaScript", error.debugDescription)
+                        if let error = error {
+                            var logErrorEventAttributes:[String:String] = [:]
+                            logErrorEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                                       EventConstant.PanelistID: self.viewModel.userAccount.panelistID,
+                                                       EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                                                       EventConstant.Status: status,
+                                                       EventConstant.JSInjectType: authState.value,
+                                                       EventConstant.EventName: EventType.ErrorWhileEvaluatingJS]
+                            FirebaseAnalyticsUtil.logSentryError(eventAttributes: logErrorEventAttributes, error: error)
+                        }
                     }
-                }
-                switch authState {
-                case .email:
-                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
-                                          EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                          EventConstant.Status: status]
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSInjectUserName, eventAttributes: logEventAttributes)
-                case .password:
-                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
-                                          EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                          EventConstant.Status: status]
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSInjectPassword, eventAttributes: logEventAttributes)
-                case .captcha:
-                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
-                                          EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                          EventConstant.Status: status]
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedCaptcha, eventAttributes: logEventAttributes)
-                case .generateReport:
-                    self.timerHandler.stopTimer()
-                    //Logging event for report generation
-                    var logEventAttributes:[String:String] = [:]
-                    logEventAttributes = [EventConstant.OrderSource:              OrderSource.Amazon.value,
-                                          EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                          EventConstant.Status: status]
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportGeneration, eventAttributes: logEventAttributes)
-                case .downloadReport:
-                    self.timerHandler.stopTimer()
-                    //Logging event for report download
-                    var logEventAttributes:[String:String] = [:]
-                    logEventAttributes = [EventConstant.OrderSource:                    OrderSource.Amazon.value,
-                                          EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                          EventConstant.Status: status]
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportDownload, eventAttributes: logEventAttributes)
-                case .dateRange, .identification, .error:break
+                    switch authState {
+                    case .email:
+                        logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                              EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                              EventConstant.Status: status]
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSInjectUserName, eventAttributes: logEventAttributes)
+                    case .password:
+                        logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                              EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                              EventConstant.Status: status]
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSInjectPassword, eventAttributes: logEventAttributes)
+                    case .captcha:
+                        logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                              EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                              EventConstant.Status: status]
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedCaptcha, eventAttributes: logEventAttributes)
+                    case .generateReport:
+                        self.timerHandler?.stopTimer()
+                        //Logging event for report generation
+                        var logEventAttributes:[String:String] = [:]
+                        logEventAttributes = [EventConstant.OrderSource:              OrderSource.Amazon.value,
+                                              EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                              EventConstant.Status: status]
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportGeneration, eventAttributes: logEventAttributes)
+                    case .downloadReport:
+                        self.timerHandler?.stopTimer()
+                        //Logging event for report download
+                        var logEventAttributes:[String:String] = [:]
+                        logEventAttributes = [EventConstant.OrderSource:                    OrderSource.Amazon.value,
+                                              EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                              EventConstant.Status: status]
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportDownload, eventAttributes: logEventAttributes)
+                    case .dateRange, .identification, .error:break
+                    }
                 }
             }
         })
@@ -315,7 +322,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             switch navigation {
             case .reload:
                 if let url = URL(string: self.baseURL) {
-                    self.webContentView.load(URLRequest(url: url))
+                    self.webContentView?.load(URLRequest(url: url))
                     FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_reload_url \(url)")
                 }
             }
@@ -325,7 +332,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             guard let self = self else { return }
             self.hideWebContents(hide: !showWeb)
             if showWeb {
-                self.timerHandler.stopTimer()
+                self.timerHandler?.stopTimer()
             }
         })
         webViewErrorSubscriber = self.viewModel.webviewError.receive(on: RunLoop.main).sink(receiveValue: { [weak self] isWebError in
@@ -342,7 +349,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         authErrorSubscriber = self.viewModel.authError.receive(on: RunLoop.main).sink(receiveValue: { [weak self] isError in
             guard let self = self else { return }
             if isError.0 {
-                self.timerHandler.stopTimer()
+                self.timerHandler?.stopTimer()
                 LibContext.shared.webAuthErrorPublisher.send((isError.0, isError.1))
                 WebCacheCleaner.clear(completionHandler: nil)
                 self.dismiss(animated: true, completion: nil)
@@ -350,8 +357,8 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         })
         progressValueSubscriber = self.viewModel.progressValue.receive(on: RunLoop.main).sink(receiveValue: { [weak self] progress in
             guard let self = self else { return }
-            self.contentView.bringSubviewToFront(self.progressView)
-            self.progressView.progress = CGFloat(progress)
+            self.contentView?.bringSubviewToFront(self.progressView)
+            self.progressView?.progress = CGFloat(progress)
             //Progress
         })
         progressMessageSubscriber = self.viewModel.progressMessage.receive(on: RunLoop.main).sink(receiveValue: { message in
@@ -361,32 +368,40 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         stepMessageSubscriber = self.viewModel.stepMessage.receive(on: RunLoop.main).sink(receiveValue: { [weak self] stepMessage in
             guard let self = self else { return }
             if !stepMessage.elementsEqual(self.progressView.stepText) {
-                self.contentView.bringSubviewToFront(self.progressView)
-                self.progressView.stepText = stepMessage
+                self.contentView?.bringSubviewToFront(self.progressView)
+                self.progressView?.stepText = stepMessage
             }
         })
         completionSubscriber = self.viewModel.completionPublisher.receive(on: RunLoop.main).sink(receiveValue: { [weak self] complete in
             guard let self = self else { return }
             if complete {
-                self.backButton.isEnabled = false
-                self.backButton.isHidden = true
-                self.contentView.bringSubviewToFront(self.fetchSuccessView)
+                self.backButton?.isEnabled = false
+                self.backButton?.isHidden = true
+                self.fetchSuccessView?.fetchSuccess = self.getSuccessMessage()
+                if let statusImage = self.getStatusImage() {
+                    self.fetchSuccessView?.imageView = statusImage
+                }
+                self.contentView?.bringSubviewToFront(self.fetchSuccessView)
             }
         })
         stopScrappingSubscriber = self.viewModel.disableScrapping.receive(on: RunLoop.main).sink(receiveValue: { [weak self] disable in
             guard let self = self else { return }
             self.isFetchSkipped = disable
             if disable {
-                self.backButton.isEnabled = false
-                self.backButton.isHidden = true
-                self.contentView.bringSubviewToFront(self.fetchSuccessView)
+                self.backButton?.isEnabled = false
+                self.backButton?.isHidden = true
+                self.fetchSuccessView?.fetchSuccess = self.getSuccessMessage()
+                if let statusImage = self.getStatusImage() {
+                    self.fetchSuccessView?.imageView = statusImage
+                }
+                self.contentView?.bringSubviewToFront(self.fetchSuccessView)
             }
         })
         authenticationCompleteSubscriber = self.viewModel.authenticationComplete.receive(on: RunLoop.main).sink(receiveValue: { [weak self] authenticated in
             guard let self = self else { return }
             if authenticated {
                 if let url = URL(string: self.reportUrl) {
-                    self.webContentView.load(URLRequest(url: url))
+                    self.webContentView?.load(URLRequest(url: url))
                 }
             }
         })
@@ -394,12 +409,12 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     
     private func loadWebContent() {
         if let url = URL(string: self.baseURL) {
-            self.webContentView.load(URLRequest(url: url))
+            self.webContentView?.load(URLRequest(url: url))
             FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_loadWebContent() \(url)")
         }
-        self.contentView.bringSubviewToFront(self.progressView)
-        self.progressView.progress = 1/6
-        self.progressView.stepText = Utils.getString(key: Strings.Step1)
+        self.contentView?.bringSubviewToFront(self.progressView)
+        self.progressView?.progress = 1/6
+        self.progressView?.stepText = Utils.getString(key: Strings.Step1)
         self.shouldAllowBack = false
     }
     
@@ -425,7 +440,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     }
     
     private func logEvents(logEvents: EventLogs) {
-        _ = AmazonService.logEvents(eventLogs: logEvents) { response, error in
+        _ = AmazonService.logEvents(eventLogs: logEvents, orderSource: self.viewModel.userAccount.source.value) { response, error in
             if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
                 print("#### servicesDown")
                 self.handleServicesDown()
@@ -434,16 +449,16 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     }
     
     func removeNavigationDelegate() {
-        self.webContentView.navigationDelegate = nil
+        self.webContentView?.navigationDelegate = nil
     }
     
     func onWebviewError(isError: Bool) {
         DispatchQueue.main.async {
             if isError {
                 if self.hasNetwork() {
-                    self.contentView.bringSubviewToFront(self.errorView)
+                    self.contentView?.bringSubviewToFront(self.errorView)
                 } else {
-                    self.contentView.bringSubviewToFront(self.networkErrorView)
+                    self.contentView?.bringSubviewToFront(self.networkErrorView)
                 }
                 self.shouldAllowBack = true
             }
@@ -452,16 +467,16 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     
     func updateProgressValue(progressValue: Float) {
         DispatchQueue.main.async {
-            self.contentView.bringSubviewToFront(self.progressView)
-            self.progressView.progress = CGFloat(progressValue)
+            self.contentView?.bringSubviewToFront(self.progressView)
+            self.progressView?.progress = CGFloat(progressValue)
         }
     }
     
     func updateStepMessage(stepMessage: String) {
         DispatchQueue.main.async {
             if !stepMessage.elementsEqual(self.progressView.stepText) {
-                self.contentView.bringSubviewToFront(self.progressView)
-                self.progressView.stepText = stepMessage
+                self.contentView?.bringSubviewToFront(self.progressView)
+                self.progressView?.stepText = stepMessage
             }
         }
     }
@@ -480,9 +495,13 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     func onCompletion(isComplete: Bool) {
         if isComplete {
             DispatchQueue.main.async {
-                self.backButton.isEnabled = false
-                self.backButton.isHidden = true
-                self.contentView.bringSubviewToFront(self.fetchSuccessView)
+                self.backButton?.isEnabled = false
+                self.backButton?.isHidden = true
+                self.fetchSuccessView?.fetchSuccess = self.getSuccessMessage()
+                if let statusImage = self.getStatusImage() {
+                    self.fetchSuccessView?.imageView = statusImage
+                }
+                self.contentView?.bringSubviewToFront(self.fetchSuccessView)
             }
         }
     }
@@ -510,7 +529,8 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         
         if action == Actions.GetOldestPossibleYearJSCallback ||
             action == Actions.DownloadReportJSInjection ||
-            action == Actions.ReportGenerationJSCallback {
+            action == Actions.ReportGenerationJSCallback ||
+            action == Actions.ForegroundHtmlScrapping {
             
             self.isFailureButAccountConnected = true
             
@@ -519,26 +539,37 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
 
             //Timeout happens and if account is connected
             //then update order status as failed in the backend
+            //TODO :- Check orderSource in case of instacart
             let amazonId = self.viewModel.userAccount.userID
-            _ = AmazonService.updateStatus(amazonId: amazonId,
+            _ = AmazonService.updateStatus(platformId: amazonId,
                                            status: AccountState.Connected.rawValue,
                                            message: AppConstants.msgTimeout,
-                                           orderStatus: OrderStatus.Failed.rawValue) { response, error in
+                                           orderStatus: OrderStatus.Failed.rawValue, orderSource: OrderSource.Amazon.value) { response, error in
                 if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
                     print("#### servicesDown")
                     self.handleServicesDown()
                 }
             }
-            let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrappingType: ScrappingType.report.rawValue)
+            let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.report.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
             self.logEvents(logEvents: eventLogs)
+            
+            if action == Actions.ForegroundHtmlScrapping {
+                self.webContentView?.stopLoading()
+                self.webContentView?.navigationDelegate = nil
+            }
+            
             DispatchQueue.main.async {
-                self.backButton.isEnabled = false
-                self.backButton.isHidden = true
-                self.contentView.bringSubviewToFront(self.fetchSuccessView)
+                self.backButton?.isEnabled = false
+                self.backButton?.isHidden = true
+                self.fetchSuccessView?.fetchSuccess = self.getSuccessMessage()
+                if let statusImage = self.getStatusImage() {
+                    self.fetchSuccessView?.imageView = statusImage
+                }
+                self.contentView?.bringSubviewToFront(self.fetchSuccessView)
             }
         } else {
-            self.timerHandler.stopTimer()
-            let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.success.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrappingType: nil)
+            self.timerHandler?.stopTimer()
+            let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.authentication.rawValue, status: EventState.success.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
             self.logEvents(logEvents: eventLogs)
             LibContext.shared.webAuthErrorPublisher.send((true, AppConstants.msgTimeout))
             WebCacheCleaner.clear(completionHandler: nil)
@@ -546,6 +577,50 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         }
     }
     
+    private func getHeaderTitle() -> String {
+        let source = self.fetchRequestSource ?? .general
+        if source == .manual {
+            return String.init(format: Strings.HeaderFetchOrders, OrderSource.Amazon.value)
+        } else {
+            return Utils.getString(key: Strings.HeadingConnectAmazonAccount)
+        }
+    }
+    
+    private func getHeaderMessage() -> String {
+        let source = self.fetchRequestSource ?? .general
+        if source == .manual {
+            return String.init(format: Strings.HeaderFetchingOrders, OrderSource.Amazon.value)
+        } else {
+            return Utils.getString(key: Strings.HeadingConnectingAmazonAccount)
+        }
+    }
+    
+    private func getSuccessMessage() -> String {
+        let source = self.fetchRequestSource ?? .general
+        if source == .manual {
+            if isFetchSkipped || isFailureButAccountConnected {
+                return String.init(format: Strings.FetchFailureMessage, OrderSource.Amazon.value)
+            } else {
+                return String.init(format: Strings.FetchSuccessMessage, OrderSource.Amazon.value)
+            }
+        } else {
+            return AppConstants.amazonAccountConnectedSuccess
+        }
+    }
+    
+    private func getStatusImage() -> UIImage? {
+        let source = self.fetchRequestSource ?? .general
+        if source == .manual {
+            if isFetchSkipped || isFailureButAccountConnected {
+                return Utils.getImage(named: IconNames.FailureScreen)
+            } else {
+                return Utils.getImage(named: IconNames.SuccessScreen)
+            }
+        } else {
+            return Utils.getImage(named: IconNames.SuccessScreen)
+        }
+    }
+
     func onServicesDown(error: ASLException?) {
         self.handleServicesDown()
     }
@@ -556,7 +631,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         LibContext.shared.webAuthErrorPublisher.send((isError.0, isError.1))
         WebCacheCleaner.clear(completionHandler: nil)
         self.dismiss(animated: true, completion: nil)
-        self.timerHandler.stopTimer()
+        self.timerHandler?.stopTimer()
         let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
         LibContext.shared.servicesStatusListener.onServicesFailure(exception: error)
     }
@@ -572,7 +647,7 @@ extension ConnectAccountViewController: WKNavigationDelegate {
         // Shows loader
         let showWebView = self.navigationHelper.shouldShowWebViewFor(url: webView.url)
         self.viewModel.showWebView.send(showWebView)
-        self.timerHandler.startTimer(action: Actions.DidStartProvisionalNavigation)
+        self.timerHandler?.startTimer(action: Actions.DidStartProvisionalNavigation)
         
         FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_VC_didStartProvisionalNavigation- \(webView.url as Any)")
     }
@@ -581,9 +656,12 @@ extension ConnectAccountViewController: WKNavigationDelegate {
         print(AppConstants.tag,"An error occurred during navigation", error.localizedDescription)
         
         var logEventAttributes:[String:String] = [:]
+
+        let panelistId = LibContext.shared.authProvider.getPanelistID()
+        let userId = self.account.userID
         logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
-                              EventConstant.PanelistID: self.account!.panelistID,
-                              EventConstant.OrderSourceID: self.account!.userID,
+                              EventConstant.PanelistID: panelistId,
+                              EventConstant.OrderSourceID: userId,
                               EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
                               EventConstant.EventName: EventType.DidFailPageNavigation,
                               EventConstant.Status: EventStatus.Failure]
@@ -596,9 +674,12 @@ extension ConnectAccountViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         print(AppConstants.tag,"An error occurred during the early navigation process", error.localizedDescription)
         var logEventAttributes:[String:String] = [:]
+
+        let panelistId = LibContext.shared.authProvider.getPanelistID()
+        let userId = self.account.userID
         logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
-                              EventConstant.PanelistID: self.account!.panelistID,
-                              EventConstant.OrderSourceID: self.account!.userID,
+                              EventConstant.PanelistID: panelistId,
+                              EventConstant.OrderSourceID: userId,
                               EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
                               EventConstant.EventName: EventType.DidFailProvisionalNavigation,
                               EventConstant.Status: EventStatus.Failure]
@@ -611,9 +692,12 @@ extension ConnectAccountViewController: WKNavigationDelegate {
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         print(AppConstants.tag, "webViewWebContentProcessDidTerminate()")
         var logEventAttributes:[String:String] = [:]
+
+        let panelistId = LibContext.shared.authProvider.getPanelistID()
+        let userId = self.account.userID
         logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
-                              EventConstant.PanelistID: self.account!.panelistID,
-                              EventConstant.OrderSourceID: self.account!.userID,
+                              EventConstant.PanelistID: panelistId,
+                              EventConstant.OrderSourceID: userId,
                               EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
                               EventConstant.EventName: EventType.WebContentProcessDidTerminate,
                               EventConstant.Status: EventStatus.Failure]
