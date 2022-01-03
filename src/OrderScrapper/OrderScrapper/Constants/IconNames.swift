@@ -13,4 +13,6 @@ struct IconNames {
     static let Tick = "tick"
     static let CheckboxChecked = "checkbox_check_new"
     static let CheckboxUnchecked = "checkbox_uncheck_new"
+    static let FailureScreen = "status_alert"
+    static let SuccessScreen = "status_ok" 
 }

@@ -45,18 +45,20 @@ class AmazonNavigationHelper: NavigationHelper {
     let timerHandler: TimerHandler!
     private var backgroundScrapper: BSScrapper!
     var isGenerateReport: Bool = false
+    var fetchRequestSource: FetchRequestSource?
 
     private lazy var CSVScrapper: BSCSVScrapper = {
         return BSCSVScrapper(webview: self.webView, scrapingMode: .Foreground, scraperListener: self.scraperListener)
     }()
     
     required init(_ viewModel: WebViewModel, webView: WKWebView, scraperListener: ScraperProgressListener,
-                  timerHandler: TimerHandler) {
+                  timerHandler: TimerHandler, fetchRequestSource: FetchRequestSource?) {
         self.viewModel = viewModel
-        self.authenticator = AmazonAuthenticator(viewModel)
+        self.authenticator = AmazonAuthenticator(viewModel, scraperListener)
         self.webView = webView
         self.scraperListener = scraperListener
         self.timerHandler = timerHandler
+        self.fetchRequestSource = fetchRequestSource
     }
     
     deinit {
@@ -112,7 +114,9 @@ class AmazonNavigationHelper: NavigationHelper {
                                       EventConstant.Status: EventStatus.Success]
             FirebaseAnalyticsUtil.logEvent(eventType: eventType, eventAttributes: logAuthEventAttributes)
             
-            let eventLogs = EventLogs(panelistId: self.viewModel.userAccount.panelistID, platformId:self.viewModel.userAccount.userID, section: SectionType.connection.rawValue, type: FailureTypes.other.rawValue, status: EventState.success.rawValue, message: "Authentication challenge", fromDate: nil, toDate: nil, scrappingType: nil)
+            let eventLogs = EventLogs(panelistId: self.viewModel.userAccount.panelistID, platformId:self.viewModel.userAccount.userID, section: SectionType.connection.rawValue, type: FailureTypes.other.rawValue, status: EventState.success.rawValue, message: "Authentication challenge", fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
+
+
             logEvents(logEvents: eventLogs)
         } else if (urlString.contains(AmazonURL.generateReport)) {
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
@@ -126,7 +130,7 @@ class AmazonNavigationHelper: NavigationHelper {
                     let userAccountState = self.viewModel.userAccount.accountState
                     if userAccountState == AccountState.NeverConnected {
                         let userId = self.viewModel.userAccount.userID
-                        _ = AmazonService.registerConnection(amazonId: userId, status: AccountState.Connected.rawValue, message: AppConstants.msgAccountConnected, orderStatus: OrderStatus.Initiated.rawValue) { response, error in
+                        _ = AmazonService.registerConnection(platformId: userId, status: AccountState.Connected.rawValue, message: AppConstants.msgAccountConnected, orderStatus: OrderStatus.Initiated.rawValue, orderSource: OrderSource.Amazon.value) { response, error in
                             var logEventAttributes:[String:String] = [:]
                             logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                                       EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
@@ -145,13 +149,17 @@ class AmazonNavigationHelper: NavigationHelper {
                                 logEventAttributes[EventConstant.Status] = EventStatus.Success
                                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIRegisterUser, eventAttributes: logEventAttributes)
                             } else {
-                                self.viewModel.authError.send((isError: true, errorMsg: AppConstants.userAccountConnected))
-                                logEventAttributes[EventConstant.Status] = EventStatus.Failure
-                                if let error = error {
-                                    logEventAttributes[EventConstant.EventName] = EventType.UserRegistrationAPIFailed
-                                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                                    self.sendServicesDownCallback()
                                 } else {
-                                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.UserRegistrationAPIFailed, eventAttributes: logEventAttributes)
+                                    self.viewModel.authError.send((isError: true, errorMsg: AppConstants.userAccountConnected))
+                                    logEventAttributes[EventConstant.Status] = EventStatus.Failure
+                                    if let error = error {
+                                        logEventAttributes[EventConstant.EventName] = EventType.UserRegistrationAPIFailed
+                                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                                    } else {
+                                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.UserRegistrationAPIFailed, eventAttributes: logEventAttributes)
+                                    }
                                 }
                             }
                         }
@@ -169,13 +177,13 @@ class AmazonNavigationHelper: NavigationHelper {
             let userAccountState = self.viewModel.userAccount.accountState
             if userAccountState != AccountState.NeverConnected {
                 do {
-                    try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: self.viewModel.userAccount.panelistID)
+                    try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: self.viewModel.userAccount.panelistID, orderSource: self.viewModel.userAccount.source.rawValue)
                 } catch {
                     print("updateAccountWithExceptionState")
                 }
             }
             self.viewModel.authError.send((isError: true, errorMsg: AppConstants.msgResetPassword))
-            self.timerHandler.stopTimer()
+            self.timerHandler?.stopTimer()
         } else if (urlString.contains(AmazonURL.reportSuccess)) {
             //No handling required
         } else {
@@ -191,7 +199,7 @@ class AmazonNavigationHelper: NavigationHelper {
                                           EventConstant.URL: urlString]
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.StepOtherURLLoaded, eventAttributes: logOtherUrlEventAttributes)
             
-            let eventLogs = EventLogs(panelistId: self.viewModel.userAccount.panelistID, platformId:self.viewModel.userAccount.userID, section: SectionType.connection.rawValue, type: FailureTypes.other.rawValue, status: EventState.fail.rawValue, message: "unknow URL", fromDate: nil, toDate: nil, scrappingType: nil)
+            let eventLogs = EventLogs(panelistId: self.viewModel.userAccount.panelistID, platformId:self.viewModel.userAccount.userID, section: SectionType.connection.rawValue, type: FailureTypes.other.rawValue, status: EventState.fail.rawValue, message: "unknow URL", fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
             logEvents(logEvents: eventLogs)
             guard let currentStep = self.currentStep else {
                 return
@@ -202,7 +210,7 @@ class AmazonNavigationHelper: NavigationHelper {
             } else {
                 self.viewModel.authError.send((isError: true, errorMsg: AppConstants.msgUnknownURL))
             }
-            self.timerHandler.stopTimer()
+            self.timerHandler?.stopTimer()
         }
         
         //Timer handling for each step
@@ -210,9 +218,9 @@ class AmazonNavigationHelper: NavigationHelper {
         case .authentication:
             if (urlString.contains(AmazonURL.authApproval) &&
                     urlString.contains(AmazonURL.twoFactorAuth)) {
-                self.timerHandler.stopTimer()
+                self.timerHandler?.stopTimer()
             } else {
-                self.timerHandler.startTimer(action: Actions.DoingAuthentication)
+                self.timerHandler?.startTimer(action: Actions.DoingAuthentication)
             }
         case .downloadReport:
             print("### Do nothing")
@@ -308,14 +316,26 @@ class AmazonNavigationHelper: NavigationHelper {
     }
     
     private func getDateRange() {
+        var forceScrape = false
+        if let source = self.fetchRequestSource, source == .manual {
+            //For manual scraping send forcescrape as true to date range API
+            forceScrape = true
+        }
         var logEventAttributes:[String:String] = [:]
-        _ = AmazonService.getDateRange(amazonId: self.viewModel.userAccount.userID) { response, error in
+        _ = AmazonService.getDateRange(platformId: self.viewModel.userAccount.userID,
+                                       orderSource: OrderSource.Amazon.value, forceScrape: forceScrape) { response, error in
             if let response = response {
                 if response.enableScraping {
+                    
+                    //Clear order details from DB while doing foreground scrapping
+                    let account = self.viewModel.userAccount as! UserAccountMO
+                    CoreDataManager.shared.deleteOrderDetails(userID: account.userID, panelistID: account.panelistID, orderSource: account.source.value)
+                    
                     if response.scrappingType == ScrappingType.report.rawValue {
                         self.scrapeReport(response: response)
                     } else {
-                        self.timerHandler.stopTimer()
+                        self.timerHandler?.stopTimer()
+                        self.timerHandler?.startTimer(action: Actions.ForegroundHtmlScrapping)
                         self.scrapeHtml()
                     }
                 } else {
@@ -338,28 +358,33 @@ class AmazonNavigationHelper: NavigationHelper {
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIDateRange, eventAttributes: logEventAttributes)
             } else {
-                self.updateOrderStatusFor(error: AppConstants.msgDateRangeAPIFailed, accountStatus: AccountState.Connected.rawValue)
-                self.viewModel.webviewError.send(true)
-                //Log event for failure of date range API call
-                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
-                                      EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
-                                      EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
-                                      EventConstant.ScrappingType: ScrappingType.report.rawValue,
-                                      EventConstant.ErrorReason: error.debugDescription,
-                                      EventConstant.EventName: EventType.ExceptionWhileDateRangeAPI,
-                                      EventConstant.Status: EventStatus.Failure]
-                if let error = error {
-                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                    self.sendServicesDownCallback()
                 } else {
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.ExceptionWhileDateRangeAPI, eventAttributes: logEventAttributes)
+                    self.updateOrderStatusFor(error: AppConstants.msgDateRangeAPIFailed, accountStatus: AccountState.Connected.rawValue)
+                    self.viewModel.webviewError.send(true)
+                    //Log event for failure of date range API call
+                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                          EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                          EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                                          EventConstant.ScrappingType: ScrappingType.report.rawValue,
+                                          EventConstant.ErrorReason: error.debugDescription,
+                                          EventConstant.EventName: EventType.ExceptionWhileDateRangeAPI,
+                                          EventConstant.Status: EventStatus.Failure]
+                    if let error = error {
+                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                    } else {
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.ExceptionWhileDateRangeAPI, eventAttributes: logEventAttributes)
+                    }
                 }
             }
         }
     }
     
     private func scrapeReport(response: DateRange) {
-        let account = self.viewModel.userAccount
-        self.CSVScrapper.scrapeOrders(response: response, account: account!, timerHandler: self.timerHandler, param: nil)
+        if let account = self.viewModel.userAccount {
+            self.CSVScrapper.scrapeOrders(response: response, account: account, timerHandler: self.timerHandler, param: nil)
+        }
     }
     
     private func scrapeHtml() {
@@ -382,24 +407,31 @@ class AmazonNavigationHelper: NavigationHelper {
             guard let self = self else {return}
             let (completed, successType) = result
             DispatchQueue.main.async {
+                self.timerHandler?.stopTimer()
                 if completed {
-                    self.scraperListener.updateSuccessType(successType: successType!)
+                    if let successType = successType {
+                        self.scraperListener.updateSuccessType(successType: successType)
+                    }
                     self.scraperListener.onCompletion(isComplete: true)
-                    UserDefaults.standard.setValue(0, forKey: Strings.OnNumberOfCaptchaRetry)
+                    UserDefaults.standard.setValue(0, forKey: Strings.AmazonOnNumberOfCaptchaRetry)
                 } else {
                     self.scraperListener.updateSuccessType(successType: .failureButAccountConnected)
                     self.scraperListener.onCompletion(isComplete: true)
                 }
                 
-                self.backgroundScrapper.scraperListener = nil
+                self.backgroundScrapper?.scraperListener = nil
                 self.backgroundScrapper = nil
             }
         }
         self.backgroundScrapper.scraperListener = self.scraperListener
         self.backgroundScrapper.scrappingMode = .Foreground
+        if let fetchRequestSource = fetchRequestSource {
+            self.backgroundScrapper.fetchRequestSource = fetchRequestSource
+        }
         self.backgroundScrapper.startScrapping(account: account)
     }
     
+   
     /*
      * add user account details in DB
      */
@@ -411,25 +443,39 @@ class AmazonNavigationHelper: NavigationHelper {
     
     private func updateOrderStatusFor(error: String, accountStatus: String) {
         let amazonId = self.viewModel.userAccount.userID
-        _ = AmazonService.updateStatus(amazonId: amazonId,
+        _ = AmazonService.updateStatus(platformId: amazonId,
                                        status: accountStatus,
                                        message: error,
-                                       orderStatus: OrderStatus.Failed.rawValue) { response, error in
+                                       orderStatus: OrderStatus.Failed.rawValue, orderSource:  OrderSource.Amazon.value) { response, error in
+            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                self.sendServicesDownCallback()
+            }
         }
     }
     
     private func updateAccountStatusToConnected(orderStatus: String) {
         let amazonId = self.viewModel.userAccount.userID
-        _ = AmazonService.updateStatus(amazonId: amazonId,
+        _ = AmazonService.updateStatus(platformId: amazonId,
                                        status: AccountState.Connected.rawValue,
                                        message: AppConstants.msgConnected,
-                                       orderStatus: orderStatus) { response, error in
+
+                                       orderStatus: orderStatus, orderSource:  OrderSource.Amazon.value) { response, error in
+            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                self.sendServicesDownCallback()
+            }
         }
     }
     
     private func logEvents(logEvents: EventLogs) {
-        _ = AmazonService.logEvents(eventLogs: logEvents) { respose, error in
-            
+        _ = AmazonService.logEvents(eventLogs: logEvents, orderSource: self.viewModel.userAccount.source.value) { respose, error in
+             if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                self.sendServicesDownCallback()
+            }
         }
+    }
+    
+    private func sendServicesDownCallback() {
+        let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
+        self.scraperListener.onServicesDown(error: error)
     }
 }

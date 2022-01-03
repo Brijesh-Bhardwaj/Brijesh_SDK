@@ -47,52 +47,56 @@ class BSCSVScrapper: NSObject {
         self.webView.navigationDelegate = self
         let url = URL(string: AppConstants.generateReportUrl)
         let urlRequest = URLRequest(url: url!)
-        self.webView.load(urlRequest)
+        DispatchQueue.main.async {
+            self.webView.load(urlRequest)
+        }
         FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_CSVScrapper_loadUrl() \(url)")
     }
     private func evaluateJS(jsType: JSInjectValue, javascript: String) {
-        self.webView.evaluateJavaScript(javascript) { [weak self]
-            (response, error) in
-            guard let self = self else { return }
-            self.evaluateJSResult(jsType: jsType, response: (response, error))
-            
-            //Log events for JS injection
-            var logEventAttributes:[String:String] = [:]
-            var commonEventAttributes:[String:String] = [:]
-            commonEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
-                                  EventConstant.OrderSourceID: self.account.userID,
-                                  EventConstant.ScrappingMode: self.scrapingMode.rawValue,
-                                  EventConstant.ScrappingType: ScrappingType.report.rawValue]
-            
-            var status: String
-            if error == nil {
-                status = EventStatus.Success
-            } else {
-                status = EventStatus.Failure
-                print(AppConstants.tag, "evaluateJavaScript", error.debugDescription)
-                logEventAttributes[EventConstant.ErrorReason] = error.debugDescription
-            }
-            logEventAttributes[EventConstant.Status] = status
-            logEventAttributes.merge(dict: commonEventAttributes)
-            switch jsType {
-            case .email:
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSInjectUserName, eventAttributes: logEventAttributes)
-            case .password:
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSInjectPassword, eventAttributes: logEventAttributes)
-            case .captcha:
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedCaptcha, eventAttributes: logEventAttributes)
-            case .generateReport:
-                self.timerHandler.startTimer(action: Actions.ReportGenerationJSCallback)
-                //Logging event for report generation
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportGeneration, eventAttributes: logEventAttributes)
-            case .downloadReport:
-                self.timerHandler.stopTimer()
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportDownload, eventAttributes: logEventAttributes)
-            case .dateRange, .identification, .error:break
+        DispatchQueue.main.async {
+            self.webView.evaluateJavaScript(javascript) { [weak self]
+                (response, error) in
+                guard let self = self else { return }
+                self.evaluateJSResult(jsType: jsType, response: (response, error))
+                
+                //Log events for JS injection
+                var logEventAttributes:[String:String] = [:]
+                var commonEventAttributes:[String:String] = [:]
+                
+                commonEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
+                                         EventConstant.OrderSourceID: self.account.userID,
+                                         EventConstant.ScrappingMode: self.scrapingMode.rawValue,
+                                         EventConstant.ScrappingType: ScrappingType.report.rawValue]
+                
+                var status: String
+                if error == nil {
+                    status = EventStatus.Success
+                } else {
+                    status = EventStatus.Failure
+                    print(AppConstants.tag, "evaluateJavaScript", error.debugDescription)
+                    logEventAttributes[EventConstant.ErrorReason] = error.debugDescription
+                }
+                logEventAttributes[EventConstant.Status] = status
+                logEventAttributes.merge(dict: commonEventAttributes)
+                switch jsType {
+                case .email:
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSInjectUserName, eventAttributes: logEventAttributes)
+                case .password:
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSInjectPassword, eventAttributes: logEventAttributes)
+                case .captcha:
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedCaptcha, eventAttributes: logEventAttributes)
+                case .generateReport:
+                    self.timerHandler.startTimer(action: Actions.ReportGenerationJSCallback)
+                    //Logging event for report generation
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportGeneration, eventAttributes: logEventAttributes)
+                case .downloadReport:
+                    self.timerHandler.stopTimer()
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportDownload, eventAttributes: logEventAttributes)
+                case .dateRange, .identification, .error:break
+                }
             }
         }
     }
-    
     private func evaluateJSResult(jsType: JSInjectValue, response: (Any?, Error?)) {
         //guard let self = self else { return }
         let (response, _) = response
@@ -106,17 +110,21 @@ class BSCSVScrapper: NSObject {
                     let year = Int(strResult) ?? 0
                     let startYear = Int(reportConfig.startYear)
                     let endYear = Int(reportConfig.endYear)
-                    if year > startYear! {
-                        reportConfig.startYear = String(year)
-                        reportConfig.startDate = AppConstants.firstDayOfJan
-                        reportConfig.startMonth =  AppConstants.monthJan
-                        let startDate = AppConstants.firstDayOfJan + "-" + AppConstants.monthJan + "-" + String(year)
-                        reportConfig.fullStartDate = DateUtils.getFormattedDate(dateStr: startDate)
+                    if let startYear = startYear {
+                        if year > startYear {
+                            reportConfig.startYear = String(year)
+                            reportConfig.startDate = AppConstants.firstDayOfJan
+                            reportConfig.startMonth =  AppConstants.monthJan
+                            let startDate = AppConstants.firstDayOfJan + "-" + AppConstants.monthJan + "-" + String(year)
+                            reportConfig.fullStartDate = DateUtils.getFormattedDate(dateStr: startDate)
+                        }
                     }
-                    if year > endYear! {
-                        reportConfig.endYear = String(year)
-                        let endDate = reportConfig.endDate + "-" + reportConfig.endMonth + "-" + String(year)
-                        reportConfig.fullStartDate = DateUtils.getFormattedDate(dateStr: endDate)
+                    if let endYear = endYear {
+                        if year > endYear {
+                            reportConfig.endYear = String(year)
+                            let endDate = reportConfig.endDate + "-" + reportConfig.endMonth + "-" + String(year)
+                            reportConfig.fullStartDate = DateUtils.getFormattedDate(dateStr: endDate)
+                        }
                     }
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
@@ -155,16 +163,19 @@ class BSCSVScrapper: NSObject {
                     if authenticated {
                         self.loadUrl()
                     } else {
-                        if error?.errorMessage == "Captcha page loaded" || error?.errorMessage == "Other url loaded" {
-                            let errorMessage = ASLException(errorMessages: Strings.ErrorOtherUrlLoaded, errorTypes: .authError, errorEventLog: .unknownURL, errorScrappingType: ScrappingType.report)
-                            self.bsScrapper!.onAuthenticationFailure(error: errorMessage)
+                        if error?.errorType == ErrorType.authError && error?.errorEventLog == FailureTypes.authentication {
+                            let errorMessage = ASLException(errorMessages: error!.errorMessage, errorTypes: .authError, errorEventLog: .authentication, errorScrappingType: ScrappingType.html)
+                                self.didFinishWith(error: errorMessage)
+                                var logEventAttributes:[String:String] = [:]
+                                logEventAttributes = [EventConstant.ErrorReason: error!.errorMessage,
+                                EventConstant.Status: EventStatus.Failure]
+                                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAuthentication, eventAttributes: logEventAttributes)
                         } else if error?.errorMessage == AppConstants.AmazonErrorMessage {
                             let errorMessage = ASLException(errorMessages: error!.errorMessage, errorTypes: .authError, errorEventLog: .unknownURL, errorScrappingType: ScrappingType.html)
                             self.bsScrapper!.onAmazonAuthFailure(error: errorMessage)
-                        } else {
-                            // Call this method when only in scrapping mode is background
-                            let errorMessage = ASLException(errorMessages: Strings.ErrorOtherUrlLoaded, errorTypes: .authError, errorEventLog: .unknownURL, errorScrappingType: ScrappingType.report)
-                            self.didFinishWith(error: errorMessage)
+                        } else  {
+                            let errorMessage = ASLException(errorMessages: error!.errorMessage, errorTypes: .authChallenge, errorEventLog: .authentication, errorScrappingType: ScrappingType.html)
+                            self.bsScrapper!.onAuthenticationFailure(error: errorMessage, orderSource: self.account.source)
                         }
                     }
                 }
@@ -204,7 +215,7 @@ class BSCSVScrapper: NSObject {
 
                 
                 let error = ASLException(errorMessages: Strings.ErrorOtherUrlLoaded, errorTypes: nil, errorEventLog: .unknownURL, errorScrappingType: ScrappingType.report)
-                bsScrapper!.onAuthenticationFailure(error: error)
+                bsScrapper!.onAuthenticationFailure(error: error, orderSource: self.account.source)
             }
         }
     }
@@ -327,6 +338,7 @@ class BSCSVScrapper: NSObject {
                                          EventConstant.EventName: EventType.PIIDetailsAPIFailed,
                                          EventConstant.Status: EventStatus.Failure]
                 if let error = error {
+                    self.sendServicesDownCallback(error: error)
                     FirebaseAnalyticsUtil.logSentryError(eventAttributes: logAPIEventAttributes, error: error)
                 } else {
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.PIIDetailsAPIFailed, eventAttributes: logAPIEventAttributes)
@@ -395,8 +407,8 @@ class BSCSVScrapper: NSObject {
         let fromDate = reportConfig.fullStartDate!
         let toDate = reportConfig.fullEndDate!
         _ = AmazonService.uploadFile(fileURL: url,
-                                     amazonId: self.account.userID,
-                                     fromDate: fromDate, toDate: toDate) { response, error in
+                                     platformId: self.account.userID,
+                                     fromDate: fromDate, toDate: toDate, orderSource: OrderSource.Amazon.value) { response, error in
             var logEventAttributes:[String:String] = [:]
             if response != nil {
                 self.currentStep = .complete
@@ -404,9 +416,9 @@ class BSCSVScrapper: NSObject {
                 UserDefaults.standard.setValue(0, forKey: Strings.OnAuthenticationChallenegeRetryCount)
                 
                 if self.scrapingMode == .Background {
-                    self.logEvents(message: AppConstants.msgUploadCSVSuccess, section: SectionType.orderUpload.rawValue, status: EventState.success.rawValue, type: FailureTypes.other.rawValue)
+                    self.logEvents(message: AppConstants.msgUploadCSVSuccess, section: SectionType.orderUpload.rawValue, status: EventState.success.rawValue, type: FailureTypes.other.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
                 } else {
-                    self.logEvents(message: AppConstants.msgUploadCSVSuccess, section: SectionType.connection.rawValue, status: EventState.success.rawValue, type: FailureTypes.other.rawValue)
+                    self.logEvents(message: AppConstants.msgUploadCSVSuccess, section: SectionType.connection.rawValue, status: EventState.success.rawValue, type: FailureTypes.other.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
                 }
                 //Log event for successful uploading of csv
                 logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
@@ -424,44 +436,48 @@ class BSCSVScrapper: NSObject {
                                                     EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.AccountConnect, eventAttributes: logConnectAccountEventAttributes)
             } else {
-                self.scraperListener.onWebviewError(isError: true)
-                _ = AmazonService.updateStatus(amazonId: self.account.userID,
-                                               status: AccountState.Connected.rawValue, message: AppConstants.msgCSVUploadFailed, orderStatus: OrderStatus.Failed.rawValue) { response, error in
-                    //Todo
-                }
-                
-                if self.scrapingMode == .Background {
-                    self.logEvents(message: AppConstants.msgCSVUploadFailed, section: SectionType.orderUpload.rawValue, status: EventState.fail.rawValue, type: FailureTypes.other.rawValue)
+                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                    self.sendServicesDownCallback(error: error)
                 } else {
-                    self.logEvents(message: AppConstants.msgCSVUploadFailed, section: SectionType.connection.rawValue, status: EventState.fail.rawValue, type: FailureTypes.other.rawValue)
+                    self.scraperListener.onWebviewError(isError: true)
+                    _ = AmazonService.updateStatus(platformId: self.account.userID,
+                                                   status: AccountState.Connected.rawValue, message: AppConstants.msgCSVUploadFailed, orderStatus: OrderStatus.Failed.rawValue, orderSource: OrderSource.Amazon.value) { response, error in
+                        self.sendServicesDownCallback(error: error)
+                    }
+                    
+                    if self.scrapingMode == .Background {
+                        self.logEvents(message: AppConstants.msgCSVUploadFailed, section: SectionType.orderUpload.rawValue, status: EventState.fail.rawValue, type: FailureTypes.other.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
+                    } else {
+                        self.logEvents(message: AppConstants.msgCSVUploadFailed, section: SectionType.connection.rawValue, status: EventState.fail.rawValue, type: FailureTypes.other.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
+                    }
+                    
+                    //Log event for failure in csv upload
+                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                          EventConstant.OrderSourceID: self.account.userID,
+                                          EventConstant.PanelistID: self.account.panelistID,
+                                          EventConstant.ScrappingMode: self.scrapingMode.rawValue,
+                                          EventConstant.ScrappingType: ScrappingType.report.rawValue,
+                                          EventConstant.ErrorReason: error.debugDescription,
+                                          EventConstant.Status: EventStatus.Failure]
+                    if let error = error {
+                        logEventAttributes[EventConstant.EventName] = EventType.UploadReportAPIFailed
+                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                    } else {
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIUploadReport, eventAttributes: logEventAttributes)
+                    }
                 }
-                
-                //Log event for failure in csv upload
-                logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
-                                      EventConstant.OrderSourceID: self.account.userID,
-                                      EventConstant.PanelistID: self.account.panelistID,
-                                      EventConstant.ScrappingMode: self.scrapingMode.rawValue,
-                                      EventConstant.ScrappingType: ScrappingType.report.rawValue,
-                                      EventConstant.ErrorReason: error.debugDescription,
-                                      EventConstant.Status: EventStatus.Failure]
-                if let error = error {
-                    logEventAttributes[EventConstant.EventName] = EventType.UploadReportAPIFailed
-                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
-                } else {
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIUploadReport, eventAttributes: logEventAttributes)
-                }
+                //Delete downloaded file even if file uploading is successful or failure
+                FileHelper.clearDirectory(orderSource: .Amazon)
             }
-            //Delete downloaded file even if file uploading is successful or failure
-            FileHelper.clearDirectory(orderSource: .Amazon)
         }
     }
-    
     private func updateOrderStatusFor(error: String, accountStatus: String) {
         let amazonId = self.account.userID
-        _ = AmazonService.updateStatus(amazonId: amazonId,
+        _ = AmazonService.updateStatus(platformId: amazonId,
                                        status: accountStatus,
                                        message: error,
-                                       orderStatus: OrderStatus.Failed.rawValue) { response, error in
+                                       orderStatus: OrderStatus.Failed.rawValue, orderSource: OrderSource.Amazon.value) { response, error in
+            self.sendServicesDownCallback(error: error)
         }
     }
     
@@ -543,19 +559,29 @@ class BSCSVScrapper: NSObject {
     
     private func didFinishWith(error: ASLException) {
         do {
-            try CoreDataManager.shared.updateUserAccount(userId: self.param!.account.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: self.param!.account.panelistID)
+            try CoreDataManager.shared.updateUserAccount(userId: self.param!.account.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: self.param!.account.panelistID, orderSource: self.param!.account.source.rawValue)
         } catch {
             print("updateAccountWithExceptionState")
         }
-        _ = AmazonService.updateStatus(amazonId: self.param!.account.userID, status: AccountState.ConnectedButException.rawValue, message: AppConstants.msgAuthError, orderStatus: OrderStatus.Failed.rawValue) { response, error in
+        _ = AmazonService.updateStatus(platformId: self.param!.account.userID, status: AccountState.ConnectedButException.rawValue, message: AppConstants.msgAuthError, orderStatus: OrderStatus.Failed.rawValue,orderSource: OrderSource.Amazon.value) { response, error in
+            self.sendServicesDownCallback(error: error)
         }
         self.param!.listener.onHtmlScrappingFailure(error: error)
     }
     
-    private func logEvents(message: String, section: String, status: String, type: String) {
-        let eventLogs = EventLogs(panelistId: self.account!.panelistID, platformId: self.account!.userID, section: section, type: type , status: status, message: message, fromDate: self.dateRange!.fromDate!, toDate: self.dateRange!.toDate!, scrappingType: ScrappingType.report.rawValue)
-        _ = AmazonService.logEvents(eventLogs: eventLogs) { response, error in
-                //TODO
+    private func logEvents(message: String, section: String, status: String, type: String, scrapingContext: String) {
+        let eventLogs = EventLogs(panelistId: self.account!.panelistID, platformId: self.account!.userID, section: section, type: type , status: status, message: message, fromDate: self.dateRange!.fromDate!, toDate: self.dateRange!.toDate!, scrapingType: ScrappingType.report.rawValue, scrapingContext: scrapingContext)
+        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.account!.source.value) { response, error in
+            self.sendServicesDownCallback(error: error)
+        }
+    }
+    
+    func sendServicesDownCallback(error: ASLException?) {
+        if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+            if scrapingMode == .Foreground {
+                let aslException = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
+                scraperListener.onServicesDown(error: aslException)
+            }
         }
     }
 }

@@ -15,6 +15,7 @@ struct DetailPageScriptInput: Encodable{
     let type: String
     let detailsUrl: String
     let orderId: String
+    let orderDate: String?
 }
 
 struct Urls: Encodable {

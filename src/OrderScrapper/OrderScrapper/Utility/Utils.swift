@@ -32,6 +32,45 @@ class Utils {
         return subUrl[0]
     }
     
+    static func getKeyForNumberOfCaptchaRetry(orderSorce: OrderSource) -> String {
+        switch orderSorce {
+        case .Amazon:
+            return Strings.AmazonOnNumberOfCaptchaRetry
+        case .Instacart:
+            return Strings.InstacartOnNumberOfCaptchaRetry
+        case .Kroger:
+            return Strings.KrogerOnNumberOfCaptchaRetry
+        case .Walmart:
+            return Strings.WalmartOnNumberOfCaptchaRetry
+        }
+    }
+    
+    static func getKeyForCoolOfTime(orderSorce: OrderSource) -> String {
+        switch orderSorce {
+        case .Amazon:
+            return Strings.AmazonOnBackgroundScrappingTimeOfPeriod
+        case .Instacart:
+            return Strings.InstacartOnBackgroundScrappingTimeOfPeriod
+        case .Kroger:
+            return Strings.KrogerOnBackgroundScrappingTimeOfPeriod
+        case .Walmart:
+            return Strings.WalmartOnBackgroundScrappingTimeOfPeriod
+        }
+    }
+    
+    static func getKeyForJSVersion(orderSorce: OrderSource) -> String {
+        switch orderSorce {
+        case .Amazon:
+            return Strings.JSVersionAmazon
+        case .Instacart:    
+            return Strings.JSVersionInstacart
+        case .Kroger:
+            return Strings.JSVersionKroger
+        case .Walmart:
+            return Strings.JSVersionWalmart
+        }
+    }
+
     static func getJsonString(object: Any) -> String {
         //        let jsonEncoder = JSONEncoder()
         //        let jsonData = try jsonEncoder.encode(object)

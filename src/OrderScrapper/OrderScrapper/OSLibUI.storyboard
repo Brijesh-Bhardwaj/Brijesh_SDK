@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ee2-wd-kaO">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ee2-wd-kaO">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -18,37 +18,82 @@
         </array>
     </customFonts>
     <scenes>
-        <!--Register Account View Controller-->
+        <!--Instacart Login-->
+        <scene sceneID="Dzg-wq-L4m">
+            <objects>
+                <viewController storyboardIdentifier="InstacartRegisterAccountVC" id="jY8-lE-lpl" customClass="InstacartLogin" customModule="OrderScrapper" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="HXF-vM-8qY">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="Pck-1O-5iZ"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fsw-MQ-o7g" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1287" y="-683"/>
+        </scene>
+        <!--Walmart Login-->
+        <scene sceneID="0FD-I2-9Bl">
+            <objects>
+                <viewController storyboardIdentifier="WalmartRegisterAccountVC" id="HHk-Nc-OxN" customClass="WalmartLogin" customModule="OrderScrapper" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="w22-6w-nbs">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="Sfy-KT-AM8"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="8hX-oB-B8K" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-366" y="-652"/>
+        </scene>
+        <!--Connect Walmart AccountVC-->
+        <scene sceneID="WgA-Zs-EI4">
+            <objects>
+                <viewController storyboardIdentifier="WalmartConnectAccountVC" id="m62-io-vjh" customClass="ConnectWalmartAccountVC" customModule="OrderScrapper" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="May-AZ-9tR">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="Uo4-ok-J0R"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="b3J-A3-gXM" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="363" y="-653"/>
+        </scene>
+        <!--Amazon Login-->
         <scene sceneID="A6q-lo-B5L">
             <objects>
-                <viewController storyboardIdentifier="RegisterAccountVC" id="ee2-wd-kaO" customClass="RegisterAccountViewController" customModule="OrderScrapper" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="RegisterAccountVC" id="ee2-wd-kaO" customClass="AmazonLogin" customModule="OrderScrapper" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="GPc-ak-Pli">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9NP-KS-Cl5" userLabel="ContentView">
+                            <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9NP-KS-Cl5" userLabel="ContentView">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Sungradient_back" translatesAutoresizingMaskIntoConstraints="NO" id="Y75-GR-wFt">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="599" height="736"/>
                                     </imageView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gq0-PW-dZT">
-                                        <rect key="frame" x="0.0" y="89.5" width="414" height="806.5"/>
+                                        <rect key="frame" x="0.0" y="73.5" width="599" height="662.5"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="ULU-Ht-frQ">
-                                                <rect key="frame" x="30" y="30" width="354" height="163"/>
+                                                <rect key="frame" x="30" y="30" width="539" height="163"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please sign in with your Amazon credentials" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vDl-Bh-621">
-                                                        <rect key="frame" x="0.0" y="0.0" width="354" height="24"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="539" height="24"/>
                                                         <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="17"/>
                                                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <stackView hidden="YES" opaque="NO" contentMode="scaleToFill" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="3th-6K-1bt">
-                                                        <rect key="frame" x="0.0" y="29" width="354" height="0.0"/>
+                                                        <rect key="frame" x="0.0" y="29" width="539" height="0.0"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your email or mobile number and/or password do not match. Please try again" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kgs-oD-wg3">
-                                                                <rect key="frame" x="0.0" y="0.0" width="354" height="0.0"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="539" height="0.0"/>
                                                                 <fontDescription key="fontDescription" name="SFProRounded-Regular" family="SF Pro Rounded" pointSize="17"/>
                                                                 <color key="textColor" red="0.92156862750000001" green="0.3411764706" blue="0.3411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
@@ -56,7 +101,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email" minimumFontSize="14" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="lXm-EU-1TR">
-                                                        <rect key="frame" x="0.0" y="34" width="354" height="40"/>
+                                                        <rect key="frame" x="0.0" y="34" width="539" height="40"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="40" id="bCQ-AL-3YF"/>
                                                         </constraints>
@@ -76,7 +121,7 @@
                                                         </userDefinedRuntimeAttributes>
                                                     </textField>
                                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="mao-jf-t7L">
-                                                        <rect key="frame" x="0.0" y="84" width="354" height="40"/>
+                                                        <rect key="frame" x="0.0" y="84" width="539" height="40"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="40" id="UGn-cb-O0y"/>
                                                         </constraints>
@@ -96,10 +141,10 @@
                                                         </userDefinedRuntimeAttributes>
                                                     </textField>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="JPZ-wI-Yvc">
-                                                        <rect key="frame" x="0.0" y="134" width="354" height="29"/>
+                                                        <rect key="frame" x="0.0" y="134" width="539" height="29"/>
                                                         <subviews>
                                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="jou-dq-vxd">
-                                                                <rect key="frame" x="0.0" y="0.0" width="138" height="29"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="130" height="29"/>
                                                                 <subviews>
                                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EZP-gw-xQe">
                                                                         <rect key="frame" x="0.0" y="4.5" width="20" height="20"/>
@@ -114,7 +159,7 @@
                                                                         </connections>
                                                                     </button>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Show password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HYH-OJ-IiP">
-                                                                        <rect key="frame" x="30" y="6" width="108" height="17.5"/>
+                                                                        <rect key="frame" x="30" y="5.5" width="100" height="18"/>
                                                                         <fontDescription key="fontDescription" name="SFProRounded-Regular" family="SF Pro Rounded" pointSize="15"/>
                                                                         <nil key="textColor"/>
                                                                         <nil key="highlightedColor"/>
@@ -136,10 +181,10 @@
                                                 </variation>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="bottom" translatesAutoresizingMaskIntoConstraints="NO" id="RTY-yD-amg">
-                                                <rect key="frame" x="16" y="193" width="378" height="70"/>
+                                                <rect key="frame" x="16" y="193" width="563" height="70"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="w47-wf-S0V">
-                                                        <rect key="frame" x="238" y="0.0" width="140" height="70"/>
+                                                        <rect key="frame" x="423" y="0.0" width="140" height="70"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="140" id="aBT-AY-0GP"/>
                                                             <constraint firstAttribute="height" constant="70" id="qOd-Ep-kFg"/>
@@ -162,10 +207,10 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="9ad-8p-CKH">
-                                                <rect key="frame" x="30" y="263" width="354" height="0.0"/>
+                                                <rect key="frame" x="30" y="263" width="539" height="0.0"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fQs-iA-wpA">
-                                                        <rect key="frame" x="0.0" y="0.0" width="354" height="0.0"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="539" height="0.0"/>
                                                         <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="17"/>
                                                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
@@ -187,10 +232,10 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BNw-dy-Pbn" userLabel="HeaderView">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="89.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="599" height="73.5"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="APJ-lS-x2Q">
-                                                <rect key="frame" x="10" y="44.5" width="40" height="40"/>
+                                                <rect key="frame" x="10" y="28.5" width="40" height="40"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="40" id="8TT-MA-uyQ"/>
                                                     <constraint firstAttribute="height" constant="40" id="U4c-dt-fZy"/>
@@ -201,7 +246,7 @@
                                                 </connections>
                                             </button>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Connect Amazon Account" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cUw-oV-Tub">
-                                                <rect key="frame" x="60" y="53" width="234.5" height="23.5"/>
+                                                <rect key="frame" x="60" y="36.5" width="237.5" height="24"/>
                                                 <fontDescription key="fontDescription" name="SFProRounded-Bold" family="SF Pro Rounded" pointSize="20"/>
                                                 <color key="textColor" red="0.13725490196078433" green="0.20784313725490194" blue="0.34509803921568627" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
@@ -243,27 +288,11 @@
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="444-Fd-HSW"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstItem="9NP-KS-Cl5" firstAttribute="bottom" secondItem="GPc-ak-Pli" secondAttribute="bottom" id="2mi-CE-FPp"/>
-                            <constraint firstAttribute="top" secondItem="9NP-KS-Cl5" secondAttribute="top" id="DHX-NA-DuM"/>
-                            <constraint firstItem="9NP-KS-Cl5" firstAttribute="leading" secondItem="GPc-ak-Pli" secondAttribute="leading" id="Fl4-DG-ZXH"/>
-                            <constraint firstAttribute="trailing" secondItem="9NP-KS-Cl5" secondAttribute="trailing" id="yfu-VR-f4J"/>
-                        </constraints>
                     </view>
-                    <connections>
-                        <outlet property="authErrorLabel" destination="kgs-oD-wg3" id="vQS-6C-PjW"/>
-                        <outlet property="authErrorView" destination="3th-6K-1bt" id="bu0-he-lGT"/>
-                        <outlet property="contentView" destination="gq0-PW-dZT" id="RH7-N5-TH6"/>
-                        <outlet property="passwordTextField" destination="mao-jf-t7L" id="Lyr-Gq-f8s"/>
-                        <outlet property="showPasswordButton" destination="EZP-gw-xQe" id="bch-Np-M8C"/>
-                        <outlet property="submitButton" destination="w47-wf-S0V" id="EjZ-Sw-Rar"/>
-                        <outlet property="userAlertLabel" destination="fQs-iA-wpA" id="MvO-jP-fx3"/>
-                        <outlet property="userIDTextField" destination="lXm-EU-1TR" id="1Pk-cx-OHc"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JFK-Vl-fMc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-500" y="58.374384236453203"/>
+            <point key="canvasLocation" x="-226" y="43"/>
         </scene>
         <!--Connect Account View Controller-->
         <scene sceneID="jZy-dp-I0v">
@@ -301,7 +330,7 @@
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Connect Amazon Account" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UBa-ar-y88">
-                                        <rect key="frame" x="60" y="52.5" width="234.5" height="24"/>
+                                        <rect key="frame" x="60" y="52.5" width="237.5" height="24"/>
                                         <fontDescription key="fontDescription" name="SFProRounded-Bold" family="SF Pro Rounded" pointSize="20"/>
                                         <color key="textColor" red="0.13725490196078433" green="0.20784313725490194" blue="0.34509803921568627" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
@@ -401,6 +430,155 @@
             </objects>
             <point key="canvasLocation" x="468.11594202898556" y="59.598214285714285"/>
         </scene>
+        <!--Connect Instacart AccountVC-->
+        <scene sceneID="dxh-Sz-oTH">
+            <objects>
+                <viewController storyboardIdentifier="InstacartConnectAccountVC" id="Suu-fX-klr" customClass="ConnectInstacartAccountVC" customModule="OrderScrapper" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="HOz-zW-hZR">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="gYv-DR-X1X"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="nCm-iS-6Gq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1298" y="59"/>
+        </scene>
+        <!--Kroger Login-->
+        <scene sceneID="SAZ-14-Izr">
+            <objects>
+                <viewController storyboardIdentifier="KrogerRegisterAccountVC" id="0su-5n-wd1" customClass="KrogerLogin" customModule="OrderScrapper" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Gig-ra-9Si">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="DAz-nl-a0l"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="GGm-Ho-TkW" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2220" y="-683"/>
+        </scene>
+        <!--Connect Kroger AccountVC-->
+        <scene sceneID="7ys-JH-IlK">
+            <objects>
+                <viewController storyboardIdentifier="KrogerConnectAccountVC" id="feF-tP-Wqc" customClass="ConnectKrogerAccountVC" customModule="OrderScrapper" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="WYo-yk-c23">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="frk-1t-1eO"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="St3-KX-uPn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2123" y="59"/>
+        </scene>
+        <!--Kroger Subsidiary AccountVC-->
+        <scene sceneID="Qsc-bQ-Xx7">
+            <objects>
+                <viewController storyboardIdentifier="KrogerSubsidiaryAccountVC" id="ftu-qF-yUy" customClass="KrogerSubsidiaryAccountVC" customModule="OrderScrapper" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="DfX-Sa-lec">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sQ4-lm-piZ" userLabel="BackgroundView">
+                                <rect key="frame" x="0.0" y="44" width="414" height="852"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Sungradient_back" translatesAutoresizingMaskIntoConstraints="NO" id="Fwp-sK-JMN">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="852"/>
+                                    </imageView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qy5-Ld-3vy">
+                                        <rect key="frame" x="10" y="40" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="40" id="vZj-e2-r4C"/>
+                                            <constraint firstAttribute="height" constant="40" id="vfE-7Q-Pov"/>
+                                        </constraints>
+                                        <state key="normal" image="back_button_dark"/>
+                                        <connections>
+                                            <action selector="didTapBackButton:" destination="ftu-qF-yUy" eventType="touchUpInside" id="pxu-vP-e0f"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Supported Kroger Subsidiaries" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9MM-Kr-aU8">
+                                        <rect key="frame" x="50" y="49.5" width="354" height="21.5"/>
+                                        <fontDescription key="fontDescription" name="SFProRounded-Bold" family="SF Pro Rounded" pointSize="18"/>
+                                        <color key="textColor" red="0.13725490200000001" green="0.20784313730000001" blue="0.34509803919999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zFd-Ml-CDc" userLabel="ContentView">
+                                        <rect key="frame" x="0.0" y="85" width="414" height="767"/>
+                                        <subviews>
+                                            <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eGV-4Z-bR5">
+                                                <rect key="frame" x="0.0" y="0.0" width="414" height="767"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <wkWebViewConfiguration key="configuration">
+                                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                                    <wkPreferences key="preferences"/>
+                                                </wkWebViewConfiguration>
+                                            </wkWebView>
+                                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="NOY-ip-9cw">
+                                                <rect key="frame" x="207" y="360" width="0.0" height="24"/>
+                                                <color key="color" systemColor="systemBlueColor"/>
+                                            </activityIndicatorView>
+                                        </subviews>
+                                        <color key="backgroundColor" name="color_background_error_view"/>
+                                        <constraints>
+                                            <constraint firstItem="eGV-4Z-bR5" firstAttribute="top" secondItem="zFd-Ml-CDc" secondAttribute="top" id="6aJ-xx-2AW"/>
+                                            <constraint firstAttribute="trailing" secondItem="eGV-4Z-bR5" secondAttribute="trailing" id="8hB-3o-xE6"/>
+                                            <constraint firstItem="NOY-ip-9cw" firstAttribute="leading" secondItem="zFd-Ml-CDc" secondAttribute="leading" constant="207" id="Adx-o4-H29"/>
+                                            <constraint firstAttribute="trailing" secondItem="NOY-ip-9cw" secondAttribute="trailing" constant="207" id="Oja-ok-odT"/>
+                                            <constraint firstItem="NOY-ip-9cw" firstAttribute="top" secondItem="zFd-Ml-CDc" secondAttribute="top" constant="360" id="R0P-CC-pN0"/>
+                                            <constraint firstAttribute="bottom" secondItem="eGV-4Z-bR5" secondAttribute="bottom" id="cuY-SB-OiG"/>
+                                            <constraint firstAttribute="bottom" secondItem="NOY-ip-9cw" secondAttribute="bottom" constant="383" id="mjn-8x-U02"/>
+                                            <constraint firstItem="eGV-4Z-bR5" firstAttribute="leading" secondItem="zFd-Ml-CDc" secondAttribute="leading" id="z6I-Y2-xiC"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="9MM-Kr-aU8" firstAttribute="leading" secondItem="Qy5-Ld-3vy" secondAttribute="trailing" id="4Gp-3L-Tf4"/>
+                                    <constraint firstAttribute="bottom" secondItem="zFd-Ml-CDc" secondAttribute="bottom" id="APK-g3-eET"/>
+                                    <constraint firstItem="Fwp-sK-JMN" firstAttribute="leading" secondItem="sQ4-lm-piZ" secondAttribute="leading" id="Ibz-tD-STF"/>
+                                    <constraint firstAttribute="trailing" secondItem="9MM-Kr-aU8" secondAttribute="trailing" constant="10" id="JT4-BN-YD8"/>
+                                    <constraint firstItem="Fwp-sK-JMN" firstAttribute="top" secondItem="sQ4-lm-piZ" secondAttribute="top" id="LIp-gN-IUt"/>
+                                    <constraint firstAttribute="trailing" secondItem="Fwp-sK-JMN" secondAttribute="trailing" id="S3b-Xe-aqP"/>
+                                    <constraint firstItem="zFd-Ml-CDc" firstAttribute="height" secondItem="sQ4-lm-piZ" secondAttribute="height" multiplier="0.9" id="XfN-jC-mOZ"/>
+                                    <constraint firstItem="9MM-Kr-aU8" firstAttribute="centerY" secondItem="Qy5-Ld-3vy" secondAttribute="centerY" id="Z6b-7v-2xy"/>
+                                    <constraint firstItem="zFd-Ml-CDc" firstAttribute="leading" secondItem="sQ4-lm-piZ" secondAttribute="leading" id="amJ-Bs-eJ7"/>
+                                    <constraint firstAttribute="bottom" secondItem="Fwp-sK-JMN" secondAttribute="bottom" id="bjG-I2-UkW"/>
+                                    <constraint firstItem="Qy5-Ld-3vy" firstAttribute="leading" secondItem="sQ4-lm-piZ" secondAttribute="leading" constant="10" id="w9n-a7-jEe"/>
+                                    <constraint firstAttribute="trailing" secondItem="zFd-Ml-CDc" secondAttribute="trailing" id="x4m-EV-a6m"/>
+                                    <constraint firstItem="zFd-Ml-CDc" firstAttribute="top" secondItem="Qy5-Ld-3vy" secondAttribute="bottom" constant="5" id="yTg-xD-2qe"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="insideColor">
+                                        <color key="value" red="0.99607843139999996" green="0.76078431369999999" blue="0.13725490200000001" alpha="1" colorSpace="calibratedRGB"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="outsideColor">
+                                        <color key="value" red="0.97254901959999995" green="0.67843137249999996" blue="0.1019607843" alpha="1" colorSpace="calibratedRGB"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="HmP-vZ-OO3"/>
+                        <color key="backgroundColor" red="0.90966647860000005" green="0.64015907049999998" blue="0.29400849340000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <constraints>
+                            <constraint firstItem="HmP-vZ-OO3" firstAttribute="trailing" secondItem="sQ4-lm-piZ" secondAttribute="trailing" id="bBN-MD-HOX"/>
+                            <constraint firstItem="sQ4-lm-piZ" firstAttribute="top" secondItem="HmP-vZ-OO3" secondAttribute="top" id="bZh-iY-8f0"/>
+                            <constraint firstItem="sQ4-lm-piZ" firstAttribute="leading" secondItem="DfX-Sa-lec" secondAttribute="leading" id="gaM-eb-BuE"/>
+                            <constraint firstAttribute="bottom" secondItem="sQ4-lm-piZ" secondAttribute="bottom" id="xox-G6-Kjl"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="activityIndicator" destination="NOY-ip-9cw" id="nc4-EI-Srp"/>
+                        <outlet property="webView" destination="eGV-4Z-bR5" id="y84-bR-eZ5"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="NPf-xg-ilW" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2250.7246376811595" y="-1356.0267857142856"/>
+        </scene>
     </scenes>
     <resources>
         <image name="Sungradient_back" width="414" height="736"/>
@@ -412,6 +590,9 @@
         </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemBlueColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

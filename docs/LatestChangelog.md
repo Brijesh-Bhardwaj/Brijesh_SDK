@@ -1,1 +1,1 @@
-- Issue fix for the account state changing to connectedButException in background Authentication (RPA-662) 
+- bumped up the sdk version for multi-retailers features.

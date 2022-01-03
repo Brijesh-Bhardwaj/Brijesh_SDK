@@ -23,7 +23,8 @@ public class OrdersExtractor {
     public static func initialize(authProvider: AuthProvider,
                                   viewPresenter: ViewPresenter,
                                   analyticsProvider: AnalyticsProvider?,
-                                  orderExtractionConfig: OrderExtractorConfig) throws {
+                                  orderExtractionConfig: OrderExtractorConfig,
+                                  servicesStatusListener: ServicesStatusListener) throws {
         
         let authToken = authProvider.getAuthToken()
         let panelistId = authProvider.getPanelistID()
@@ -46,7 +47,8 @@ public class OrdersExtractor {
         
         AmazonOrderScrapper.shared.initialize(authProvider: authProvider,
                                               viewPresenter: viewPresenter,
-                                              analyticsProvider: analyticsProvider)
+                                              analyticsProvider: analyticsProvider,
+                                              servicesStatusListener: servicesStatusListener)
         
         //Configure firebase analytics
         if analyticsProvider == nil {
@@ -55,7 +57,7 @@ public class OrdersExtractor {
         registerFonts()
         
         //get Scrapper config details
-        ConfigManager.shared.loadConfigs(orderSource: .Amazon) { scrapeConfigs, error in
+        ConfigManager.shared.loadConfigs(orderSources: [.Amazon,.Instacart,.Kroger,.Walmart]) { scrapeConfigs, error in
             if let scrapeConfigs = scrapeConfigs {
                 FirebaseAnalyticsUtil.initSentrySDK(scrapeConfigs: scrapeConfigs)
                 FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_init_library")
@@ -73,6 +75,12 @@ public class OrdersExtractor {
                 }
             } else {
                 LibContext.shared.timeoutValue = AppConstants.timeoutCounter
+
+                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+
+                    let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
+                    LibContext.shared.servicesStatusListener.onServicesFailure(exception: error)
+                }
             }
         }
         
@@ -84,99 +92,22 @@ public class OrdersExtractor {
     /// - Parameter orderSource:the order source type
     /// - Parameter completionHandler:closure which gives list of connected accounts for order source
     /// - Throws ASLException: if this method is called before the initialization method
-    public static func getAccounts(orderSource: OrderSource?,
-                                   completionHandler: @escaping ([Account], Bool) -> Void) throws {
+    public static func getAccounts(orderSource: OrderSource?...,
+                                   completionHandler: @escaping ([String: AccountInfo]) -> Void) throws {
         if isInitialized {
-            let panelistId = LibContext.shared.authProvider.getPanelistID()
-            var hasNeverConnected: Bool = false
-            _ = AmazonService.getAccounts() { response, error in
-                DispatchQueue.global().async {
-                    let accountsInDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
-                    var logEventAttributes:[String:String] = [:]
-                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
-                                          EventConstant.PanelistID: panelistId,
-                                          EventConstant.Status: EventStatus.Success]
-                    if let response = response  {
-                        //TODO Add response in attributes
-                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIGetAccounts, eventAttributes: logEventAttributes)
-                        
-                        hasNeverConnected = response.hasNeverConnected
-                        guard let accountDetails = response.accounts else {
-                            if !accountsInDB.isEmpty {
-                                CoreDataManager.shared.deleteAccountsByPanelistId(panelistId: panelistId)
-                            }
-                            let accounts = [UserAccountMO]()
-                            DispatchQueue.main.async {
-                                completionHandler(accounts, hasNeverConnected)
-                            }
-                            return
-                        }
-                        
-                        if accountsInDB.isEmpty && accountDetails.isEmpty {
-                            DispatchQueue.main.async {
-                                completionHandler(accountsInDB, hasNeverConnected)
-                            }
-                        } else if !accountDetails.isEmpty && accountsInDB.isEmpty {
-                            let account = accountDetails[0]
-                            let statusToUpdate = (account.status == AccountState.Connected.rawValue) ? AccountState.ConnectedButException.rawValue : account.status
-                            
-                            CoreDataManager.shared.addAccount(userId: account.amazonId, password: "",
-                                                              accountStatus:statusToUpdate,
-                                                              orderSource: OrderSource.Amazon.rawValue, panelistId: panelistId)
-                            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { [self] in
-                                let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
-                                accountsFromDB.first?.isFirstConnectedAccount = account.firstaccount
-                                DispatchQueue.main.async {
-                                    completionHandler(accountsFromDB, hasNeverConnected)
-                                }
-                            }
-                        } else {
-                            if let account = accountDetails.first, let accountInDb = accountsInDB.first {
-                                if account.amazonId.elementsEqual(accountInDb.userID) {
-                                    accountsInDB.first?.isFirstConnectedAccount = account.firstaccount
-                                    DispatchQueue.main.async {
-                                        completionHandler(accountsInDB, hasNeverConnected)
-                                    }
-                                } else {
-                                    CoreDataManager.shared.deleteAccountsByPanelistId(panelistId: panelistId)
-                                    CoreDataManager.shared.addAccount(userId: account.amazonId,
-                                                                      password: "",
-                                                                      accountStatus:AccountState.ConnectedButException.rawValue,
-                                                                      orderSource: OrderSource.Amazon.rawValue,
-                                                                      panelistId: panelistId)
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { [self] in
-                                        let accountsFromDB = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
-                                        accountsFromDB.first?.isFirstConnectedAccount = account.firstaccount
-                                        DispatchQueue.main.async {
-                                            completionHandler(accountsFromDB, hasNeverConnected)
-                                        }
-                                    }
-                                }
-                            } else {
-                                if let account = accountDetails.first {
-                                    accountsInDB.first?.isFirstConnectedAccount = account.firstaccount
-                                }
-                                DispatchQueue.main.async {
-                                    completionHandler(accountsInDB, hasNeverConnected)
-                                }
-                            }
-                        }
-                    } else {
-                        DispatchQueue.global().async {
-                            if let error = error {
-                                logEventAttributes[EventConstant.EventName] = EventType.GetAccountAPIFailed
-                                FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
-                            }
-                            
-                            let accounts = CoreDataManager.shared.fetch(orderSource: orderSource, panelistId: panelistId)
-                            DispatchQueue.main.async {
-                                completionHandler(accounts, hasNeverConnected)
-                            }
-                        }
-                    }
+            var orderSources:[OrderSource] = []
+            
+            for source in orderSource {
+                if let source = source {
+                    orderSources.append(source)
                 }
-                
             }
+            AccountsManager.shared.fetchAccounts(orderSources: orderSources) { (response) in
+                DispatchQueue.main.async {
+                    completionHandler(response)
+                }
+            }
+            
         } else {
             let error = ASLException(errorMessage: Strings.ErrorLibNotInitialized, errorType: nil)
             let panelistId = LibContext.shared.authProvider.getPanelistID()
@@ -184,14 +115,10 @@ public class OrdersExtractor {
             logEventAttributes = [EventConstant.PanelistID: panelistId,
                                   EventConstant.EventName: EventType.LibNotInit,
                                   EventConstant.Status: EventStatus.Success]
-            if let orderSource = orderSource {
-                logEventAttributes[EventConstant.OrderSource] = orderSource.value
-            }
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.LibNotInit, eventAttributes: logEventAttributes)
             throw error
         }
     }
-    
     /// Registers a new account in the SDK. The SDK shows  the required screen for this operation.
     /// - Parameter orderSource: the order source type
     /// - Parameter orderExtractionListner: callback interface to noftify the status
@@ -224,12 +151,4 @@ public class OrdersExtractor {
         UIFont.registerFont(withFilenameString: "SF-Pro-Rounded-Bold.otf")
         UIFont.registerFont(withFilenameString: "SF-Pro-Rounded-Regular.otf")
     }
-    
-    private static func updateStatus(amazonId: String, status: String, message: String, orderStatus: String) {
-        _ = AmazonService.updateStatus(amazonId: amazonId, status: status, message: message, orderStatus: orderStatus) { response, error in
-            //Todo
-        }
-    }
-    
-    
 }

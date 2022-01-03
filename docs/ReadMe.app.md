@@ -85,17 +85,17 @@ All protocols needed to be implemented by the application are
 
 - Once initialized you can use the static methods to invoke the functionalities provided by the SDK
 
-- To connect to a new account call `registerAccount` method as below
+- To connect to a new account call `registerAccount` method as below for different order-sources
  ```
  OrdersExtractor.registerAccount(.Amazon, orderExtractionListener)
  ```
- - Currently, the SDK only supports `Amazon` as an order source
+ - Currently, the SDK supports `Amazon` , `Instacart` , `Kroger` and `Walmart` as an order source
  - orderExtractionListener is the reference implementing the OrderExtractionListener protocol.
 
 - Once your application has registered accounts, they can be fetched back using `getAccounts`
  method.
  ```
- OrdersExtractor.getAccounts(.Amazon, completionBlock)
+ OrdersExtractor.getAccounts(.Amazon,.Instacart,.Kroger,.Walmart completionBlock)
  ```
  - Note that the SDK currently only supports 1 account connection at a time
  - Use the `accountState` property on the returned Account references to identify the current status of an account. The account status is represented by `AccountState` enum with these
@@ -104,11 +104,13 @@ All protocols needed to be implemented by the application are
   - Connected - Account is registered and connected successfully.
   - ConnectedAndDisconnected - Account is in a disconnected state now and was successfully connected before the SDK encountered issues with the account.
   - ConnectedButException - Account connected before but SDK encountered issues with the account.
+  - ConnectedButScrappingFailed - Account is connected but the order scrapping is failing
+  - ConnectionInProgress - Account is not connected and all connection time scrape orders are not uploaded
  - Use the `hasNeverConnected` flag, to check if the panelist has never connected any account before.
  
 - To initiate an order-extraction operation on a connected account silently i.e without any UI and without user-intervention, use instance method `fetchOrders` on account reference as below:
  ```
- account.fetchOrders(orderExtractionListener)
+ account.fetchOrders(orderExtractionListener, source: .general)
  ```
    - where orderExtractionListener is a reference implementing protocol `OrderExtractionListener`
    - for this method, the SDK invokes the background order scrapping mechanism
@@ -138,3 +140,9 @@ All protocols needed to be implemented by the application are
  > func onAccountDisconnectionFailed(account : Account, error: ASLException)
    
   This method is called when the account disconnection has failed  
+  
+- On calling fetchOrders() method from the application it will return RetailerScrapingStatus enum value
+- RetailerScrapingStatus has three enum values:
+  - InProgress : the retailer scraping is in progress
+  - Enqueued : the retailer scraping is in queue 
+  - Other : it is default value  

@@ -8,7 +8,7 @@
 "heading_connect_amazon_account" = "Connect Amazon Account";
 "heading_please_sign_in_with_credentials" = "Please sign in with your Amazon credentials";
 "error_enter_valid_username_password" = "Your email or mobile number and/or password do not match. Please try again";
-"label_email_or_mobile_number" = "Email or mobile number with country code";
+"label_email_or_mobile_number" = "Email or mobile number";
 "label_password" = "Password";
 "btn_submit" = "Submit";
 "no_connection" = "No Connection";
@@ -30,5 +30,23 @@
 "step6" = "Step 6";
 "success_msg_receipts_fetched_successfully" = "Receipts fetched successfully";
 "heading_fetching_receipts" = "Fetching Receipts";
+"heading_connect_instacart_account" = "Connect Instacart Account";
+"heading_please_sign_in_with_instacart_credentials" = "Please sign in with your Instacart credentials";
+"heading_connecting_instacart_account" = "Connecting Instacart Account";
+"label_instacart_email" = "Email Id";
+"validation_instacart_please_enter_valid_email" = "Please enter valid email address";
 "dont_be_alarmed" = "Don’t be alarmed!";
 "user_alert_message" = " You will receive an email from Amazon containing your historical orders. This is a standard part of connecting your account with ";
+"heading_connect_kroger_account" = "Connect Kroger Account";
+"heading_please_sign_in_with_kroger_credentials" = "Please sign in with your Kroger credentials";
+"heading_connecting_kroger_account" = "Connecting Kroger Account";
+"label_kroger_email" = "Email Id";
+"validation_kroger_please_enter_valid_email" = "Please enter valid email address";
+"kroger_account_connected_success_msg" = "Kroger Account Connected Successfully";
+"heading_connect_walmart_account" = "Connect Walmart Account";
+"heading_please_sign_in_with_walmart_credentials" = "Please sign in with your Walmart credentials";
+"heading_connecting_walmart_account" = "Connecting Walmart Account";
+"label_walmart_email" = "Email Id";
+"validation_walmart_please_enter_valid_email" = "Please enter valid email address";
+"walmart_account_connected_success_msg" = "Walmart Account Connected Successfully";
+
