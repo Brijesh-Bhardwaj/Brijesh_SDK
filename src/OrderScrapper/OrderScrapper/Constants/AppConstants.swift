@@ -73,8 +73,6 @@ struct AppConstants {
     static let instacartAccountConnectedSuccess = "Instacart Account Connected Successfully"
     static let walmartAccountConnectedSuccess = "Walmart Account Connected Successfully"
     static let msgOrderListSuccess = "List scrapping success"
-
-
     static let errorEmailWrongKroger = "Please enter a valid email address"
     static let errorWrongCredentialsKroger = "The email or password entered is incorrect. Please try again or select Forgot Password."
     static let errorWrongEmailkroger = "There's a problem with the entered email address. Please check the spelling and try again."
@@ -83,7 +81,6 @@ struct AppConstants {
     static let devicePlatform = "ios"
     static let orderUploadRetryCount = 2
     static let captchaRetryCount = 3
-
     static let ErrorInJsonEncoding = "Error in JSON encoding"
     static let AmazonErrorMessage = "Enter your email or mobile phone number"
 }

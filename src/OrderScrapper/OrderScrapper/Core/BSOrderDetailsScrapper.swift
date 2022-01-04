@@ -182,7 +182,7 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                         if status == "success" {
                             let timerValue = self.timer.stop()
                             orderDetailsCount = orderDetailsCount + 1
-                            let message = "\(timerValue) \(orderDetailsCount)"
+                            let message = "\(Strings.ScrappingPageDetails)\(timerValue) \(orderDetailsCount)"
                             let orderDataCount = jsCallBackResult["data"] as? Dictionary<String,Any>
                             FirebaseAnalyticsUtil.logSentryMessage(message: message)
                             var logEventAttributes = [EventConstant.Message: message, EventConstant.OrderSource: orderDetail.orderSource ?? "", EventConstant.Status: EventStatus.Success, EventConstant.ScrappingType: ScrappingType.html.rawValue]
@@ -190,7 +190,6 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                                 logEventAttributes[EventConstant.ScrappingMode] = scrappingMode.rawValue
                             }
                             FirebaseAnalyticsUtil.logEvent(eventType: EventType.onSingleOrderDetailScrape, eventAttributes: logEventAttributes)
-                            
                             FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResultSuccess, eventAttributes: logEventAttributes)
                             print("### onHtmlScrappingSucess for OrderDetail", response)
                             if let orderDetails = jsCallBackResult["data"] as? Dictionary<String,Any> {
@@ -225,10 +224,8 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                             if let scrappingMode = scrappingMode {
                                 logEventAttributes[EventConstant.ScrappingMode] = scrappingMode.rawValue
                             }
-
                             FirebaseAnalyticsUtil.logEvent(eventType: EventType.onSingleOrderDetailScrapeFilure, eventAttributes: logEventAttributes)
                             FirebaseAnalyticsUtil.logEvent(eventType: Strings.ScrappingPageDetails, eventAttributes: logEventAttributes)
-
                             FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResultFilure, eventAttributes: logEventAttributes)
                         }
                     }

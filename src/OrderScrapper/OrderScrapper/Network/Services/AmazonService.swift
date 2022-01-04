@@ -33,7 +33,7 @@ class AmazonService {
         let client = NetworkClient<APIResponse<DateRange>>(relativeURL: relativeURL, requestMethod: .post)
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         
-        client.body = [JSONKeys.panelistId.rawValue: panelistId.lowercased(), JSONKeys.platformId.rawValue: platformId.lowercased(), JSONKeys.forceScrape.rawValue: forceScrape]
+        client.body = [JSONKeys.panelistId.rawValue: panelistId.lowercased(), JSONKeys.platformId.rawValue: platformId.lowercased(),                 JSONKeys.forceScrape.rawValue: forceScrape]
         
         client.executeAPI() { (response, error) in
             if let response = response as? APIResponse<DateRange> {
@@ -55,7 +55,6 @@ class AmazonService {
         return client
     }
     
-
     static func uploadFile(fileURL: URL, platformId: String,
                            fromDate: String, toDate: String, orderSource: String,
                            _ completionHandler: @escaping (ReportUpload?, ASLException?) -> Void) -> APIClient {
@@ -113,7 +112,6 @@ class AmazonService {
         return client
     }
     
-
     static func getAccounts(orderSource: [String], completionHandler: @escaping ([GetAccountsResponse]?, ASLException?) -> Void) -> APIClient {
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         let relativeUrl = GetAccounts + "/" + panelistId.lowercased()

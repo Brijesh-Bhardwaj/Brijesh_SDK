@@ -35,7 +35,6 @@ class ConfigManager {
                 } catch {
                     json = AppConstants.ErrorInJsonEncoding
                 }
-                
                 for orderSource in orderSources {
                     for scrapperConfig in platformSourceConfigs {
                         if scrapperConfig.platformSource == orderSource.value {

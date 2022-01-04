@@ -87,7 +87,6 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     func getAuthenticator() throws -> BSAuthenticator {
         let error = ASLException(errorMessage: Strings.ErrorChildClassShouldImplementMethod, errorType: nil)
         var logEventAttributes:[String:String] = [:]
-        
         logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
                               EventConstant.PanelistID: panelistID,
                               EventConstant.OrderSourceID: self.account?.userID ?? "",
@@ -160,7 +159,6 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
         if let listener = self.scraperListener {
             listener.updateProgressStep(htmlScrappingStep: .startScrapping)
             var logEventAttributes:[String:String] = [:]
-            
             logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
                                   EventConstant.PanelistID: panelistID,
                                   EventConstant.OrderSourceID: self.account?.userID ?? "",
@@ -188,7 +186,6 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
                     json = AppConstants.ErrorInJsonEncoding
                 }
                 var logEventAttributes:[String:String] = [:]
-
                 logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
                                       EventConstant.PanelistID: self.panelistID,
                                       EventConstant.OrderSourceID: self.account?.userID ?? "",
@@ -256,7 +253,6 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
             self.stopScrapping()
             
             var logEventAttributes:[String:String] = [:]
-
             logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
                                   EventConstant.PanelistID: self.panelistID,
                                   EventConstant.OrderSourceID: self.account?.userID ?? "",
@@ -329,7 +325,6 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
         self.stopScrapping()
         let panelistID = self.account?.panelistID ?? ""
         let platformId = self.account?.userID ?? ""
-
         let orderSource = self.account?.source.value ?? ""
         let eventLogs = EventLogs(panelistId: panelistID, platformId:platformId, section: SectionType.orderUpload.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: self.dateRange?.fromDate, toDate: self.dateRange?.toDate, scrapingType: ScrappingType.report.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
         _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: orderSource) { response, error in
@@ -338,7 +333,6 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
         let error = ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil)
         
         var logEventAttributes:[String:String] = [:]
-
         logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
                               EventConstant.PanelistID: self.panelistID,
                               EventConstant.OrderSourceID: self.account?.userID ?? "",
@@ -410,7 +404,6 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
         print("### onScrapeDataUploadCompleted ", complete)
         
         var logEventAttributes:[String:String] = [:]
-
         logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
                               EventConstant.PanelistID: self.panelistID,
                               EventConstant.OrderSourceID: self.account?.userID ?? "",
@@ -472,7 +465,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     }
                     
                     let timerValue = self.timer.stop()
-                    let message = "\(timerValue) + \(String(describing: scrapeResponse.data?.count))"
+                    let message = "\(Strings.ScrappingPageListing) \(timerValue) + \(String(describing: scrapeResponse.data?.count))"
                     logEventAttributes [EventConstant.ScrappingTime] = message
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.onOrderListingCompletion, eventAttributes: logEventAttributes)
                     FirebaseAnalyticsUtil.logSentryMessage(message: message)
@@ -502,7 +495,6 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     let userId = account!.userID
                     let amazonLogs = EventLogs(panelistId:self.panelistID , platformId: userId, section: SectionType.orderUpload.rawValue, type: FailureTypes.none.rawValue, status: EventState.success.rawValue, message: AppConstants.msgOrderListSuccess, fromDate: dateRange?.fromDate, toDate: dateRange?.toDate, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
                     _ = AmazonService.logEvents(eventLogs: amazonLogs, orderSource: self.account!.source.value) { response, error in
-
                         self.sendServicesDownCallback(error: error)
                     }
                     logEventAttributes[EventConstant.Status] =  EventStatus.Success
@@ -527,7 +519,6 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     let userId = account!.userID
                     let amazonLogs = EventLogs(panelistId: self.panelistID , platformId: userId, section: SectionType.orderUpload.rawValue, type: FailureTypes.jsFailed.rawValue, status: EventState.fail.rawValue, message: error, fromDate: dateRange?.fromDate, toDate: dateRange?.toDate, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
                     _ = AmazonService.logEvents(eventLogs: amazonLogs, orderSource: self.orderSource.value) { response, error in
-
                         self.sendServicesDownCallback(error: error)
                     }
                     logEventAttributes[EventConstant.ErrorReason] =  error

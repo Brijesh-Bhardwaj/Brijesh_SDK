@@ -252,7 +252,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         jsSubscriber = viewModel.jsPublisher.receive(on: RunLoop.main).sink(receiveValue: {
             [weak self] (authState, javascript) in
             guard let self = self else { return }
-  DispatchQueue.main.async {
+            DispatchQueue.main.async {
                 self.webContentView.evaluateJavaScript(javascript) {
                     [weak self] (response, error) in
                     guard let self = self else { return }
@@ -550,12 +550,16 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                     self.handleServicesDown()
                 }
             }
-            let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.report.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
-            self.logEvents(logEvents: eventLogs)
             
             if action == Actions.ForegroundHtmlScrapping {
                 self.webContentView?.stopLoading()
                 self.webContentView?.navigationDelegate = nil
+            
+                let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
+                self.logEvents(logEvents: eventLogs)
+            } else {
+                let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.report.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
+                self.logEvents(logEvents: eventLogs)
             }
             
             DispatchQueue.main.async {

@@ -115,8 +115,6 @@ class AmazonNavigationHelper: NavigationHelper {
             FirebaseAnalyticsUtil.logEvent(eventType: eventType, eventAttributes: logAuthEventAttributes)
             
             let eventLogs = EventLogs(panelistId: self.viewModel.userAccount.panelistID, platformId:self.viewModel.userAccount.userID, section: SectionType.connection.rawValue, type: FailureTypes.other.rawValue, status: EventState.success.rawValue, message: "Authentication challenge", fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
-
-
             logEvents(logEvents: eventLogs)
         } else if (urlString.contains(AmazonURL.generateReport)) {
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
@@ -328,8 +326,8 @@ class AmazonNavigationHelper: NavigationHelper {
                 if response.enableScraping {
                     
                     //Clear order details from DB while doing foreground scrapping
-                    let account = self.viewModel.userAccount as! UserAccountMO
-                    CoreDataManager.shared.deleteOrderDetails(userID: account.userID, panelistID: account.panelistID, orderSource: account.source.value)
+//                    let account = self.viewModel.userAccount as! UserAccountMO
+//                    CoreDataManager.shared.deleteOrderDetails(userID: account.userID, panelistID: account.panelistID, orderSource: account.source.value)
                     
                     if response.scrappingType == ScrappingType.report.rawValue {
                         self.scrapeReport(response: response)
@@ -458,7 +456,6 @@ class AmazonNavigationHelper: NavigationHelper {
         _ = AmazonService.updateStatus(platformId: amazonId,
                                        status: AccountState.Connected.rawValue,
                                        message: AppConstants.msgConnected,
-
                                        orderStatus: orderStatus, orderSource:  OrderSource.Amazon.value) { response, error in
             if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
                 self.sendServicesDownCallback()

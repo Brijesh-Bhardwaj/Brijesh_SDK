@@ -62,7 +62,7 @@ class Utils {
         switch orderSorce {
         case .Amazon:
             return Strings.JSVersionAmazon
-        case .Instacart:    
+        case .Instacart:
             return Strings.JSVersionInstacart
         case .Kroger:
             return Strings.JSVersionKroger

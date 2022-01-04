@@ -63,8 +63,8 @@ public class OrdersExtractor {
                 FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_init_library")
             }
         }
-        //get scripts for the order sources
-        BSScriptFileManager.shared.loadScriptFile()
+//        //get scripts for the order sources
+//        BSScriptFileManager.shared.loadScriptFile()
 
         _ = AmazonService.getConfigs() {configs, error in
             if let configs = configs {

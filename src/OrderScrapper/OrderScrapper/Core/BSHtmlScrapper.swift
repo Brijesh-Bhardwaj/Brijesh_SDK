@@ -170,13 +170,11 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                 //                let error = ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError)
                 let error = ASLException(errorMessages: Strings.ErrorOtherUrlLoaded, errorTypes: nil, errorEventLog: .unknownURL, errorScrappingType: ScrappingType.html)
                 let exception = NSException(name: AppConstants.bsOrderFailed, reason: url)
-
                 self.onAuthenticationFailure(error: error, orderSource: self.params.account.source)
                 
                 var logOtherUrlEventAttributes:[String:String] = [:]
                 let userId = params.account.userID
                 let panelistId = params.account.panelistID
-
                 logOtherUrlEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
                                               EventConstant.OrderSourceID: userId,
                                               EventConstant.PanelistID: panelistId,
@@ -199,7 +197,6 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
     func didStartPageNavigation(url: URL?) {
         if url == nil {
             let error = ASLException(errorMessages: Strings.ErrorPageNotloaded, errorTypes: nil, errorEventLog: .pageNotLoded, errorScrappingType: ScrappingType.html)
-
             let onPageFailTimer = timer.stop()
             var logEventAttributes:[String:String] = [:]
             logEventAttributes = [EventConstant.ScrappingTime:onPageFailTimer]
@@ -212,7 +209,6 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
     func didFailPageNavigation(for url: URL?, withError error: Error) {
         let error = ASLException(errorMessages: Strings.ErrorOrderExtractionFailed, errorTypes: nil, errorEventLog: .pageNotLoded, errorScrappingType: ScrappingType.html)
         self.params.listener.onHtmlScrappingFailure(error: error)
-
        let onPageFailTimer = timer.stop()
         var logEventAttributes:[String:String] = [:]
 
@@ -228,7 +224,6 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
         if let scrappingType = self.params.scrappingType {
             logEventAttributes[EventConstant.ScrappingMode] = scrappingType
         }
-
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.onBGPageLoadigFailure, eventAttributes: logEventAttributes)
         FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
     }
@@ -320,7 +315,6 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
         FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
         let failureCount = UserDefaults.standard.integer(forKey: Strings.OnAuthenticationChallenegeRetryCount)
         UserDefaults.standard.setValue(failureCount + 1, forKey: Strings.OnAuthenticationChallenegeRetryCount)
-        
         let currentDate = Date().timeIntervalSince1970
         UserDefaults.standard.setValue(currentDate, forKey: Utils.getKeyForCoolOfTime(orderSorce: .Amazon))
         

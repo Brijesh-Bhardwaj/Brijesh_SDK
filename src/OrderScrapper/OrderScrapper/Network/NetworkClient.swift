@@ -37,7 +37,6 @@ class NetworkClient<T: Codable>: APIClient {
         self.requestMethod = method
     }
     
-
     required init(relativeURL url: String, requestMethod method: RequestMethod, contentType type:String) {
         self.relativeURL = url
         self.requestMethod = method

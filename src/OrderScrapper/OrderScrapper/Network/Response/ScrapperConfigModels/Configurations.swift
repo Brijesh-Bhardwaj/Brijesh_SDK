@@ -13,13 +13,11 @@ class Configurations: Codable {
     var orderDetailDelay: Int?
     var orderUploadRetryCount: Int?
     var otherRetryCount: Int?
-    
     init(login: String) {
         self.login = login
         self.details = ""
         self.listing = ""
     }
-
 }
 
 class Connection: Codable {
