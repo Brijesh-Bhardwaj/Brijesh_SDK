@@ -612,7 +612,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
         return orderDetails
     }
     
-    func getOrdersDetailsCountOnConnection() -> Int {
+    func getOrdersDetailsCountOnConnection(completion: @escaping (Int) -> Void) {
         var orderDetailsCount = 0
         ConfigManager.shared.getConfigurations(orderSource: self.orderSource) { (configurations, error) in
             if let configuration = configurations {
@@ -625,6 +625,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                                       EventConstant.OrderSourceID: self.account?.userID ?? "",
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrappedOrderDetailsFromDB, eventAttributes: logEventAttributes)
+                completion(orderDetailsCount)
             } else {
                 if let error = error {
                     var logEventAttributes:[String:String] = [:]
@@ -638,9 +639,9 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                 }
                 let orderUploadRetryCount =  AppConstants.orderUploadRetryCount
                 orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: try! self.getOrderSource().value, panelistID: self.account!.panelistID, userID: self.account!.userID, orderSectionType: SectionType.connection.rawValue, orderUploadRetryCount: orderUploadRetryCount)
+                completion(orderDetailsCount)
             }
         }
-        return orderDetailsCount
     }
     
     private func didInsertToDB() {
@@ -689,22 +690,23 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
             let source = account.source
             if source == .Walmart || source == .Instacart {
                 print("!!! updateAccountAsConnected")
-                let orderDetailsUploadCount = self.getOrdersDetailsCountOnConnection()
-                print("!!!! orderDetailsUploadCount",orderDetailsUploadCount)
-                let accountState = account.accountState
-                if (accountState == .ConnectionInProgress || accountState == .Connected) && orderDetailsUploadCount == 0 {
-                    do {
-                        try CoreDataManager.shared.updateUserAccount(userId: self.account!.userID, accountStatus: AccountState.Connected.rawValue, panelistId: self.panelistID, orderSource: self.account!.source.rawValue)
-                    } catch let error {
-                        print(AppConstants.tag, "updateAccountWithExceptionState", error.localizedDescription)
-                    }
-                    
-                    let amazonId = self.account!.userID
-                    _ = AmazonService.updateStatus(platformId: amazonId,
-                                                   status: AccountState.Connected.rawValue,
-                                                   message: AppConstants.msgConnected,
-                                                   orderStatus: OrderStatus.Completed.rawValue, orderSource:  self.account!.source.value) { response, error in
-                        self.sendServicesDownCallback(error: error)
+                self.getOrdersDetailsCountOnConnection() { orderDetailsUploadCount in
+                    print("!!!! orderDetailsUploadCount",orderDetailsUploadCount)
+                    let accountState = account.accountState
+                    if (accountState == .ConnectionInProgress || accountState == .Connected) && orderDetailsUploadCount == 0 {
+                        do {
+                            try CoreDataManager.shared.updateUserAccount(userId: self.account!.userID, accountStatus: AccountState.Connected.rawValue, panelistId: self.panelistID, orderSource: self.account!.source.rawValue)
+                        } catch let error {
+                            print(AppConstants.tag, "updateAccountWithExceptionState", error.localizedDescription)
+                        }
+                        
+                        let amazonId = self.account!.userID
+                        _ = AmazonService.updateStatus(platformId: amazonId,
+                                                       status: AccountState.Connected.rawValue,
+                                                       message: AppConstants.msgConnected,
+                                                       orderStatus: OrderStatus.Completed.rawValue, orderSource:  self.account!.source.value) { response, error in
+                            self.sendServicesDownCallback(error: error)
+                        }
                     }
                 }
             }
