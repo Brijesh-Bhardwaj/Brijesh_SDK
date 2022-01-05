@@ -316,7 +316,9 @@ class ConnectWalmartAccountVC: BaseAccountConnectVC {
     private func getSuccessMessage() -> String {
         let source = self.fetchRequestSource ?? .general
         if source == .manual {
-            if successType == .failureButAccountConnected || successType == .fetchSkipped {
+            if isTimeOut {
+                return LibContext.shared.manualScrapeTimeOutMessage
+            } else if  successType == .failureButAccountConnected || successType == .fetchSkipped {
                 return String.init(format: Strings.FetchFailureMessage, OrderSource.Walmart.value)
             } else if isTimeOut {
                 return LibContext.shared.manualScrapeTimeOutMessage
@@ -332,7 +334,9 @@ class ConnectWalmartAccountVC: BaseAccountConnectVC {
     private func getStatusImage() -> UIImage? {
         let source = self.fetchRequestSource ?? .general
         if source == .manual {
-            if successType == .failureButAccountConnected || successType == .fetchSkipped {
+            if isTimeOut {
+                return Utils.getImage(named: IconNames.SuccessScreen)
+            } else if successType == .failureButAccountConnected || successType == .fetchSkipped {
                 return Utils.getImage(named: IconNames.FailureScreen)
             } else if isTimeOut {
                 return Utils.getImage(named: IconNames.SuccessScreen)

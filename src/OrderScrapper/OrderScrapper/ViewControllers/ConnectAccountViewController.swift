@@ -568,8 +568,8 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 self.isTimeOut = true
                 self.backButton?.isEnabled = false
                 self.backButton?.isHidden = true
-                self.fetchSuccessView?.fetchSuccess = self.getSuccessMessage()
-                if let statusImage = self.getStatusImage() {
+                self.fetchSuccessView?.fetchSuccess = self.getSuccessMessage(action: action)
+                if let statusImage = self.getStatusImage(action: action) {
                     self.fetchSuccessView?.imageView = statusImage
                 }
                 self.contentView?.bringSubviewToFront(self.fetchSuccessView)
@@ -605,7 +605,29 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     private func getSuccessMessage() -> String {
         let source = self.fetchRequestSource ?? .general
         if source == .manual {
-            if isFetchSkipped || isFailureButAccountConnected {
+            if isTimeOut {
+                return LibContext.shared.manualScrapeTimeOutMessage
+            } else if isFetchSkipped || isFailureButAccountConnected {
+                return String.init(format: Strings.FetchFailureMessage, OrderSource.Amazon.value)
+            } else {
+                return String.init(format: Strings.FetchSuccessMessage, OrderSource.Amazon.value)
+            }
+        } else {
+            return AppConstants.amazonAccountConnectedSuccess
+        }
+    }
+    
+    //TODO:- Need to change
+    private func getSuccessMessage(action: String) -> String {
+        let source = self.fetchRequestSource ?? .general
+        if source == .manual {
+            if isTimeOut {
+                if action == Actions.ForegroundCSVScrapping {
+                    return String.init(format: Strings.FetchFailureMessage, OrderSource.Amazon.value)
+                } else {
+                    return LibContext.shared.manualScrapeTimeOutMessage
+                }
+            } else if isFetchSkipped || isFailureButAccountConnected {
                 return String.init(format: Strings.FetchFailureMessage, OrderSource.Amazon.value)
             } else if isTimeOut {
                 return LibContext.shared.manualScrapeTimeOutMessage
@@ -620,7 +642,28 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     private func getStatusImage() -> UIImage? {
         let source = self.fetchRequestSource ?? .general
         if source == .manual {
-            if isFetchSkipped || isFailureButAccountConnected {
+            if isTimeOut  {
+                return Utils.getImage(named: IconNames.SuccessScreen)
+            } else if isFetchSkipped || isFailureButAccountConnected {
+                return Utils.getImage(named: IconNames.FailureScreen)
+            } else {
+                return Utils.getImage(named: IconNames.SuccessScreen)
+            }
+        } else {
+            return Utils.getImage(named: IconNames.SuccessScreen)
+        }
+    }
+    
+    private func getStatusImage(action: String) -> UIImage? {
+        let source = self.fetchRequestSource ?? .general
+        if source == .manual {
+            if isTimeOut  {
+                if action == Actions.ForegroundCSVScrapping {
+                    return Utils.getImage(named: IconNames.FailureScreen)
+                } else {
+                    return Utils.getImage(named: IconNames.SuccessScreen)
+                }
+            } else if isFetchSkipped || isFailureButAccountConnected {
                 return Utils.getImage(named: IconNames.FailureScreen)
             } else if isTimeOut {
                 return Utils.getImage(named: IconNames.SuccessScreen)
