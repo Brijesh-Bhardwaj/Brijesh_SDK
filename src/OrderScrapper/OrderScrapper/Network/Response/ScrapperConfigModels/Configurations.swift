@@ -13,6 +13,9 @@ class Configurations: Codable {
     var orderDetailDelay: Int?
     var orderUploadRetryCount: Int?
     var otherRetryCount: Int?
+    var manualScrapeTimeout: Double?
+    var manualScrapeReportTimeout: Double?
+    var manualScrapeTimeoutMessage: String?
     init(login: String) {
         self.login = login
         self.details = ""
@@ -30,4 +33,10 @@ class Connection: Codable {
 class OrderUpload: Codable {
     var orderDetailDelay: Int?
     var orderUploadRetryCount: Int?
+    var manualScrapeTimeout: Double?
+    var manualScrapeReportTimeout: Double?
+}
+
+class Messages: Codable {
+    var manualScrapeTimeoutMessage: String?
 }

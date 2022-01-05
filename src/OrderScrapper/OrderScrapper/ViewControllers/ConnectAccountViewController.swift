@@ -26,6 +26,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     let monitor = NWPathMonitor()
     var account: Account!
     var fetchRequestSource: FetchRequestSource?
+    private var isTimeOut: Bool = false
     
     // MARK: - Subscribers
     private var jsSubscriber: AnyCancellable? = nil
@@ -530,7 +531,8 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         if action == Actions.GetOldestPossibleYearJSCallback ||
             action == Actions.DownloadReportJSInjection ||
             action == Actions.ReportGenerationJSCallback ||
-            action == Actions.ForegroundHtmlScrapping {
+            action == Actions.ForegroundHtmlScrapping ||
+            action == Actions.ForegroundCSVScrapping {
             
             self.isFailureButAccountConnected = true
             
@@ -563,6 +565,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             }
             
             DispatchQueue.main.async {
+                self.isTimeOut = true
                 self.backButton?.isEnabled = false
                 self.backButton?.isHidden = true
                 self.fetchSuccessView?.fetchSuccess = self.getSuccessMessage()
@@ -604,6 +607,8 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         if source == .manual {
             if isFetchSkipped || isFailureButAccountConnected {
                 return String.init(format: Strings.FetchFailureMessage, OrderSource.Amazon.value)
+            } else if isTimeOut {
+                return LibContext.shared.manualScrapeTimeOutMessage
             } else {
                 return String.init(format: Strings.FetchSuccessMessage, OrderSource.Amazon.value)
             }
@@ -617,6 +622,8 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         if source == .manual {
             if isFetchSkipped || isFailureButAccountConnected {
                 return Utils.getImage(named: IconNames.FailureScreen)
+            } else if isTimeOut {
+                return Utils.getImage(named: IconNames.SuccessScreen)
             } else {
                 return Utils.getImage(named: IconNames.SuccessScreen)
             }

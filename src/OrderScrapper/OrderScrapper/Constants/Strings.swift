@@ -126,4 +126,5 @@ struct Strings {
     static let HeaderFetchingOrders = "Fetching %@ Orders"
     static let FetchSuccessMessage = "%@ orders fetched successfully"
     static let FetchFailureMessage = "%@ orders fetch failed"
+    static let TimeOutFailureMessage = "Fetched your orders partially. Please try again later."
 }

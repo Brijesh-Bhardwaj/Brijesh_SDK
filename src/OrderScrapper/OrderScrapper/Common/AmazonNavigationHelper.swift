@@ -330,11 +330,26 @@ class AmazonNavigationHelper: NavigationHelper {
 //                    CoreDataManager.shared.deleteOrderDetails(userID: account.userID, panelistID: account.panelistID, orderSource: account.source.value)
                     
                     if response.scrappingType == ScrappingType.report.rawValue {
-                        self.scrapeReport(response: response)
+                        if self.fetchRequestSource == .manual {
+                            self.getTimerValue(type: .report) { timerValue in
+                                self.timerHandler.startTimer(action: Actions.ForegroundCSVScrapping, timerInterval: TimeInterval(timerValue))
+                                self.scrapeReport(response: response)
+                            }
+                       
+                        } else {
+                            self.scrapeReport(response: response)
+                        }
                     } else {
                         self.timerHandler?.stopTimer()
-                        self.timerHandler?.startTimer(action: Actions.ForegroundHtmlScrapping)
-                        self.scrapeHtml()
+                        if self.fetchRequestSource == .manual {
+                            self.getTimerValue(type: .html) { timerValue in
+                                self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping, timerInterval: TimeInterval(timerValue))
+                                self.scrapeHtml()
+                            }
+                        } else {
+                            self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping)
+                            self.scrapeHtml()
+                        }
                     }
                 } else {
                     self.updateAccountStatusToConnected(orderStatus: OrderStatus.None.rawValue)
@@ -474,5 +489,36 @@ class AmazonNavigationHelper: NavigationHelper {
     private func sendServicesDownCallback() {
         let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
         self.scraperListener.onServicesDown(error: error)
+    }
+    
+    private func getTimerValue(type: ScrappingType, completion: @escaping (Double) -> Void) {
+        ConfigManager.shared.getConfigurations(orderSource: self.viewModel.userAccount.source) { (configurations, error) in
+            var timerValue: Double = 0
+            if let configuration = configurations {
+                if type == .report {
+                    timerValue = configuration.manualScrapeReportTimeout ?? AppConstants.timeoutManualScrapeCSV
+                } else {
+                    timerValue = configuration.manualScrapeTimeout ?? AppConstants.timeoutManualScrape
+                }
+            } else {
+                if let error = error {
+                    var logEventAttributes:[String:String] = [:]
+                    
+                    logEventAttributes = [EventConstant.OrderSource: self.viewModel.userAccount.userID,
+                                          EventConstant.PanelistID: self.viewModel.userAccount.panelistID,
+                                          EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                          EventConstant.EventName: EventType.ExceptionWhileGettingConfiguration,
+                                          EventConstant.Status: EventStatus.Failure]
+                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                }
+                // In case of configurations not found
+                if type == .report {
+                    timerValue = AppConstants.timeoutManualScrapeCSV
+                } else {
+                    timerValue = AppConstants.timeoutManualScrape
+                }
+            }
+            completion(timerValue)
+        }
     }
 }

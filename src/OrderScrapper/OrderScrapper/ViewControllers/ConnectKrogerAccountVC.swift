@@ -64,10 +64,17 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
                     self.account.accountState = .Connected
                     self.updateAccountStatusToConnected(orderStatus: OrderStatus.Initiated.rawValue)
                     self.addUserAccountInDB()
-                    self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping)
-                    self.scrapeHtml()
+                    if self.fetchRequestSource == .manual {
+                        self.getTimerValue { timerValue in
+                         self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping, timerInterval: TimeInterval(timerValue))
+                         self.scrapeHtml()
+                         }
+                    } else {
+                        self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping)
+                        self.scrapeHtml()
+                    }
                 }
-            }else {
+            } else {
                 print("#### Auth ERROR",error as Any)
                 if error!.errorMessage.contains("pop up or ad blockers"){
                     print("#### POP UP ERROR")
@@ -178,6 +185,7 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
     override func onTimerTriggered(action: String) {
         if action == Actions.ForegroundHtmlScrapping {
             self.stopScrapping()
+            self.isTimeOut = true
             self.onCompletion(isComplete: true)
             
             _ = AmazonService.updateStatus(platformId: self.account.panelistID,
@@ -353,6 +361,8 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
         if source == .manual {
             if successType == .failureButAccountConnected || successType == .fetchSkipped {
                 return String.init(format: Strings.FetchFailureMessage, OrderSource.Kroger.value)
+            } else if isTimeOut {
+                return LibContext.shared.manualScrapeTimeOutMessage
             } else {
                 return String.init(format: Strings.FetchSuccessMessage, OrderSource.Kroger.value)
             }
@@ -366,6 +376,8 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
         if source == .manual {
             if successType == .failureButAccountConnected || successType == .fetchSkipped {
                 return Utils.getImage(named: IconNames.FailureScreen)
+            } else if isTimeOut {
+                return Utils.getImage(named: IconNames.SuccessScreen)
             } else {
                 return Utils.getImage(named: IconNames.SuccessScreen)
             }

@@ -16,6 +16,7 @@ class BSCSVScrapper: NSObject {
     private var param: BSHtmlScrapperParams?
     private var loginDetected = false
     private var bsScrapper: BSHtmlScrapper?
+    var fetchRequestSource: FetchRequestSource!
 
     init(webview: WKWebView, scrapingMode: ScrapingMode, scraperListener: ScraperProgressListener) {
         self.webView = webview
@@ -86,7 +87,7 @@ class BSCSVScrapper: NSObject {
                 case .captcha:
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedCaptcha, eventAttributes: logEventAttributes)
                 case .generateReport:
-                    self.timerHandler.startTimer(action: Actions.ReportGenerationJSCallback)
+                        self.timerHandler.startTimer(action: Actions.ReportGenerationJSCallback)
                     //Logging event for report generation
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportGeneration, eventAttributes: logEventAttributes)
                 case .downloadReport:
@@ -104,7 +105,7 @@ class BSCSVScrapper: NSObject {
         case .captcha,.downloadReport, .email, .generateReport, .identification, .password, .error: break
         case .dateRange:
             if let response = response {
-                self.timerHandler.startTimer(action: Actions.GetOldestPossibleYearJSCallback)
+                    self.timerHandler.startTimer(action: Actions.GetOldestPossibleYearJSCallback)
                 let strResult = response as! String
                 if (!strResult.isEmpty) {
                     let year = Int(strResult) ?? 0
@@ -189,7 +190,7 @@ class BSCSVScrapper: NSObject {
                 self.injectDownloadReportJS()
                 self.currentStep = .downloadReport
                 self.publishProgrssFor(step: .downloadReport)
-                self.timerHandler.startTimer(action: Actions.DownloadReportJSInjection)
+                    self.timerHandler.startTimer(action: Actions.DownloadReportJSInjection)
             }
         } else if (urlString.contains(AmazonURL.reportSuccess)) {
             //No handling required

@@ -68,8 +68,15 @@ class ConnectWalmartAccountVC: BaseAccountConnectVC {
                     }
                     self.updateAccountStatusToConnected(orderStatus: OrderStatus.Initiated.rawValue)
                     self.addUserAccountInDB()
-                    self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping)
-                    self.scrapeHtml()
+                    if self.fetchRequestSource == .manual {
+                        self.getTimerValue { timerValue in
+                         self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping, timerInterval: TimeInterval(timerValue))
+                         self.scrapeHtml()
+                         }
+                    } else {
+                        self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping)
+                        self.scrapeHtml()
+                    }
                 }
             } else {
                 self.didReceiveLoginChallenge(error: Strings.ErrorOnWebViewLoading)
@@ -131,7 +138,8 @@ class ConnectWalmartAccountVC: BaseAccountConnectVC {
         if action == Actions.ForegroundHtmlScrapping {
             self.stopScrapping()
             //TODO: - Review success type
-            self.updateSuccessType(successType: .failureButAccountConnected)
+            self.isTimeOut = true
+//            self.updateSuccessType(successType: .failureButAccountConnected)
             self.onCompletion(isComplete: true)
             
             _ = AmazonService.updateStatus(platformId: self.account.panelistID,
@@ -310,6 +318,8 @@ class ConnectWalmartAccountVC: BaseAccountConnectVC {
         if source == .manual {
             if successType == .failureButAccountConnected || successType == .fetchSkipped {
                 return String.init(format: Strings.FetchFailureMessage, OrderSource.Walmart.value)
+            } else if isTimeOut {
+                return LibContext.shared.manualScrapeTimeOutMessage
             } else {
                 return String.init(format: Strings.FetchSuccessMessage, OrderSource.Walmart.value)
             }
@@ -324,6 +334,8 @@ class ConnectWalmartAccountVC: BaseAccountConnectVC {
         if source == .manual {
             if successType == .failureButAccountConnected || successType == .fetchSkipped {
                 return Utils.getImage(named: IconNames.FailureScreen)
+            } else if isTimeOut {
+                return Utils.getImage(named: IconNames.SuccessScreen)
             } else {
                 return Utils.getImage(named: IconNames.SuccessScreen)
             }

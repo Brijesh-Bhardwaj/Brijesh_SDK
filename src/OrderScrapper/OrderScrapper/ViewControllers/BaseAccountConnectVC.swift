@@ -26,6 +26,7 @@ class BaseAccountConnectVC: UIViewController, BSWebNavigationObserver, TimerCall
     lazy var timerHandler: TimerHandler = {
         return TimerHandler(timerCallback: self)
     }()
+    var isTimeOut: Bool = false
     
     //MARK:- Lifecycle Methods
     override func viewDidLoad() {
@@ -77,7 +78,30 @@ class BaseAccountConnectVC: UIViewController, BSWebNavigationObserver, TimerCall
     }
     
     func onTimerTriggered(action: String) {
-       
+        
+    }
+    
+    func getTimerValue(completion: @escaping (Double) -> Void) {
+        ConfigManager.shared.getConfigurations(orderSource: self.account.source) { (configurations, error) in
+            var timerValue: Double = 0
+            if let configuration = configurations {
+             timerValue = configuration.manualScrapeTimeout ?? AppConstants.timeoutManualScrape
+            } else {
+                if let error = error {
+                    var logEventAttributes:[String:String] = [:]
+                    
+                    logEventAttributes = [EventConstant.OrderSource: self.account.source.value,
+                                          EventConstant.PanelistID: self.account.panelistID,
+                                          EventConstant.OrderSourceID: self.account.userID,
+                                          EventConstant.EventName: EventType.ExceptionWhileGettingConfiguration,
+                                          EventConstant.Status: EventStatus.Failure]
+                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                }
+                // Configurations not found then return default value
+                timerValue = 1800
+            }
+            completion(timerValue)
+        }
     }
     //MARK:- Private Methods
     

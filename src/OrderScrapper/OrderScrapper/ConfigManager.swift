@@ -43,6 +43,10 @@ class ConfigManager {
                             scrapperConfig.urls.cooloffPeriodCaptcha = scrapperConfig.connections.cooloffPeriodCaptcha
                             scrapperConfig.urls.orderDetailDelay = scrapperConfig.orderUpload.orderDetailDelay
                             scrapperConfig.urls.orderUploadRetryCount = scrapperConfig.orderUpload.orderUploadRetryCount
+                            scrapperConfig.urls.manualScrapeTimeout = scrapperConfig.orderUpload.manualScrapeTimeout
+                            scrapperConfig.urls.manualScrapeReportTimeout = scrapperConfig.orderUpload.manualScrapeReportTimeout
+                            scrapperConfig.urls.manualScrapeTimeoutMessage = scrapperConfig.messages.manualScrapeTimeoutMessage
+                            LibContext.shared.manualScrapeTimeOutMessage = scrapperConfig.urls.manualScrapeTimeoutMessage ?? Strings.TimeOutFailureMessage
                             self.configs[orderSource] = scrapperConfig.urls
                             break
                         }

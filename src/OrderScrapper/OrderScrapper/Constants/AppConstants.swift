@@ -11,6 +11,8 @@ struct AppConstants {
     static let numberOfSteps: Float = 6
     static let steps: Float = 3
     static let timeoutCounter: Double = 15
+    static let timeoutManualScrape: Double = 1800
+    static let timeoutManualScrapeCSV: Double = 150
     static let entityName = "UserAccount"
     static let orderDetailEntity = "OrderDetails"
     static let resource = "CoreDataModel"

@@ -9,4 +9,5 @@ class PlatformSourceConfig: Codable {
     let urls: Configurations
     let connections: Connection
     let orderUpload: OrderUpload
+    let messages: Messages
 }

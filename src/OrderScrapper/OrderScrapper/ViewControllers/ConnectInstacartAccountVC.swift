@@ -78,8 +78,17 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
                     }
                     self.updateAccountStatusToConnected(orderStatus: OrderStatus.Initiated.rawValue)
                     self.addUserAccountInDB()
-                    self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping)
-                    self.scrapeHtml()
+                   
+                    if self.fetchRequestSource == .manual {
+                       self.getTimerValue { timerValue in
+                        self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping, timerInterval: TimeInterval(timerValue))
+                        self.scrapeHtml()
+                        }
+                    } else {
+                        self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping)
+                        self.scrapeHtml()
+                    }
+                   
                 }
                 //On authentication add user account details to DB
             } else {
@@ -143,8 +152,9 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
     
     override func onTimerTriggered(action: String) {
         if action == Actions.ForegroundHtmlScrapping {
+            self.isTimeOut = true
             self.stopScrapping()
-            self.updateSuccessType(successType: .failureButAccountConnected)
+//            self.updateSuccessType(successType: .failureButAccountConnected)
             self.onCompletion(isComplete: true)
             
             _ = AmazonService.updateStatus(platformId: self.account.panelistID,
@@ -323,6 +333,8 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
         if source == .manual {
             if successType == .failureButAccountConnected || successType == .fetchSkipped {
                 return String.init(format: Strings.FetchFailureMessage, OrderSource.Instacart.value)
+            } else if isTimeOut {
+                return LibContext.shared.manualScrapeTimeOutMessage
             } else {
                 return String.init(format: Strings.FetchSuccessMessage, OrderSource.Instacart.value)
             }
@@ -336,6 +348,8 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
         if source == .manual {
             if successType == .failureButAccountConnected || successType == .fetchSkipped {
                 return Utils.getImage(named: IconNames.FailureScreen)
+            } else if isTimeOut {
+                return Utils.getImage(named: IconNames.SuccessScreen)
             } else {
                 return Utils.getImage(named: IconNames.SuccessScreen)
             }
