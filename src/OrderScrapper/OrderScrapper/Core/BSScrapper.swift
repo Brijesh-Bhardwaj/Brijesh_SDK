@@ -493,7 +493,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     }
 
                     let userId = account!.userID
-                    let amazonLogs = EventLogs(panelistId:self.panelistID , platformId: userId, section: SectionType.orderUpload.rawValue, type: FailureTypes.none.rawValue, status: EventState.success.rawValue, message: AppConstants.msgOrderListSuccess, fromDate: dateRange?.fromDate, toDate: dateRange?.toDate, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
+                    let amazonLogs = EventLogs(panelistId:self.panelistID , platformId: userId, section: getSectionType(), type: FailureTypes.none.rawValue, status: EventState.success.rawValue, message: AppConstants.msgOrderListSuccess, fromDate: dateRange?.fromDate, toDate: dateRange?.toDate, scrapingType: ScrappingType.html.rawValue, scrapingContext: getScrappingContext())
                     _ = AmazonService.logEvents(eventLogs: amazonLogs, orderSource: self.account!.source.value) { response, error in
                         self.sendServicesDownCallback(error: error)
                     }
@@ -517,7 +517,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     FirebaseAnalyticsUtil.logSentryMessage(message: message)
                     
                     let userId = account!.userID
-                    let amazonLogs = EventLogs(panelistId: self.panelistID , platformId: userId, section: SectionType.orderUpload.rawValue, type: FailureTypes.jsFailed.rawValue, status: EventState.fail.rawValue, message: error, fromDate: dateRange?.fromDate, toDate: dateRange?.toDate, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
+                    let amazonLogs = EventLogs(panelistId: self.panelistID , platformId: userId, section: getSectionType(), type: FailureTypes.jsFailed.rawValue, status: EventState.fail.rawValue, message: error, fromDate: dateRange?.fromDate, toDate: dateRange?.toDate, scrapingType: ScrappingType.html.rawValue, scrapingContext: getScrappingContext())
                     _ = AmazonService.logEvents(eventLogs: amazonLogs, orderSource: self.orderSource.value) { response, error in
                         self.sendServicesDownCallback(error: error)
                     }
@@ -538,7 +538,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     func onHtmlScrappingFailure(error: ASLException) {
         self.stopScrapping()
         let userId = account!.userID
-        let eventLogs = EventLogs(panelistId: self.panelistID, platformId: userId, section: SectionType.orderUpload.rawValue , type: error.errorEventLog!.rawValue, status: EventState.fail.rawValue, message: error.errorMessage, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrapingType: error.errorScrappingType?.rawValue, scrapingContext: ScrapingMode.Background.rawValue)
+        let eventLogs = EventLogs(panelistId: self.panelistID, platformId: userId, section: getSectionType() , type: error.errorEventLog!.rawValue, status: EventState.fail.rawValue, message: error.errorMessage, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrapingType: error.errorScrappingType?.rawValue, scrapingContext: getScrappingContext())
         _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.orderSource.value) { response, error in
             self.sendServicesDownCallback(error: error)
         }
@@ -709,5 +709,22 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                 }
             }
         }
+    }
+    
+    private func getScrappingContext()-> String{
+        if(fetchRequestSource == FetchRequestSource.general){
+            return ScrapingMode.Background.rawValue
+        }else{
+            return ScrapingMode.Foreground.rawValue
+        }
+    }
+    
+    private func getSectionType()-> String{
+        if(fetchRequestSource == FetchRequestSource.general){
+            return SectionType.orderUpload.rawValue
+        }else{
+            return SectionType.connection.rawValue
+        }
+        
     }
 }
