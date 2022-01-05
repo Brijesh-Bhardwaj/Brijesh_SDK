@@ -622,15 +622,13 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         let source = self.fetchRequestSource ?? .general
         if source == .manual {
             if isTimeOut {
-                if action == Actions.ForegroundCSVScrapping {
-                    return String.init(format: Strings.FetchFailureMessage, OrderSource.Amazon.value)
-                } else {
+                if action == Actions.ForegroundHtmlScrapping {
                     return LibContext.shared.manualScrapeTimeOutMessage
+                } else {
+                    return String.init(format: Strings.FetchFailureMessage, OrderSource.Amazon.value)
                 }
             } else if isFetchSkipped || isFailureButAccountConnected {
                 return String.init(format: Strings.FetchFailureMessage, OrderSource.Amazon.value)
-            } else if isTimeOut {
-                return LibContext.shared.manualScrapeTimeOutMessage
             } else {
                 return String.init(format: Strings.FetchSuccessMessage, OrderSource.Amazon.value)
             }
@@ -658,10 +656,10 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         let source = self.fetchRequestSource ?? .general
         if source == .manual {
             if isTimeOut  {
-                if action == Actions.ForegroundCSVScrapping {
-                    return Utils.getImage(named: IconNames.FailureScreen)
-                } else {
+                if action == Actions.ForegroundHtmlScrapping {
                     return Utils.getImage(named: IconNames.SuccessScreen)
+                } else {
+                    return Utils.getImage(named: IconNames.FailureScreen)
                 }
             } else if isFetchSkipped || isFailureButAccountConnected {
                 return Utils.getImage(named: IconNames.FailureScreen)
