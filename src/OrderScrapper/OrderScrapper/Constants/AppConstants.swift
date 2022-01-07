@@ -85,4 +85,5 @@ struct AppConstants {
     static let captchaRetryCount = 3
     static let ErrorInJsonEncoding = "Error in JSON encoding"
     static let AmazonErrorMessage = "Enter your email or mobile phone number"
+    static let ErrorBgScrappingCoolOff = "bg process in cool off period"
 }

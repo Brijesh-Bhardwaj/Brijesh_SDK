@@ -201,7 +201,12 @@ class AmazonOrderScrapper {
                                                                   EventConstant.OrderSourceID: (scrappingData?.account.userID) ?? "",
                                                                   EventConstant.ScrappingMode: ScrapingMode.Background.rawValue,
                                                                   EventConstant.Status: EventStatus.Success]
-                        let error = ASLException(errorMessage: "bg process in cool off period" , errorType: nil)
+                        let error = ASLException(errorMessage: AppConstants.ErrorBgScrappingCoolOff , errorType: nil)
+                        if let orderSource = (scrappingData?.account.source.value) {
+                            let logEvent = EventLogs(panelistId: scrappingData?.account.panelistID ?? "", platformId: scrappingData?.account.userID ?? "", section: SectionType.orderUpload.rawValue, type: FailureTypes.other.rawValue, status: EventState.fail.rawValue, message: AppConstants.ErrorBgScrappingCoolOff, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Background.rawValue)
+                                                
+                            _ = AmazonService.logEvents(eventLogs: logEvent, orderSource: orderSource ) { response, error in}
+                        }
                         scrappingData?.orderExtractionListner.onOrderExtractionFailure(error: error, account: (scrappingData?.account)!)
                         FirebaseAnalyticsUtil.logEvent(eventType: EventType.InCoolOffPeriod, eventAttributes: logEventAttributes)
                     }
