@@ -413,6 +413,9 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
         }
         
         if extractingOldOrders {
+            //For Walmart and Instacart update account state to Connected if all connection scrape orders uploaded
+            updateAccountAsConnected(account: self.account)
+            // Extract new orders on completing upload of pending orders
             self.extractNewOrders()
         } else {
             if complete {
