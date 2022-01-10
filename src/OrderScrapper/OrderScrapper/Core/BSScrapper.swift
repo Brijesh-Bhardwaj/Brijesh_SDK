@@ -488,7 +488,29 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                         
                         //For Walmart and Instacart update account state to Connected if all connection scrape orders uploaded
                         updateAccountAsConnected(account: self.account)
-                        
+                        if let fromDate = self.dateRange?.fromDate, let toDate = self.dateRange?.toDate, let userID = self.account?.userID {
+                            let orderRequest = OrderRequest(panelistId: self.panelistID, platformId: userID, fromDate: fromDate, toDate: toDate, status: OrderStatus.Completed.rawValue, data: [])
+                            _ = AmazonService.uploadOrderHistory(orderRequest: orderRequest, orderSource: self.orderSource.value) { response, error in
+                                DispatchQueue.global().async {
+                                    var logEventAttributes:[String:String] = [:]
+
+                                    logEventAttributes = [EventConstant.OrderSource:self.orderSource.value,
+                                                          EventConstant.PanelistID: self.panelistID,
+                                                          EventConstant.OrderSourceID: self.account?.userID ?? ""]
+                                    if let response = response {
+
+                                    } else {
+                                        logEventAttributes[EventConstant.Status] = EventStatus.Failure
+                                        if let error = error {
+                                            logEventAttributes[EventConstant.EventName] = EventType.UploadOrdersAPIFailed
+                                            FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                                        } else {
+                                            FirebaseAnalyticsUtil.logEvent(eventType: EventType.UploadOrdersAPIFailed, eventAttributes: logEventAttributes)
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         if let listener = self.scraperListener {
                             listener.updateProgressStep(htmlScrappingStep: .complete)
                         }
