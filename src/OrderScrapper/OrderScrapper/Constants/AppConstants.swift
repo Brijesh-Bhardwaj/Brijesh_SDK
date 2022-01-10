@@ -33,6 +33,8 @@ struct AppConstants {
     static let orderDetailsColumnOrderDeatilsURL = "orderDeatilsURL"
     static let orderDetailsColumnOrderSectionType = "orderSectionType"
     static let orderDetailsColumnsUplaodRetryCount = "uploadRetryCount"
+    static let orderDetailsColumnFromDate = "startDate"
+    static let orderDetailsColumnToDate = "endDate"
     //Firebase Analytics
     static let resourceName = "GoogleService-Info"
     static let resourceOfType = "plist"

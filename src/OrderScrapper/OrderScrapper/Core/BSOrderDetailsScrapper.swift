@@ -15,6 +15,7 @@ class BSOrderDetailsScrapper {
     var fetchRequestSource: FetchRequestSource?
     var orderDetailsTimer = BSTimer()
     var orderDetailsCount = 0
+    var dateRange: DateRange?
     
     lazy var scrapeQueue: [String] = {
         return Array<String>()
@@ -37,12 +38,13 @@ class BSOrderDetailsScrapper {
     }
     
     func scrapeOrderDetailPage(script: String, orderDetails: [OrderDetails],
-                               mode: ScrapingMode?, source: FetchRequestSource?) {
+                               mode: ScrapingMode?, source: FetchRequestSource?, dateRange: DateRange?) {
         orderDetailsTimer.start()
         self.script = script
         self.queue = Queue(queue: orderDetails)
         self.scrappingMode = mode
         self.fetchRequestSource = source
+        self.dateRange = dateRange
         
         scrapeOrder()
     }
@@ -110,9 +112,19 @@ class BSOrderDetailsScrapper {
                 self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue)
             }
         } else {
-            print("$$$$ scrapeQueue",OrderState.Completed.rawValue)
-            if let orderDetail = orderDetail {
-            self.dataUploader.addData(data: data, orderDetail: orderDetail,orderState: OrderState.Completed.rawValue)
+            self.getOrdersDetailsCountOnConnection { [weak self] orderDetailsUploadCount in
+                guard let self = self else {return}
+                if orderDetailsUploadCount == 0 || orderDetailsUploadCount == 1 {
+                    if let orderDetail = self.orderDetail {
+                        print("$$$$ scrapeQueue",OrderState.Completed.rawValue)
+                        self.dataUploader.addData(data: data, orderDetail: orderDetail,orderState: OrderState.Completed.rawValue)
+                    }
+                } else {
+                    if let orderDetail = self.orderDetail {
+                        print("$$$$ scrapeQueue",OrderState.Inprogress.rawValue)
+                        self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue)
+                    }
+                }
             }
         }
     }
@@ -163,6 +175,43 @@ class BSOrderDetailsScrapper {
             }
         }
         return true
+    }
+    
+    func getOrdersDetailsCountOnConnection(completion: @escaping (Int) -> Void) {
+        var orderDetailsCount = 0
+        let orderSource = self.params.account.source
+        ConfigManager.shared.getConfigurations(orderSource: orderSource) { (configurations, error) in
+            if let configuration = configurations {
+                let orderUploadRetryCount = configuration.orderUploadRetryCount ?? AppConstants.orderUploadRetryCount
+                if let toDate = self.dateRange?.toDate, let fromDate = self.dateRange?.fromDate {
+                    orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: orderSource.value, panelistID: self.params.account.panelistID, userID: self.params.account.userID, orderSectionType: SectionType.connection.rawValue, orderUploadRetryCount: orderUploadRetryCount, endDate: toDate, startDate: fromDate)
+                }
+                
+                var logEventAttributes:[String:String] = [:]
+                logEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
+                                      EventConstant.PanelistID: self.params.account.panelistID,
+                                      EventConstant.OrderSourceID: self.params.account.userID,
+                                      EventConstant.Status: EventStatus.Success]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrappedOrderDetailsFromDB, eventAttributes: logEventAttributes)
+                completion(orderDetailsCount)
+            } else {
+                if let error = error {
+                    var logEventAttributes:[String:String] = [:]
+                    
+                    logEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
+                                          EventConstant.PanelistID: self.params.account.panelistID,
+                                          EventConstant.OrderSourceID: self.params.account.userID,
+                                          EventConstant.EventName: EventType.ExceptionWhileGettingConfiguration,
+                                          EventConstant.Status: EventStatus.Failure]
+                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                }
+                let orderUploadRetryCount =  AppConstants.orderUploadRetryCount
+                if let toDate = self.dateRange?.toDate, let fromDate = self.dateRange?.fromDate {
+                    orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: orderSource.value, panelistID: self.params.account.panelistID, userID: self.params.account.userID, orderSectionType: SectionType.connection.rawValue, orderUploadRetryCount: orderUploadRetryCount, endDate: toDate, startDate: fromDate)
+                }
+                completion(orderDetailsCount)
+            }
+        }
     }
 }
 
