@@ -8,11 +8,12 @@ import WebKit
 class BSInstacartAuthenticator: BSBaseAuthenticator {
     private let LoginURLDelimiter = "/"
     var isAuthenticated: Bool = false
-    
+    var url = ""
     
     override func onPageFinish(url: String) throws {
         print("####",url)
         if let configurations = configurations {
+            self.url = url
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
                 guard let self = self else {return}
                 
@@ -253,7 +254,12 @@ extension BSInstacartAuthenticator: ScriptMessageListener {
                 self.webClient.scriptMessageHandler?.removeScriptMessageListener()
             } else if data.contains("Email field Availablity callback") {
                 print("$$$ data",data)
-                self.onSignIn()
+                if self.url == configurations?.login {
+                    print("### login url",self.url)
+                    self.onSignIn()
+                } else {
+                    FirebaseAnalyticsUtil.logSentryMessage(message: AppConstants.WrongLoginURL)
+                }
             } else if data.contains("Captcha_open") {
                 print("$$$ data",data)
                 self.authenticationChallenge(data: data)

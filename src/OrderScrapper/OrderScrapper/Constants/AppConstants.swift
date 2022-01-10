@@ -86,4 +86,5 @@ struct AppConstants {
     static let ErrorInJsonEncoding = "Error in JSON encoding"
     static let AmazonErrorMessage = "Enter your email or mobile phone number"
     static let ErrorBgScrappingCoolOff = "bg process in cool off period"
+    static let WrongLoginURL = "Wrong URL for login"
 }
