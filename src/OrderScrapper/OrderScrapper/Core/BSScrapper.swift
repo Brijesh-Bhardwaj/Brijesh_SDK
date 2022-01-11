@@ -742,29 +742,27 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     }
     
     private func getScrappingContext()-> String{
-        if(fetchRequestSource == FetchRequestSource.manual || fetchRequestSource == FetchRequestSource.notification){
+        if (self.scrappingMode == .Foreground) {
             return ScrapingMode.Foreground.rawValue
-        }else{
+        } else {
             return ScrapingMode.Background.rawValue
         }
     }
     
     private func getSectionType()-> String{
-        if(fetchRequestSource == FetchRequestSource.manual || fetchRequestSource == FetchRequestSource.notification){
+        if (self.scrappingMode == .Foreground) {
             return SectionType.connection.rawValue
-        }else{
+        } else {
             return SectionType.orderUpload.rawValue
         }
         
     }
     
     private func getScrappingSuccessMessage()-> String{
-        if(fetchRequestSource == FetchRequestSource.manual || fetchRequestSource == FetchRequestSource.notification){
+        if (self.scrappingMode == .Foreground) {
             return AppConstants.fgScrappingCompleted
-        }else{
+        } else {
             return AppConstants.bgScrappingCompleted
         }
-        
     }
-    
 }
