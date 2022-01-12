@@ -305,7 +305,6 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
                 self.backgroundScrapper?.stopScrapping()
                 self.backgroundScrapper?.scraperListener = nil
                 self.backgroundScrapper = nil
-                self.logEvent()
                 if completed {
                     if let successType = successType {
                         self.updateSuccessType(successType: successType)

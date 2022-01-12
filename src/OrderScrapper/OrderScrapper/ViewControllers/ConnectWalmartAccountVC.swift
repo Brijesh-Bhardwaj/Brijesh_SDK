@@ -180,7 +180,6 @@ class ConnectWalmartAccountVC: BaseAccountConnectVC {
             DispatchQueue.main.async {
                 self.backgroundScrapper?.stopScrapping()
                 self.backgroundScrapper?.scraperListener = nil
-                self.logEvent()
                 self.timerHandler.stopTimer()
                 self.timerHandler.removeCallbackListener()
                 if completed {
