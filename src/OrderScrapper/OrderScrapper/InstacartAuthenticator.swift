@@ -5,24 +5,16 @@
 import Foundation
 import WebKit
 
-enum JSValues {
-    case click_Login_btn, sign_in, Continue_in_browser, error_email, flash_message, recaptcha, error_password
-}
-
 internal class InstacartAuthenticator: BSBaseAuthenticator {
     private let LoginURLDelimiter = "/?"
     private let URLDelimiter = "/store"
     var isAuthenticated: Bool = false
-    var timer: Timer? = nil
     var isNetworkDisconnect = false
     
     override func onPageFinish(url: String) throws {
         print("####",url)
         if let configurations = configurations {
             self.authenticationDelegate?.didReceiveAuthenticationChallenge(authError: false)
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
-                guard let self = self else {return}
-                
                 let loginSubURL = Utils.getSubUrl(url: configurations.login, delimeter: self.LoginURLDelimiter)
                 // TODO -: Check the hardcoded URL
                 let subURL = AppConstants.ICLoginSuccessURL
@@ -48,7 +40,6 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
                     }
                     self.webClient.scriptMessageHandler?.removeScriptMessageListener()
                 }
-            }
         } else {
             let error = ASLException(errorMessage: Strings.ErrorNoConfigurationsFound, errorType: .authChallenge)
             if let completionHandler = self.completionHandler {

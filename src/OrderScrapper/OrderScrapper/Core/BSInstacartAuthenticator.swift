@@ -8,15 +8,10 @@ import WebKit
 class BSInstacartAuthenticator: BSBaseAuthenticator {
     private let LoginURLDelimiter = "/"
     var isAuthenticated: Bool = false
-    var url = ""
     
     override func onPageFinish(url: String) throws {
         print("####",url)
         if let configurations = configurations {
-            self.url = url
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
-                guard let self = self else {return}
-                
                 let loginSubURL = Utils.getSubUrl(url: configurations.login, delimeter: self.LoginURLDelimiter)
                 // TODO -: Check the hardcoded URL
                 let subURL = AppConstants.ICLoginSuccessURL
@@ -37,7 +32,6 @@ class BSInstacartAuthenticator: BSBaseAuthenticator {
                     } else {
                         self.completionHandler?(true, nil)
                     }
-                }
             }
         } else {
             let error = ASLException(errorMessage: Strings.ErrorNoConfigurationsFound, errorType: .authChallenge)
@@ -177,6 +171,7 @@ class BSInstacartAuthenticator: BSBaseAuthenticator {
                     self?.completionHandler!(false,error)
                     //TODO :- Authentication error
                 } else {
+                    self?.isAuthenticated = true
                     print("#### Valid SignIn JS")
                 }
             }
@@ -254,12 +249,11 @@ extension BSInstacartAuthenticator: ScriptMessageListener {
                 self.webClient.scriptMessageHandler?.removeScriptMessageListener()
             } else if data.contains("Email field Availablity callback") {
                 print("$$$ data",data)
-                if self.url == configurations?.login {
-                    print("### login url",self.url)
+                //TODO In case of manual scrape we need to reset the flag when we show the webView
+                if !isAuthenticated {
                     self.onSignIn()
-                } else {
-                    FirebaseAnalyticsUtil.logSentryMessage(message: AppConstants.WrongLoginURL)
                 }
+                    
             } else if data.contains("Captcha_open") {
                 print("$$$ data",data)
                 self.authenticationChallenge(data: data)
