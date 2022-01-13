@@ -707,7 +707,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     }
     
     private func logEvent(status: String) {
-        let eventLogs = EventLogs(panelistId: self.panelistID, platformId: self.account!.userID, section: getSectionType() , type: FailureTypes.none.rawValue, status: status, message: self.getScrappingSuccessMessage(), fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrapingType: ScrappingType.html.rawValue, scrapingContext: self.getScrappingContext())
+        let eventLogs = EventLogs(panelistId: self.panelistID, platformId: self.account!.userID, section: getSectionType() , type: FailureTypes.none.rawValue, status: status, message: AppConstants.ScrappingCompleted, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrapingType: ScrappingType.html.rawValue, scrapingContext: self.getScrappingContext())
         _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.orderSource.value) { response, error in
             self.sendServicesDownCallback(error: error)
         }
@@ -754,15 +754,6 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
             return SectionType.connection.rawValue
         } else {
             return SectionType.orderUpload.rawValue
-        }
-        
-    }
-    
-    private func getScrappingSuccessMessage()-> String{
-        if (self.scrappingMode == .Foreground) {
-            return AppConstants.fgScrappingCompleted
-        } else {
-            return AppConstants.bgScrappingCompleted
         }
     }
 }
