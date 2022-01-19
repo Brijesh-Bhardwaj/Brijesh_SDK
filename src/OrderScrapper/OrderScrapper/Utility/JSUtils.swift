@@ -41,99 +41,105 @@ class JSUtils {
     }
     
     static func getInstacartIdentification() -> String {
-           return " var isEmailError, isPasswordError, isFlashError, isRecaptchaVerifyError, isEmailFieldAvailable, isVerification = false;" +
-           " var temp; " +
-           " const callback = async function (mutationsList, observer) { " +
-              " for (const mutation of mutationsList) { " +
-                   " const el = mutation.target;" +
+        return "var isEmailError, isPasswordError, isFlashError, isRecaptchaVerifyError, isEmailFieldAvailable, isVerification = false; " +
+            " const callback = function (mutationsList, observer) { " +
+                " for (const mutation of mutationsList) { " +
+                   " const el = mutation.target; " +
                    " const verifyEl = document.querySelector('[id*=\"code-\"]'); " +
-                   " if (verifyEl && !isVerification) { " +
-                      " console.log('Verification screen callback');" +
-                    "    [document.querySelector('[data-testid=\"mobile-close\"]'), document.querySelector('[data-testid=\"back\"]')].forEach(function (item) { " +
-                    "      item.addEventListener('click', function () { " +
-                    "      window.webkit.messageHandlers.iOS.postMessage(\"verification_closed\");" +
-                    "     });" +
-                    "     }); " +
+                    " if (verifyEl && !isVerification) { " +
+                        " console.log('Verification screen callback'); " +
+                        "    [document.querySelector('[data-testid=\"mobile-close\"]'), document.querySelector('[data-testid=\"back\"]')].forEach(function (item) { " +
+                        "      item.addEventListener('click', function () { " +
+                        "      window.webkit.messageHandlers.iOS.postMessage(\"verification_closed\");" +
+                        "     });" +
+                        "     }); " +
                        " isVerification = true; " +
-                        " window.webkit.messageHandlers.iOS.postMessage(\"Verification screen callback\"); " +
-                        "  } " +
-                   "if (mutation.addedNodes.length) {" +
-                      " if (el && el.classList instanceof DOMTokenList) { " +
-                          " if (document.querySelector('[data-testid=\"desktop-close\"]')) { " +
-                              " const passwordEl = document.querySelector(\"div[id*='error_password']\"); " +
+                      " window.webkit.messageHandlers.iOS.postMessage(\"Verification screen callback\"); " +
+                   " } " +
+                    " if(mutation.type === 'attributes' && mutation.attributeName === 'errortext') { " +
+                       " if(el.getAttribute('errortext') && el.getAttribute('errortext').trim() != '') { " +
+                          "   console.log('Invalid email or passwrd'); " +
+                          " window.webkit.messageHandlers.iOS.postMessage(\"Invalid_user_or_passwrd\"); " +
+                       " } " +
+                  "  } " +
+                   " if (mutation.addedNodes.length) { " +
+                       " if (el && el.classList instanceof DOMTokenList) { " +
+                            " if (document.querySelector('[data-testid=\"desktop-close\"]')) { " +
+                               " const passwordEl = document.querySelector(\"div[id*='error_password']\"); " +
                                " if (passwordEl && passwordEl.textContent.trim() != '' && !isPasswordError) { " +
-                                  " console.log('Password error callback'); " +
+                                   " console.log('Password error callback'); " +
                                    " isPasswordError = true; " +
                                    " window.webkit.messageHandlers.iOS.postMessage(\"Password error callback\"); " +
                                " } " +
-                               " const emailEl = el.querySelector(\"div[id*='error_email']\"); " +
-                               " if (emailEl && emailEl.textContent.trim() != '' && !isEmailError) { " +
-                                "   console.log('Email error callback'); " +
-                               " isEmailError = true; " +
-                                   " window.webkit.messageHandlers.iOS.postMessage(\"Email error callback\"); " +
-                              " } " +
-                              " if ((temp = el.querySelector('[data-testid*=\"flash-message\"]')) && temp.textContent && !isFlashError) { " +
-                                 "  console.log('Flash message callback'); " +
-                                  " isFlashError = true; " +
-                                   " window.webkit.messageHandlers.iOS.postMessage(\"Flash message callback\"); " +
-                              " } " +
-                              " if (el.querySelector(\"input[id*='email-']\") && !isEmailFieldAvailable) { " +
-                                  " console.log('Email field Availablity callback'); " +
+                                " const emailEl = el.querySelector(\"div[id*='error_email']\"); " +
+                                " if (emailEl && emailEl.textContent.trim() != '' && !isEmailError) { " +
+                                   " console.log('Email error callback'); " +
+                                   " isEmailError = true; " +
+                                    " window.webkit.messageHandlers.iOS.postMessage(\"Email error callback\"); " +
+                                " } " +
+                                
+                                " if (el.querySelector(\"[data-testid*='flash-message']\") && !isFlashError && " + "el.querySelector(\"[data-testid*='flash-message']\").textContent.trim() != '') { " +
+                                    " console.log('Flash message callback'); " +
+                                   " isFlashError = true; " +
+                                    " window.webkit.messageHandlers.iOS.postMessage(\"Flash message callback\"); " +
+                               " } " +
+                               " if (el.querySelector(\"input[type='email']\") && !isEmailFieldAvailable) { " +
+                                   " console.log('Email field Availablity callback'); " +
                                    " isEmailFieldAvailable = true; " +
                                    " window.webkit.messageHandlers.iOS.postMessage(\"Email field Availablity callback\"); " +
-                              " } " +
-                              " break; " +
-                           " } " +
+                               " } " +
+                               " break; " +
+                            " } " +
                        " } " +
-                  " } " +
+                   " } " +
 
-                  " if (mutation.removedNodes.length) { " +
-                      " if (el && el.classList instanceof DOMTokenList) { " +
-                         "  const removedEl = mutation.removedNodes[0]; " +
-                          " const passwordEl = document.querySelector(\"div[id*='error_password']\"); " +
-                           " if (passwordEl && passwordEl.textContent.trim() == '' && isPasswordError) { " +
-                               // console.log('Password removed error callback', passwordEl);
-                              " isPasswordError = false; " +
-                           " } " +
-                          " const emailEl = el.querySelector(\"div[id*='error_email']\"); " +
-                          " if (emailEl && emailEl.textContent.trim() == '' && isEmailError) { " +
-                               // console.log('Email removed error callback', emailEl);
+                   " if (mutation.removedNodes.length) { " +
+                      "  if (el && el.classList instanceof DOMTokenList) { " +
+                           " const removedEl = mutation.removedNodes[0]; " +
+                           " const passwordEl = document.querySelector(\"div[id*='error_password']\"); " +
+                            " if (passwordEl && passwordEl.textContent.trim() == '' && isPasswordError) { " +
+                                // console.log('Password removed error callback', passwordEl);
+                               " isPasswordError = false; " +
+                            " } " +
+                            " const emailEl = el.querySelector(\"div[id*='error_email']\"); " +
+                            " if (emailEl && emailEl.textContent.trim() == '' && isEmailError) { " +
+                                // console.log('Email removed error callback', emailEl);
                                " isEmailError = false; " +
+                            " } " +
+                            " const verifyEl = document.querySelector('[id*=\"code-\"]'); " +
+                           " if (!verifyEl && isVerification) { " +
+                                // console.log('Verification removed screen callback');
+                               " isVerification = false; " +
                            " } " +
-                          " const verifyEl = document.querySelector('[id*=\"code-\"]'); " +
-                          " if (!verifyEl && isVerification) { " +
-                               // console.log('Verification removed screen callback');
-                              " isVerification = false; " +
-                          " } " +
                            " if (!el.querySelector(\"[data-testid*='flash-message']\") && isFlashError) { " +
-                               // console.log('Flash removed message callback', el);
-                              " isFlashError = false; " +
-                          " } " +
-                          " if (!el.querySelector(\"input[id*='email-']\") && isEmailFieldAvailable) { " +
-                               // console.log('Email field removed Availablity callback', el);
-                              " isEmailFieldAvailable = false; " +
+                                // console.log('Flash removed message callback', el);
+                                " isFlashError = false; " +
                            " } " +
-                          " break; " +
-                      " } " +
-                  " } " +
-             "  } " +
-          " }; " +
-          " var observer = new MutationObserver(callback); " +
-           " observer.observe(document.querySelector('body#landing'), { attributes: true, childList: true, characterData: true, subtree: true }); "
-       }
-
-    static func getICFieldIdentificationJS() -> String {
-        return "(function() {   var element = null;  element = document.evaluate('//span[text()=\"Continue in browser\"]',document,null,  XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;  if (element != undefined && element != null) {return \"Continue_in_browser\";}  element = document.querySelector(\"div[id*=\'error_password\']\");  if (element != undefined && element != null && element.innerHTML.length > 0) {return \"error_password\";    }  element = document.querySelector(\"div[id*=\'error_email\']\");  if (element != undefined && element != null && element.innerHTML.length > 0) {  return \"error_email\";}element = document.querySelector(\"span[data-testid*=\'flash-message\']\");  if (element != undefined && element != null && element.innerHTML.length > 0) {  return \"flash_message\";}element = document.querySelector(\"button[id*=\'recaptcha-verify-button\']\");if (element != undefined && element != null) {       return \"recaptcha\";}element = document.querySelector(\"input[id*='email']\");  if (element != undefined && element != null) {    return \"sign_in\";}element = document.evaluate('//span[text()=\"Log in\"]',document,null,                XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;  if (element != undefined && element != null) {    return \"click_Login_btn\";  }})()"
-    }
+                            " if (!el.querySelector(\"input[type='email']\") && isEmailFieldAvailable) { " +
+                                // console.log('Email field removed Availablity callback', el);
+                               " isEmailFieldAvailable = false; " +
+                           " } " +
+                           " break; " +
+                        " }  " +
+                   " } " +
+                " } " +
+            " }; " +
+           "  var observer = new MutationObserver(callback); " +
+           " observer.observe(document.querySelector('body#landing'), { attributes: true, childList: true, characterData: true, subtree: true });"
+           }
     
     static func getICinjectLoginJS(email: String, password: String) ->String {
-        return " document.querySelector(\"input[id*='email']\").value = '" + email + "';" +  "document.querySelector(\"input[id*='password']\").value = '" + password + "';" +
+        return " document.querySelector(\"input[type='email']\").value = '" + email + "';" +  "document.querySelector(\"input[type='password']\").value = '" + password + "';" +
             "document.querySelector(\'button[type=\"submit\"]\').click() "
     }
     
     static func getICErrorPasswordInjectJS() ->String {
         return " (function() { var element = document.querySelector(\"div[id*='error_password-']\").innerHTML;if (element == null && element.lenght == 0) {return null} else { return element}})() "
     }
+    
+    static func getInstacartWrongPasswordInjectJS() ->String {
+            return " (function() { var element = document.querySelector('input[type=\"password\"]').getAttribute('errortext');if (element == null && element.length == 0) {return null} else { return element}})() "
+        }
     
     static func getICRecaptchaInjectJs() -> String {
         return " (function() { var element = document.querySelector(\"button[id*='recaptcha-verify-button']\");if (element != null && element.innerHTML !== null){return 1} else { return null}})() "
