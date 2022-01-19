@@ -1,1 +1,1 @@
-- bumped up the sdk version for multi-retailers features.
+ - Issue fix for user not able to connect instacart account (RPA-824)

@@ -10,6 +10,10 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
   
+  ## [2.0.2] - 2022-01-19
+   ### Added
+   - Issue fix for user not able to connect instacart account (RPA-824)
+   
   ## [2.0.1] - 2022-01-03
    ### Added
    - bumped up the sdk version for multi-retailers features.
