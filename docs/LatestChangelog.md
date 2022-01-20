@@ -1,1 +1,1 @@
-- bumped up the sdk version for multi-retailers features.
+   - Fixes added for the tickets RPA-689, RPA-692, RPA-710, RPA-711, RPA-713, RPA-743, RPA-755, RPA-757   
