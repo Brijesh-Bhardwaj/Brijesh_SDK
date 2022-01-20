@@ -153,6 +153,22 @@ class BSInstacartAuthenticator: BSBaseAuthenticator {
         }
     }
     
+    func onWrongCredentials() {
+            let js = JSUtils.getInstacartWrongPasswordInjectJS()
+            self.evaluateJS(javascript: js) { response, error in
+                if let response = response as? String {
+                    let error = ASLException(errorMessages: response, errorTypes: .authError, errorEventLog: .authentication, errorScrappingType: .html)
+                    self.completionHandler?(false, error)
+                    self.webClient.scriptMessageHandler?.removeScriptMessageListener()
+                } else {
+                    if let error = error {
+                        FirebaseAnalyticsUtil.logSentryError(error: error)
+                    }
+                    self.completionHandler?(false,ASLException(errorMessage: Strings.ErrorInInjectingScript, errorType: .authError))
+                }
+            }
+        }
+    
     func onSignIn() {
         print("$$$$ signIn called")
         guard let password = self.account?.userPassword else {
@@ -249,14 +265,15 @@ extension BSInstacartAuthenticator: ScriptMessageListener {
                 self.webClient.scriptMessageHandler?.removeScriptMessageListener()
             } else if data.contains("Email field Availablity callback") {
                 print("$$$ data",data)
-                //TODO In case of manual scrape we need to reset the flag when we show the webView
                 if !isAuthenticated {
                     self.onSignIn()
                 }
-                    
             } else if data.contains("Captcha_open") {
                 print("$$$ data",data)
                 self.authenticationChallenge(data: data)
+            }  else if data.contains("Invalid_user_or_passwrd") {
+                print("$$$ data",data)
+                self.onWrongCredentials()
             }
             
         }

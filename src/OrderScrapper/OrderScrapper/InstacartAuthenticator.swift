@@ -145,6 +145,22 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectSignIn, eventAttributes: logEventAttributes)
         
     }
+    
+    func onWrongCredentials() {
+            let js = JSUtils.getInstacartWrongPasswordInjectJS()
+            self.evaluateJS(javascript: js) { response, error in
+            if let response = response as? String {
+                self.authenticationDelegate?.didReceiveLoginChallenge(error: response)
+                self.notifyAuthError(errorMessage: response)
+                self.webClient.scriptMessageHandler?.removeScriptMessageListener()
+            } else {
+                if let error = error {
+                    FirebaseAnalyticsUtil.logSentryError(error: error)
+                }
+                self.completionHandler?(false,ASLException(errorMessage: Strings.ErrorInInjectingScript, errorType: .authError))
+            }
+        }
+       }
     func onLoginScript() {
         let userId = self.account?.userID
         let js = JSUtils.getICOnClick()
@@ -368,7 +384,9 @@ extension InstacartAuthenticator: ScriptMessageListener {
                 print("$$$ data",data)
                 self.authenticationDelegate?.didReceiveAuthenticationChallenge(authError: false)
                 if !isNetworkDisconnect {
-                    self.onSignIn()
+                    if !isAuthenticated {
+                        self.onSignIn()
+                    }
                 } else {
                     isNetworkDisconnect = false
                     self.webClient.scriptMessageHandler?.removeScriptMessageListener()
@@ -383,8 +401,10 @@ extension InstacartAuthenticator: ScriptMessageListener {
             } else if data.contains("verification_success") {
                 print("$$$ data",data)
                 self.authenticationDelegate?.didReceiveAuthenticationChallenge(authError: false)
+            } else if data.contains("Invalid_user_or_passwrd") {
+                print("$$$ data",data)
+                self.onWrongCredentials()
             }
-            
         }
     }
 }
