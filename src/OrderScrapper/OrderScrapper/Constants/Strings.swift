@@ -122,9 +122,9 @@ struct Strings {
     static let ErrorJSICAuthenticationResposne = "Error password"
     
     //Manual scraping messages
-    static let HeaderFetchOrders = "Fetch %@ Orders"
-    static let HeaderFetchingOrders = "Fetching %@ Orders"
-    static let FetchSuccessMessage = "%@ orders fetched successfully"
-    static let FetchFailureMessage = "%@ orders fetch failed"
-    static let TimeOutFailureMessage = "Fetched your orders partially. Please try again later."
+    static let HeaderFetchOrders = "Update %@ Orders"
+    static let HeaderFetchingOrders = "Updating %@ Orders"
+    static let FetchSuccessMessage = "%@ orders updated successfully"
+    static let FetchFailureMessage = "%@ orders update failed"
+    static let TimeOutFailureMessage = "Updated your orders partially. Please try again later."
 }

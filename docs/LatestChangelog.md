@@ -1,1 +1,2 @@
  - Issue fix for user not able to connect instacart account (RPA-824)
+ - Fixes added for the tickets RPA-689, RPA-692, RPA-710, RPA-711, RPA-713, RPA-743, RPA-755, RPA-757   

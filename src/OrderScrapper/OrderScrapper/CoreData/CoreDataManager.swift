@@ -259,7 +259,7 @@ class CoreDataManager {
         }
     }
     
-    public func getCountForOrderDetailsByOrderSection(orderSource: String, panelistID: String, userID: String, orderSectionType: String, orderUploadRetryCount: Int) -> Int {
+    public func getCountForOrderDetailsByOrderSection(orderSource: String, panelistID: String, userID: String, orderSectionType: String, orderUploadRetryCount: Int, endDate: String, startDate: String) -> Int {
         dispatchQueue.sync {
             let context = persistentContainer.viewContext
             let fetchRequest = NSFetchRequest<OrderDetailsMO>(entityName: AppConstants.orderDetailEntity)
@@ -267,11 +267,13 @@ class CoreDataManager {
             let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) == %@", orderSource)
             let orderSectionIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSectionType) == [c] %@", orderSectionType)
             let uploadOrderRetryPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnsUplaodRetryCount) <= %d", orderUploadRetryCount)
+            let toDateSectionIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnToDate) ==  %@", endDate)
+            let fromDateSectionIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnFromDate) ==  %@", startDate)
             
             let sortedOrderDate = NSSortDescriptor(key: "orderDate", ascending: true)
             fetchRequest.sortDescriptors = [sortedOrderDate]
             
-            fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderSourcePredicate, orderSectionIDPredicate, uploadOrderRetryPredicate])
+            fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderSourcePredicate, orderSectionIDPredicate, uploadOrderRetryPredicate, toDateSectionIDPredicate, fromDateSectionIDPredicate])
             
             var orderDetails = [OrderDetailsMO]()
             do {

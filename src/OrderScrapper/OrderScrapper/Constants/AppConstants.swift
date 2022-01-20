@@ -33,6 +33,8 @@ struct AppConstants {
     static let orderDetailsColumnOrderDeatilsURL = "orderDeatilsURL"
     static let orderDetailsColumnOrderSectionType = "orderSectionType"
     static let orderDetailsColumnsUplaodRetryCount = "uploadRetryCount"
+    static let orderDetailsColumnFromDate = "startDate"
+    static let orderDetailsColumnToDate = "endDate"
     //Firebase Analytics
     static let resourceName = "GoogleService-Info"
     static let resourceOfType = "plist"
@@ -60,8 +62,7 @@ struct AppConstants {
     static let fetchAccounts = "Failed to fetch Account."
     static let fetchOrderDetails = "Failed to fetch orderDetails"
     static let userAccountConnected = "This account is already associated with an existing user. Please try with another account."
-    static let bgScrappingCompleted = "Background scrapping completed"
-    static let fgScrappingCompleted = "Foreground scrapping completed"
+    static let ScrappingCompleted = "Scrapping completed"
     //Sentry Variables
     static let dsnURL = "https://6ad6390802f44f3fa71739de94424310@o915046.ingest.sentry.io/5854887"
     static let tracesSampleRate: NSNumber = 1.0
@@ -85,4 +86,6 @@ struct AppConstants {
     static let captchaRetryCount = 3
     static let ErrorInJsonEncoding = "Error in JSON encoding"
     static let AmazonErrorMessage = "Enter your email or mobile phone number"
+    static let ErrorBgScrappingCoolOff = "bg process in cool off period"
+    static let WrongLoginURL = "Wrong URL for login"
 }

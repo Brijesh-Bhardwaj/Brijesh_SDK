@@ -413,6 +413,9 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
         }
         
         if extractingOldOrders {
+            //For Walmart and Instacart update account state to Connected if all connection scrape orders uploaded
+            updateAccountAsConnected(account: self.account)
+            // Extract new orders on completing upload of pending orders
             self.extractNewOrders()
         } else {
             if complete {
@@ -485,7 +488,29 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                         
                         //For Walmart and Instacart update account state to Connected if all connection scrape orders uploaded
                         updateAccountAsConnected(account: self.account)
-                        
+                        if let fromDate = self.dateRange?.fromDate, let toDate = self.dateRange?.toDate, let userID = self.account?.userID {
+                            let orderRequest = OrderRequest(panelistId: self.panelistID, platformId: userID, fromDate: fromDate, toDate: toDate, status: OrderStatus.Completed.rawValue, data: [])
+                            _ = AmazonService.uploadOrderHistory(orderRequest: orderRequest, orderSource: self.orderSource.value) { response, error in
+                                DispatchQueue.global().async {
+                                    var logEventAttributes:[String:String] = [:]
+
+                                    logEventAttributes = [EventConstant.OrderSource:self.orderSource.value,
+                                                          EventConstant.PanelistID: self.panelistID,
+                                                          EventConstant.OrderSourceID: self.account?.userID ?? ""]
+                                    if let response = response {
+
+                                    } else {
+                                        logEventAttributes[EventConstant.Status] = EventStatus.Failure
+                                        if let error = error {
+                                            logEventAttributes[EventConstant.EventName] = EventType.UploadOrdersAPIFailed
+                                            FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                                        } else {
+                                            FirebaseAnalyticsUtil.logEvent(eventType: EventType.UploadOrdersAPIFailed, eventAttributes: logEventAttributes)
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         if let listener = self.scraperListener {
                             listener.updateProgressStep(htmlScrappingStep: .complete)
                         }
@@ -617,8 +642,9 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
         ConfigManager.shared.getConfigurations(orderSource: self.orderSource) { (configurations, error) in
             if let configuration = configurations {
                 let orderUploadRetryCount = configuration.orderUploadRetryCount ?? AppConstants.orderUploadRetryCount
-                orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: self.orderSource.value, panelistID: self.account!.panelistID, userID: self.account!.userID, orderSectionType: SectionType.connection.rawValue, orderUploadRetryCount: orderUploadRetryCount)
-                
+                if let toDate = self.dateRange?.toDate, let fromDate = self.dateRange?.fromDate {
+                    orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: self.orderSource.value, panelistID: self.account!.panelistID, userID: self.account!.userID, orderSectionType: SectionType.connection.rawValue, orderUploadRetryCount: orderUploadRetryCount, endDate: toDate, startDate: fromDate)
+                }
                 var logEventAttributes:[String:String] = [:]
                 logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
                                       EventConstant.PanelistID: self.panelistID,
@@ -638,7 +664,9 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
                 }
                 let orderUploadRetryCount =  AppConstants.orderUploadRetryCount
-                orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: try! self.getOrderSource().value, panelistID: self.account!.panelistID, userID: self.account!.userID, orderSectionType: SectionType.connection.rawValue, orderUploadRetryCount: orderUploadRetryCount)
+                if let toDate = self.dateRange?.toDate, let fromDate = self.dateRange?.fromDate {
+                    orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: self.orderSource.value, panelistID: self.account!.panelistID, userID: self.account!.userID, orderSectionType: SectionType.connection.rawValue, orderUploadRetryCount: orderUploadRetryCount, endDate: toDate, startDate: fromDate)
+                }
                 completion(orderDetailsCount)
             }
         }
@@ -656,7 +684,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgInjectJSForOrderDetail, eventAttributes: logEventAttributes)
                 
-                BSOrderDetailsScrapper(scrapperParams: self.scrapperParams).scrapeOrderDetailPage(script: script, orderDetails: orderDetails, mode: self.scrappingMode, source: self.fetchRequestSource)
+                BSOrderDetailsScrapper(scrapperParams: self.scrapperParams).scrapeOrderDetailPage(script: script, orderDetails: orderDetails, mode: self.scrappingMode, source: self.fetchRequestSource, dateRange: self.dateRange)
                 print("### BSScrapper started scrapeOrderDetailPage")
                 
             } else {
@@ -679,7 +707,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     }
     
     private func logEvent(status: String) {
-        let eventLogs = EventLogs(panelistId: self.panelistID, platformId: self.account!.userID, section: SectionType.orderUpload.rawValue , type: FailureTypes.none.rawValue, status: status, message: AppConstants.bgScrappingCompleted, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrapingType: ScrappingType.html.rawValue, scrapingContext: self.getScrappingContext())
+        let eventLogs = EventLogs(panelistId: self.panelistID, platformId: self.account!.userID, section: getSectionType() , type: FailureTypes.none.rawValue, status: status, message: AppConstants.ScrappingCompleted, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrapingType: ScrappingType.html.rawValue, scrapingContext: self.getScrappingContext())
         _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.orderSource.value) { response, error in
             self.sendServicesDownCallback(error: error)
         }
@@ -714,19 +742,18 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     }
     
     private func getScrappingContext()-> String{
-        if(fetchRequestSource == FetchRequestSource.general){
-            return ScrapingMode.Background.rawValue
-        }else{
+        if (self.scrappingMode == .Foreground) {
             return ScrapingMode.Foreground.rawValue
+        } else {
+            return ScrapingMode.Background.rawValue
         }
     }
     
     private func getSectionType()-> String{
-        if(fetchRequestSource == FetchRequestSource.general){
-            return SectionType.orderUpload.rawValue
-        }else{
+        if (self.scrappingMode == .Foreground) {
             return SectionType.connection.rawValue
+        } else {
+            return SectionType.orderUpload.rawValue
         }
-        
     }
 }

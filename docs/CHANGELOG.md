@@ -10,11 +10,12 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
   
-  ## [2.0.2] - 2022-01-19
+## [2.0.2] - 2022-01-19
    ### Added
    - Issue fix for user not able to connect instacart account (RPA-824)
+   - Fixes added for the tickets RPA-689, RPA-692, RPA-710, RPA-711, RPA-713, RPA-743, RPA-755, RPA-757   
    
-  ## [2.0.1] - 2022-01-03
+## [2.0.1] - 2022-01-03
    ### Added
    - bumped up the sdk version for multi-retailers features.
 
@@ -55,8 +56,6 @@ All notable changes to OrderScrapper iOS project will be documented in this file
    - For Kroger added bug fixed in case of getting 'adblocker' error message during connection flow   
    - Added enhanced sentry logs which includes some additional attribute information and error logged as events 
 
-
->>>>>>> uat_multi_retailers
 ## [1.1.5] - 2021-10-25
  
   ### Fixed

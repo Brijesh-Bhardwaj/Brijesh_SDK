@@ -180,7 +180,6 @@ class ConnectWalmartAccountVC: BaseAccountConnectVC {
             DispatchQueue.main.async {
                 self.backgroundScrapper?.stopScrapping()
                 self.backgroundScrapper?.scraperListener = nil
-                self.logEvent()
                 self.timerHandler.stopTimer()
                 self.timerHandler.removeCallbackListener()
                 if completed {
@@ -217,15 +216,6 @@ class ConnectWalmartAccountVC: BaseAccountConnectVC {
             self.webClient?.navigationDelegate = nil
             self.webClient?.stopLoading()
         }
-    }
-    private func logEvent() {
-        let eventLog = EventLogs(panelistId: self.account.panelistID, platformId:  self.account.userID, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.success.rawValue, message: AppConstants.fgScrappingCompleted, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
-        _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: self.account.source.value) { response, error in
-            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
-                self.handleServicesDown()
-            }
-        }
-        
     }
     // MARK: - Public Methods
     
