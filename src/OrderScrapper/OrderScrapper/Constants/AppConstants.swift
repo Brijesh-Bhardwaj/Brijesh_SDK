@@ -88,4 +88,5 @@ struct AppConstants {
     static let AmazonErrorMessage = "Enter your email or mobile phone number"
     static let ErrorBgScrappingCoolOff = "bg process in cool off period"
     static let WrongLoginURL = "Wrong URL for login"
+    static let Completed = "Completed"
 }

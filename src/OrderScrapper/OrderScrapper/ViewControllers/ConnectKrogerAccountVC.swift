@@ -251,14 +251,21 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
     func onCompletion(isComplete: Bool) {
         DispatchQueue.main.async {
             if isComplete {
-                self.connectAccountView?.backButton.isHidden = true
-                self.connectAccountView?.connectAccountTitle.text = self.getHeaderTitle()
-                self.connectAccountView?.fetchSuccess = self.getSuccessMessage()
-                if let statusImage = self.getStatusImage() {
-                    self.connectAccountView?.statusImage = statusImage
+                if self.fetchRequestSource == .manual || self.fetchRequestSource == .notification {
+                    self.connectAccountView?.backButton.isHidden = true
+                    self.connectAccountView?.connectAccountTitle.text = self.getHeaderTitle()
+                    self.connectAccountView?.fetchSuccess = self.getSuccessMessage()
+                    if let statusImage = self.getStatusImage() {
+                        self.connectAccountView?.statusImage = statusImage
+                    }
+                    self.connectAccountView?.bringSubviewToFront(self.connectAccountView.successView)
+                    self.removeWebview()
+                    self.timerHandler.stopTimer()
+                } else {
+                    self.sendSuccessCallBack()
+                    self.removeWebview()
+                    self.timerHandler.stopTimer()
                 }
-                self.connectAccountView?.bringSubviewToFront(self.connectAccountView.successView)
-                self.removeWebview()
             }
         }
     }

@@ -735,6 +735,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                                                        orderStatus: OrderStatus.Completed.rawValue, orderSource:  self.account!.source.value) { response, error in
                             self.sendServicesDownCallback(error: error)
                         }
+                        self.account?.accountState = .Connected
                     }
                 }
             }

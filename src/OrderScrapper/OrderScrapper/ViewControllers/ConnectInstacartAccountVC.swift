@@ -33,6 +33,8 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
         self.shouldAllowBack = false
         self.baseAuthenticator?.authenticationDelegate = self
         self.publishProgress(step: .authentication)
+        webClient.isHidden = true
+        self.view.bringSubviewToFront(self.webClient)
         self.baseAuthenticator?.authenticate(account: self.account, configurations: self.configurations) { authenticated, error in
             if authenticated  {
                 self.publishProgress(step: .scrape)
@@ -155,6 +157,10 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
             self.isTimeOut = true
             self.stopScrapping()
 //            self.updateSuccessType(successType: .failureButAccountConnected)
+            let orderState = UserDefaults.standard.string(forKey: Strings.OrderStateInstacart)
+            if orderState == AppConstants.Completed {
+                self.account.accountState = .Connected
+            }
             self.onCompletion(isComplete: true)
             
             _ = AmazonService.updateStatus(platformId: self.account.panelistID,
@@ -231,14 +237,23 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
     func onCompletion(isComplete: Bool) {
         DispatchQueue.main.async {
             if isComplete {
-                self.connectAccountView?.backButton.isHidden = true
-                self.connectAccountView?.connectAccountTitle.text = self.getHeaderTitle()
-                self.connectAccountView?.fetchSuccess = self.getSuccessMessage()
-                if let statusImage = self.getStatusImage() {
-                    self.connectAccountView?.statusImage = statusImage
+                self.webClient.isHidden = false
+                self.view.bringSubviewToFront(self.webClient)
+                if self.fetchRequestSource == .manual || self.fetchRequestSource == .notification {
+                    self.connectAccountView?.backButton.isHidden = true
+                    self.connectAccountView?.connectAccountTitle.text = self.getHeaderTitle()
+                    self.connectAccountView?.fetchSuccess = self.getSuccessMessage()
+                    if let statusImage = self.getStatusImage() {
+                        self.connectAccountView?.statusImage = statusImage
+                    }
+                    self.connectAccountView?.bringSubviewToFront(self.connectAccountView.successView)
+                    self.removeWebview()
+                    self.timerHandler.stopTimer()
+                } else {
+                    self.sendSuccessCallBack()
+                    self.removeWebview()
+                    self.timerHandler.stopTimer()
                 }
-                self.connectAccountView?.bringSubviewToFront(self.connectAccountView.successView)
-                self.removeWebview()
             }
         }
     }
@@ -283,10 +298,12 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
                         self.updateSuccessType(successType: successType)
                     }
                     UserDefaults.standard.setValue(0, forKey: Strings.InstacartOnNumberOfCaptchaRetry)
+                    
                 } else {
                     self.updateSuccessType(successType: .failureButAccountConnected)
                 }
-                self.publishProgress(step: .complete)
+                UserDefaults.standard.setValue("", forKey: Strings.OrderStateInstacart)
+                self.onCompletion(isComplete: true)
             }
         }
         backgroundScrapper?.scraperListener = self
