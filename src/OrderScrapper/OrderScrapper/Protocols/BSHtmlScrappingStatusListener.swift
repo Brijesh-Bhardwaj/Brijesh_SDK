@@ -10,4 +10,6 @@ protocol BSHtmlScrappingStatusListener {
     func onHtmlScrappingFailure(error: ASLException)
     
     func onScrapeDataUploadCompleted(complete: Bool, error: ASLException?)
+    
+    func onScrapePageLoadData(pageLoadTime: Int64)
 }

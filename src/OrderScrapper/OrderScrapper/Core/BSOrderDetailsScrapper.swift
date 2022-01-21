@@ -16,6 +16,7 @@ class BSOrderDetailsScrapper {
     var orderDetailsTimer = BSTimer()
     var orderDetailsCount = 0
     var dateRange: DateRange?
+    var scrapeTime: [String: Any] = [:]
     
     lazy var scrapeQueue: [String] = {
         return Array<String>()
@@ -216,6 +217,10 @@ class BSOrderDetailsScrapper {
 }
 
 extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
+    func onScrapePageLoadData(pageLoadTime: Int64) {
+        scrapeTime[Strings.PageLoadTime] = pageLoadTime
+    }
+    
     func onScrapeDataUploadCompleted(complete: Bool, error: ASLException?) {
         //NA
     }
@@ -230,6 +235,7 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                     if let status = jsCallBackResult["status"] as? String {
                         if status == "success" {
                             let timerValue = self.timer.stop()
+                            let scrapingTime = self.timer.stopTimer()
                             orderDetailsCount = orderDetailsCount + 1
                             let message = "\(Strings.ScrappingPageDetails)\(timerValue) \(orderDetailsCount)"
                             let orderDataCount = jsCallBackResult["data"] as? Dictionary<String,Any>
@@ -240,8 +246,10 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                             }
                             FirebaseAnalyticsUtil.logEvent(eventType: EventType.onSingleOrderDetailScrape, eventAttributes: logEventAttributes)
                             FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResultSuccess, eventAttributes: logEventAttributes)
+                            scrapeTime[Strings.ScrapeTime] = scrapingTime
                             print("### onHtmlScrappingSucess for OrderDetail", response)
-                            if let orderDetails = jsCallBackResult["data"] as? Dictionary<String,Any> {
+                            if var orderDetails = jsCallBackResult["data"] as? Dictionary<String,Any> {
+                                orderDetails[Strings.ScrapingTime] = scrapeTime
                                 self.uploadScrapeData(data: orderDetails)
                             }
                             self.scrapeNextOrder()

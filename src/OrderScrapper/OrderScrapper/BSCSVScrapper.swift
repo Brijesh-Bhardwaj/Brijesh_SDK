@@ -17,6 +17,8 @@ class BSCSVScrapper: NSObject {
     private var loginDetected = false
     private var bsScrapper: BSHtmlScrapper?
     var fetchRequestSource: FetchRequestSource!
+    var scrapeTimer = BSTimer()
+    var scrapingTimer: Int64 = 0
 
     init(webview: WKWebView, scrapingMode: ScrapingMode, scraperListener: ScraperProgressListener) {
         self.webView = webview
@@ -130,6 +132,8 @@ class BSCSVScrapper: NSObject {
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
                     guard let self = self else {return}
+                    //start timers
+                    self.scrapeTimer.start()
                     self.injectGenerateReportJS()
                 }
             }
@@ -292,6 +296,7 @@ class BSCSVScrapper: NSObject {
         fileDownloader.downloadFile(fromURL: url, cookies: cookies) { success, tempURL in
             var logEventAttributes:[String:String] = [:]
             if success, let tempURL = tempURL {
+                self.scrapingTimer = self.scrapeTimer.stopTimer()
                 let fileName = FileHelper.getReportFileNameFromResponse(response)
                 self.removePIIAttributes(fileName: fileName, fileURL: tempURL)
                 
@@ -407,9 +412,10 @@ class BSCSVScrapper: NSObject {
         //let reportConfig = reportConfig
         let fromDate = reportConfig.fullStartDate!
         let toDate = reportConfig.fullEndDate!
+        let scrapeTimer = String(self.scrapingTimer)
         _ = AmazonService.uploadFile(fileURL: url,
                                      platformId: self.account.userID,
-                                     fromDate: fromDate, toDate: toDate, orderSource: OrderSource.Amazon.value) { response, error in
+                                     fromDate: fromDate, toDate: toDate, orderSource: OrderSource.Amazon.value, scrapeTime: scrapeTimer) { response, error in
             var logEventAttributes:[String:String] = [:]
             if response != nil {
                 self.currentStep = .complete
