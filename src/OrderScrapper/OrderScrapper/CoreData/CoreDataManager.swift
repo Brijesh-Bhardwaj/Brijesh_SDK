@@ -202,7 +202,6 @@ class CoreDataManager {
     public func insertOrderDetails(orderDetails: [OrderDetails], completionHandler: @escaping (Bool) -> Void) {
         dispatchQueue.sync {
             let context = persistentContainer.viewContext
-            context.perform {
                 for orderData in orderDetails {
                     let orderDetail = NSEntityDescription.insertNewObject(forEntityName: AppConstants.orderDetailEntity, into: context) as! OrderDetailsMO
                     orderDetail.orderID = orderData.orderId
@@ -230,7 +229,6 @@ class CoreDataManager {
                     }
                 }
                 completionHandler(true)
-            }
         }
     }
     public func fetchOrderDetails(orderSource: String, panelistID: String, userID: String) -> [OrderDetailsMO] {

@@ -477,14 +477,16 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     FirebaseAnalyticsUtil.logSentryMessage(message: message)
                     if let orderDetails = scrapeResponse.data, !orderDetails.isEmpty {
                         self.uploadOrderHistory(listingScrapeTime: listingScrapeTime, listingOrderCount: orderDetails.count)
-                        insertOrderDetailsToDB(orderDetails: orderDetails) { dataInserted in
-                            if dataInserted {
-                                self.didInsertToDB()
-                            } else {
-                                self.stopScrapping()
-                                let error = ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil)
-                                FirebaseAnalyticsUtil.logSentryError(error: error)
-                                self.completionHandler((false, nil), error)
+                        DispatchQueue.global().async { [self] in
+                            insertOrderDetailsToDB(orderDetails: orderDetails) { dataInserted in
+                                if dataInserted {
+                                    self.didInsertToDB()
+                                } else {
+                                    self.stopScrapping()
+                                    let error = ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil)
+                                    FirebaseAnalyticsUtil.logSentryError(error: error)
+                                    self.completionHandler((false, nil), error)
+                                }
                             }
                         }
                     } else {
