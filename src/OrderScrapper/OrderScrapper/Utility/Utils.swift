@@ -70,6 +70,19 @@ class Utils {
             return Strings.JSVersionWalmart
         }
     }
+    
+    static func getKeyForOrderState(orderSource: OrderSource) -> String {
+        switch orderSource {
+        case .Instacart:
+            return Strings.OrderStateInstacart
+        case .Walmart:
+            return Strings.OrderStateWalmart
+        case .Amazon:
+            return ""
+        case .Kroger:
+            return ""
+        }
+    }
 
     static func getJsonString(object: Any) -> String {
         //        let jsonEncoder = JSONEncoder()

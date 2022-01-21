@@ -111,6 +111,11 @@ struct Strings {
     static let ErrorInInjectingScript = "An error in injecting script"
     static let ErrorServicesDown = "Service Not Available"
     static let OnAuthenticationChallenegeRetryCount = "Amazon error retry count"
+    static let OrderStateInstacart = "order_state_instacart"
+    static let OrderStateWalmart = "order_state_walmart"
+    static let PageLoadTime = "pageLoadTime"
+    static let ScrapingTime = "scrapingTime"
+    static let ScrapeTime = "scrapeTime"
 
     //Sentry error message
     static let ErrorAPIReponseDateRange = "Error while getting date range"

@@ -103,6 +103,10 @@ class BaseAccountConnectVC: UIViewController, BSWebNavigationObserver, TimerCall
             completion(timerValue)
         }
     }
+     func sendSuccessCallBack() {
+        let result = (true, self.successType ?? OrderFetchSuccessType.fetchCompleted)
+        LibContext.shared.scrapeCompletionPublisher.send((result, nil))
+    }
     //MARK:- Private Methods
     
     private func setupNetworkMonitor() {

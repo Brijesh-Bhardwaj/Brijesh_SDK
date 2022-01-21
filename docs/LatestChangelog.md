@@ -1,2 +1,4 @@
- - Issue fix for user not able to connect instacart account (RPA-824)
- - Fixes added for the tickets RPA-689, RPA-692, RPA-710, RPA-711, RPA-713, RPA-743, RPA-755, RPA-757   
+  ## Unreleased
+   - Changes added for consistent connection flow of instacart and walmart (RPA-752)
+   - Added scrape time for order details  in the backend DB (RPA-756)
+   - Issue fixes added for MOSP-513, MOSP-514,MOSP-515, MOSP-516

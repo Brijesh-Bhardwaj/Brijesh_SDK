@@ -400,6 +400,8 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
 }
 
 extension BSScrapper: BSHtmlScrappingStatusListener {
+   
+    
     func onScrapeDataUploadCompleted(complete: Bool, error: ASLException?) {
         print("### onScrapeDataUploadCompleted ", complete)
         
@@ -468,19 +470,23 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     }
                     
                     let timerValue = self.timer.stop()
+                    let listingScrapeTime = self.timer.stopTimer()
                     let message = "\(Strings.ScrappingPageListing) \(timerValue) + \(String(describing: scrapeResponse.data?.count))"
                     logEventAttributes [EventConstant.ScrappingTime] = message
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.onOrderListingCompletion, eventAttributes: logEventAttributes)
                     FirebaseAnalyticsUtil.logSentryMessage(message: message)
                     if let orderDetails = scrapeResponse.data, !orderDetails.isEmpty {
-                        insertOrderDetailsToDB(orderDetails: orderDetails) { dataInserted in
-                            if dataInserted {
-                                self.didInsertToDB()
-                            } else {
-                                self.stopScrapping()
-                                let error = ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil)
-                                FirebaseAnalyticsUtil.logSentryError(error: error)
-                                self.completionHandler((false, nil), error)
+                        self.uploadOrderHistory(listingScrapeTime: listingScrapeTime, listingOrderCount: orderDetails.count)
+                        DispatchQueue.global().async { [self] in
+                            insertOrderDetailsToDB(orderDetails: orderDetails) { dataInserted in
+                                if dataInserted {
+                                    self.didInsertToDB()
+                                } else {
+                                    self.stopScrapping()
+                                    let error = ASLException(errorMessage: Strings.ErrorOrderExtractionFailed, errorType: nil)
+                                    FirebaseAnalyticsUtil.logSentryError(error: error)
+                                    self.completionHandler((false, nil), error)
+                                }
                             }
                         }
                     } else {
@@ -488,29 +494,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                         
                         //For Walmart and Instacart update account state to Connected if all connection scrape orders uploaded
                         updateAccountAsConnected(account: self.account)
-                        if let fromDate = self.dateRange?.fromDate, let toDate = self.dateRange?.toDate, let userID = self.account?.userID {
-                            let orderRequest = OrderRequest(panelistId: self.panelistID, platformId: userID, fromDate: fromDate, toDate: toDate, status: OrderStatus.Completed.rawValue, data: [])
-                            _ = AmazonService.uploadOrderHistory(orderRequest: orderRequest, orderSource: self.orderSource.value) { response, error in
-                                DispatchQueue.global().async {
-                                    var logEventAttributes:[String:String] = [:]
-
-                                    logEventAttributes = [EventConstant.OrderSource:self.orderSource.value,
-                                                          EventConstant.PanelistID: self.panelistID,
-                                                          EventConstant.OrderSourceID: self.account?.userID ?? ""]
-                                    if let response = response {
-
-                                    } else {
-                                        logEventAttributes[EventConstant.Status] = EventStatus.Failure
-                                        if let error = error {
-                                            logEventAttributes[EventConstant.EventName] = EventType.UploadOrdersAPIFailed
-                                            FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
-                                        } else {
-                                            FirebaseAnalyticsUtil.logEvent(eventType: EventType.UploadOrdersAPIFailed, eventAttributes: logEventAttributes)
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        self.uploadOrderHistory(listingScrapeTime: listingScrapeTime, listingOrderCount: 0)
                         if let listener = self.scraperListener {
                             listener.updateProgressStep(htmlScrappingStep: .complete)
                         }
@@ -580,6 +564,10 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
             logEventAttributes[EventConstant.ScrappingMode] = scrappingMode.rawValue
         }
         FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+    }
+    
+    func onScrapePageLoadData(pageLoadTime: Int64) {
+        // DO nothing
     }
     
     func insertOrderDetailsToDB(orderDetails: [OrderDetails], completion: @escaping (Bool) -> Void) {
@@ -735,6 +723,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                                                        orderStatus: OrderStatus.Completed.rawValue, orderSource:  self.account!.source.value) { response, error in
                             self.sendServicesDownCallback(error: error)
                         }
+                        self.account?.accountState = .Connected
                     }
                 }
             }
@@ -754,6 +743,32 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
             return SectionType.connection.rawValue
         } else {
             return SectionType.orderUpload.rawValue
+        }
+    }
+    
+    private func uploadOrderHistory(listingScrapeTime: Int64, listingOrderCount: Int) {
+        if let fromDate = self.dateRange?.fromDate, let toDate = self.dateRange?.toDate, let userID = self.account?.userID {
+            let orderRequest = OrderRequest(panelistId: self.panelistID, platformId: userID, fromDate: fromDate, toDate: toDate, status: OrderStatus.Completed.rawValue, data: [], listingScrapeTime: listingScrapeTime, listingOrderCount: listingOrderCount)
+            _ = AmazonService.uploadOrderHistory(orderRequest: orderRequest, orderSource: self.orderSource.value) { response, error in
+                DispatchQueue.global().async {
+                    var logEventAttributes:[String:String] = [:]
+
+                    logEventAttributes = [EventConstant.OrderSource:self.orderSource.value,
+                                          EventConstant.PanelistID: self.panelistID,
+                                          EventConstant.OrderSourceID: self.account?.userID ?? ""]
+                    if let response = response {
+
+                    } else {
+                        logEventAttributes[EventConstant.Status] = EventStatus.Failure
+                        if let error = error {
+                            logEventAttributes[EventConstant.EventName] = EventType.UploadOrdersAPIFailed
+                            FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                        } else {
+                            FirebaseAnalyticsUtil.logEvent(eventType: EventType.UploadOrdersAPIFailed, eventAttributes: logEventAttributes)
+                        }
+                    }
+                }
+            }
         }
     }
 }
