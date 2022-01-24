@@ -265,13 +265,14 @@ class CoreDataManager {
             let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) == %@", orderSource)
             let orderSectionIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSectionType) == [c] %@", orderSectionType)
             let uploadOrderRetryPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnsUplaodRetryCount) <= %d", orderUploadRetryCount)
+            let userIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderUserID) == [c] %@", userID)
             let toDateSectionIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnToDate) ==  %@", endDate)
             let fromDateSectionIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnFromDate) ==  %@", startDate)
             
             let sortedOrderDate = NSSortDescriptor(key: "orderDate", ascending: true)
             fetchRequest.sortDescriptors = [sortedOrderDate]
             
-            fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderSourcePredicate, orderSectionIDPredicate, uploadOrderRetryPredicate, toDateSectionIDPredicate, fromDateSectionIDPredicate])
+            fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderSourcePredicate, orderSectionIDPredicate, uploadOrderRetryPredicate, toDateSectionIDPredicate, fromDateSectionIDPredicate,userIDPredicate])
             
             var orderDetails = [OrderDetailsMO]()
             do {
