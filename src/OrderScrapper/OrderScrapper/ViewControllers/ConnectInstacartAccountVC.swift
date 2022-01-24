@@ -111,6 +111,7 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
         } else {
             //No network
             self.baseAuthenticator?.onNetworkDisconnected()
+            self.connectAccountView?.backButton.isHidden = false
             self.connectAccountView?.bringSubviewToFront(self.connectAccountView.networkErrorView)
             self.shouldAllowBack = true
         }
