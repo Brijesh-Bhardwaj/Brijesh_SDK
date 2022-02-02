@@ -16,6 +16,8 @@ class BSOrderDetailsScrapper {
     var orderDetailsTimer = BSTimer()
     var orderDetailsCount = 0
     var dateRange: DateRange?
+    var scraperListener: ScraperProgressListener?
+    var totalOrderCount: Int = 0
     var scrapeTime: [String: Any] = [:]
     
     lazy var scrapeQueue: [String] = {
@@ -38,15 +40,16 @@ class BSOrderDetailsScrapper {
         self.params = scrapperParams
     }
     
-    func scrapeOrderDetailPage(script: String, orderDetails: [OrderDetails],
-                               mode: ScrapingMode?, source: FetchRequestSource?, dateRange: DateRange?) {
+    func scrapeOrderDetailPage(script: String, orderDetails: [OrderDetails], mode: ScrapingMode?,
+                               source: FetchRequestSource?, dateRange: DateRange?, scraperListener: ScraperProgressListener?) {
         orderDetailsTimer.start()
         self.script = script
         self.queue = Queue(queue: orderDetails)
         self.scrappingMode = mode
         self.fetchRequestSource = source
         self.dateRange = dateRange
-        
+        self.scraperListener = scraperListener
+        self.totalOrderCount = orderDetails.count
         scrapeOrder()
     }
     
@@ -137,6 +140,9 @@ class BSOrderDetailsScrapper {
         
         let shouldScrape = self.shouldScrapeNextOrder()
         if shouldScrape {
+            //Show scrape percentage for manual scraping
+            showScrapePercentage(dataUploadComplete: false)
+            
             ConfigManager.shared.getConfigurations(orderSource: self.params.account.source) { (configurations, error) in
                 if let configuration = configurations {
                     let orderDetailDelay = configuration.orderDetailDelay ?? 1
@@ -211,6 +217,31 @@ class BSOrderDetailsScrapper {
                     orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: orderSource.value, panelistID: self.params.account.panelistID, userID: self.params.account.userID, orderSectionType: SectionType.connection.rawValue, orderUploadRetryCount: orderUploadRetryCount, endDate: toDate, startDate: fromDate)
                 }
                 completion(orderDetailsCount)
+            }
+        }
+    }
+    
+    private func calculateScrapePercentage() -> Int {
+        if totalOrderCount > 0 {
+            let scrapeCount = totalOrderCount - queue.dataQueue.count
+            let scrapePercentage = (Float(scrapeCount)/Float(totalOrderCount))*100
+            print("############# TotalOrder-> \(totalOrderCount)  ScrapeCount- \(scrapeCount)  calculateScrapePercentage  \(Int(round(scrapePercentage))) %")
+            return Int(round(scrapePercentage))
+        }
+        return 0
+    }
+    
+    private func showScrapePercentage(dataUploadComplete: Bool) {
+        if let source = self.fetchRequestSource, source == .manual {
+            if let listener = self.scraperListener {
+                let value = calculateScrapePercentage()
+                if value > 0 {
+                    if dataUploadComplete {
+                        listener.updateScrapeProgressPercentage(value: value)
+                    } else if value < 100 {
+                        listener.updateScrapeProgressPercentage(value: value)
+                    }
+                }
             }
         }
     }
@@ -341,6 +372,9 @@ extension BSOrderDetailsScrapper: DataUploadListener {
         let completed = queue.isEmpty() && self.scrapeQueue.count == 0
         && !self.dataUploader.hasDataForUpload()
         if completed {
+            //Show scrape percentage for manual scraping
+            showScrapePercentage(dataUploadComplete: true)
+
             let detailsTimer = orderDetailsTimer.stop()
             let logEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
                                       EventConstant.PanelistID: self.params.account.panelistID,

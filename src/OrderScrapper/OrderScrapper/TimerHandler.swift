@@ -40,7 +40,7 @@ class TimerHandler {
         print("### TimerHandler: Start Timer Started ")
         timer = Timer.scheduledTimer(withTimeInterval: timerInterval, repeats: false) { timer in
             print("### TimerHandler: Start Timer triggered")
-            WebCacheCleaner.clear(completionHandler: nil)
+            //WebCacheCleaner.clear(completionHandler: nil)
             self.timerCallback?.onTimerTriggered(action: action)
             print("### TimerHandler: Timer triggered")
         }

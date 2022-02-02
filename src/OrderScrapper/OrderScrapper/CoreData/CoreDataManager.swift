@@ -339,13 +339,15 @@ class CoreDataManager {
                 let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) == %@", orderSource)
                 
                 fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderIDPredicate,  orderSourcePredicate])
-                let result = try? context.fetch(fetchRequest)
-                let resultData = result as! [OrderDetailsMO]
-                for orderDetails in resultData {
-                    context.delete(orderDetails)
-                }
                 do {
-                    try context.save()
+                    let result = try context.fetch(fetchRequest)
+                    let resultData = result as? [OrderDetailsMO]
+                    if let resultData = resultData {
+                        for orderDetails in resultData {
+                            context.delete(orderDetails)
+                        }
+                        try context.save()
+                    }
                 } catch let error as NSError  {
                     print(error.userInfo)
                     FirebaseAnalyticsUtil.logSentryError(error: error)

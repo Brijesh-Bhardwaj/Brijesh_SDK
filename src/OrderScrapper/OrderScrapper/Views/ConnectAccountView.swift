@@ -11,6 +11,9 @@ protocol ConnectAccountViewDelegate {
     func didTapRetryOnError()
     func didTapRetryOnNetworkError()
     func didTapSuccessButton()
+    func didTapCancelScraping()
+    func didTapContinueScraping()
+    func didTapScrapeLater()
 }
 
 class ConnectAccountView: UIView {
@@ -72,6 +75,24 @@ class ConnectAccountView: UIView {
         }
     }
     
+    var scrapePercentage: String {
+        get {
+            return ""
+        }
+        set {
+            self.progressView.scrapePercentage.text = newValue
+        }
+    }
+    
+    var hideCancelScrapeBtn: Bool {
+        get {
+            false
+        }
+        set {
+            self.progressView.cancelScrapeBtn.isHidden = newValue
+        }
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         initView()
@@ -110,6 +131,23 @@ class ConnectAccountView: UIView {
         self.successView.buttonClickHandler = { [weak self] in
             guard let self = self else { return }
             self.delegate?.didTapSuccessButton()
+        }
+        
+        self.progressView.buttonClickHandler = { [weak self] in
+            guard let self = self else { return }
+            self.delegate?.didTapCancelScraping()
+        }
+        
+        self.successView.scrapeContinueClickHandler = { [weak self] in
+            guard let self = self else { return }
+            self.delegate?.didTapContinueScraping()
+            print("######## continue")
+        }
+        
+        self.successView.scrapeLaterClickHandler = { [weak self] in
+            guard let self = self else { return }
+            self.delegate?.didTapScrapeLater()
+            print("######## scrapeLater")
         }
     }
     

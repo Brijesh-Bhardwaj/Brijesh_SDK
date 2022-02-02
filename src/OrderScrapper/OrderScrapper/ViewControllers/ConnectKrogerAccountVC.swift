@@ -211,7 +211,7 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
         }
     }
     
-    func stopScrapping() {
+    override func stopScrapping() {
         DispatchQueue.main.async {
             if self.backgroundScrapper != nil {
                 self.backgroundScrapper.scraperListener = nil
@@ -457,5 +457,13 @@ extension ConnectKrogerAccountVC: ScraperProgressListener {
     
     func onServicesDown(error: ASLException?) {
         self.handleServicesDown()
+    }
+    
+    func updateScrapeProgressPercentage(value: Int) {
+        //TODO
+    }
+    
+    func updateProgressHeaderLabel(isUploadingPreviousOrder: Bool) {
+        //TODO
     }
 }

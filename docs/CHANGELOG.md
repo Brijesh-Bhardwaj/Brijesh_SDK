@@ -9,6 +9,10 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Added : This section to enlist the additions/implementations 
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
+
+## Unreleased
+  ### Added
+  - UI feedback to user during manual scraping (RPA-753)  
   
 ## Unreleased
   ### Added
