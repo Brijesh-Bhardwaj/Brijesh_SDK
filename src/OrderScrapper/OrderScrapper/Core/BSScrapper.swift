@@ -123,6 +123,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     
     private func uploadPreviousOrders() {
         extractingOldOrders = true
+        updateProgressViewLabel(isUploadingPreviousOrder: true)
         ConfigManager.shared.getConfigurations(orderSource: self.orderSource) { (configuration, error) in
             if let configuration = configuration {
                 self.configuration = configuration
@@ -155,7 +156,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     
     private func extractNewOrders() {
         extractingOldOrders = false
-        
+        updateProgressViewLabel(isUploadingPreviousOrder: false)
         if let listener = self.scraperListener {
             listener.updateProgressStep(htmlScrappingStep: .startScrapping)
             var logEventAttributes:[String:String] = [:]
@@ -394,6 +395,22 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
         if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
             if let scrappingMode = scrappingMode, scrappingMode == .Foreground {
                 onServicesDown(error: nil)
+            }
+        }
+    }
+    
+    func updateScrapeProgressPercentage(value: Int) {
+        //Do nothing
+    }
+    
+    func updateProgressHeaderLabel(isUploadingPreviousOrder: Bool) {
+        //Do nothing
+    }
+    
+    private func updateProgressViewLabel(isUploadingPreviousOrder: Bool) {
+        if let source = self.fetchRequestSource, source == .manual {
+            if let listener = self.scraperListener {
+                listener.updateProgressHeaderLabel(isUploadingPreviousOrder: isUploadingPreviousOrder)
             }
         }
     }
@@ -672,7 +689,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgInjectJSForOrderDetail, eventAttributes: logEventAttributes)
                 
-                BSOrderDetailsScrapper(scrapperParams: self.scrapperParams).scrapeOrderDetailPage(script: script, orderDetails: orderDetails, mode: self.scrappingMode, source: self.fetchRequestSource, dateRange: self.dateRange)
+                BSOrderDetailsScrapper(scrapperParams: self.scrapperParams).scrapeOrderDetailPage(script: script, orderDetails: orderDetails, mode: self.scrappingMode, source: self.fetchRequestSource, dateRange: self.dateRange, scraperListener: self.scraperListener)
                 print("### BSScrapper started scrapeOrderDetailPage")
                 
             } else {

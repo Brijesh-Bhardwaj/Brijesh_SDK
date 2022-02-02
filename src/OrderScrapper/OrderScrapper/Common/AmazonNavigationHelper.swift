@@ -43,7 +43,7 @@ class AmazonNavigationHelper: NavigationHelper {
     var webView: WKWebView
     let scraperListener: ScraperProgressListener
     let timerHandler: TimerHandler!
-    private var backgroundScrapper: BSScrapper!
+    var backgroundScrapper: BSScrapper!
     var isGenerateReport: Bool = false
     var fetchRequestSource: FetchRequestSource?
 

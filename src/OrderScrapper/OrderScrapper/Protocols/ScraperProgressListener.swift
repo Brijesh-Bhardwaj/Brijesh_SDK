@@ -11,5 +11,7 @@ protocol ScraperProgressListener {
     func updateProgressStep(htmlScrappingStep: HtmlScrappingStep)
     func updateSuccessType(successType: OrderFetchSuccessType)
     func onServicesDown(error: ASLException?)
+    func updateScrapeProgressPercentage(value: Int)
+    func updateProgressHeaderLabel(isUploadingPreviousOrder: Bool) 
 }
 

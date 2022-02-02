@@ -79,9 +79,12 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     override func viewDidLoad() {
         super.viewDidLoad()
         self.headerLabel?.text = getHeaderTitle()
-        self.progressView?.headerText = getHeaderMessage()
+        self.progressView?.headerText = getHeaderMessage(isUploadingPreviousOrder: false)
         if let statusImage = self.getStatusImage() {
             self.fetchSuccessView?.imageView = statusImage
+        }
+        if self.fetchRequestSource == .manual {
+            self.progressView?.hideCancelScrapeBtn = false
         }
         self.scraperListener = self
         
@@ -201,6 +204,17 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_network_not_satisfied")
         self.contentView.bringSubviewToFront(self.networkErrorView)
         self.shouldAllowBack = true
+        if let navigationHelper = self.navigationHelper {
+            let scraper = navigationHelper.backgroundScrapper
+            if let scraper = scraper {
+                scraper.stopScrapping()
+            }
+        }
+        if fetchRequestSource == .manual {
+            DispatchQueue.main.async {
+                self.progressView?.scrapePercentage.text = ""
+            }
+        }
     }
     
     private func hasNetwork() -> Bool {
@@ -226,6 +240,18 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         self.fetchSuccessView.buttonClickHandler = { [weak self] in
             guard let self = self else { return }
             self.successHandler()
+        }
+        self.progressView.buttonClickHandler = {[weak self] in
+            guard let self = self else { return }
+            self.cancelManualScrape()
+        }
+        self.fetchSuccessView.scrapeLaterClickHandler = {[weak self] in
+            guard let self = self else { return }
+            self.cancelManualScrape()
+        }
+        self.fetchSuccessView.scrapeContinueClickHandler = {[weak self] in
+            guard let self = self else { return }
+            self.continueManualScraping()
         }
     }
     
@@ -449,6 +475,17 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         }
     }
     
+    private func logEventss(failureType: String, eventState: String, scrapingType: String?) {
+        let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: failureType, status: eventState, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: scrapingType, scrapingContext: ScrapingMode.Foreground.rawValue)
+
+        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.viewModel.userAccount.source.value) { response, error in
+            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                print("#### servicesDown")
+                self.handleServicesDown()
+            }
+        }
+    }
+    
     func removeNavigationDelegate() {
         self.webContentView?.navigationDelegate = nil
     }
@@ -490,15 +527,23 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             self.isFailureButAccountConnected = true
         case .fetchCompleted:
             print("")
+        case .fetchSkippedByUser:
+            print("")
         }
     }
     
     func onCompletion(isComplete: Bool) {
         if isComplete {
+            self.isTimeOut = false
+            self.isFailureButAccountConnected = false
+            self.isFetchSkipped = false
             DispatchQueue.main.async {
                 self.backButton?.isEnabled = false
                 self.backButton?.isHidden = true
                 self.fetchSuccessView?.fetchSuccess = self.getSuccessMessage()
+                self.fetchSuccessView?.hideOkButton = false
+                self.fetchSuccessView?.hideCancelButton = true
+                self.fetchSuccessView?.hideContinueButton = true
                 if let statusImage = self.getStatusImage() {
                     self.fetchSuccessView?.imageView = statusImage
                 }
@@ -538,7 +583,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             
             // On timeout cancel all the ongoing API calls
             AmazonService.cancelAPI()
-
+            
             //Timeout happens and if account is connected
             //then update order status as failed in the backend
             //TODO :- Check orderSource in case of instacart
@@ -552,32 +597,20 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                     self.handleServicesDown()
                 }
             }
-            
-            if action == Actions.ForegroundHtmlScrapping {
+            if self.fetchRequestSource == .manual && action == Actions.ForegroundHtmlScrapping {
+                logEventss(failureType: FailureTypes.timeout.rawValue, eventState: EventState.fail.rawValue, scrapingType: ScrappingType.html.rawValue)
+            } else if (action == Actions.ForegroundHtmlScrapping) {
                 self.webContentView?.stopLoading()
                 self.webContentView?.navigationDelegate = nil
-            
-                let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
-                self.logEvents(logEvents: eventLogs)
+                logEventss(failureType: FailureTypes.timeout.rawValue, eventState: EventState.fail.rawValue, scrapingType: ScrappingType.html.rawValue)
             } else {
-                let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.report.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
-                self.logEvents(logEvents: eventLogs)
+                logEventss(failureType: FailureTypes.timeout.rawValue, eventState: EventState.fail.rawValue, scrapingType: ScrappingType.report.rawValue)
             }
-            
-            DispatchQueue.main.async {
-                self.isTimeOut = true
-                self.backButton?.isEnabled = false
-                self.backButton?.isHidden = true
-                self.fetchSuccessView?.fetchSuccess = self.getSuccessMessage(action: action)
-                if let statusImage = self.getStatusImage(action: action) {
-                    self.fetchSuccessView?.imageView = statusImage
-                }
-                self.contentView?.bringSubviewToFront(self.fetchSuccessView)
-            }
+            //On timeout show error on success view. For manual scrapping show 'Contunue' and 'Do It Later' buttons
+            showSuccessView(action: action)
         } else {
             self.timerHandler?.stopTimer()
-            let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.authentication.rawValue, status: EventState.success.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
-            self.logEvents(logEvents: eventLogs)
+            logEventss(failureType: FailureTypes.authentication.rawValue, eventState: EventState.success.rawValue, scrapingType: nil)
             LibContext.shared.webAuthErrorPublisher.send((true, AppConstants.msgTimeout))
             WebCacheCleaner.clear(completionHandler: nil)
             self.dismiss(animated: true, completion: nil)
@@ -593,10 +626,14 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         }
     }
     
-    private func getHeaderMessage() -> String {
+    private func getHeaderMessage(isUploadingPreviousOrder: Bool) -> String {
         let source = self.fetchRequestSource ?? .general
         if source == .manual {
-            return String.init(format: Strings.HeaderFetchingOrders, OrderSource.Amazon.value)
+            if isUploadingPreviousOrder {
+                return String.init(format: Strings.HeaderFetchingPendingOrders, OrderSource.Amazon.value)
+            } else {
+                return String.init(format: Strings.HeaderFetchingOrders, OrderSource.Amazon.value)
+            }
         } else {
             return Utils.getString(key: Strings.HeadingConnectingAmazonAccount)
         }
@@ -686,6 +723,89 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         self.timerHandler?.stopTimer()
         let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
         LibContext.shared.servicesStatusListener.onServicesFailure(exception: error)
+    }
+    
+    func updateScrapeProgressPercentage(value: Int) {
+        DispatchQueue.main.async {
+            self.progressView?.scrapePercentage.text = "\(value) %"
+        }
+    }
+    
+    private func cancelManualScrape() {
+        let result = (true, OrderFetchSuccessType.fetchSkippedByUser)
+        LibContext.shared.scrapeCompletionPublisher.send((result, nil))
+    }
+    
+    private func continueManualScraping() {
+        print("##### $$ didTapContinueScraping")
+        self.isTimeOut = false
+        reStartTimerManualScraping()
+        self.contentView?.bringSubviewToFront(self.progressView)
+    }
+    
+    private func reStartTimerManualScraping() {
+        self.getTimerValue(type: .html) { timerValue in
+            self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping, timerInterval: TimeInterval(timerValue))
+        }
+    }
+    
+    private func showSuccessView(action: String) {
+        DispatchQueue.main.async {
+            self.isTimeOut = true
+            self.backButton?.isEnabled = false
+            self.backButton?.isHidden = true
+            self.fetchSuccessView?.fetchSuccess = self.getSuccessMessage(action: action)
+            if let statusImage = self.getStatusImage(action: action) {
+                self.fetchSuccessView?.imageView = statusImage
+            }
+            if self.fetchRequestSource == .manual {
+                self.fetchSuccessView?.hideOkButton = true
+                self.fetchSuccessView?.hideCancelButton = false
+                self.fetchSuccessView?.hideContinueButton = false
+            } else {
+                self.fetchSuccessView?.hideOkButton = false
+                self.fetchSuccessView?.hideCancelButton = true
+                self.fetchSuccessView?.hideContinueButton = true
+            }
+            self.contentView?.bringSubviewToFront(self.fetchSuccessView)
+        }
+    }
+    
+    private func getTimerValue(type: ScrappingType, completion: @escaping (Double) -> Void) {
+        ConfigManager.shared.getConfigurations(orderSource: self.viewModel.userAccount.source) { (configurations, error) in
+            var timerValue: Double = 0
+            if let configuration = configurations {
+                if type == .report {
+                    timerValue = configuration.manualScrapeReportTimeout ?? AppConstants.timeoutManualScrapeCSV
+                } else {
+                    timerValue = configuration.manualScrapeTimeout ?? AppConstants.timeoutManualScrape
+                }
+            } else {
+                if let error = error {
+                    var logEventAttributes:[String:String] = [:]
+                    
+                    logEventAttributes = [EventConstant.OrderSource: self.viewModel.userAccount.userID,
+                                          EventConstant.PanelistID: self.viewModel.userAccount.panelistID,
+                                          EventConstant.OrderSourceID: self.viewModel.userAccount.userID,
+                                          EventConstant.EventName: EventType.ExceptionWhileGettingConfiguration,
+                                          EventConstant.Status: EventStatus.Failure]
+                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                }
+                // In case of configurations not found
+                if type == .report {
+                    timerValue = AppConstants.timeoutManualScrapeCSV
+                } else {
+                    timerValue = AppConstants.timeoutManualScrape
+                }
+            }
+            completion(timerValue)
+        }
+    }
+    
+    func updateProgressHeaderLabel(isUploadingPreviousOrder: Bool) {
+        DispatchQueue.main.async {
+            self.progressView?.headerText = self.getHeaderMessage(isUploadingPreviousOrder: isUploadingPreviousOrder)
+        }
     }
 }
 
