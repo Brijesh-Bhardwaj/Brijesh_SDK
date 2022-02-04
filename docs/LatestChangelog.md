@@ -1,1 +1,1 @@
-- UI feedback to user during manual scraping (RPA-753)  
+- UI feedback to user during manual scraping (RPA-753 and RPA-585)  
