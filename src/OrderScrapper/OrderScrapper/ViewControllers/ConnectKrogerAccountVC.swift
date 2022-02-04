@@ -211,7 +211,7 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
         }
     }
     
-    func stopScrapping() {
+    override func stopScrapping() {
         DispatchQueue.main.async {
             if self.backgroundScrapper != nil {
                 self.backgroundScrapper.scraperListener = nil
@@ -251,14 +251,21 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
     func onCompletion(isComplete: Bool) {
         DispatchQueue.main.async {
             if isComplete {
-                self.connectAccountView?.backButton.isHidden = true
-                self.connectAccountView?.connectAccountTitle.text = self.getHeaderTitle()
-                self.connectAccountView?.fetchSuccess = self.getSuccessMessage()
-                if let statusImage = self.getStatusImage() {
-                    self.connectAccountView?.statusImage = statusImage
+                if self.fetchRequestSource == .manual || self.fetchRequestSource == .notification {
+                    self.connectAccountView?.backButton.isHidden = true
+                    self.connectAccountView?.connectAccountTitle.text = self.getHeaderTitle()
+                    self.connectAccountView?.fetchSuccess = self.getSuccessMessage()
+                    if let statusImage = self.getStatusImage() {
+                        self.connectAccountView?.statusImage = statusImage
+                    }
+                    self.connectAccountView?.bringSubviewToFront(self.connectAccountView.successView)
+                    self.removeWebview()
+                    self.timerHandler.stopTimer()
+                } else {
+                    self.sendSuccessCallBack()
+                    self.removeWebview()
+                    self.timerHandler.stopTimer()
                 }
-                self.connectAccountView?.bringSubviewToFront(self.connectAccountView.successView)
-                self.removeWebview()
             }
         }
     }
@@ -305,7 +312,6 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
                 self.backgroundScrapper?.stopScrapping()
                 self.backgroundScrapper?.scraperListener = nil
                 self.backgroundScrapper = nil
-                self.logEvent()
                 if completed {
                     if let successType = successType {
                         self.updateSuccessType(successType: successType)
@@ -327,15 +333,6 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
         if let account = self.account {
             backgroundScrapper?.startScrapping(account: account)
         }
-    }
-    private func logEvent() {
-        let eventLog = EventLogs(panelistId: self.account.panelistID, platformId:  self.account.userID, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.success.rawValue, message: AppConstants.fgScrappingCompleted, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
-        _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: self.account.source.value) { response, error in
-            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
-                self.handleServicesDown()
-            }
-        }
-        
     }
     
     private func getHeaderTitle() -> String {
@@ -460,5 +457,13 @@ extension ConnectKrogerAccountVC: ScraperProgressListener {
     
     func onServicesDown(error: ASLException?) {
         self.handleServicesDown()
+    }
+    
+    func updateScrapeProgressPercentage(value: Int) {
+        //TODO
+    }
+    
+    func updateProgressHeaderLabel(isUploadingPreviousOrder: Bool) {
+        //TODO
     }
 }

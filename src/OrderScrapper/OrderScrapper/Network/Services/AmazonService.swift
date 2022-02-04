@@ -9,7 +9,7 @@ import Sentry
 
 private enum JSONKeys: String, CodingKey {
 
-    case panelistId, panelist_id, amazonId, file, fromDate, toDate, status, message, orderStatus, data, configDetails, orderSource, platformSources, platformId, forceScrape
+    case panelistId, panelist_id, amazonId, file, fromDate, toDate, status, message, orderStatus, data, configDetails, orderSource, platformSources, platformId, forceScrape, scrapeTime
 }
 
 class AmazonService {
@@ -56,7 +56,7 @@ class AmazonService {
     }
     
     static func uploadFile(fileURL: URL, platformId: String,
-                           fromDate: String, toDate: String, orderSource: String,
+                           fromDate: String, toDate: String, orderSource: String, scrapeTime: String,
                            _ completionHandler: @escaping (ReportUpload?, ASLException?) -> Void) -> APIClient {
         let relativeURL = UploadReportURL + "/" + orderSource
         let client = NetworkClient<APIResponse<ReportUpload>>(relativeURL: relativeURL, requestMethod: .multipart)
@@ -69,6 +69,7 @@ class AmazonService {
             multipartData.append(Data(panelistId.utf8), withName: JSONKeys.panelistId.rawValue)
             multipartData.append(Data(fromDate.utf8), withName: JSONKeys.fromDate.rawValue)
             multipartData.append(Data(toDate.utf8), withName: JSONKeys.toDate.rawValue)
+            multipartData.append(Data(scrapeTime.utf8), withName: JSONKeys.scrapeTime.rawValue)
         }
         
         client.executeAPI() { response, error in

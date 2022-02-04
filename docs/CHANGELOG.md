@@ -9,13 +9,22 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Added : This section to enlist the additions/implementations 
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
+
+## [2.0.3] - 2022-02-04
+  ### Added
+   - Changes added for consistent connection flow of instacart and walmart (RPA-752)
+   - Added scrape time for order details  in the backend DB (RPA-756)
+   - Issue fixes added for MOSP-513, MOSP-514,MOSP-515, MOSP-516
+   - Issue fixes added for MOSP-517, MOSP-518 and MOSP-531  
+   - UI feedback to user during manual scraping (RPA-753 and RPA-585)
   
-  ## [2.0.2] - 2022-01-19
-   ### Added
+## [2.0.2] - 2022-01-19
+  ### Added
    - Issue fix for user not able to connect instacart account (RPA-824)
+   - Fixes added for the tickets RPA-689, RPA-692, RPA-710, RPA-711, RPA-713, RPA-743, RPA-755, RPA-757   
    
-  ## [2.0.1] - 2022-01-03
-   ### Added
+## [2.0.1] - 2022-01-03
+  ### Added
    - bumped up the sdk version for multi-retailers features.
 
 ## [1.2.0] - 2021-12-15
@@ -23,7 +32,7 @@ All notable changes to OrderScrapper iOS project will be documented in this file
    - Added new enum value connectionInProgress in AccountState enum. During connection flow on authentication completed updated account state as connectionInProgress  
    - In foreground scrapping on uploading all scrape orders updated account state as connected in DB and backend through API call
    
-   ### Fixed
+  ### Fixed
    - Issue fix for the account state changing to connectedButException in backgroundAuthentication (RPA-662)
    - Added ServicesStatusListener to handle the API down scenario from the SDK side. A callback given to the Application when the services are down.
 
@@ -55,8 +64,6 @@ All notable changes to OrderScrapper iOS project will be documented in this file
    - For Kroger added bug fixed in case of getting 'adblocker' error message during connection flow   
    - Added enhanced sentry logs which includes some additional attribute information and error logged as events 
 
-
->>>>>>> uat_multi_retailers
 ## [1.1.5] - 2021-10-25
  
   ### Fixed

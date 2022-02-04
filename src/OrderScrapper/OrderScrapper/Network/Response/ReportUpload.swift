@@ -14,4 +14,5 @@ struct ReportUpload: Codable {
     let fileName: String?
     let filePath: String?
     let storageType: String?
+    let scrapeTime: String?
 }

@@ -1,1 +1,1 @@
- - Issue fix for user not able to connect instacart account (RPA-824)
+- UI feedback to user during manual scraping (RPA-753 and RPA-585)  

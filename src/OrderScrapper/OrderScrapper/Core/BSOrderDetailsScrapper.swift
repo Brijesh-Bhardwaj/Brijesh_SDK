@@ -15,6 +15,10 @@ class BSOrderDetailsScrapper {
     var fetchRequestSource: FetchRequestSource?
     var orderDetailsTimer = BSTimer()
     var orderDetailsCount = 0
+    var dateRange: DateRange?
+    var scraperListener: ScraperProgressListener?
+    var totalOrderCount: Int = 0
+    var scrapeTime: [String: Any] = [:]
     
     lazy var scrapeQueue: [String] = {
         return Array<String>()
@@ -36,14 +40,16 @@ class BSOrderDetailsScrapper {
         self.params = scrapperParams
     }
     
-    func scrapeOrderDetailPage(script: String, orderDetails: [OrderDetails],
-                               mode: ScrapingMode?, source: FetchRequestSource?) {
+    func scrapeOrderDetailPage(script: String, orderDetails: [OrderDetails], mode: ScrapingMode?,
+                               source: FetchRequestSource?, dateRange: DateRange?, scraperListener: ScraperProgressListener?) {
         orderDetailsTimer.start()
         self.script = script
         self.queue = Queue(queue: orderDetails)
         self.scrappingMode = mode
         self.fetchRequestSource = source
-        
+        self.dateRange = dateRange
+        self.scraperListener = scraperListener
+        self.totalOrderCount = orderDetails.count
         scrapeOrder()
     }
     
@@ -110,9 +116,19 @@ class BSOrderDetailsScrapper {
                 self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue)
             }
         } else {
-            print("$$$$ scrapeQueue",OrderState.Completed.rawValue)
-            if let orderDetail = orderDetail {
-            self.dataUploader.addData(data: data, orderDetail: orderDetail,orderState: OrderState.Completed.rawValue)
+            self.getOrdersDetailsCountOnConnection { [weak self] orderDetailsUploadCount in
+                guard let self = self else {return}
+                if orderDetailsUploadCount == 0 || orderDetailsUploadCount == 1 {
+                    if let orderDetail = self.orderDetail {
+                        print("$$$$ scrapeQueue",OrderState.Completed.rawValue)
+                        self.dataUploader.addData(data: data, orderDetail: orderDetail,orderState: OrderState.Completed.rawValue)
+                    }
+                } else {
+                    if let orderDetail = self.orderDetail {
+                        print("$$$$ scrapeQueue",OrderState.Inprogress.rawValue)
+                        self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue)
+                    }
+                }
             }
         }
     }
@@ -124,6 +140,9 @@ class BSOrderDetailsScrapper {
         
         let shouldScrape = self.shouldScrapeNextOrder()
         if shouldScrape {
+            //Show scrape percentage for manual scraping
+            showScrapePercentage(dataUploadComplete: false)
+            
             ConfigManager.shared.getConfigurations(orderSource: self.params.account.source) { (configurations, error) in
                 if let configuration = configurations {
                     let orderDetailDelay = configuration.orderDetailDelay ?? 1
@@ -164,9 +183,75 @@ class BSOrderDetailsScrapper {
         }
         return true
     }
+    
+    func getOrdersDetailsCountOnConnection(completion: @escaping (Int) -> Void) {
+        var orderDetailsCount = 0
+        let orderSource = self.params.account.source
+        ConfigManager.shared.getConfigurations(orderSource: orderSource) { (configurations, error) in
+            if let configuration = configurations {
+                let orderUploadRetryCount = configuration.orderUploadRetryCount ?? AppConstants.orderUploadRetryCount
+                if let toDate = self.dateRange?.toDate, let fromDate = self.dateRange?.fromDate {
+                    orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: orderSource.value, panelistID: self.params.account.panelistID, userID: self.params.account.userID, orderSectionType: SectionType.connection.rawValue, orderUploadRetryCount: orderUploadRetryCount, endDate: toDate, startDate: fromDate)
+                }
+                
+                var logEventAttributes:[String:String] = [:]
+                logEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
+                                      EventConstant.PanelistID: self.params.account.panelistID,
+                                      EventConstant.OrderSourceID: self.params.account.userID,
+                                      EventConstant.Status: EventStatus.Success]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrappedOrderDetailsFromDB, eventAttributes: logEventAttributes)
+                completion(orderDetailsCount)
+            } else {
+                if let error = error {
+                    var logEventAttributes:[String:String] = [:]
+                    
+                    logEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
+                                          EventConstant.PanelistID: self.params.account.panelistID,
+                                          EventConstant.OrderSourceID: self.params.account.userID,
+                                          EventConstant.EventName: EventType.ExceptionWhileGettingConfiguration,
+                                          EventConstant.Status: EventStatus.Failure]
+                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                }
+                let orderUploadRetryCount =  AppConstants.orderUploadRetryCount
+                if let toDate = self.dateRange?.toDate, let fromDate = self.dateRange?.fromDate {
+                    orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: orderSource.value, panelistID: self.params.account.panelistID, userID: self.params.account.userID, orderSectionType: SectionType.connection.rawValue, orderUploadRetryCount: orderUploadRetryCount, endDate: toDate, startDate: fromDate)
+                }
+                completion(orderDetailsCount)
+            }
+        }
+    }
+    
+    private func calculateScrapePercentage() -> Int {
+        if totalOrderCount > 0 {
+            let scrapeCount = totalOrderCount - queue.dataQueue.count
+            let scrapePercentage = (Float(scrapeCount)/Float(totalOrderCount))*100
+            print("############# TotalOrder-> \(totalOrderCount)  ScrapeCount- \(scrapeCount)  calculateScrapePercentage  \(Int(round(scrapePercentage))) %")
+            return Int(round(scrapePercentage))
+        }
+        return 0
+    }
+    
+    private func showScrapePercentage(dataUploadComplete: Bool) {
+        if let source = self.fetchRequestSource, source == .manual {
+            if let listener = self.scraperListener {
+                let value = calculateScrapePercentage()
+                if value > 0 {
+                    if dataUploadComplete {
+                        listener.updateScrapeProgressPercentage(value: value)
+                    } else if value < 100 {
+                        listener.updateScrapeProgressPercentage(value: value)
+                    }
+                }
+            }
+        }
+    }
 }
 
 extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
+    func onScrapePageLoadData(pageLoadTime: Int64) {
+        scrapeTime[Strings.PageLoadTime] = pageLoadTime
+    }
+    
     func onScrapeDataUploadCompleted(complete: Bool, error: ASLException?) {
         //NA
     }
@@ -181,6 +266,7 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                     if let status = jsCallBackResult["status"] as? String {
                         if status == "success" {
                             let timerValue = self.timer.stop()
+                            let scrapingTime = self.timer.stopTimer()
                             orderDetailsCount = orderDetailsCount + 1
                             let message = "\(Strings.ScrappingPageDetails)\(timerValue) \(orderDetailsCount)"
                             let orderDataCount = jsCallBackResult["data"] as? Dictionary<String,Any>
@@ -191,8 +277,10 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                             }
                             FirebaseAnalyticsUtil.logEvent(eventType: EventType.onSingleOrderDetailScrape, eventAttributes: logEventAttributes)
                             FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResultSuccess, eventAttributes: logEventAttributes)
+                            scrapeTime[Strings.ScrapeTime] = scrapingTime
                             print("### onHtmlScrappingSucess for OrderDetail", response)
-                            if let orderDetails = jsCallBackResult["data"] as? Dictionary<String,Any> {
+                            if var orderDetails = jsCallBackResult["data"] as? Dictionary<String,Any> {
+                                orderDetails[Strings.ScrapingTime] = scrapeTime
                                 self.uploadScrapeData(data: orderDetails)
                             }
                             self.scrapeNextOrder()
@@ -284,6 +372,9 @@ extension BSOrderDetailsScrapper: DataUploadListener {
         let completed = queue.isEmpty() && self.scrapeQueue.count == 0
         && !self.dataUploader.hasDataForUpload()
         if completed {
+            //Show scrape percentage for manual scraping
+            showScrapePercentage(dataUploadComplete: true)
+
             let detailsTimer = orderDetailsTimer.stop()
             let logEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
                                       EventConstant.PanelistID: self.params.account.panelistID,

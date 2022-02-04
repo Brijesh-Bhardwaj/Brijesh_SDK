@@ -288,6 +288,8 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
     
     private func scrapePage(script: String) {
         let extractTimer = timer.stop()
+        let pageLoadTime = timer.stopTimer()
+        self.params.listener.onScrapePageLoadData(pageLoadTime: pageLoadTime)
         var logEventAttributes:[String:String] = [:]
         logEventAttributes = [EventConstant.ScrappingTime: extractTimer,
                               EventConstant.URL: url,

@@ -28,11 +28,16 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.connectAccountView?.connectAccountTitle.text = getHeaderTitle()
-        self.connectAccountView?.headerText = getHeaderMessage()
+        self.connectAccountView?.headerText = getHeaderMessage(isUploadingPreviousOrder: false)
         self.baseAuthenticator = InstacartAuthenticator(webClient: self.webClient, delegate: self.webClientDelegate, scraperListener: self)
         self.shouldAllowBack = false
         self.baseAuthenticator?.authenticationDelegate = self
         self.publishProgress(step: .authentication)
+        webClient.isHidden = true
+        self.view.bringSubviewToFront(self.webClient)
+        if self.fetchRequestSource == .manual {
+            self.connectAccountView?.hideCancelScrapeBtn = false
+        }
         self.baseAuthenticator?.authenticate(account: self.account, configurations: self.configurations) { authenticated, error in
             if authenticated  {
                 self.publishProgress(step: .scrape)
@@ -109,8 +114,10 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
         } else {
             //No network
             self.baseAuthenticator?.onNetworkDisconnected()
+            self.connectAccountView?.backButton.isHidden = false
             self.connectAccountView?.bringSubviewToFront(self.connectAccountView.networkErrorView)
             self.shouldAllowBack = true
+            self.webClient.stopLoading()
         }
     }
     
@@ -153,9 +160,18 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
     override func onTimerTriggered(action: String) {
         if action == Actions.ForegroundHtmlScrapping {
             self.isTimeOut = true
-            self.stopScrapping()
 //            self.updateSuccessType(successType: .failureButAccountConnected)
-            self.onCompletion(isComplete: true)
+            let orderState = UserDefaults.standard.string(forKey: Strings.OrderStateInstacart)
+            if orderState == AppConstants.Completed {
+                self.account.accountState = .Connected
+            }
+            
+            if self.fetchRequestSource == .manual {
+                showScrapeAgainView()
+            } else {
+                self.stopScrapping()
+                self.onCompletion(isComplete: true)
+            }
             
             _ = AmazonService.updateStatus(platformId: self.account.panelistID,
                                            status: self.account.accountState.rawValue,
@@ -180,7 +196,7 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
         }
     }
     
-    func stopScrapping() {
+    override func stopScrapping() {
         DispatchQueue.main.async {
             if self.backgroundScrapper != nil {
                 self.backgroundScrapper.scraperListener = nil
@@ -231,14 +247,35 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
     func onCompletion(isComplete: Bool) {
         DispatchQueue.main.async {
             if isComplete {
-                self.connectAccountView?.backButton.isHidden = true
-                self.connectAccountView?.connectAccountTitle.text = self.getHeaderTitle()
-                self.connectAccountView?.fetchSuccess = self.getSuccessMessage()
-                if let statusImage = self.getStatusImage() {
-                    self.connectAccountView?.statusImage = statusImage
+                self.webClient.isHidden = false
+                self.view.bringSubviewToFront(self.webClient)
+                if self.fetchRequestSource == .manual || self.fetchRequestSource == .notification {
+                    if self.hasNetwork() {
+                        self.connectAccountView?.backButton.isHidden = true
+                        self.connectAccountView?.connectAccountTitle.text = self.getHeaderTitle()
+                        self.connectAccountView?.successView.hideOkButton = false
+                        self.connectAccountView?.successView.hideCancelButton = true
+                        self.connectAccountView?.successView.hideContinueButton = true
+                        self.connectAccountView?.fetchSuccess = self.getSuccessMessage()
+                        if let statusImage = self.getStatusImage() {
+                            self.connectAccountView?.statusImage = statusImage
+                        }
+                        self.connectAccountView?.bringSubviewToFront(self.connectAccountView.successView)
+                        self.removeWebview()
+                        self.timerHandler.stopTimer()
+                    } else {
+                        self.connectAccountView.scrapePercentage = ""
+                        self.timerHandler.stopTimer()
+                        self.baseAuthenticator?.onNetworkDisconnected()
+                        self.connectAccountView?.bringSubviewToFront(self.connectAccountView.networkErrorView)
+                        self.shouldAllowBack = true
+                        self.webClient.stopLoading()
+                    }
+                } else {
+                    self.sendSuccessCallBack()
+                    self.removeWebview()
+                    self.timerHandler.stopTimer()
                 }
-                self.connectAccountView?.bringSubviewToFront(self.connectAccountView.successView)
-                self.removeWebview()
             }
         }
     }
@@ -278,16 +315,18 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
                 self.backgroundScrapper?.stopScrapping()
                 self.backgroundScrapper?.scraperListener = nil
                 self.backgroundScrapper = nil
-                self.logEvent()
+                self.isTimeOut = false
                 if completed {
                     if let successType = successType {
                         self.updateSuccessType(successType: successType)
                     }
                     UserDefaults.standard.setValue(0, forKey: Strings.InstacartOnNumberOfCaptchaRetry)
+                    
                 } else {
                     self.updateSuccessType(successType: .failureButAccountConnected)
                 }
-                self.publishProgress(step: .complete)
+                UserDefaults.standard.setValue("", forKey: Strings.OrderStateInstacart)
+                self.onCompletion(isComplete: true)
             }
         }
         backgroundScrapper?.scraperListener = self
@@ -300,15 +339,6 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
         }
     }
     
-    private func logEvent() {
-        let eventLog = EventLogs(panelistId: self.account.panelistID, platformId:  self.account.userID, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.success.rawValue, message: AppConstants.fgScrappingCompleted, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
-        _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: self.account.source.value) { response, error in
-            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
-                self.handleServicesDown()
-            }
-        }
-        
-    }
     
     private func getHeaderTitle() -> String {
         let source = self.fetchRequestSource ?? .general
@@ -319,10 +349,14 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
         }
     }
     
-    private func getHeaderMessage() -> String {
+    private func getHeaderMessage(isUploadingPreviousOrder: Bool) -> String {
         let source = self.fetchRequestSource ?? .general
         if source == .manual {
-            return String.init(format: Strings.HeaderFetchingOrders, OrderSource.Instacart.value)
+            if isUploadingPreviousOrder {
+                return String.init(format: Strings.HeaderFetchingPendingOrders, OrderSource.Instacart.value)
+            } else {
+                return String.init(format: Strings.HeaderFetchingOrders, OrderSource.Instacart.value)
+            }
         } else {
             return Utils.getString(key: Strings.HeadingConnectingInstacartAccount)
         }
@@ -335,8 +369,6 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
                 return LibContext.shared.manualScrapeTimeOutMessage
             } else if successType == .failureButAccountConnected || successType == .fetchSkipped {
                 return String.init(format: Strings.FetchFailureMessage, OrderSource.Instacart.value)
-            } else if isTimeOut {
-                return LibContext.shared.manualScrapeTimeOutMessage
             } else {
                 return String.init(format: Strings.FetchSuccessMessage, OrderSource.Instacart.value)
             }
@@ -372,6 +404,29 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
         self.timerHandler.stopTimer()
         let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
         LibContext.shared.servicesStatusListener.onServicesFailure(exception: error)
+    }
+    
+    private func showScrapeAgainView() {
+        DispatchQueue.main.async {
+        self.connectAccountView?.backButton.isHidden = true
+        self.connectAccountView?.successView.hideOkButton = true
+        self.connectAccountView?.successView.hideCancelButton = false
+        self.connectAccountView?.successView.hideContinueButton = false
+        self.connectAccountView?.connectAccountTitle.text = self.getHeaderTitle()
+        self.connectAccountView?.fetchSuccess = self.getSuccessMessage()
+        if let statusImage = self.getStatusImage() {
+            self.connectAccountView?.statusImage = statusImage
+        }
+        self.connectAccountView?.bringSubviewToFront(self.connectAccountView.successView)
+        self.timerHandler.stopTimer()
+        }
+    }
+    
+    override func reStartTimerForManualScraping() {
+        print("####### reStartTimerForManualScraping")
+        self.getTimerValue { timerValue in
+            self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping, timerInterval: TimeInterval(timerValue))
+        }
     }
 }
 
@@ -431,5 +486,17 @@ extension  ConnectInstacartAccountVC: ScraperProgressListener   {
     
     func onServicesDown(error: ASLException?) {
         self.handleServicesDown()
+    }
+    
+    func updateScrapeProgressPercentage(value: Int) {
+        DispatchQueue.main.async {
+            self.connectAccountView.scrapePercentage = "\(value) %"
+        }
+    }
+    
+    func updateProgressHeaderLabel(isUploadingPreviousOrder: Bool) {
+        DispatchQueue.main.async {
+            self.connectAccountView?.progressView.headerText = self.getHeaderMessage(isUploadingPreviousOrder: isUploadingPreviousOrder)
+        }
     }
 }

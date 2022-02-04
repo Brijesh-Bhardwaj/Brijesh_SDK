@@ -81,26 +81,38 @@ class BSScriptFileManager {
     }
     //Returns script for scrapping
     func getScriptForScrapping(orderSource: OrderSource, completion: @escaping (String?) -> Void) {
-        let scriptFileExist = FileHelper.isScriptFileExist(orderSource: orderSource)
-        if scriptFileExist {
-            let filePath = FileHelper.getScriptFilePath(orderSource: orderSource)
-            let script = FileHelper.getDataFromFile(fileUrl: filePath)
-            completion(script)
-        } else {
-            self.getScript(orderSources: [orderSource]) { script in
-                var logEventRetrieveScriptAttributes:[String:String] = [EventConstant.OrderSource: orderSource.value,EventConstant.PanelistID: LibContext.shared.authProvider.getPanelistID()]
-                
-                if let script = script {
-                    completion(script)
-                    
-                    logEventRetrieveScriptAttributes[EventConstant.Status] = EventStatus.Success
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrapperScript, eventAttributes: logEventRetrieveScriptAttributes)
+        _ = AmazonService.fetchScript(orderSource: orderSource) { response, error in
+            if let response = response {
+                let jsVersion = response.jsVersion
+                let lastJSVersion = UserDefaults.standard.string(forKey: Utils.getKeyForJSVersion(orderSorce: orderSource))
+                let jsUrl = response.jsUrl
+                //If we get the updated js version then download script file for it
+                if !jsVersion.isEmpty && jsVersion == lastJSVersion {
+                    let scriptFileExist = FileHelper.isScriptFileExist(orderSource: orderSource)
+                    if scriptFileExist {
+                        let filePath = FileHelper.getScriptFilePath(orderSource: orderSource)
+                        let script = FileHelper.getDataFromFile(fileUrl: filePath)
+                        completion(script)
+                    } else {
+                        self.getScriptFile(jsUrl: jsUrl, jsVersion: jsVersion, orderSource: orderSource) { script in
+                            if let script = script {
+                                completion(script)
+                            } else {
+                                completion(nil)
+                            }
+                        }
+                    }
                 } else {
-                    completion(nil)
-                    
-                    logEventRetrieveScriptAttributes[EventConstant.Status] = EventStatus.Failure
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.ExceptionWhileLoadingScrapingScript, eventAttributes: logEventRetrieveScriptAttributes)
+                    self.getScriptFile(jsUrl: jsUrl, jsVersion: jsVersion, orderSource: orderSource) { script in
+                        if let script = script {
+                            completion(script)
+                        } else {
+                            completion(nil)
+                        }
+                    }
                 }
+            } else {
+                completion(nil)
             }
         }
     }
@@ -119,6 +131,52 @@ class BSScriptFileManager {
                     FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
                 }
                 completion(nil, APIError(error: error.debugDescription))
+            }
+        }
+    }
+    
+    func getScriptFile(jsUrl: String, jsVersion: String, orderSource: OrderSource, completion: @escaping (String?) -> Void) {
+        let url = LibContext.shared.orderExtractorConfig.baseURL + jsUrl
+        let scriptFileUrl = URL(string: url)
+        
+        var urlRequest = URLRequest(url: scriptFileUrl!)
+        urlRequest.addValue("Bearer " + LibContext.shared.authProvider.getAuthToken(), forHTTPHeaderField: "Authorization")
+        urlRequest.addValue(LibContext.shared.authProvider.getPanelistID(), forHTTPHeaderField: "panelist_id")
+        urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let filePath = FileHelper.getScriptFilePath(orderSource: orderSource)
+        //download script file
+        let downloader = FileDownloader()
+        downloader.downloadFile(urlRequest: urlRequest, destinationFilePath: filePath) { filePath, error in
+            var logEventAttributes:[String:String] = [EventConstant.OrderSource: orderSource.value,
+                                                      EventConstant.PanelistID: LibContext.shared.authProvider.getPanelistID()]
+            
+            if let filePath = filePath {
+                logEventAttributes[EventConstant.Status] = EventStatus.Success
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgDownloadScrapperScriptFile, eventAttributes: logEventAttributes)
+                
+                var logEventRetrieveScriptAttributes:[String:String] = [EventConstant.OrderSource: orderSource.value,EventConstant.PanelistID: LibContext.shared.authProvider.getPanelistID()]
+                
+                let script = FileHelper.getDataFromFile(fileUrl: filePath)
+                if let script = script {
+                    UserDefaults.standard.setValue(jsVersion, forKey: Utils.getKeyForJSVersion(orderSorce: orderSource))
+                    completion(script)
+                    
+                    logEventRetrieveScriptAttributes[EventConstant.Status] = EventStatus.Success
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrapperScript, eventAttributes: logEventRetrieveScriptAttributes)
+                } else {
+                    completion(nil)
+                    
+                    logEventRetrieveScriptAttributes[EventConstant.ErrorReason] = Strings.ErrorScriptNotFound
+                    logEventRetrieveScriptAttributes[EventConstant.Status] = EventStatus.Failure
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrapperScript, eventAttributes: logEventRetrieveScriptAttributes)
+                }
+            } else {
+                completion(nil)
+                
+                logEventAttributes[EventConstant.ErrorReason] = Strings.ErrorScriptFileNotFound
+                logEventAttributes[EventConstant.Status] = EventStatus.Failure
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.FailureWhileDownloadingScript, eventAttributes: logEventAttributes)
             }
         }
     }

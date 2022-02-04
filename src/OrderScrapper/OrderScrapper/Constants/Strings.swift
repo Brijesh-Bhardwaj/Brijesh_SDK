@@ -111,6 +111,11 @@ struct Strings {
     static let ErrorInInjectingScript = "An error in injecting script"
     static let ErrorServicesDown = "Service Not Available"
     static let OnAuthenticationChallenegeRetryCount = "Amazon error retry count"
+    static let OrderStateInstacart = "order_state_instacart"
+    static let OrderStateWalmart = "order_state_walmart"
+    static let PageLoadTime = "pageLoadTime"
+    static let ScrapingTime = "scrapingTime"
+    static let ScrapeTime = "scrapeTime"
 
     //Sentry error message
     static let ErrorAPIReponseDateRange = "Error while getting date range"
@@ -122,9 +127,10 @@ struct Strings {
     static let ErrorJSICAuthenticationResposne = "Error password"
     
     //Manual scraping messages
-    static let HeaderFetchOrders = "Fetch %@ Orders"
-    static let HeaderFetchingOrders = "Fetching %@ Orders"
-    static let FetchSuccessMessage = "%@ orders fetched successfully"
-    static let FetchFailureMessage = "%@ orders fetch failed"
-    static let TimeOutFailureMessage = "Fetched your orders partially. Please try again later."
+    static let HeaderFetchOrders = "Update %@ Orders"
+    static let HeaderFetchingOrders = "Updating %@ Orders"
+    static let HeaderFetchingPendingOrders = "Updating Pending %@ Orders"
+    static let FetchSuccessMessage = "%@ orders updated successfully"
+    static let FetchFailureMessage = "%@ orders update failed"
+    static let TimeOutFailureMessage = "Updated your orders partially. Please try again later."
 }

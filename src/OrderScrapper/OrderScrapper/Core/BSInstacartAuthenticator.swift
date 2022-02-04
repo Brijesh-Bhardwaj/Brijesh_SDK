@@ -9,13 +9,9 @@ class BSInstacartAuthenticator: BSBaseAuthenticator {
     private let LoginURLDelimiter = "/"
     var isAuthenticated: Bool = false
     
-    
     override func onPageFinish(url: String) throws {
         print("####",url)
         if let configurations = configurations {
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
-                guard let self = self else {return}
-                
                 let loginSubURL = Utils.getSubUrl(url: configurations.login, delimeter: self.LoginURLDelimiter)
                 // TODO -: Check the hardcoded URL
                 let subURL = AppConstants.ICLoginSuccessURL
@@ -36,7 +32,6 @@ class BSInstacartAuthenticator: BSBaseAuthenticator {
                     } else {
                         self.completionHandler?(true, nil)
                     }
-                }
             }
         } else {
             let error = ASLException(errorMessage: Strings.ErrorNoConfigurationsFound, errorType: .authChallenge)

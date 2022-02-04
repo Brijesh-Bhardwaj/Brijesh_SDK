@@ -103,6 +103,10 @@ class BaseAccountConnectVC: UIViewController, BSWebNavigationObserver, TimerCall
             completion(timerValue)
         }
     }
+     func sendSuccessCallBack() {
+        let result = (true, self.successType ?? OrderFetchSuccessType.fetchCompleted)
+        LibContext.shared.scrapeCompletionPublisher.send((result, nil))
+    }
     //MARK:- Private Methods
     
     private func setupNetworkMonitor() {
@@ -167,6 +171,14 @@ class BaseAccountConnectVC: UIViewController, BSWebNavigationObserver, TimerCall
         
         self.view.addSubview(self.connectAccountView)
     }
+    
+    func reStartTimerForManualScraping() {
+       //Implementation in child class
+    }
+    
+    func stopScrapping() {
+        //Implementation in child class
+    }
 }
 
 extension BaseAccountConnectVC: ConnectAccountViewDelegate {
@@ -197,6 +209,25 @@ extension BaseAccountConnectVC: ConnectAccountViewDelegate {
     func didTapSuccessButton() {
         let result = (true, self.successType ?? OrderFetchSuccessType.fetchCompleted)
         LibContext.shared.scrapeCompletionPublisher.send((result, nil))
+    }
+    
+    func didTapCancelScraping() {
+        stopScrapping()
+        WebCacheCleaner.clear(completionHandler: nil)
+        let result = (true, OrderFetchSuccessType.fetchSkippedByUser)
+        LibContext.shared.scrapeCompletionPublisher.send((result, nil))
+    }
+    
+    func didTapScrapeLater() {
+        stopScrapping()
+        WebCacheCleaner.clear(completionHandler: nil)
+        let result = (true, OrderFetchSuccessType.fetchSkippedByUser)
+        LibContext.shared.scrapeCompletionPublisher.send((result, nil))
+    }
+    
+    func didTapContinueScraping() {
+        reStartTimerForManualScraping()
+        self.connectAccountView?.bringSubviewToFront(self.connectAccountView.progressView)
     }
 }
 

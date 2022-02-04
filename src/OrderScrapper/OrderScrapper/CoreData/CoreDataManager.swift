@@ -202,7 +202,6 @@ class CoreDataManager {
     public func insertOrderDetails(orderDetails: [OrderDetails], completionHandler: @escaping (Bool) -> Void) {
         dispatchQueue.sync {
             let context = persistentContainer.viewContext
-            context.perform {
                 for orderData in orderDetails {
                     let orderDetail = NSEntityDescription.insertNewObject(forEntityName: AppConstants.orderDetailEntity, into: context) as! OrderDetailsMO
                     orderDetail.orderID = orderData.orderId
@@ -230,7 +229,6 @@ class CoreDataManager {
                     }
                 }
                 completionHandler(true)
-            }
         }
     }
     public func fetchOrderDetails(orderSource: String, panelistID: String, userID: String) -> [OrderDetailsMO] {
@@ -259,7 +257,7 @@ class CoreDataManager {
         }
     }
     
-    public func getCountForOrderDetailsByOrderSection(orderSource: String, panelistID: String, userID: String, orderSectionType: String, orderUploadRetryCount: Int) -> Int {
+    public func getCountForOrderDetailsByOrderSection(orderSource: String, panelistID: String, userID: String, orderSectionType: String, orderUploadRetryCount: Int, endDate: String, startDate: String) -> Int {
         dispatchQueue.sync {
             let context = persistentContainer.viewContext
             let fetchRequest = NSFetchRequest<OrderDetailsMO>(entityName: AppConstants.orderDetailEntity)
@@ -267,11 +265,14 @@ class CoreDataManager {
             let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) == %@", orderSource)
             let orderSectionIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSectionType) == [c] %@", orderSectionType)
             let uploadOrderRetryPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnsUplaodRetryCount) <= %d", orderUploadRetryCount)
+            let userIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderUserID) == [c] %@", userID)
+            let toDateSectionIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnToDate) ==  %@", endDate)
+            let fromDateSectionIDPredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnFromDate) ==  %@", startDate)
             
             let sortedOrderDate = NSSortDescriptor(key: "orderDate", ascending: true)
             fetchRequest.sortDescriptors = [sortedOrderDate]
             
-            fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderSourcePredicate, orderSectionIDPredicate, uploadOrderRetryPredicate])
+            fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderSourcePredicate, orderSectionIDPredicate, uploadOrderRetryPredicate, toDateSectionIDPredicate, fromDateSectionIDPredicate,userIDPredicate])
             
             var orderDetails = [OrderDetailsMO]()
             do {
@@ -338,13 +339,15 @@ class CoreDataManager {
                 let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) == %@", orderSource)
                 
                 fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderIDPredicate,  orderSourcePredicate])
-                let result = try? context.fetch(fetchRequest)
-                let resultData = result as! [OrderDetailsMO]
-                for orderDetails in resultData {
-                    context.delete(orderDetails)
-                }
                 do {
-                    try context.save()
+                    let result = try context.fetch(fetchRequest)
+                    let resultData = result as? [OrderDetailsMO]
+                    if let resultData = resultData {
+                        for orderDetails in resultData {
+                            context.delete(orderDetails)
+                        }
+                        try context.save()
+                    }
                 } catch let error as NSError  {
                     print(error.userInfo)
                     FirebaseAnalyticsUtil.logSentryError(error: error)

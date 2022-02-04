@@ -25,6 +25,15 @@ class BSTimer {
              }
         return ""
     }
+    
+    func stopTimer() -> Int64 {
+        endTime = CFAbsoluteTimeGetCurrent()
+        if let endTime = endTime {
+            let milliseconds = Int64((endTime - startTime) * 1000)
+            return milliseconds
+        }
+        return 0
+    }
 }
 
 

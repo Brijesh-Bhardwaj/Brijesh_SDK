@@ -9,12 +9,21 @@ class FetchSuccessView: UIView {
     let nibName = "FetchSuccessView"
     
     var buttonClickHandler: (() -> Void)?
+    var scrapeContinueClickHandler: (() -> Void)?
+    var scrapeLaterClickHandler: (() -> Void)?
     
     @IBOutlet var contentView: UIView!
     
     @IBOutlet weak var fetchSuccessMessage: UILabel!
     
     @IBOutlet weak var fetchView: UIImageView!
+    
+    @IBOutlet weak var continueButton: UIButton!
+    
+    @IBOutlet weak var cancelButton: UIButton!
+    
+    @IBOutlet weak var okButton: UIButton!
+    
     var fetchSuccess: String {
         get {
             return ""
@@ -32,6 +41,34 @@ class FetchSuccessView: UIView {
             self.fetchView.image = newValue
         }
     }
+    
+    var hideOkButton: Bool {
+        get {
+            return false
+        }
+        set {
+            okButton.isHidden = newValue
+        }
+    }
+    
+    var hideContinueButton: Bool {
+        get {
+            return false
+        }
+        set {
+            continueButton.isHidden = newValue
+        }
+    }
+    
+    var hideCancelButton: Bool {
+        get {
+            return false
+        }
+        set {
+            cancelButton.isHidden = newValue
+        }
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         initView()
@@ -45,6 +82,20 @@ class FetchSuccessView: UIView {
     @IBAction func didClickOkButton(_ sender: Any) {
         if let clickHandler = buttonClickHandler {
             clickHandler()
+        }
+    }
+    
+    @IBAction func didClickContinueButton(_ sender: Any) {
+        if let scrapeContinueClickHandler = scrapeContinueClickHandler {
+            scrapeContinueClickHandler()
+            print("###### didClickContinueButton")
+        }
+    }
+    
+    @IBAction func didClickCancelButton(_ sender: Any) {
+        if let scrapeLaterClickHandler = scrapeLaterClickHandler {
+            scrapeLaterClickHandler()
+            print("###### didClickCancelButton")
         }
     }
     
