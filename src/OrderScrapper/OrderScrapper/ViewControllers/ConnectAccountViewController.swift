@@ -549,6 +549,19 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 }
                 self.contentView?.bringSubviewToFront(self.fetchSuccessView)
             }
+        } else {
+            DispatchQueue.main.async {
+                self.backButton?.isEnabled = false
+                self.backButton?.isHidden = true
+                self.fetchSuccessView?.fetchSuccess = self.getSuccessMessage()
+                self.fetchSuccessView?.hideOkButton = false
+                self.fetchSuccessView?.hideCancelButton = true
+                self.fetchSuccessView?.hideContinueButton = true
+                if let statusImage = self.getStatusImage() {
+                    self.fetchSuccessView?.imageView = statusImage
+                }
+                self.contentView?.bringSubviewToFront(self.fetchSuccessView)
+            }
         }
     }
     

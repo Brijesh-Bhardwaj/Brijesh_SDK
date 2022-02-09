@@ -429,7 +429,7 @@ class AmazonNavigationHelper: NavigationHelper {
                     UserDefaults.standard.setValue(0, forKey: Strings.AmazonOnNumberOfCaptchaRetry)
                 } else {
                     self.scraperListener.updateSuccessType(successType: .failureButAccountConnected)
-                    self.scraperListener.onCompletion(isComplete: true)
+                    self.scraperListener.onCompletion(isComplete: false)
                 }
                 
                 self.backgroundScrapper?.scraperListener = nil

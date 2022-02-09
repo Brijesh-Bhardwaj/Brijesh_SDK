@@ -44,6 +44,7 @@ class BSHtmlScrapper {
     private var dateRange: DateRange?
     var timer = BSTimer()
     var authTimer = BSTimer()
+    var authenticationCounter = 0
     
     init(params: BSHtmlScrapperParams) {
         self.params = params
@@ -105,44 +106,19 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
         if let url = url?.absoluteString, let script = script {
             let loginSubURL = getSubURL(from: self.params.configuration.login, delimeter: LoginURLDelimiter)
             let subURL = getSubURL(from: self.url, delimeter: URLQueryDelimiter)
-            if ((url.contains(loginSubURL) || loginSubURL.contains(url)) && !loginDetected) {
-                self.loginDetected = true
+            if ((url.contains(loginSubURL) || loginSubURL.contains(url))) {
                 authTimer.start()
-                self.params.authenticator.authenticate(account: self.params.account,
-                                                       configurations: self.params.configuration) { [weak self] authenticated, error in
-                    guard let self = self else { return }
-                    
-                    if authenticated {
-                        let authTimer = self.authTimer.stop()
-                        self.params.webNavigationDelegate.setObserver(observer: self)
-                        self.params.webClient.scriptMessageHandler?.addScriptMessageListener(listener: self)
-                        print("$$$$ didFinishPageNavigation ",self.url)
-                        self.params.webClient.loadListingUrl(url: self.url)
-                        
-                        var logEventAttributes:[String:String] = [:]
-                        logEventAttributes = [EventConstant.Status: EventStatus.Success,
-                                              EventConstant.ScrappingTime: authTimer]
-                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAuthentication, eventAttributes: logEventAttributes)
+                if !loginDetected {
+                    authenticationCounter = authenticationCounter + 1
+                    authenticate()
+                } else {
+                    if (authenticationCounter == 1) {
+                        authenticationCounter += 1
+                        authenticate()
                     } else {
-                        let authTimer = self.authTimer.stop()
-                        if error?.errorType == ErrorType.authError && error?.errorEventLog == FailureTypes.authentication {
-                            let errorMessage = ASLException(errorMessages: error!.errorMessage, errorTypes: .authError, errorEventLog: .authentication, errorScrappingType: ScrappingType.html)
-                            self.didFinishWith(error: errorMessage)
-                            var logEventAttributes:[String:String] = [:]
-                            logEventAttributes = [EventConstant.ErrorReason: error!.errorMessage,
-                                                  EventConstant.ScrappingTime: authTimer,
-                                                  EventConstant.Status: EventStatus.Failure]
-                            if let scrappingMode = self.params.scrappingMode {
-                                logEventAttributes[EventConstant.ScrappingMode] = scrappingMode
-                            }
-                            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAuthentication, eventAttributes: logEventAttributes)
-                        } else if(error?.errorType == ErrorType.authChallenge && error?.errorMessage == AppConstants.AmazonErrorMessage) {
-                            let errorMessage = ASLException(errorMessages: error!.errorMessage, errorTypes: .authChallenge, errorEventLog: .authentication, errorScrappingType: ScrappingType.html)
-                            self.onAmazonAuthFailure(error: errorMessage)
-                        } else {
-                            let errorMessage = ASLException(errorMessages: error!.errorMessage, errorTypes: .authChallenge, errorEventLog: .authentication, errorScrappingType: ScrappingType.html)
-                            self.onAuthenticationFailure(error: errorMessage, orderSource: self.params.account.source)
-                        }
+                        //Give HtmlScrapingFailure() callback on retrying authentication
+                        let error = ASLException(errorMessages: Strings.MultiAuthError, errorTypes: .multiAuthError, errorEventLog: .authentication, errorScrappingType: .html)
+                        self.params.listener.onHtmlScrappingFailure(error: error)
                     }
                 }
             } else if(url.contains(subURL) || subURL.contains(url)) {
@@ -167,7 +143,6 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                     self.scrapePage(script: script)
                 }
             } else {
-                //                let error = ASLException(errorMessage: Strings.ErrorOtherUrlLoaded, errorType: .authError)
                 let error = ASLException(errorMessages: Strings.ErrorOtherUrlLoaded, errorTypes: nil, errorEventLog: .unknownURL, errorScrappingType: ScrappingType.html)
                 let exception = NSException(name: AppConstants.bsOrderFailed, reason: url)
                 self.onAuthenticationFailure(error: error, orderSource: self.params.account.source)
@@ -187,7 +162,7 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSDetectOtherURL, eventAttributes: logOtherUrlEventAttributes)
             }
         } else {
-//            let error = ASLException(errorMessage: Strings.ErrorPageNotloaded, errorType: nil)
+            //            let error = ASLException(errorMessage: Strings.ErrorPageNotloaded, errorType: nil)
             let error = ASLException(errorMessages: Strings.ErrorPageNotloaded, errorTypes: nil, errorEventLog: .pageNotLoded, errorScrappingType: ScrappingType.html)
             FirebaseAnalyticsUtil.logSentryError(error: error)
             self.params.listener.onHtmlScrappingFailure(error: error)
@@ -209,9 +184,9 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
     func didFailPageNavigation(for url: URL?, withError error: Error) {
         let error = ASLException(errorMessages: Strings.ErrorOrderExtractionFailed, errorTypes: nil, errorEventLog: .pageNotLoded, errorScrappingType: ScrappingType.html)
         self.params.listener.onHtmlScrappingFailure(error: error)
-       let onPageFailTimer = timer.stop()
+        let onPageFailTimer = timer.stop()
         var logEventAttributes:[String:String] = [:]
-
+        
         logEventAttributes = [EventConstant.OrderSource:self.params.account.source.value,
                               EventConstant.PanelistID: self.params.account.panelistID,
                               EventConstant.OrderSourceID: self.params.account.userID,
@@ -273,7 +248,7 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
             } else {
                 if let error = error {
                     var logEventAttributes:[String:String] = [:]
-
+                    
                     logEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
                                           EventConstant.PanelistID: self.params.account.panelistID,
                                           EventConstant.OrderSourceID: self.params.account.userID,
@@ -303,7 +278,7 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
             }
         }
     }
-                
+    
     func onAmazonAuthFailure(error: ASLException) {
         var logEventAttributes:[String:String] = [:]
         logEventAttributes = [EventConstant.OrderSource:OrderSource.Amazon.value,
@@ -350,6 +325,47 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                     FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
                 }
                 completion(false)
+            }
+        }
+    }
+    
+    private func authenticate() {
+        self.params.authenticator.authenticate(account: self.params.account,
+                                               configurations: self.params.configuration) { [weak self] authenticated, error in
+            guard let self = self else { return }
+            
+            if authenticated {
+                self.loginDetected = true
+                
+                let authTimer = self.authTimer.stop()
+                self.params.webNavigationDelegate.setObserver(observer: self)
+                self.params.webClient.scriptMessageHandler?.addScriptMessageListener(listener: self)
+                self.params.webClient.loadListingUrl(url: self.url)
+                
+                var logEventAttributes:[String:String] = [:]
+                logEventAttributes = [EventConstant.Status: EventStatus.Success,
+                                      EventConstant.ScrappingTime: authTimer]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAuthentication, eventAttributes: logEventAttributes)
+            } else {
+                let authTimer = self.authTimer.stop()
+                if error?.errorType == ErrorType.authError && error?.errorEventLog == FailureTypes.authentication {
+                    let errorMessage = ASLException(errorMessages: error!.errorMessage, errorTypes: .authError, errorEventLog: .authentication, errorScrappingType: ScrappingType.html)
+                    self.didFinishWith(error: errorMessage)
+                    var logEventAttributes:[String:String] = [:]
+                    logEventAttributes = [EventConstant.ErrorReason: error!.errorMessage,
+                                          EventConstant.ScrappingTime: authTimer,
+                                          EventConstant.Status: EventStatus.Failure]
+                    if let scrappingMode = self.params.scrappingMode {
+                        logEventAttributes[EventConstant.ScrappingMode] = scrappingMode
+                    }
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAuthentication, eventAttributes: logEventAttributes)
+                } else if(error?.errorType == ErrorType.authChallenge && error?.errorMessage == AppConstants.AmazonErrorMessage) {
+                    let errorMessage = ASLException(errorMessages: error!.errorMessage, errorTypes: .authChallenge, errorEventLog: .authentication, errorScrappingType: ScrappingType.html)
+                    self.onAmazonAuthFailure(error: errorMessage)
+                } else {
+                    let errorMessage = ASLException(errorMessages: error!.errorMessage, errorTypes: .authChallenge, errorEventLog: .authentication, errorScrappingType: ScrappingType.html)
+                    self.onAuthenticationFailure(error: errorMessage, orderSource: self.params.account.source)
+                }
             }
         }
     }

@@ -324,7 +324,10 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
     
     func onHtmlScrappingFailure(error: ASLException) {
         print("### onHtmlScrappingFailure ")
-        if error.errorType == ErrorType.authError || error.errorType == ErrorType.authChallenge {
+        if error.errorType == .multiAuthError {
+            WebCacheCleaner.clear(completionHandler: nil)
+            self.params.listener.onHtmlScrappingFailure(error: error)
+        } else if error.errorType == ErrorType.authError || error.errorType == ErrorType.authChallenge {
             self.params.listener.onScrapeDataUploadCompleted(complete: false, error: error)
             
             var logEventAttributes:[String:String] = [EventConstant.OrderSource: orderDetail.orderSource ?? "",

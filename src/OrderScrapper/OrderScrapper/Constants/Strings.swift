@@ -116,6 +116,7 @@ struct Strings {
     static let PageLoadTime = "pageLoadTime"
     static let ScrapingTime = "scrapingTime"
     static let ScrapeTime = "scrapeTime"
+    static let MultiAuthError = "Multiple authentication attempts failed"
 
     //Sentry error message
     static let ErrorAPIReponseDateRange = "Error while getting date range"
