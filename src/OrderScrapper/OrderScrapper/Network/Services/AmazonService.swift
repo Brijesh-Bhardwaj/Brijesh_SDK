@@ -219,8 +219,8 @@ class AmazonService {
         return client
     }
     
-    static func fetchScript(orderSource: OrderSource, completionHandler: @escaping (FetchScript?, ASLException?) -> Void) -> APIClient {
-        let relativeUrl = FetchScript + "/" + orderSource.value
+    static func fetchScript(orderSource: OrderSource, scriptType: String, completionHandler: @escaping (FetchScript?, ASLException?) -> Void) -> APIClient {
+        let relativeUrl = FetchScript + "/" + orderSource.value + "/" + scriptType
         let client = NetworkClient<APIResponse<FetchScript>>(relativeURL: relativeUrl, requestMethod: .get)
         
         client.executeAPI() { (response, error) in

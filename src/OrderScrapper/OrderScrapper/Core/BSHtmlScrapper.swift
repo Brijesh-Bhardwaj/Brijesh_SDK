@@ -112,54 +112,53 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                     authenticationCounter = authenticationCounter + 1
                     authenticate()
                 } else {
-                    if (authenticationCounter == 1) {
-                        authenticationCounter += 1
-                        authenticate()
+                    if self.params.account.source != .Amazon {
+                        if(url.contains(subURL) || subURL.contains(url)) {
+                            self.scrapePage(script: script)
+                        } else {
+                            self.otherUrlHandling()
+                        }
                     } else {
-                        //Give HtmlScrapingFailure() callback on retrying authentication
-                        let error = ASLException(errorMessages: Strings.MultiAuthError, errorTypes: .multiAuthError, errorEventLog: .authentication, errorScrappingType: .html)
-                        self.params.listener.onHtmlScrappingFailure(error: error)
+                        if (authenticationCounter == 1) {
+                            authenticationCounter += 1
+                            authenticate()
+                        } else {
+                            //Give HtmlScrapingFailure() callback on retrying authentication
+                            let error = ASLException(errorMessages: Strings.MultiAuthError, errorTypes: .multiAuthError, errorEventLog: .authentication, errorScrappingType: .html)
+                            self.params.listener.onHtmlScrappingFailure(error: error)
+                        }
                     }
                 }
             } else if(url.contains(subURL) || subURL.contains(url)) {
                 print("### Injecting script for URL: ", url)
                 if params.account.source == .Walmart {
-                    let js = JSUtils.getWalmartSignInRequiredJS()
-                    DispatchQueue.main.async {
-                        self.params.webClient.evaluateJavaScript(js) { response, error in
-                            print("#### evaluateJavaScript ", response)
-                            if let doSignIn = response as? Bool {
-                                if doSignIn {
-                                    print("##### Load login again")
-                                    self.params.webClient.loadUrl(url: self.params.configuration.login)
-                                } else {
-                                    print("##### Scrape page")
-                                    self.scrapePage(script: script)
+                    BSScriptFileManager.shared.getAuthScript(orderSource: params.account.source, scriptKey:AppConstants.getWalmartSignInRequiredJS) { scriptData in
+                        if !scriptData.isEmpty {
+                            DispatchQueue.main.async {
+                                self.params.webClient.evaluateJavaScript(scriptData) { response, error in
+                                    print("#### evaluateJavaScript ", response)
+                                    if let doSignIn = response as? Bool {
+                                        if doSignIn {
+                                            print("##### Load login again")
+                                            self.params.webClient.loadUrl(url: self.params.configuration.login)
+                                        } else {
+                                            print("##### Scrape page")
+                                            self.scrapePage(script: script)
+                                        }
+                                    }
                                 }
                             }
+                        } else {
+                            // Completion handler if script not found
+                            let error = ASLException(errorMessages: Strings.ErrorScriptNotFound, errorTypes: nil, errorEventLog: .unknownURL, errorScrappingType: ScrappingType.html)
+                            self.onAuthenticationFailure(error: error, orderSource: self.params.account.source)
                         }
                     }
                 } else {
                     self.scrapePage(script: script)
                 }
             } else {
-                let error = ASLException(errorMessages: Strings.ErrorOtherUrlLoaded, errorTypes: nil, errorEventLog: .unknownURL, errorScrappingType: ScrappingType.html)
-                let exception = NSException(name: AppConstants.bsOrderFailed, reason: url)
-                self.onAuthenticationFailure(error: error, orderSource: self.params.account.source)
-                
-                var logOtherUrlEventAttributes:[String:String] = [:]
-                let userId = params.account.userID
-                let panelistId = params.account.panelistID
-                logOtherUrlEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
-                                              EventConstant.OrderSourceID: userId,
-                                              EventConstant.PanelistID: panelistId,
-                                              EventConstant.ScrappingType: ScrappingType.html.rawValue,
-                                              EventConstant.Status: EventStatus.Success,
-                                              EventConstant.URL: url]
-                if let scrappingMode = self.params.scrappingMode {
-                    logOtherUrlEventAttributes[EventConstant.ScrappingMode] = scrappingMode
-                }
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSDetectOtherURL, eventAttributes: logOtherUrlEventAttributes)
+                self.otherUrlHandling()
             }
         } else {
             //            let error = ASLException(errorMessage: Strings.ErrorPageNotloaded, errorType: nil)
@@ -368,5 +367,25 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
                 }
             }
         }
+    }
+    
+    private func otherUrlHandling() {
+        let error = ASLException(errorMessages: Strings.ErrorOtherUrlLoaded, errorTypes: nil, errorEventLog: .unknownURL, errorScrappingType: ScrappingType.html)
+        let exception = NSException(name: AppConstants.bsOrderFailed, reason: url)
+        self.onAuthenticationFailure(error: error, orderSource: self.params.account.source)
+        
+        var logOtherUrlEventAttributes:[String:String] = [:]
+        let userId = params.account.userID
+        let panelistId = params.account.panelistID
+        logOtherUrlEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
+                                      EventConstant.OrderSourceID: userId,
+                                      EventConstant.PanelistID: panelistId,
+                                      EventConstant.ScrappingType: ScrappingType.html.rawValue,
+                                      EventConstant.Status: EventStatus.Success,
+                                      EventConstant.URL: url]
+        if let scrappingMode = self.params.scrappingMode {
+            logOtherUrlEventAttributes[EventConstant.ScrappingMode] = scrappingMode
+        }
+        FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSDetectOtherURL, eventAttributes: logOtherUrlEventAttributes)
     }
 }

@@ -116,7 +116,12 @@ struct Strings {
     static let PageLoadTime = "pageLoadTime"
     static let ScrapingTime = "scrapingTime"
     static let ScrapeTime = "scrapeTime"
+    static let JSAuthVersionAmazon = "js_auth_version_amazon"
+    static let JSAuthVersionInstacart = "js_auth_version_instacart"
+    static let JSAuthVersionKroger = "js_auth_version_kroger"
+    static let JSAuthVersionWalmart = "js_auth_version_walmart"
     static let MultiAuthError = "Multiple authentication attempts failed"
+
 
     //Sentry error message
     static let ErrorAPIReponseDateRange = "Error while getting date range"

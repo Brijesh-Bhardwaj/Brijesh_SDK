@@ -88,6 +88,7 @@
 		9D35EF9626B3D84000272C27 /* BSTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D35EF9526B3D84000272C27 /* BSTimer.swift */; };
 		9D638A3C265BD2B200C412AC /* OrdersExtractorConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D638A3B265BD2B200C412AC /* OrdersExtractorConfig.swift */; };
 		9D812DA3265F7EC800629376 /* OrderDetailsMO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D812DA2265F7EC800629376 /* OrderDetailsMO.swift */; };
+		9D81376027A982120087FEE7 /* ScriptType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D81375F27A982120087FEE7 /* ScriptType.swift */; };
 		9D830BF526692A3C0081D4BD /* OrderData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D830BF426692A3C0081D4BD /* OrderData.swift */; };
 		9D83BCA827511DA60092762C /* OrderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D83BCA727511DA60092762C /* OrderState.swift */; };
 		9D84136B26BA520C00D237DC /* InstacartAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D84136A26BA520C00D237DC /* InstacartAuthenticator.swift */; };
@@ -292,6 +293,7 @@
 		9D638A3B265BD2B200C412AC /* OrdersExtractorConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrdersExtractorConfig.swift; sourceTree = "<group>"; };
 		9D812DA1265F791D00629376 /* CoreDataModel v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CoreDataModel v2.xcdatamodel"; sourceTree = "<group>"; };
 		9D812DA2265F7EC800629376 /* OrderDetailsMO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailsMO.swift; sourceTree = "<group>"; };
+		9D81375F27A982120087FEE7 /* ScriptType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptType.swift; sourceTree = "<group>"; };
 		9D830BF426692A3C0081D4BD /* OrderData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderData.swift; sourceTree = "<group>"; };
 		9D83BCA727511DA60092762C /* OrderState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderState.swift; sourceTree = "<group>"; };
 		9D84136A26BA520C00D237DC /* InstacartAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstacartAuthenticator.swift; sourceTree = "<group>"; };
@@ -656,6 +658,7 @@
 				1C563CAF272036A60061462A /* NetworkState.swift */,
 				9D83BCA727511DA60092762C /* OrderState.swift */,
 				9DC9794627620678007FA9C0 /* RetailerScrapingStatus.swift */,
+				9D81375F27A982120087FEE7 /* ScriptType.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -979,6 +982,7 @@
 				1C26830F264BE310004ED054 /* BSAmazonAuthenticator.swift in Sources */,
 				1C414C572668E07B009126E0 /* Queue.swift in Sources */,
 				1C26830B264BE2C8004ED054 /* AmazonScrapper.swift in Sources */,
+				9D81376027A982120087FEE7 /* ScriptType.swift in Sources */,
 				1C414C532668DFA0009126E0 /* BSOrderDetailsScrapper.swift in Sources */,
 				1C006FB12600B7DA00F9263E /* Utils.swift in Sources */,
 				E148DC9A2605CB1E001430BE /* FileHelper.swift in Sources */,

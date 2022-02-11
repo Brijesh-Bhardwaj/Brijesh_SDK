@@ -16,7 +16,6 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
         if let configurations = configurations {
             self.authenticationDelegate?.didReceiveAuthenticationChallenge(authError: false)
                 let loginSubURL = Utils.getSubUrl(url: configurations.login, delimeter: self.LoginURLDelimiter)
-                // TODO -: Check the hardcoded URL
                 let subURL = AppConstants.ICLoginSuccessURL
                 
                 if  url.contains(AppConstants.InstacartOnBoardingURL) {
@@ -99,19 +98,29 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
     
     func getIdentificationJS() {
         self.addScriptListener()
-        let js = JSUtils.getInstacartIdentification()
-        self.evaluateJS(javascript: js) { response, error in
-            print("Idnetification JS",response)
+        self.getScript(orderSource: .Instacart, scriptKey: AppConstants.getInstacartIdentification) { script in
+                if !script.isEmpty {
+                     self.evaluateJS(javascript: script) { response, error in
+                         print("Idnetification JS",response)
+                     }
+                } else {
+                    self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorScriptNotFound + "getIdentificationJS for Instacart", errorType: .authError))
+                }
         }
     }
     
     func onContinueBrowser() {
-        let js = JSUtils.getICProcide()
-        self.evaluateJS(javascript: js) { response, error in
-            if response != nil {
-                self.onLoginScript()
+        self.getScript(orderSource: .Instacart, scriptKey: AppConstants.getInstacartProcide) { script in
+            if !script.isEmpty {
+                self.evaluateJS(javascript: script) { response, error in
+                    if response != nil {
+                        self.onLoginScript()
+                    } else {
+                        self.completionHandler?(false,ASLException(errorMessage: Strings.ErrorInInjectingScript, errorType: .authError))
+                    }
+                }
             } else {
-                self.completionHandler?(false,ASLException(errorMessage: Strings.ErrorInInjectingScript, errorType: .authError))
+                self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorScriptNotFound + "onContinueBrowser for Instacart", errorType: .authError))
             }
         }
     }
@@ -126,90 +135,118 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
             self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorUserIdIsNil, errorType: .authError))
             return
         }
-        let js = JSUtils.getICinjectLoginJS(email: email, password: password)
         let userId = self.account?.userID
         var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Instacart.value,
                                                   EventConstant.OrderSourceID: userId ?? ""]
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
-            guard let self = self else {return}
-            self.evaluateJS(javascript: js) { respone, error in
-                if let error = error {
-                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
-                } else {
-                    print("### valid JS")
-                }
-            }
-        }
-        self.captchaClosed()
+        
         logEventAttributes[EventConstant.Status] = EventStatus.Success
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectSignIn, eventAttributes: logEventAttributes)
         
+        self.getScript(orderSource: .Instacart, scriptKey: AppConstants.getInstcartinjectLoginJS) { script in
+            if !script.isEmpty {
+                let passwordJS = script.replacingOccurrences(of: "$email$", with: email)
+                let signInJS = passwordJS.replacingOccurrences(of: "$password$", with: password)
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
+                    guard let self = self else {return}
+                    self.evaluateJS(javascript: signInJS) { respone, error in
+                        if let error = error {
+                            FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                        } else {
+                            print("### valid JS")
+                        }
+                    }
+                }
+                self.captchaClosed()
+            } else {
+                self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorScriptNotFound + "onSignIn for Instacart", errorType: .authError))
+            }
+        }
     }
     
     func onWrongCredentials() {
-            let js = JSUtils.getInstacartWrongPasswordInjectJS()
-            self.evaluateJS(javascript: js) { response, error in
-            if let response = response as? String {
-                self.authenticationDelegate?.didReceiveLoginChallenge(error: response)
-                self.notifyAuthError(errorMessage: response)
-                self.webClient.scriptMessageHandler?.removeScriptMessageListener()
-            } else {
-                if let error = error {
-                    FirebaseAnalyticsUtil.logSentryError(error: error)
+        self.getScript(orderSource: .Instacart, scriptKey: AppConstants.getInstacartWrongPasswordInjectJS) { script in
+            if !script.isEmpty {
+                self.evaluateJS(javascript: script) { response, error in
+                    if let response = response as? String {
+                        self.authenticationDelegate?.didReceiveLoginChallenge(error: response)
+                        self.notifyAuthError(errorMessage: response)
+                        self.webClient.scriptMessageHandler?.removeScriptMessageListener()
+                    } else {
+                        if let error = error {
+                            FirebaseAnalyticsUtil.logSentryError(error: error)
+                        }
+                        self.completionHandler?(false,ASLException(errorMessage: Strings.ErrorInInjectingScript, errorType: .authError))
+                    }
                 }
-                self.completionHandler?(false,ASLException(errorMessage: Strings.ErrorInInjectingScript, errorType: .authError))
+                
+            } else {
+                self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorScriptNotFound + "onWrongCredentials for Instacart", errorType: .authError))
             }
         }
-       }
+    }
+    
     func onLoginScript() {
         let userId = self.account?.userID
-        let js = JSUtils.getICOnClick()
-        self.evaluateJS(javascript: js) { response, error in
-            if response != nil {
-                self.getIdentificationJS()
-            } else {
-               if let error = error {
-                    FirebaseAnalyticsUtil.logSentryError(error: error)
+     self.getScript(orderSource: .Instacart, scriptKey: AppConstants.getInstacartOnClick) { script in
+            if !script.isEmpty {
+                self.evaluateJS(javascript: script) { response, error in
+                    if response != nil {
+                        self.getIdentificationJS()
+                    } else {
+                        if let error = error {
+                            FirebaseAnalyticsUtil.logSentryError(error: error)
+                        }
+                        self.completionHandler?(false,ASLException(errorMessage: Strings.ErrorInInjectingScript, errorType: .authError))
+                    }
                 }
-                self.completionHandler?(false,ASLException(errorMessage: Strings.ErrorInInjectingScript, errorType: .authError))
+            } else {
+                self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorScriptNotFound + "onErrorPassword for Instacart", errorType: .authError))
             }
-            
         }
         var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Instacart.value,
                                                   EventConstant.OrderSourceID: userId ?? ""]
         logEventAttributes[EventConstant.Status] = EventStatus.Success
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetected, eventAttributes: logEventAttributes)
-
     }
     
     func onErrorPassword() {
-        let js = JSUtils.getICErrorPasswordInjectJS()
-        self.evaluateJS(javascript: js) { response, error in
-            if let response = response as? String {
-                self.authenticationDelegate?.didReceiveLoginChallenge(error: response)
-                self.notifyAuthError(errorMessage: response)
-                self.webClient.scriptMessageHandler?.removeScriptMessageListener()
-            } else {
-                if let error = error {
-                    FirebaseAnalyticsUtil.logSentryError(error: error)
+        self.getScript(orderSource: .Instacart, scriptKey: AppConstants.getInstacartErrorPasswordInjectJS) { script in
+                if !script.isEmpty {
+                    self.evaluateJS(javascript: script) { response, error in
+                        if let response = response as? String {
+                            self.authenticationDelegate?.didReceiveLoginChallenge(error: response)
+                            self.notifyAuthError(errorMessage: response)
+                            self.webClient.scriptMessageHandler?.removeScriptMessageListener()
+                        } else {
+                            if let error = error {
+                                FirebaseAnalyticsUtil.logSentryError(error: error)
+                            }
+                            self.completionHandler?(false,ASLException(errorMessage: Strings.ErrorInInjectingScript, errorType: .authError))
+                        }
+                    }
+                } else {
+                    self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorScriptNotFound + "onErrorPassword for Instacart", errorType: .authError))
                 }
-                self.completionHandler?(false,ASLException(errorMessage: Strings.ErrorInInjectingScript, errorType: .authError))
-            }
         }
     }
     
     func onErrorEmail() {
-        let js = JSUtils.getICErrorEmailInjectJS()
-        self.evaluateJS(javascript: js) { response, error in
-            if let response = response as? String  {
-                self.authenticationDelegate?.didReceiveLoginChallenge(error: response)
-                self.notifyAuthError(errorMessage: response)
-                self.webClient.scriptMessageHandler?.removeScriptMessageListener()
-            } else {
-                if let error = error {
-                    FirebaseAnalyticsUtil.logSentryError(error: error)
+        self.getScript(orderSource: .Instacart, scriptKey: AppConstants.getInstacartErrorEmailInjectJS) { script in
+            if !script.isEmpty {
+                self.evaluateJS(javascript: script) { response, error in
+                    if let response = response as? String  {
+                        self.authenticationDelegate?.didReceiveLoginChallenge(error: response)
+                        self.notifyAuthError(errorMessage: response)
+                        self.webClient.scriptMessageHandler?.removeScriptMessageListener()
+                    } else {
+                        if let error = error {
+                            FirebaseAnalyticsUtil.logSentryError(error: error)
+                        }
+                        self.completionHandler?(false,ASLException(errorMessage: Strings.ErrorInInjectingScript, errorType: .authError))
+                    }
                 }
-                self.completionHandler?(false,ASLException(errorMessage: Strings.ErrorInInjectingScript, errorType: .authError))
+            }  else {
+                self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorScriptNotFound + "onErrorEmail for Instacart", errorType: .authError))
             }
         }
     }
@@ -220,34 +257,47 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
     
     func captchaClosed() {
         print("$$$$ captchaClosed called")
-        let js = JSUtils.captchaClosed()
-        self.evaluateJS(javascript: js) { response, error in
+        self.getScript(orderSource: .Instacart, scriptKey: AppConstants.getInstcartCaptchaClosed) { script in
+            if !script.isEmpty {
+                self.evaluateJS(javascript: script) { response, error in
+                }
+            } else {
+                self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorScriptNotFound + "captchaClosed for Instacart", errorType: .authError))
+            }
         }
     }
     
     func onFlashMessage() {
-        let js = JSUtils.getICFlashMessage()
-        self.evaluateJS(javascript: js) { response, error in
-            if let response = response as? String {
-                self.authenticationDelegate?.didReceiveLoginChallenge(error: response)
-                self.webClient.scriptMessageHandler?.removeScriptMessageListener()
-            } else {
-                if let error = error {
-                    FirebaseAnalyticsUtil.logSentryError(error: error)
+        self.getScript(orderSource: .Instacart, scriptKey: AppConstants.getInstacartFlashMessage) { script in
+            if !script.isEmpty {
+                self.evaluateJS(javascript: script) { response, error in
+                    if let response = response as? String {
+                        self.authenticationDelegate?.didReceiveLoginChallenge(error: response)
+                        self.webClient.scriptMessageHandler?.removeScriptMessageListener()
+                    } else {
+                        if let error = error {
+                            FirebaseAnalyticsUtil.logSentryError(error: error)
+                        }
+                        self.completionHandler?(false,ASLException(errorMessage: Strings.ErrorInInjectingScript, errorType: .authError))
+                    }
                 }
-                self.completionHandler?(false,ASLException(errorMessage: Strings.ErrorInInjectingScript, errorType: .authError))
+            } else {
+                self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorScriptNotFound + "onFlashMessage for Instacart", errorType: .authError))
             }
         }
     }
     
     func verificationCodeSuccess() {
-        let js = JSUtils.verificationCodeSuccess()
-        self.evaluateJS(javascript: js) { response, error in
-            print("verificationCodeSuccess",response)
+      self.getScript(orderSource: .Instacart, scriptKey: AppConstants.getInstacartverificationCodeSuccess) { script in
+            if !script.isEmpty {
+                self.evaluateJS(javascript: script) { response, error in
+                    print("verificationCodeSuccess",response)
+                }
+            } else {
+                self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorScriptNotFound + "verificationCodeSuccess for Instacart", errorType: .authError))
+            }
         }
-
     }
-
     func authenticationChallenge() {
         let userId = self.account?.userID
         var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Instacart.value,
@@ -356,6 +406,12 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
     private func sendServicesDownCallback() {
         if let scraperListener = scraperListener {
             scraperListener.onServicesDown(error: nil)
+        }
+    }
+    
+    private func getScript(orderSource: OrderSource, scriptKey: String, completionHandler: @escaping(String) -> Void) {
+        BSScriptFileManager.shared.getAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
+           completionHandler(script)
         }
     }
 }

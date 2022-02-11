@@ -91,9 +91,16 @@ class AmazonNavigationHelper: NavigationHelper {
             } else {
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
                     guard let self = self else {return}
-                    self.authenticator.authenticate()
-                    self.currentStep = .authentication
-                    self.publishProgrssFor(step: .authentication)
+                    BSScriptFileManager.shared.getAuthenticationScripts(orderSource: .Amazon, isAuthScript: ScriptType.auth.rawValue) { response in
+                        if response {
+                            self.authenticator.authenticate()
+                            self.currentStep = .authentication
+                            self.publishProgrssFor(step: .authentication)
+                        } else {
+                            self.viewModel.authError.send((isError: true, errorMsg: AppConstants.authScriptNotFound))
+                        }
+                    }
+                  
                 }
             }
         } else if (urlString.contains(AmazonURL.authApproval)

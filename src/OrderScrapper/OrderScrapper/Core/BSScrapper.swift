@@ -272,7 +272,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     
     private func didReceive(configuration: Configurations) {
         self.configuration = configuration
-        BSScriptFileManager.shared.getScriptForScrapping(orderSource: self.orderSource) { script in
+        BSScriptFileManager.shared.getScriptForScrapping(orderSource: self.orderSource, scriptType: ScriptType.scrape.rawValue) { script in
             if let script = script {
                 self.timer.start()
                 let urls = Urls(login: self.configuration.login, listing: self.configuration.listing, details: self.configuration.details)
@@ -678,7 +678,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     }
     
     private func didInsertToDB() {
-        BSScriptFileManager.shared.getScriptForScrapping(orderSource: self.orderSource) { script in
+        BSScriptFileManager.shared.getScriptForScrapping(orderSource: self.orderSource, scriptType: ScriptType.scrape.rawValue) { script in
             if let script = script {
                 let orderDetails = OrderDetailsMapper.mapFromDBObject(dbOrderDetails: self.getOrderDetails())
                 
