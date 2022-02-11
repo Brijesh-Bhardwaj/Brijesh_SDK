@@ -9,6 +9,11 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Added : This section to enlist the additions/implementations 
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
+  
+## Unreleased
+ ### Added
+ - Moved authentication scripts for all order sources  to server side (RPA- 833)
+ - Issue fixes added for the tickets RPA- 773, RPA- 774, RPA- 775 , RPA-894
 
 ## Unreleased
   ### Added
