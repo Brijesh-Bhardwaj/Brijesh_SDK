@@ -105,6 +105,11 @@ public class UserAccountMO: NSManagedObject, Account {
         return isScrapping
     }
     
+    public func scanOnlineOrders(orderExtractionListener: OrderExtractionListener, accounts: Account?...) {
+        AmazonOrderScrapper.shared.scanAllOrders(accounts: accounts, orderExtractionListener: orderExtractionListener)
+     
+    }
+    
     // MARK: - Private Methods
     private func getOrderSource() -> OrderSource {
         return OrderSource(rawValue: self.orderSource)!

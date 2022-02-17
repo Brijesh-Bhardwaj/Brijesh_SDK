@@ -185,6 +185,17 @@ class AmazonOrderScrapper {
         return scrappingProcess
     }
     
+    func scanAllOrders(accounts: [Account?],
+                       orderExtractionListener: OrderExtractionListener)  {
+        for account in accounts {
+            if let account = account {
+                if account.source == .Amazon {
+                    self.performForegroundScraping(account, orderExtractionListener, .manual)
+                }
+            }
+        }
+    }
+    
     private func scrappingQueue() {
         let scrappingData = queue.peekData()
         if scrappingData != nil && (self.isScrapping[(scrappingData?.account.source)!] == false) {
