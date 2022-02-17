@@ -147,6 +147,10 @@ public class OrdersExtractor {
         }
     }
     
+    public func scanOnlineOrders(orderExtractionListener: OrderExtractionListener, accounts: Account?...) {
+        AmazonOrderScrapper.shared.scanAllOrders(accounts: accounts, orderExtractionListener: orderExtractionListener)
+    }
+    
     private static func registerFonts() {
         UIFont.registerFont(withFilenameString: "SF-Pro-Rounded-Bold.otf")
         UIFont.registerFont(withFilenameString: "SF-Pro-Rounded-Regular.otf")

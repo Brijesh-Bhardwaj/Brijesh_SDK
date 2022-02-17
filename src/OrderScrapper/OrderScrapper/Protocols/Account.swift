@@ -40,5 +40,4 @@ public protocol Account {
     /// about the status of order extraction process
     func fetchOrders(orderExtractionListener: OrderExtractionListener, source: FetchRequestSource) -> RetailerScrapingStatus
     
-    func scanOnlineOrders(orderExtractionListener: OrderExtractionListener, accounts: Account?...) 
 }
