@@ -147,8 +147,19 @@ public class OrdersExtractor {
         }
     }
     
-    public func scanOnlineOrders(orderExtractionListener: OrderExtractionListener, accounts: Account?...) {
+    public func scanOnlineOrders(orderExtractionListener: OrderExtractionListener, accounts: Account?...) throws {
+        if OrdersExtractor.isInitialized {
         AmazonOrderScrapper.shared.scanAllOrders(accounts: accounts, orderExtractionListener: orderExtractionListener)
+        } else {
+            let error =  ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
+            let panelistId = LibContext.shared.authProvider.getPanelistID()
+            var logEventAttributes:[String:String] = [:]
+            logEventAttributes = [EventConstant.PanelistID: panelistId,
+                                  EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                                  EventConstant.Status: EventStatus.Success]
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.ConfigsMissing, eventAttributes: logEventAttributes)
+            throw error
+        }
     }
     
     private static func registerFonts() {
