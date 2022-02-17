@@ -147,7 +147,7 @@ public class OrdersExtractor {
         }
     }
     
-    public func scanOnlineOrders(orderExtractionListener: OrderExtractionListener, accounts: Account?...) throws {
+    public static func scanOnlineOrders(orderExtractionListener: OrderExtractionListener, accounts: Account?...) throws {
         if OrdersExtractor.isInitialized {
         AmazonOrderScrapper.shared.scanAllOrders(accounts: accounts, orderExtractionListener: orderExtractionListener)
         } else {
