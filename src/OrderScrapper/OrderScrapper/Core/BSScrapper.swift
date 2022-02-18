@@ -493,7 +493,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.onOrderListingCompletion, eventAttributes: logEventAttributes)
                     FirebaseAnalyticsUtil.logSentryMessage(message: message)
                     if let orderDetails = scrapeResponse.data, !orderDetails.isEmpty {
-                        self.uploadOrderHistory(listingScrapeTime: listingScrapeTime, listingOrderCount: orderDetails.count)
+                        self.uploadOrderHistory(listingScrapeTime: listingScrapeTime, listingOrderCount: orderDetails.count, status: OrderStatus.InProgress.rawValue)
                         DispatchQueue.global().async { [self] in
                             insertOrderDetailsToDB(orderDetails: orderDetails) { dataInserted in
                                 if dataInserted {
@@ -511,7 +511,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                         
                         //For Walmart and Instacart update account state to Connected if all connection scrape orders uploaded
                         updateAccountAsConnected(account: self.account)
-                        self.uploadOrderHistory(listingScrapeTime: listingScrapeTime, listingOrderCount: 0)
+                        self.uploadOrderHistory(listingScrapeTime: listingScrapeTime, listingOrderCount: 0, status: OrderStatus.Completed.rawValue)
                         if let listener = self.scraperListener {
                             listener.updateProgressStep(htmlScrappingStep: .complete)
                         }
@@ -771,9 +771,9 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
         }
     }
     
-    private func uploadOrderHistory(listingScrapeTime: Int64, listingOrderCount: Int) {
+    private func uploadOrderHistory(listingScrapeTime: Int64, listingOrderCount: Int, status: String) {
         if let fromDate = self.dateRange?.fromDate, let toDate = self.dateRange?.toDate, let userID = self.account?.userID {
-            let orderRequest = OrderRequest(panelistId: self.panelistID, platformId: userID, fromDate: fromDate, toDate: toDate, status: OrderStatus.Completed.rawValue, data: [], listingScrapeTime: listingScrapeTime, listingOrderCount: listingOrderCount, sessionScrapingContext: getScrapingMode())
+            let orderRequest = OrderRequest(panelistId: self.panelistID, platformId: userID, fromDate: fromDate, toDate: toDate, status: OrderStatus.Completed.rawValue, data: [], listingScrapeTime: listingScrapeTime, listingOrderCount: listingOrderCount, scrapingSessionContext: getScrapingMode())
             _ = AmazonService.uploadOrderHistory(orderRequest: orderRequest, orderSource: self.orderSource.value) { response, error in
                 DispatchQueue.global().async {
                     var logEventAttributes:[String:String] = [:]

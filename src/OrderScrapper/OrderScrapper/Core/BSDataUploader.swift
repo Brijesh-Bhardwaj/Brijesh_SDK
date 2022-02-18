@@ -92,7 +92,7 @@ class DataUploadOperation: Operation {
             state = .finished
         } else {
             state = .executing
-            let orderRequest = OrderRequest(panelistId: self.panelistId, platformId: self.userId, fromDate: dateRange.fromDate!, toDate: dateRange.toDate!, status: self.orderState!, data: [data], listingScrapeTime: 0, listingOrderCount: 0, sessionScrapingContext: self.scrapingContext)
+            let orderRequest = OrderRequest(panelistId: self.panelistId, platformId: self.userId, fromDate: dateRange.fromDate!, toDate: dateRange.toDate!, status: self.orderState!, data: [data], listingScrapeTime: 0, listingOrderCount: 0, scrapingSessionContext: self.scrapingContext)
             if orderSource == OrderSource.Instacart.value || orderSource == OrderSource.Walmart.value {
                 if self.orderState == OrderState.Completed.rawValue {
                    if self.orderSource == OrderSource.Instacart.value {

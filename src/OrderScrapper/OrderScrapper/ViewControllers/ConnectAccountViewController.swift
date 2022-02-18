@@ -632,7 +632,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     
     private func getHeaderTitle() -> String {
         let source = self.fetchRequestSource ?? .general
-        if source == .manual {
+        if source == .manual || source == .online {
             return String.init(format: Strings.HeaderFetchOrders, OrderSource.Amazon.value)
         } else {
             return Utils.getString(key: Strings.HeadingConnectAmazonAccount)
@@ -641,7 +641,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     
     private func getHeaderMessage(isUploadingPreviousOrder: Bool) -> String {
         let source = self.fetchRequestSource ?? .general
-        if source == .manual {
+        if source == .manual || source == .online{
             if isUploadingPreviousOrder {
                 return String.init(format: Strings.HeaderFetchingPendingOrders, OrderSource.Amazon.value)
             } else {
@@ -670,7 +670,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     //TODO:- Need to change
     private func getSuccessMessage(action: String) -> String {
         let source = self.fetchRequestSource ?? .general
-        if source == .manual {
+        if source == .manual || source == .online {
             if isTimeOut {
                 if action == Actions.ForegroundHtmlScrapping {
                     return LibContext.shared.manualScrapeTimeOutMessage
@@ -689,7 +689,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     
     private func getStatusImage() -> UIImage? {
         let source = self.fetchRequestSource ?? .general
-        if source == .manual {
+        if source == .manual || source == .online {
             if isTimeOut  {
                 return Utils.getImage(named: IconNames.SuccessScreen)
             } else if isFetchSkipped || isFailureButAccountConnected {
@@ -704,7 +704,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     
     private func getStatusImage(action: String) -> UIImage? {
         let source = self.fetchRequestSource ?? .general
-        if source == .manual {
+        if source == .manual || source == .online {
             if isTimeOut  {
                 if action == Actions.ForegroundHtmlScrapping {
                     return Utils.getImage(named: IconNames.SuccessScreen)

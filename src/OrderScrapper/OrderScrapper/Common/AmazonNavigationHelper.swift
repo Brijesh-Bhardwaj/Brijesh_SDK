@@ -322,7 +322,7 @@ class AmazonNavigationHelper: NavigationHelper {
     
     private func getDateRange() {
         var forceScrape = false
-        if let source = self.fetchRequestSource, source == .manual {
+        if let source = self.fetchRequestSource, source == .manual || source == .online {
             //For manual scraping send forcescrape as true to date range API
             forceScrape = true
         }
@@ -337,7 +337,7 @@ class AmazonNavigationHelper: NavigationHelper {
 //                    CoreDataManager.shared.deleteOrderDetails(userID: account.userID, panelistID: account.panelistID, orderSource: account.source.value)
                     
                     if response.scrappingType == ScrappingType.report.rawValue {
-                        if self.fetchRequestSource == .manual {
+                        if self.fetchRequestSource == .manual || self.fetchRequestSource == .online {
                             self.getTimerValue(type: .report) { timerValue in
                                 self.timerHandler.startTimer(action: Actions.ForegroundCSVScrapping, timerInterval: TimeInterval(timerValue))
                                 self.scrapeReport(response: response)
@@ -348,7 +348,7 @@ class AmazonNavigationHelper: NavigationHelper {
                         }
                     } else {
                         self.timerHandler?.stopTimer()
-                        if self.fetchRequestSource == .manual {
+                        if self.fetchRequestSource == .manual || self.fetchRequestSource == .online {
                             self.getTimerValue(type: .html) { timerValue in
                                 self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping, timerInterval: TimeInterval(timerValue))
                                 self.scrapeHtml()
