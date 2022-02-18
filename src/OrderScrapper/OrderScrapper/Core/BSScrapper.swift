@@ -171,7 +171,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.StepStarHtmlScrapping, eventAttributes: logEventAttributes)
         }
         var forceScrape = false
-        if let source = self.fetchRequestSource, source == .manual {
+        if let source = self.fetchRequestSource, source == .manual || source == .online{
             //For manual scraping send forcescrape as true to date range API
             forceScrape = true
         }
@@ -591,7 +591,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
         DispatchQueue.global().async {
             var orderSectionType = ""
             let source = self.fetchRequestSource ?? .general
-            if self.scrappingMode == .Foreground && source != .manual {
+            if self.scrappingMode == .Foreground && source != .manual && source != .online {
                 orderSectionType = SectionType.connection.rawValue
             } else {
                 orderSectionType = SectionType.orderUpload.rawValue
