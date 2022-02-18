@@ -408,7 +408,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     }
     
     private func updateProgressViewLabel(isUploadingPreviousOrder: Bool) {
-        if let source = self.fetchRequestSource, source == .manual, source == .online {
+        if let source = self.fetchRequestSource, source == .manual || source == .online {
             if let listener = self.scraperListener {
                 listener.updateProgressHeaderLabel(isUploadingPreviousOrder: isUploadingPreviousOrder)
             }

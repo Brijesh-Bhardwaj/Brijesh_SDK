@@ -167,7 +167,6 @@ public class OrdersExtractor {
             var localTimeZoneIdentifier: String { return TimeZone.current.identifier }
             _ = AmazonService.getIncentiveFlag(timeZone: localTimeZoneIdentifier) { response, error in
                 if response != nil {
-                    print("!!! isUserEligibleForIncentive response",response)
                     if let shouldShowButton = response?.isFlagEnabled {
                         if shouldShowButton {
                             completionHandler(shouldShowButton)
@@ -178,7 +177,8 @@ public class OrdersExtractor {
                         completionHandler(false)
                     }
                 } else {
-                    print("!!!! isUserEligibleForIncentive error ",error)
+                    let aslException = ASLException(error: nil, errorMessage: error!.errorMessage, failureType: nil)
+                    FirebaseAnalyticsUtil.logSentryError(error: aslException)
                 }
             }
         

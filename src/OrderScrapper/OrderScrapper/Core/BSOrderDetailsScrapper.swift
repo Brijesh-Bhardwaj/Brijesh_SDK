@@ -179,7 +179,7 @@ class BSOrderDetailsScrapper {
     
     private func shouldScrapeNextOrder() -> Bool {
         if let mode = self.scrappingMode, mode == .Foreground {
-            if let source = self.fetchRequestSource, source == .manual, source == .online {
+            if let source = self.fetchRequestSource, source == .manual || source == .online {
                 return true
             } else {
                 return false
@@ -236,7 +236,7 @@ class BSOrderDetailsScrapper {
     }
     
     private func showScrapePercentage(dataUploadComplete: Bool) {
-        if let source = self.fetchRequestSource, source == .manual, source == .online {
+        if let source = self.fetchRequestSource, source == .manual || source == .online {
             if let listener = self.scraperListener {
                 let value = calculateScrapePercentage()
                 if value > 0 {
