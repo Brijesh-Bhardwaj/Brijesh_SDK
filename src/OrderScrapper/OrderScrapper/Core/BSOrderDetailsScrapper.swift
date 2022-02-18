@@ -45,8 +45,12 @@ class BSOrderDetailsScrapper {
         orderDetailsTimer.start()
         self.script = script
         self.queue = Queue(queue: orderDetails)
-        self.scrappingMode = mode
         self.fetchRequestSource = source
+        if fetchRequestSource == .online {
+            self.scrappingMode = .Online
+        } else {
+            self.scrappingMode = mode
+        }
         self.dateRange = dateRange
         self.scraperListener = scraperListener
         self.totalOrderCount = orderDetails.count
@@ -113,7 +117,7 @@ class BSOrderDetailsScrapper {
         if !queue.isEmpty() {
             print("$$$$ scrapeQueue",OrderState.Inprogress.rawValue)
             if let orderDetail = orderDetail {
-                self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue)
+                self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue, scrapingContext: self.scrappingMode!.rawValue)
             }
         } else {
             self.getOrdersDetailsCountOnConnection { [weak self] orderDetailsUploadCount in
@@ -121,12 +125,12 @@ class BSOrderDetailsScrapper {
                 if orderDetailsUploadCount == 0 || orderDetailsUploadCount == 1 {
                     if let orderDetail = self.orderDetail {
                         print("$$$$ scrapeQueue",OrderState.Completed.rawValue)
-                        self.dataUploader.addData(data: data, orderDetail: orderDetail,orderState: OrderState.Completed.rawValue)
+                        self.dataUploader.addData(data: data, orderDetail: orderDetail,orderState: OrderState.Completed.rawValue, scrapingContext: self.scrappingMode!.rawValue)
                     }
                 } else {
                     if let orderDetail = self.orderDetail {
                         print("$$$$ scrapeQueue",OrderState.Inprogress.rawValue)
-                        self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue)
+                        self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue, scrapingContext: self.scrappingMode!.rawValue)
                     }
                 }
             }
@@ -281,6 +285,7 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                             print("### onHtmlScrappingSucess for OrderDetail", response)
                             if var orderDetails = jsCallBackResult["data"] as? Dictionary<String,Any> {
                                 orderDetails[Strings.ScrapingTime] = scrapeTime
+                                orderDetails[Strings.scrapingMode] = scrappingMode?.rawValue
                                 self.uploadScrapeData(data: orderDetails)
                             }
                             self.scrapeNextOrder()

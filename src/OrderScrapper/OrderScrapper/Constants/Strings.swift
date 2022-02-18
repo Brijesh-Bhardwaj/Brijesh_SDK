@@ -121,6 +121,7 @@ struct Strings {
     static let JSAuthVersionKroger = "js_auth_version_kroger"
     static let JSAuthVersionWalmart = "js_auth_version_walmart"
     static let MultiAuthError = "Multiple authentication attempts failed"
+    static let scrapingMode = "scrapingContext"
 
 
     //Sentry error message
@@ -137,6 +138,7 @@ struct Strings {
     static let HeaderFetchingOrders = "Updating %@ Orders"
     static let HeaderFetchingPendingOrders = "Updating Pending %@ Orders"
     static let FetchSuccessMessage = "%@ orders updated successfully"
+    static let ManualSuccessMessage = "Your account has been scanned successfully and incentive will be credited in 72hrs"
     static let FetchFailureMessage = "%@ orders update failed"
     static let TimeOutFailureMessage = "Updated your orders partially. Please try again later."
 }

@@ -654,13 +654,13 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     
     private func getSuccessMessage() -> String {
         let source = self.fetchRequestSource ?? .general
-        if source == .manual {
+        if source == .manual || source == .online {
             if isTimeOut {
                 return LibContext.shared.manualScrapeTimeOutMessage
             } else if isFetchSkipped || isFailureButAccountConnected {
                 return String.init(format: Strings.FetchFailureMessage, OrderSource.Amazon.value)
             } else {
-                return String.init(format: Strings.FetchSuccessMessage, OrderSource.Amazon.value)
+                return LibContext.shared.manualScrapeSuccess
             }
         } else {
             return AppConstants.amazonAccountConnectedSuccess

@@ -5,7 +5,7 @@
 import Foundation
 
 enum OrderJsonKey: String {
-    case panelistId, toDate, fromDate, platformId, data, status, listingScrapeTime, listingOrderCount
+    case panelistId, toDate, fromDate, platformId, data, status, listingScrapeTime, listingOrderCount, sessionScrapingContext
 }
 
 struct OrderRequest {
@@ -17,8 +17,9 @@ struct OrderRequest {
     let data: [[String:Any]]?
     let listingScrapeTime: Int64?
     let listingOrderCount: Int?
+    let sessionScrapingContext: String?
     
     func toDictionary() -> [String: Any] {
-        return [OrderJsonKey.panelistId.rawValue: panelistId.lowercased(), OrderJsonKey.platformId.rawValue: platformId.lowercased(), OrderJsonKey.toDate.rawValue: toDate, OrderJsonKey.fromDate.rawValue: fromDate, OrderJsonKey.data.rawValue: data, OrderJsonKey.status.rawValue: status, OrderJsonKey.listingScrapeTime.rawValue: listingScrapeTime, OrderJsonKey.listingOrderCount.rawValue: listingOrderCount]
+        return [OrderJsonKey.panelistId.rawValue: panelistId.lowercased(), OrderJsonKey.platformId.rawValue: platformId.lowercased(), OrderJsonKey.toDate.rawValue: toDate, OrderJsonKey.fromDate.rawValue: fromDate, OrderJsonKey.data.rawValue: data, OrderJsonKey.status.rawValue: status, OrderJsonKey.listingScrapeTime.rawValue: listingScrapeTime, OrderJsonKey.listingOrderCount.rawValue: listingOrderCount, OrderJsonKey.sessionScrapingContext.rawValue: sessionScrapingContext]
     }
 }

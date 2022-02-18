@@ -444,7 +444,11 @@ class AmazonNavigationHelper: NavigationHelper {
             }
         }
         self.backgroundScrapper.scraperListener = self.scraperListener
-        self.backgroundScrapper.scrappingMode = .Foreground
+        if self.fetchRequestSource == .manual {
+            backgroundScrapper?.scrappingMode = .Manual
+        } else {
+            backgroundScrapper?.scrappingMode = .Foreground
+        }
         if let fetchRequestSource = fetchRequestSource {
             self.backgroundScrapper.fetchRequestSource = fetchRequestSource
         }

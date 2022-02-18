@@ -162,6 +162,22 @@ public class OrdersExtractor {
         }
     }
     
+    public static func isUserEligibleForIncentive() throws -> Bool{
+        if OrdersExtractor.isInitialized {
+            
+        } else {
+            let error =  ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
+            let panelistId = LibContext.shared.authProvider.getPanelistID()
+            var logEventAttributes:[String:String] = [:]
+            logEventAttributes = [EventConstant.PanelistID: panelistId,
+                                  EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                                  EventConstant.Status: EventStatus.Success]
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.ConfigsMissing, eventAttributes: logEventAttributes)
+            throw error
+        }
+        return true
+    }
+    
     private static func registerFonts() {
         UIFont.registerFont(withFilenameString: "SF-Pro-Rounded-Bold.otf")
         UIFont.registerFont(withFilenameString: "SF-Pro-Rounded-Regular.otf")

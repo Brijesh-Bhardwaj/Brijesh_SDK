@@ -16,6 +16,7 @@ class Configurations: Codable {
     var manualScrapeTimeout: Double?
     var manualScrapeReportTimeout: Double?
     var manualScrapeTimeoutMessage: String?
+    var manualScrapeSuccess: String?
     init(login: String) {
         self.login = login
         self.details = ""
@@ -39,4 +40,5 @@ class OrderUpload: Codable {
 
 class Messages: Codable {
     var manualScrapeTimeoutMessage: String?
+    var manualScrapeSuccess: String?
 }

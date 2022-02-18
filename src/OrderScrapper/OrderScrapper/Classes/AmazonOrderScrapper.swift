@@ -190,7 +190,7 @@ class AmazonOrderScrapper {
         for account in accounts {
             if let account = account {
                 if account.source == .Amazon {
-                    self.performForegroundScraping(account, orderExtractionListener, .manual)
+                    self.performForegroundScraping(account, orderExtractionListener, .online)
                 }
             }
         }
@@ -310,6 +310,7 @@ class AmazonOrderScrapper {
             
             //Start scrapping in the background
             timerValue.start()
+            self.backgroundScrapper.scrappingMode = .Background
             self.backgroundScrapper.startScrapping(account: account)
         }
     }
