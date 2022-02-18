@@ -164,7 +164,10 @@ public class OrdersExtractor {
     
     public static func isUserEligibleForIncentive() throws -> Bool{
         if OrdersExtractor.isInitialized {
-            
+            var localTimeZoneIdentifier: String { return TimeZone.current.identifier }
+
+            localTimeZoneIdentifier
+            print("!!!! localTimeZoneIdentifier",localTimeZoneIdentifier)
         } else {
             let error =  ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
             let panelistId = LibContext.shared.authProvider.getPanelistID()

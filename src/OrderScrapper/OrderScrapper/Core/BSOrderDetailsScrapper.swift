@@ -282,10 +282,10 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                             FirebaseAnalyticsUtil.logEvent(eventType: EventType.onSingleOrderDetailScrape, eventAttributes: logEventAttributes)
                             FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResultSuccess, eventAttributes: logEventAttributes)
                             scrapeTime[Strings.ScrapeTime] = scrapingTime
+                            scrapeTime[Strings.scrapingMode] = scrappingMode?.rawValue
                             print("### onHtmlScrappingSucess for OrderDetail", response)
                             if var orderDetails = jsCallBackResult["data"] as? Dictionary<String,Any> {
                                 orderDetails[Strings.ScrapingTime] = scrapeTime
-                                orderDetails[Strings.scrapingMode] = scrappingMode?.rawValue
                                 self.uploadScrapeData(data: orderDetails)
                             }
                             self.scrapeNextOrder()
