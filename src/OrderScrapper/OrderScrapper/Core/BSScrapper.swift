@@ -171,7 +171,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.StepStarHtmlScrapping, eventAttributes: logEventAttributes)
         }
         var forceScrape = false
-        if let source = self.fetchRequestSource, source == .manual || source == .online{
+        if let source = self.fetchRequestSource, source == .manual || source == .online {
             //For manual scraping send forcescrape as true to date range API
             forceScrape = true
         }
@@ -408,7 +408,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     }
     
     private func updateProgressViewLabel(isUploadingPreviousOrder: Bool) {
-        if let source = self.fetchRequestSource, source == .manual {
+        if let source = self.fetchRequestSource, source == .manual, source == .online {
             if let listener = self.scraperListener {
                 listener.updateProgressHeaderLabel(isUploadingPreviousOrder: isUploadingPreviousOrder)
             }

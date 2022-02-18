@@ -162,12 +162,26 @@ public class OrdersExtractor {
         }
     }
     
-    public static func isUserEligibleForIncentive() throws -> Bool{
+    public static func isUserEligibleForIncentive(completionHandler: @escaping (Bool) -> Void) throws {
         if OrdersExtractor.isInitialized {
             var localTimeZoneIdentifier: String { return TimeZone.current.identifier }
-
-            localTimeZoneIdentifier
-            print("!!!! localTimeZoneIdentifier",localTimeZoneIdentifier)
+            _ = AmazonService.getIncentiveFlag(timeZone: localTimeZoneIdentifier) { response, error in
+                if response != nil {
+                    print("!!! isUserEligibleForIncentive response",response)
+                    if let shouldShowButton = response?.isFlagEnabled {
+                        if shouldShowButton {
+                            completionHandler(shouldShowButton)
+                        } else {
+                            completionHandler(false)
+                        }
+                    } else {
+                        completionHandler(false)
+                    }
+                } else {
+                    print("!!!! isUserEligibleForIncentive error ",error)
+                }
+            }
+        
         } else {
             let error =  ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
             let panelistId = LibContext.shared.authProvider.getPanelistID()
@@ -177,10 +191,9 @@ public class OrdersExtractor {
                                   EventConstant.Status: EventStatus.Success]
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.ConfigsMissing, eventAttributes: logEventAttributes)
             throw error
+            completionHandler(false)
         }
-        return true
     }
-    
     private static func registerFonts() {
         UIFont.registerFont(withFilenameString: "SF-Pro-Rounded-Bold.otf")
         UIFont.registerFont(withFilenameString: "SF-Pro-Rounded-Regular.otf")
