@@ -29,6 +29,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     public var scrappingMode: ScrapingMode?
     var fetchRequestSource: FetchRequestSource?
     let panelistID = LibContext.shared.authProvider.getPanelistID()
+    var isNewSession = false
     
     private lazy var bsHtmlScrapper: BSHtmlScrapper = {
         return BSHtmlScrapper(params: self.scrapperParams)
@@ -173,6 +174,9 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
         var forceScrape = false
         if let source = self.fetchRequestSource, source == .manual || source == .online {
             //For manual scraping send forcescrape as true to date range API
+            if fetchRequestSource == .online {
+                isNewSession = true
+            }
             forceScrape = true
         }
         _ = AmazonService.getDateRange(platformId: self.account!.userID,
@@ -689,7 +693,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgInjectJSForOrderDetail, eventAttributes: logEventAttributes)
                 
-                BSOrderDetailsScrapper(scrapperParams: self.scrapperParams).scrapeOrderDetailPage(script: script, orderDetails: orderDetails, mode: self.scrappingMode, source: self.fetchRequestSource, dateRange: self.dateRange, scraperListener: self.scraperListener)
+                BSOrderDetailsScrapper(scrapperParams: self.scrapperParams).scrapeOrderDetailPage(script: script, orderDetails: orderDetails, mode: self.scrappingMode, source: self.fetchRequestSource, dateRange: self.dateRange, scraperListener: self.scraperListener, isNewSession: self.isNewSession)
                 print("### BSScrapper started scrapeOrderDetailPage")
                 
             } else {
@@ -771,9 +775,21 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
         }
     }
     
+    private func getscrapingSessionStatus(listingOrderCount: Int) -> String? {
+        if fetchRequestSource == .online && isNewSession {
+            if listingOrderCount == 0 {
+                return OrderStatus.Completed.rawValue
+            } else {
+                return OrderStatus.InProgress.rawValue
+            }
+        } else {
+            return nil
+        }
+    }
+    
     private func uploadOrderHistory(listingScrapeTime: Int64, listingOrderCount: Int, status: String) {
         if let fromDate = self.dateRange?.fromDate, let toDate = self.dateRange?.toDate, let userID = self.account?.userID {
-            let orderRequest = OrderRequest(panelistId: self.panelistID, platformId: userID, fromDate: fromDate, toDate: toDate, status: OrderStatus.Completed.rawValue, data: [], listingScrapeTime: listingScrapeTime, listingOrderCount: listingOrderCount, scrapingSessionContext: getScrapingMode())
+            let orderRequest = OrderRequest(panelistId: self.panelistID, platformId: userID, fromDate: fromDate, toDate: toDate, status: status, data: [], listingScrapeTime: listingScrapeTime, listingOrderCount: listingOrderCount, scrapingSessionContext: getScrapingMode(), scrapingSessionStatus: getscrapingSessionStatus(listingOrderCount: listingOrderCount))
             _ = AmazonService.uploadOrderHistory(orderRequest: orderRequest, orderSource: self.orderSource.value) { response, error in
                 DispatchQueue.global().async {
                     var logEventAttributes:[String:String] = [:]

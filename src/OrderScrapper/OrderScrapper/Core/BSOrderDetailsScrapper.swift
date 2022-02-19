@@ -19,6 +19,7 @@ class BSOrderDetailsScrapper {
     var scraperListener: ScraperProgressListener?
     var totalOrderCount: Int = 0
     var scrapeTime: [String: Any] = [:]
+    var isNewSession = false
     
     lazy var scrapeQueue: [String] = {
         return Array<String>()
@@ -41,7 +42,7 @@ class BSOrderDetailsScrapper {
     }
     
     func scrapeOrderDetailPage(script: String, orderDetails: [OrderDetails], mode: ScrapingMode?,
-                               source: FetchRequestSource?, dateRange: DateRange?, scraperListener: ScraperProgressListener?) {
+                               source: FetchRequestSource?, dateRange: DateRange?, scraperListener: ScraperProgressListener?, isNewSession: Bool) {
         orderDetailsTimer.start()
         self.script = script
         self.queue = Queue(queue: orderDetails)
@@ -54,6 +55,7 @@ class BSOrderDetailsScrapper {
         self.dateRange = dateRange
         self.scraperListener = scraperListener
         self.totalOrderCount = orderDetails.count
+        self.isNewSession = isNewSession
         scrapeOrder()
     }
     
@@ -117,7 +119,7 @@ class BSOrderDetailsScrapper {
         if !queue.isEmpty() {
             print("$$$$ scrapeQueue",OrderState.Inprogress.rawValue)
             if let orderDetail = orderDetail {
-                self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue, scrapingContext: self.scrappingMode!.rawValue)
+                self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue, scrapingContext: self.scrappingMode!.rawValue, scrapingSessionStatus: self.getScrapingSessionStatus())
             }
         } else {
             self.getOrdersDetailsCountOnConnection { [weak self] orderDetailsUploadCount in
@@ -125,15 +127,27 @@ class BSOrderDetailsScrapper {
                 if orderDetailsUploadCount == 0 || orderDetailsUploadCount == 1 {
                     if let orderDetail = self.orderDetail {
                         print("$$$$ scrapeQueue",OrderState.Completed.rawValue)
-                        self.dataUploader.addData(data: data, orderDetail: orderDetail,orderState: OrderState.Completed.rawValue, scrapingContext: self.scrappingMode!.rawValue)
+                        self.dataUploader.addData(data: data, orderDetail: orderDetail,orderState: OrderState.Completed.rawValue, scrapingContext: self.scrappingMode!.rawValue, scrapingSessionStatus: self.getScrapingSessionStatus())
                     }
                 } else {
                     if let orderDetail = self.orderDetail {
                         print("$$$$ scrapeQueue",OrderState.Inprogress.rawValue)
-                        self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue, scrapingContext: self.scrappingMode!.rawValue)
+                        self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue, scrapingContext: self.scrappingMode!.rawValue, scrapingSessionStatus: self.getScrapingSessionStatus())
                     }
                 }
             }
+        }
+    }
+    
+    private func getScrapingSessionStatus() -> String? {
+        if fetchRequestSource == .online && isNewSession {
+            if !queue.isEmpty() {
+                return OrderStatus.InProgress.rawValue
+            } else {
+                return OrderStatus.Completed.rawValue
+            }
+        } else {
+            return nil
         }
     }
     
