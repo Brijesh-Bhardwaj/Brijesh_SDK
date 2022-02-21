@@ -83,7 +83,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         if let statusImage = self.getStatusImage() {
             self.fetchSuccessView?.imageView = statusImage
         }
-        if self.fetchRequestSource == .manual {
+        if self.fetchRequestSource == .manual || self.fetchRequestSource == .online {
             self.progressView?.hideCancelScrapeBtn = false
         }
         self.scraperListener = self
@@ -610,7 +610,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                     self.handleServicesDown()
                 }
             }
-            if self.fetchRequestSource == .manual && action == Actions.ForegroundHtmlScrapping {
+            if (self.fetchRequestSource == .manual || self.fetchRequestSource == .online) && action == Actions.ForegroundHtmlScrapping {
                 logEventss(failureType: FailureTypes.timeout.rawValue, eventState: EventState.fail.rawValue, scrapingType: ScrappingType.html.rawValue)
             } else if (action == Actions.ForegroundHtmlScrapping) {
                 self.webContentView?.stopLoading()
@@ -771,7 +771,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             if let statusImage = self.getStatusImage(action: action) {
                 self.fetchSuccessView?.imageView = statusImage
             }
-            if self.fetchRequestSource == .manual {
+            if self.fetchRequestSource == .manual || self.fetchRequestSource == .online {
                 self.fetchSuccessView?.hideOkButton = true
                 self.fetchSuccessView?.hideCancelButton = false
                 self.fetchSuccessView?.hideContinueButton = false
