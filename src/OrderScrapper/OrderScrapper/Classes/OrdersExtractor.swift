@@ -177,6 +177,7 @@ public class OrdersExtractor {
                         completionHandler(false)
                     }
                 } else {
+                    completionHandler(false)
                     let aslException = ASLException(error: nil, errorMessage: error!.errorMessage, failureType: nil)
                     FirebaseAnalyticsUtil.logSentryError(error: aslException)
                 }
