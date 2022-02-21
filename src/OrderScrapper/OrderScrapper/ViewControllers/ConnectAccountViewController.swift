@@ -83,7 +83,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         if let statusImage = self.getStatusImage() {
             self.fetchSuccessView?.imageView = statusImage
         }
-        if self.fetchRequestSource == .manual {
+        if self.fetchRequestSource == .manual || self.fetchRequestSource == .online {
             self.progressView?.hideCancelScrapeBtn = false
         }
         self.scraperListener = self
