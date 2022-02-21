@@ -190,6 +190,11 @@ class AmazonOrderScrapper {
         for account in accounts {
             if let account = account {
                 if account.source == .Amazon {
+                    self.terminateScrapping(account: account)
+                    if self.backgroundScrapper != nil {
+                        self.backgroundScrapper.stopScrapping()
+                        self.backgroundScrapper = nil
+                    }
                     self.performForegroundScraping(account, orderExtractionListener, .online)
                 }
             }

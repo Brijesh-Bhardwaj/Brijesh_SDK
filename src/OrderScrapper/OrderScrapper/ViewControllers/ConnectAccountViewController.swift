@@ -83,7 +83,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         if let statusImage = self.getStatusImage() {
             self.fetchSuccessView?.imageView = statusImage
         }
-        if self.fetchRequestSource == .manual || self.fetchRequestSource == .online {
+        if self.fetchRequestSource == .manual {
             self.progressView?.hideCancelScrapeBtn = false
         }
         self.scraperListener = self
@@ -210,7 +210,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 scraper.stopScrapping()
             }
         }
-        if fetchRequestSource == .manual {
+        if fetchRequestSource == .manual || fetchRequestSource == .online {
             DispatchQueue.main.async {
                 self.progressView?.scrapePercentage.text = ""
             }
