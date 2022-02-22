@@ -32,6 +32,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     var isNewSession = false
     var bsHtmlScrapper: BSHtmlScrapper! = nil
     var scraperParams: BSHtmlScrapperParams! = nil
+    var getScrapeSessionTimer: String? = nil
     
     private func getBSHtmlScrapper () -> BSHtmlScrapper {
         if bsHtmlScrapper == nil {
@@ -72,7 +73,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     func startScrapping(account: Account) {
         windowManager.attachHeadlessView(view: webClient)
         self.account = account
-        
+        getScrapeSessionTimer = DateUtils.getSessionTimer(getSessionTimeForOnline: fetchRequestSource ?? .general)
         let dbOrderDetails = self.getOrderDetails()
         if dbOrderDetails.count > 0 {
             self.uploadPreviousOrders()
@@ -179,6 +180,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.StepStarHtmlScrapping, eventAttributes: logEventAttributes)
         }
         var forceScrape = false
+        var sessionScrapeTimer: String? = nil
         if let source = self.fetchRequestSource, source == .manual || source == .online {
             //For manual scraping send forcescrape as true to date range API
             if fetchRequestSource == .online {
@@ -701,7 +703,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgInjectJSForOrderDetail, eventAttributes: logEventAttributes)
                 
-                BSOrderDetailsScrapper(scrapperParams: self.getScraperParams()).scrapeOrderDetailPage(script: script, orderDetails: orderDetails, mode: self.scrappingMode, source: self.fetchRequestSource, dateRange: self.dateRange, scraperListener: self.scraperListener, isNewSession: self.isNewSession)
+                BSOrderDetailsScrapper(scrapperParams: self.getScraperParams()).scrapeOrderDetailPage(script: script, orderDetails: orderDetails, mode: self.scrappingMode, source: self.fetchRequestSource, dateRange: self.dateRange, scraperListener: self.scraperListener, isNewSession: self.isNewSession, scrapingSessionStartedAt: self.getScrapeSessionTimer)
                 print("### BSScrapper started scrapeOrderDetailPage")
                 
             } else {
@@ -797,7 +799,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     
     private func uploadOrderHistory(listingScrapeTime: Int64, listingOrderCount: Int, status: String) {
         if let fromDate = self.dateRange?.fromDate, let toDate = self.dateRange?.toDate, let userID = self.account?.userID {
-            let orderRequest = OrderRequest(panelistId: self.panelistID, platformId: userID, fromDate: fromDate, toDate: toDate, status: status, data: [], listingScrapeTime: listingScrapeTime, listingOrderCount: listingOrderCount, scrapingSessionContext: getScrapingMode(), scrapingSessionStatus: getscrapingSessionStatus(listingOrderCount: listingOrderCount))
+            let orderRequest = OrderRequest(panelistId: self.panelistID, platformId: userID, fromDate: fromDate, toDate: toDate, status: status, data: [], listingScrapeTime: listingScrapeTime, listingOrderCount: listingOrderCount, scrapingSessionContext: getScrapingMode(), scrapingSessionStatus: getscrapingSessionStatus(listingOrderCount: listingOrderCount), scrapingSessionStartedAt: getScrapeSessionTimer)
             _ = AmazonService.uploadOrderHistory(orderRequest: orderRequest, orderSource: self.orderSource.value) { response, error in
                 DispatchQueue.global().async {
                     var logEventAttributes:[String:String] = [:]
