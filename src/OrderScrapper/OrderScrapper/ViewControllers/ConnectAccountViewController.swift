@@ -745,6 +745,11 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     }
     
     private func cancelManualScrape() {
+        self.navigationHelper.backgroundScrapper.stopScrapping()
+        if self.navigationHelper.backgroundScrapper != nil {
+            self.navigationHelper.backgroundScrapper.scraperListener = nil
+            self.navigationHelper.backgroundScrapper = nil
+        }
         let result = (true, OrderFetchSuccessType.fetchSkippedByUser)
         LibContext.shared.scrapeCompletionPublisher.send((result, nil))
     }

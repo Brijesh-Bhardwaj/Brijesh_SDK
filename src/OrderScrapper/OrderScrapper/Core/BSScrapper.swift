@@ -30,16 +30,23 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     var fetchRequestSource: FetchRequestSource?
     let panelistID = LibContext.shared.authProvider.getPanelistID()
     var isNewSession = false
+    var bsHtmlScrapper: BSHtmlScrapper! = nil
+    var scraperParams: BSHtmlScrapperParams! = nil
     
-    private lazy var bsHtmlScrapper: BSHtmlScrapper = {
-        return BSHtmlScrapper(params: self.scrapperParams)
-    }()
+    private func getBSHtmlScrapper () -> BSHtmlScrapper {
+        if bsHtmlScrapper == nil {
+            bsHtmlScrapper = BSHtmlScrapper(params: self.getScraperParams())
+        }
+        return bsHtmlScrapper
+    }
     
-    lazy var scrapperParams: BSHtmlScrapperParams = {
-        let authenticator = try! self.getAuthenticator()
-        
-        return BSHtmlScrapperParams(webClient: self.webClient, webNavigationDelegate: self.webClientDelegate, listener: self, authenticator: authenticator, configuration: self.configuration, account: self.account!, scrappingType: self.scrappingType, scrappingMode: scrappingMode?.rawValue)
-    }()
+    private func getScraperParams() -> BSHtmlScrapperParams {
+        if scraperParams == nil {
+            let authenticator = try! self.getAuthenticator()
+            scraperParams =  BSHtmlScrapperParams(webClient: self.webClient, webNavigationDelegate: self.webClientDelegate, listener: self, authenticator: authenticator, configuration: self.configuration, account: self.account!, scrappingType: self.scrappingType, scrappingMode: scrappingMode?.rawValue)
+        }
+        return scraperParams
+    }
     
     lazy var authenticator: BSAuthenticator = {
         let authenticator = try! self.getAuthenticator()
@@ -288,9 +295,9 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
                 if self.dateRange?.scrappingType == ScrappingType.report.rawValue {
                     let timerHandler = TimerHandler(timerCallback: self)
                     self.CSVScrapper.scrapeOrders(response: self.dateRange!, account: self.account!
-                                                  , timerHandler: timerHandler, param: self.scrapperParams)
+                                                  , timerHandler: timerHandler, param: self.getScraperParams())
                 } else {
-                    self.bsHtmlScrapper.extractOrders(script: executableScript, url: self.configuration.listing)
+                    self.getBSHtmlScrapper().extractOrders(script: executableScript, url: self.configuration.listing)
                     
                     var logEventAttributes:[String:String] = [:]
                     logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
@@ -425,7 +432,6 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     
     func onScrapeDataUploadCompleted(complete: Bool, error: ASLException?) {
         print("### onScrapeDataUploadCompleted ", complete)
-        
         var logEventAttributes:[String:String] = [:]
         logEventAttributes = [EventConstant.OrderSource: self.orderSource.value,
                               EventConstant.PanelistID: self.panelistID,
@@ -436,6 +442,8 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
         }
         
         if extractingOldOrders {
+            self.scraperParams = nil
+            self.bsHtmlScrapper = nil
             //For Walmart and Instacart update account state to Connected if all connection scrape orders uploaded
             updateAccountAsConnected(account: self.account)
             // Extract new orders on completing upload of pending orders
@@ -693,7 +701,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgInjectJSForOrderDetail, eventAttributes: logEventAttributes)
                 
-                BSOrderDetailsScrapper(scrapperParams: self.scrapperParams).scrapeOrderDetailPage(script: script, orderDetails: orderDetails, mode: self.scrappingMode, source: self.fetchRequestSource, dateRange: self.dateRange, scraperListener: self.scraperListener, isNewSession: self.isNewSession)
+                BSOrderDetailsScrapper(scrapperParams: self.getScraperParams()).scrapeOrderDetailPage(script: script, orderDetails: orderDetails, mode: self.scrappingMode, source: self.fetchRequestSource, dateRange: self.dateRange, scraperListener: self.scraperListener, isNewSession: self.isNewSession)
                 print("### BSScrapper started scrapeOrderDetailPage")
                 
             } else {

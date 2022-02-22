@@ -20,6 +20,8 @@ class BSOrderDetailsScrapper {
     var totalOrderCount: Int = 0
     var scrapeTime: [String: Any] = [:]
     var isNewSession = false
+    var isScrapingComplete = false
+    let lock = NSLock()
     
     lazy var scrapeQueue: [String] = {
         return Array<String>()
@@ -391,9 +393,10 @@ extension BSOrderDetailsScrapper: DataUploadListener {
         guard let queue = self.queue else {
             return
         }
+        lock.lock()
         let completed = queue.isEmpty() && self.scrapeQueue.count == 0
         && !self.dataUploader.hasDataForUpload()
-        if completed {
+        if completed && !isScrapingComplete {
             //Show scrape percentage for manual scraping
             showScrapePercentage(dataUploadComplete: true)
 
@@ -403,7 +406,9 @@ extension BSOrderDetailsScrapper: DataUploadListener {
                                       EventConstant.OrderSourceID: self.params.account.userID,
                                       EventConstant.ScrappingTime: detailsTimer]
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.onDataUploadSuccess, eventAttributes: logEventAttributes)
+            isScrapingComplete = true
             self.params.listener.onScrapeDataUploadCompleted(complete: true, error: nil)
         }
+        lock.unlock()
     }
 }
