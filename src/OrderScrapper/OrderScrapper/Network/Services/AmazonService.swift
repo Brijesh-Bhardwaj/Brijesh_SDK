@@ -25,6 +25,7 @@ class AmazonService {
     private static let orderUpload = "order_history/upload_orders"
     private static let GetConfigs = "scraper_config"
     private static let PostEvents = "scrapping/push_events"
+    private static let GetIncnetiveFlagReponse = "scraper_config/show_incentive_flag"
     
     
     static func getDateRange(platformId: String, orderSource: String, forceScrape: Bool,
@@ -314,6 +315,27 @@ class AmazonService {
                      let aslException = ASLException(error: nil, errorMessage: response.error ?? "Error", failureType: nil)
                      completionHandler(nil, aslException)
                      print(AppConstants.tag, "getKrogerSusidiary", response.error ?? "Error")
+                 } else {
+                     completionHandler(response.data, nil)
+                 }
+             } else {
+                 completionHandler(nil, error)
+             }
+         }
+         return client
+     }
+    
+    static func getIncentiveFlag(timeZone: String, completionHandler: @escaping (IncnetiveFlagReponse?, ASLException?) -> Void) -> APIClient {
+        let encodedParameter = timeZone.replacingOccurrences(of: "/", with: "%2F")
+        let relativeURL = GetIncnetiveFlagReponse + "/" + encodedParameter
+         let client = NetworkClient<APIResponse<IncnetiveFlagReponse>>(relativeURL: relativeURL, requestMethod: .get)
+         
+         client.executeAPI() { (response, error) in
+             if let response = response as? APIResponse<IncnetiveFlagReponse> {
+                 if response.isError {
+                     let aslException = ASLException(error: nil, errorMessage: response.error ?? "Error", failureType: nil)
+                     completionHandler(nil, aslException)
+                     print(AppConstants.tag, "IncnetiveFlagReponse", response.error ?? "Error")
                  } else {
                      completionHandler(response.data, nil)
                  }

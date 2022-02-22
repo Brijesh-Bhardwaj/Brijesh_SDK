@@ -19,6 +19,9 @@ class BSOrderDetailsScrapper {
     var scraperListener: ScraperProgressListener?
     var totalOrderCount: Int = 0
     var scrapeTime: [String: Any] = [:]
+    var isNewSession = false
+    var isScrapingComplete = false
+    let lock = NSLock()
     
     lazy var scrapeQueue: [String] = {
         return Array<String>()
@@ -41,15 +44,20 @@ class BSOrderDetailsScrapper {
     }
     
     func scrapeOrderDetailPage(script: String, orderDetails: [OrderDetails], mode: ScrapingMode?,
-                               source: FetchRequestSource?, dateRange: DateRange?, scraperListener: ScraperProgressListener?) {
+                               source: FetchRequestSource?, dateRange: DateRange?, scraperListener: ScraperProgressListener?, isNewSession: Bool) {
         orderDetailsTimer.start()
         self.script = script
         self.queue = Queue(queue: orderDetails)
-        self.scrappingMode = mode
         self.fetchRequestSource = source
+        if fetchRequestSource == .online {
+            self.scrappingMode = .Online
+        } else {
+            self.scrappingMode = mode
+        }
         self.dateRange = dateRange
         self.scraperListener = scraperListener
         self.totalOrderCount = orderDetails.count
+        self.isNewSession = isNewSession
         scrapeOrder()
     }
     
@@ -113,7 +121,7 @@ class BSOrderDetailsScrapper {
         if !queue.isEmpty() {
             print("$$$$ scrapeQueue",OrderState.Inprogress.rawValue)
             if let orderDetail = orderDetail {
-                self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue)
+                self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue, scrapingContext: self.scrappingMode!.rawValue, scrapingSessionStatus: self.getScrapingSessionStatus())
             }
         } else {
             self.getOrdersDetailsCountOnConnection { [weak self] orderDetailsUploadCount in
@@ -121,15 +129,27 @@ class BSOrderDetailsScrapper {
                 if orderDetailsUploadCount == 0 || orderDetailsUploadCount == 1 {
                     if let orderDetail = self.orderDetail {
                         print("$$$$ scrapeQueue",OrderState.Completed.rawValue)
-                        self.dataUploader.addData(data: data, orderDetail: orderDetail,orderState: OrderState.Completed.rawValue)
+                        self.dataUploader.addData(data: data, orderDetail: orderDetail,orderState: OrderState.Completed.rawValue, scrapingContext: self.scrappingMode!.rawValue, scrapingSessionStatus: self.getScrapingSessionStatus())
                     }
                 } else {
                     if let orderDetail = self.orderDetail {
                         print("$$$$ scrapeQueue",OrderState.Inprogress.rawValue)
-                        self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue)
+                        self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue, scrapingContext: self.scrappingMode!.rawValue, scrapingSessionStatus: self.getScrapingSessionStatus())
                     }
                 }
             }
+        }
+    }
+    
+    private func getScrapingSessionStatus() -> String? {
+        if fetchRequestSource == .online && isNewSession {
+            if !queue.isEmpty() {
+                return OrderStatus.InProgress.rawValue
+            } else {
+                return OrderStatus.Completed.rawValue
+            }
+        } else {
+            return nil
         }
     }
     
@@ -175,7 +195,7 @@ class BSOrderDetailsScrapper {
     
     private func shouldScrapeNextOrder() -> Bool {
         if let mode = self.scrappingMode, mode == .Foreground {
-            if let source = self.fetchRequestSource, source == .manual {
+            if let source = self.fetchRequestSource, source == .manual || source == .online {
                 return true
             } else {
                 return false
@@ -232,7 +252,7 @@ class BSOrderDetailsScrapper {
     }
     
     private func showScrapePercentage(dataUploadComplete: Bool) {
-        if let source = self.fetchRequestSource, source == .manual {
+        if let source = self.fetchRequestSource, source == .manual || source == .online {
             if let listener = self.scraperListener {
                 let value = calculateScrapePercentage()
                 if value > 0 {
@@ -278,6 +298,7 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                             FirebaseAnalyticsUtil.logEvent(eventType: EventType.onSingleOrderDetailScrape, eventAttributes: logEventAttributes)
                             FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrappingOrderDetailResultSuccess, eventAttributes: logEventAttributes)
                             scrapeTime[Strings.ScrapeTime] = scrapingTime
+                            scrapeTime[Strings.scrapingMode] = scrappingMode?.rawValue
                             print("### onHtmlScrappingSucess for OrderDetail", response)
                             if var orderDetails = jsCallBackResult["data"] as? Dictionary<String,Any> {
                                 orderDetails[Strings.ScrapingTime] = scrapeTime
@@ -372,9 +393,10 @@ extension BSOrderDetailsScrapper: DataUploadListener {
         guard let queue = self.queue else {
             return
         }
+        lock.lock()
         let completed = queue.isEmpty() && self.scrapeQueue.count == 0
         && !self.dataUploader.hasDataForUpload()
-        if completed {
+        if completed && !isScrapingComplete {
             //Show scrape percentage for manual scraping
             showScrapePercentage(dataUploadComplete: true)
 
@@ -384,7 +406,9 @@ extension BSOrderDetailsScrapper: DataUploadListener {
                                       EventConstant.OrderSourceID: self.params.account.userID,
                                       EventConstant.ScrappingTime: detailsTimer]
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.onDataUploadSuccess, eventAttributes: logEventAttributes)
+            isScrapingComplete = true
             self.params.listener.onScrapeDataUploadCompleted(complete: true, error: nil)
         }
+        lock.unlock()
     }
 }

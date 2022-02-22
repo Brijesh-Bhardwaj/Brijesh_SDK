@@ -78,6 +78,7 @@
 		1CEBA4CC266F580500F331C7 /* JSCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEBA4CB266F580500F331C7 /* JSCallback.swift */; };
 		1CEDD13B26038CAE00E7BAB4 /* UserAccountMO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEDD13A26038CAE00E7BAB4 /* UserAccountMO.swift */; };
 		1CFB487B265405A8007F949E /* BSBaseAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFB487A265405A8007F949E /* BSBaseAuthenticator.swift */; };
+		4C5B12F327BF9E1300BEB9BE /* IncnetiveFlagReponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5B12F227BF9E1300BEB9BE /* IncnetiveFlagReponse.swift */; };
 		846E1F9026FA0E30009695C3 /* KrogerLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E1F8F26FA0E30009695C3 /* KrogerLogin.swift */; };
 		846E1FA226FA2D6B009695C3 /* ConnectKrogerAccountVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E1FA126FA2D6B009695C3 /* ConnectKrogerAccountVC.swift */; };
 		846E1FA626FA3265009695C3 /* KrogerAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E1FA526FA3265009695C3 /* KrogerAuthenticator.swift */; };
@@ -282,6 +283,7 @@
 		1CEBA4CB266F580500F331C7 /* JSCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSCallback.swift; sourceTree = "<group>"; };
 		1CEDD13A26038CAE00E7BAB4 /* UserAccountMO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAccountMO.swift; sourceTree = "<group>"; };
 		1CFB487A265405A8007F949E /* BSBaseAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSBaseAuthenticator.swift; sourceTree = "<group>"; };
+		4C5B12F227BF9E1300BEB9BE /* IncnetiveFlagReponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncnetiveFlagReponse.swift; sourceTree = "<group>"; };
 		846E1F8F26FA0E30009695C3 /* KrogerLogin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KrogerLogin.swift; sourceTree = "<group>"; };
 		846E1FA126FA2D6B009695C3 /* ConnectKrogerAccountVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectKrogerAccountVC.swift; sourceTree = "<group>"; };
 		846E1FA526FA3265009695C3 /* KrogerAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KrogerAuthenticator.swift; sourceTree = "<group>"; };
@@ -764,6 +766,7 @@
 				1C6D440A268EDDF2004A3165 /* Configs.swift */,
 				9DB6749426D6964E00A6DA26 /* EventLogs.swift */,
 				F03CB42E27316C5300B1DFA3 /* KrogerSubsidiaries.swift */,
+				4C5B12F227BF9E1300BEB9BE /* IncnetiveFlagReponse.swift */,
 			);
 			path = Response;
 			sourceTree = "<group>";
@@ -1068,6 +1071,7 @@
 				1C1BD79426C568B500ED6C5D /* BSCSVScrapper.swift in Sources */,
 				1C1BD79826C569AF00ED6C5D /* ScrapingMode.swift in Sources */,
 				E148DB8325FF317B001430BE /* WebViewModel.swift in Sources */,
+				4C5B12F327BF9E1300BEB9BE /* IncnetiveFlagReponse.swift in Sources */,
 				E148DB6B25FF2BFD001430BE /* ViewPresenter.swift in Sources */,
 				1C4F89A12654E91100925FAB /* ScrapperConfigs.swift in Sources */,
 				1C5B95B826CCEB8500FF0040 /* TimerHandler.swift in Sources */,
