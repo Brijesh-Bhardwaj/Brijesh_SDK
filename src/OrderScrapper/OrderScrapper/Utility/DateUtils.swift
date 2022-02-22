@@ -55,4 +55,17 @@ class DateUtils {
         
         return dateFormatter.string(from: date)
     }
+    
+    static func getSessionTimer(getSessionTimeForOnline: FetchRequestSource) -> String? {
+        let date = NSDate()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        
+        if getSessionTimeForOnline == .online {
+            return dateFormatter.string(from: date as Date)
+        } else {
+            return nil
+        }
+        
+    }
 }

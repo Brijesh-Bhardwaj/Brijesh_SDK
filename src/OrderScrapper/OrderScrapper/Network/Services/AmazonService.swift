@@ -328,7 +328,6 @@ class AmazonService {
     static func getIncentiveFlag(timeZone: String, completionHandler: @escaping (IncnetiveFlagReponse?, ASLException?) -> Void) -> APIClient {
         let encodedParameter = timeZone.replacingOccurrences(of: "/", with: "%2F")
         let relativeURL = GetIncnetiveFlagReponse + "?timezone=" + encodedParameter
-        print("!!! relativeURL",relativeURL)
          let client = NetworkClient<APIResponse<IncnetiveFlagReponse>>(relativeURL: relativeURL, requestMethod: .get)
          
          client.executeAPI() { (response, error) in

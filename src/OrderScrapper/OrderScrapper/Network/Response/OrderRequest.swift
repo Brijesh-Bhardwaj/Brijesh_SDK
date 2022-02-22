@@ -5,7 +5,7 @@
 import Foundation
 
 enum OrderJsonKey: String {
-    case panelistId, toDate, fromDate, platformId, data, status, listingScrapeTime, listingOrderCount, scrapingSessionContext, scrapingSessionStatus
+    case panelistId, toDate, fromDate, platformId, data, status, listingScrapeTime, listingOrderCount, scrapingSessionContext, scrapingSessionStatus, scrapingSessionStartedAt
 }
 
 struct OrderRequest {
@@ -19,8 +19,10 @@ struct OrderRequest {
     let listingOrderCount: Int?
     let scrapingSessionContext: String?
     let scrapingSessionStatus: String?
+    let scrapingSessionStartedAt: String?
     
     func toDictionary() -> [String: Any] {
-        return [OrderJsonKey.panelistId.rawValue: panelistId.lowercased(), OrderJsonKey.platformId.rawValue: platformId.lowercased(), OrderJsonKey.toDate.rawValue: toDate, OrderJsonKey.fromDate.rawValue: fromDate, OrderJsonKey.data.rawValue: data, OrderJsonKey.status.rawValue: status, OrderJsonKey.listingScrapeTime.rawValue: listingScrapeTime, OrderJsonKey.listingOrderCount.rawValue: listingOrderCount, OrderJsonKey.scrapingSessionStatus.rawValue: scrapingSessionStatus,OrderJsonKey.scrapingSessionContext.rawValue: scrapingSessionContext ]
+        return [OrderJsonKey.panelistId.rawValue: panelistId.lowercased(), OrderJsonKey.platformId.rawValue: platformId.lowercased(), OrderJsonKey.toDate.rawValue: toDate, OrderJsonKey.fromDate.rawValue: fromDate, OrderJsonKey.data.rawValue: data, OrderJsonKey.status.rawValue: status, OrderJsonKey.listingScrapeTime.rawValue: listingScrapeTime, OrderJsonKey.listingOrderCount.rawValue: listingOrderCount, OrderJsonKey.scrapingSessionStatus.rawValue: scrapingSessionStatus,OrderJsonKey.scrapingSessionContext.rawValue: scrapingSessionContext,
+            OrderJsonKey.scrapingSessionStartedAt.rawValue: scrapingSessionStartedAt]
     }
 }
