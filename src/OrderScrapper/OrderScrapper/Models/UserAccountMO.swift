@@ -105,7 +105,6 @@ public class UserAccountMO: NSManagedObject, Account {
         return isScrapping
     }
     
-    
     // MARK: - Private Methods
     private func getOrderSource() -> OrderSource {
         return OrderSource(rawValue: self.orderSource)!

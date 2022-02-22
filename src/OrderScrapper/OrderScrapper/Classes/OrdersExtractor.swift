@@ -63,7 +63,7 @@ public class OrdersExtractor {
                 FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_init_library")
             }
         }
-//        //get scripts for the order sources
+//        get scripts for the order sources
 //        BSScriptFileManager.shared.loadScriptFile()
 
         _ = AmazonService.getConfigs() {configs, error in
@@ -149,7 +149,7 @@ public class OrdersExtractor {
     
     public static func scanOnlineOrders(orderExtractionListener: OrderExtractionListener, accounts: Account?...) throws {
         if OrdersExtractor.isInitialized {
-        AmazonOrderScrapper.shared.scanAllOrders(accounts: accounts, orderExtractionListener: orderExtractionListener)
+            AmazonOrderScrapper.shared.scanAllOrders(accounts: accounts, orderExtractionListener: orderExtractionListener)
         } else {
             let error =  ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
             let panelistId = LibContext.shared.authProvider.getPanelistID()
@@ -182,7 +182,6 @@ public class OrdersExtractor {
                     FirebaseAnalyticsUtil.logSentryError(error: aslException)
                 }
             }
-        
         } else {
             let error =  ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
             let panelistId = LibContext.shared.authProvider.getPanelistID()
