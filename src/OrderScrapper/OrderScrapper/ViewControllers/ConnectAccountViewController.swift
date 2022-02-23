@@ -547,13 +547,16 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 if let statusImage = self.getStatusImage() {
                     self.fetchSuccessView?.imageView = statusImage
                 }
+                self.fetchSuccessView?.successIncentiveMessage = self.getIncentiveSuccessMessage()
                 self.contentView?.bringSubviewToFront(self.fetchSuccessView)
             }
         } else {
             DispatchQueue.main.async {
                 self.backButton?.isEnabled = false
                 self.backButton?.isHidden = true
+                self.isTimeOut = false
                 self.fetchSuccessView?.fetchSuccess = self.getSuccessMessage()
+                self.fetchSuccessView.successIncentiveMessage = true
                 self.fetchSuccessView?.hideOkButton = false
                 self.fetchSuccessView?.hideCancelButton = true
                 self.fetchSuccessView?.hideContinueButton = true
@@ -632,20 +635,28 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     
     private func getHeaderTitle() -> String {
         let source = self.fetchRequestSource ?? .general
-        if source == .manual || source == .online {
+        if source == .manual  {
             return String.init(format: Strings.HeaderFetchOrders, OrderSource.Amazon.value)
-        } else {
+        } else if source == .online{
+            return Strings.OnlineHeaderFetchingOrders
+        }else {
             return Utils.getString(key: Strings.HeadingConnectAmazonAccount)
         }
     }
     
     private func getHeaderMessage(isUploadingPreviousOrder: Bool) -> String {
         let source = self.fetchRequestSource ?? .general
-        if source == .manual || source == .online{
+        if source == .manual {
             if isUploadingPreviousOrder {
                 return String.init(format: Strings.HeaderFetchingPendingOrders, OrderSource.Amazon.value)
             } else {
                 return String.init(format: Strings.HeaderFetchingOrders, OrderSource.Amazon.value)
+            }
+        } else if source == .online {
+            if isUploadingPreviousOrder {
+                return Strings.OnlineHeaderPendingFetchingOrders
+            } else {
+                return Strings.OnlineFetchingOrders
             }
         } else {
             return Utils.getString(key: Strings.HeadingConnectingAmazonAccount)
@@ -654,7 +665,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     
     private func getSuccessMessage() -> String {
         let source = self.fetchRequestSource ?? .general
-        if source == .manual || source == .online {
+        if source == .manual {
             if isTimeOut {
                 return LibContext.shared.manualScrapeTimeOutMessage
             } else if isFetchSkipped || isFailureButAccountConnected {
@@ -662,15 +673,32 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             } else {
                 return LibContext.shared.manualScrapeSuccess
             }
+        } else if source == .online {
+            if isTimeOut {
+                return Strings.OnlineTimeOutFailureMessage
+            } else if isFetchSkipped || isFailureButAccountConnected {
+                return Strings.OnlineFetchFailureMessage
+            } else {
+                return Strings.OnlineSuccessMessage
+            }
         } else {
             return AppConstants.amazonAccountConnectedSuccess
+        }
+    }
+    
+    private func getIncentiveSuccessMessage() -> Bool {
+        let source = self.fetchRequestSource ?? .general
+        if source == .online {
+            return false
+        } else {
+            return true
         }
     }
     
     //TODO:- Need to change
     private func getSuccessMessage(action: String) -> String {
         let source = self.fetchRequestSource ?? .general
-        if source == .manual || source == .online {
+        if source == .manual  {
             if isTimeOut {
                 if action == Actions.ForegroundHtmlScrapping {
                     return LibContext.shared.manualScrapeTimeOutMessage
@@ -682,6 +710,19 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             } else {
                 return String.init(format: Strings.FetchSuccessMessage, OrderSource.Amazon.value)
             }
+        } else if source == .online {
+            if isTimeOut {
+                if action == Actions.ForegroundHtmlScrapping {
+                    return Strings.OnlineTimeOutFailureMessage
+                } else {
+                    return Strings.OnlineFetchFailureMessage
+                }
+            } else if isFetchSkipped || isFailureButAccountConnected {
+                return Strings.OnlineFetchFailureMessage
+            } else {
+                return Strings.OnlineSuccessMessage
+            }
+            
         } else {
             return AppConstants.amazonAccountConnectedSuccess
         }
@@ -745,8 +786,8 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     }
     
     private func cancelManualScrape() {
-        self.navigationHelper.backgroundScrapper.stopScrapping()
         if self.navigationHelper.backgroundScrapper != nil {
+            self.navigationHelper.backgroundScrapper.stopScrapping()
             self.navigationHelper.backgroundScrapper.scraperListener = nil
             self.navigationHelper.backgroundScrapper = nil
         }
@@ -777,13 +818,16 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 self.fetchSuccessView?.imageView = statusImage
             }
             if self.fetchRequestSource == .manual || self.fetchRequestSource == .online {
+                self.fetchSuccessView?.successIncentiveMessage = true
                 self.fetchSuccessView?.hideOkButton = true
                 self.fetchSuccessView?.hideCancelButton = false
                 self.fetchSuccessView?.hideContinueButton = false
             } else {
+                self.fetchSuccessView?.successIncentiveMessage = true
                 self.fetchSuccessView?.hideOkButton = false
                 self.fetchSuccessView?.hideCancelButton = true
                 self.fetchSuccessView?.hideContinueButton = true
+               
             }
             self.contentView?.bringSubviewToFront(self.fetchSuccessView)
         }
