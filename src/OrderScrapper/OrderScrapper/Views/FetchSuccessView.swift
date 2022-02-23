@@ -24,6 +24,8 @@ class FetchSuccessView: UIView {
     
     @IBOutlet weak var okButton: UIButton!
     
+    @IBOutlet weak var incentiveMessage: UILabel!
+    
     var fetchSuccess: String {
         get {
             return ""
@@ -66,6 +68,15 @@ class FetchSuccessView: UIView {
         }
         set {
             cancelButton.isHidden = newValue
+        }
+    }
+    
+    var successIncentiveMessage: Bool {
+        get {
+            return false
+        }
+        set {
+            incentiveMessage.isHidden = newValue
         }
     }
     

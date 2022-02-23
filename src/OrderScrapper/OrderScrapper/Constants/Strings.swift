@@ -141,4 +141,13 @@ struct Strings {
     static let ManualSuccessMessage = "Your account has been scanned successfully and incentive will be credited in 72hrs"
     static let FetchFailureMessage = "%@ orders update failed"
     static let TimeOutFailureMessage = "Updated your orders partially. Please try again later."
+    static let OnlineFetchingPendingOrders = "Downloading Online Orders"
+    static let OnlineTimeOutFailureMessage = "Downloading online orders is taking awhile.  If you would like to continue downloading please press continue"
+   static let OnlineHeaderFetchingOrders = "Update Online Orders"
+    static let OnlineHeaderPendingFetchingOrders = "Downloading pending Online Orders"
+   static let OnlineHeaderFetchOrdersUpdate = "Update Online Orders"
+   static let OnlineSuccessMessage = "Your online orders have been updated!  Your weekly incentive will be awarded within the next 72 hours"
+    static let OnlineFetchFailureMessage = "Downloading orders update failed"
+    static let OnlineIncentiveMessage = "Incentives are awarded one time per week for downloading online orders.  In order to qualify for the incentive you must have at least 1 online order for the week."
+    static let OnlineFetchingOrders = "Downloading Online Orders"
 }
