@@ -829,7 +829,6 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 self.fetchSuccessView?.hideOkButton = false
                 self.fetchSuccessView?.hideCancelButton = true
                 self.fetchSuccessView?.hideContinueButton = true
-               
             }
             self.contentView?.bringSubviewToFront(self.fetchSuccessView)
         }
