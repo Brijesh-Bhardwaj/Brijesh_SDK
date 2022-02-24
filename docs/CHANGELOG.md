@@ -10,6 +10,12 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
 
+## [2.0.6] - 2022-02-24
+ ### Added
+ - Added online scraping for amazon for first phase release of RPA_863
+ - Moved authentication scripts for all order sources  to server side (RPA- 833)
+ - Issue fixes added for the tickets RPA- 773, RPA- 774, RPA- 775 , RPA-894
+    
 ## [2.0.3] - 2022-02-04
   ### Added
    - Changes added for consistent connection flow of instacart and walmart (RPA-752)
@@ -17,7 +23,7 @@ All notable changes to OrderScrapper iOS project will be documented in this file
    - Issue fixes added for MOSP-513, MOSP-514,MOSP-515, MOSP-516
    - Issue fixes added for MOSP-517, MOSP-518 and MOSP-531  
    - UI feedback to user during manual scraping (RPA-753 and RPA-585)
-  
+   
 ## [2.0.2] - 2022-01-19
   ### Added
    - Issue fix for user not able to connect instacart account (RPA-824)

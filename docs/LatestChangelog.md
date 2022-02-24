@@ -1,1 +1,3 @@
-- UI feedback to user during manual scraping (RPA-753 and RPA-585)  
+- Moved authentication scripts for all order sources  to server side (RPA- 833)
+- Issue fixes added for the tickets RPA- 773, RPA- 774, RPA- 775 , RPA-894
+- Added online scraping for amazon for first phase release of RPA_863

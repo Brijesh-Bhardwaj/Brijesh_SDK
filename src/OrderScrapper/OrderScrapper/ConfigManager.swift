@@ -47,6 +47,8 @@ class ConfigManager {
                             scrapperConfig.urls.manualScrapeReportTimeout = scrapperConfig.orderUpload.manualScrapeReportTimeout
                             scrapperConfig.urls.manualScrapeTimeoutMessage = scrapperConfig.messages.manualScrapeTimeoutMessage
                             LibContext.shared.manualScrapeTimeOutMessage = scrapperConfig.urls.manualScrapeTimeoutMessage ?? Strings.TimeOutFailureMessage
+                            scrapperConfig.urls.manualScrapeSuccess = scrapperConfig.messages.manualScrapeSuccess
+                            LibContext.shared.manualScrapeSuccess = scrapperConfig.urls.manualScrapeSuccess ?? Strings.ManualSuccessMessage
                             self.configs[orderSource] = scrapperConfig.urls
                             break
                         }

@@ -78,6 +78,7 @@
 		1CEBA4CC266F580500F331C7 /* JSCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEBA4CB266F580500F331C7 /* JSCallback.swift */; };
 		1CEDD13B26038CAE00E7BAB4 /* UserAccountMO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEDD13A26038CAE00E7BAB4 /* UserAccountMO.swift */; };
 		1CFB487B265405A8007F949E /* BSBaseAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFB487A265405A8007F949E /* BSBaseAuthenticator.swift */; };
+		4C5B12F327BF9E1300BEB9BE /* IncnetiveFlagReponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5B12F227BF9E1300BEB9BE /* IncnetiveFlagReponse.swift */; };
 		846E1F9026FA0E30009695C3 /* KrogerLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E1F8F26FA0E30009695C3 /* KrogerLogin.swift */; };
 		846E1FA226FA2D6B009695C3 /* ConnectKrogerAccountVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E1FA126FA2D6B009695C3 /* ConnectKrogerAccountVC.swift */; };
 		846E1FA626FA3265009695C3 /* KrogerAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E1FA526FA3265009695C3 /* KrogerAuthenticator.swift */; };
@@ -88,6 +89,7 @@
 		9D35EF9626B3D84000272C27 /* BSTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D35EF9526B3D84000272C27 /* BSTimer.swift */; };
 		9D638A3C265BD2B200C412AC /* OrdersExtractorConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D638A3B265BD2B200C412AC /* OrdersExtractorConfig.swift */; };
 		9D812DA3265F7EC800629376 /* OrderDetailsMO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D812DA2265F7EC800629376 /* OrderDetailsMO.swift */; };
+		9D81376027A982120087FEE7 /* ScriptType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D81375F27A982120087FEE7 /* ScriptType.swift */; };
 		9D830BF526692A3C0081D4BD /* OrderData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D830BF426692A3C0081D4BD /* OrderData.swift */; };
 		9D83BCA827511DA60092762C /* OrderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D83BCA727511DA60092762C /* OrderState.swift */; };
 		9D84136B26BA520C00D237DC /* InstacartAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D84136A26BA520C00D237DC /* InstacartAuthenticator.swift */; };
@@ -281,6 +283,7 @@
 		1CEBA4CB266F580500F331C7 /* JSCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSCallback.swift; sourceTree = "<group>"; };
 		1CEDD13A26038CAE00E7BAB4 /* UserAccountMO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAccountMO.swift; sourceTree = "<group>"; };
 		1CFB487A265405A8007F949E /* BSBaseAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSBaseAuthenticator.swift; sourceTree = "<group>"; };
+		4C5B12F227BF9E1300BEB9BE /* IncnetiveFlagReponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncnetiveFlagReponse.swift; sourceTree = "<group>"; };
 		846E1F8F26FA0E30009695C3 /* KrogerLogin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KrogerLogin.swift; sourceTree = "<group>"; };
 		846E1FA126FA2D6B009695C3 /* ConnectKrogerAccountVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectKrogerAccountVC.swift; sourceTree = "<group>"; };
 		846E1FA526FA3265009695C3 /* KrogerAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KrogerAuthenticator.swift; sourceTree = "<group>"; };
@@ -292,6 +295,7 @@
 		9D638A3B265BD2B200C412AC /* OrdersExtractorConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrdersExtractorConfig.swift; sourceTree = "<group>"; };
 		9D812DA1265F791D00629376 /* CoreDataModel v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CoreDataModel v2.xcdatamodel"; sourceTree = "<group>"; };
 		9D812DA2265F7EC800629376 /* OrderDetailsMO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailsMO.swift; sourceTree = "<group>"; };
+		9D81375F27A982120087FEE7 /* ScriptType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptType.swift; sourceTree = "<group>"; };
 		9D830BF426692A3C0081D4BD /* OrderData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderData.swift; sourceTree = "<group>"; };
 		9D83BCA727511DA60092762C /* OrderState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderState.swift; sourceTree = "<group>"; };
 		9D84136A26BA520C00D237DC /* InstacartAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstacartAuthenticator.swift; sourceTree = "<group>"; };
@@ -656,6 +660,7 @@
 				1C563CAF272036A60061462A /* NetworkState.swift */,
 				9D83BCA727511DA60092762C /* OrderState.swift */,
 				9DC9794627620678007FA9C0 /* RetailerScrapingStatus.swift */,
+				9D81375F27A982120087FEE7 /* ScriptType.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -761,6 +766,7 @@
 				1C6D440A268EDDF2004A3165 /* Configs.swift */,
 				9DB6749426D6964E00A6DA26 /* EventLogs.swift */,
 				F03CB42E27316C5300B1DFA3 /* KrogerSubsidiaries.swift */,
+				4C5B12F227BF9E1300BEB9BE /* IncnetiveFlagReponse.swift */,
 			);
 			path = Response;
 			sourceTree = "<group>";
@@ -979,6 +985,7 @@
 				1C26830F264BE310004ED054 /* BSAmazonAuthenticator.swift in Sources */,
 				1C414C572668E07B009126E0 /* Queue.swift in Sources */,
 				1C26830B264BE2C8004ED054 /* AmazonScrapper.swift in Sources */,
+				9D81376027A982120087FEE7 /* ScriptType.swift in Sources */,
 				1C414C532668DFA0009126E0 /* BSOrderDetailsScrapper.swift in Sources */,
 				1C006FB12600B7DA00F9263E /* Utils.swift in Sources */,
 				E148DC9A2605CB1E001430BE /* FileHelper.swift in Sources */,
@@ -1064,6 +1071,7 @@
 				1C1BD79426C568B500ED6C5D /* BSCSVScrapper.swift in Sources */,
 				1C1BD79826C569AF00ED6C5D /* ScrapingMode.swift in Sources */,
 				E148DB8325FF317B001430BE /* WebViewModel.swift in Sources */,
+				4C5B12F327BF9E1300BEB9BE /* IncnetiveFlagReponse.swift in Sources */,
 				E148DB6B25FF2BFD001430BE /* ViewPresenter.swift in Sources */,
 				1C4F89A12654E91100925FAB /* ScrapperConfigs.swift in Sources */,
 				1C5B95B826CCEB8500FF0040 /* TimerHandler.swift in Sources */,
@@ -1230,7 +1238,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.3;
+				MARKETING_VERSION = 2.0.6;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.orderscrapper;
@@ -1356,7 +1364,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.3;
+				MARKETING_VERSION = 2.0.6;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = ai.blackstraw.orderscrapper;

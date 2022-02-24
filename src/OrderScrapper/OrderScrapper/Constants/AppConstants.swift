@@ -63,6 +63,8 @@ struct AppConstants {
     static let fetchOrderDetails = "Failed to fetch orderDetails"
     static let userAccountConnected = "This account is already associated with an existing user. Please try with another account."
     static let ScrappingCompleted = "Scrapping completed"
+    static let updateRetryCount = "Failed to update retry count for orderDetails"
+    static let updateAccount = "Failed to update Account"
     //Sentry Variables
     static let dsnURL = "https://6ad6390802f44f3fa71739de94424310@o915046.ingest.sentry.io/5854887"
     static let tracesSampleRate: NSNumber = 1.0
@@ -89,4 +91,33 @@ struct AppConstants {
     static let ErrorBgScrappingCoolOff = "bg process in cool off period"
     static let WrongLoginURL = "Wrong URL for login"
     static let Completed = "Completed"
+    static let authScriptFileNotFound = "auth file not found"
+    static let ScriptParseError = "Script parsing error"
+    static let authScriptNotFound = "Error while executing request please try again later"
+    // NOTE: - Do not change this keys unless it is changed from backend Authentication script key constants
+    static let getEmailAmazon = "validateEmailId"
+    static let getPasswordAmazon = "signInWithPassword"
+    static let captchaAmazon = "checkIfCaptchaScreen"
+    static let getGenerateReportScript = "getGenerateReportScript"
+    static let getDownloadReport = "getDownloadReportScript"
+    static let getOldestPossibleYear = "getOldestPossibleYear"
+    static let checkIfSignInErrorAmazon = "checkIfSignInError"
+    static let getSignInPromptTypeAmazon = "getSignInPromptType"
+    // Walmart script keys
+    static let getWalmartVerifyIdentityJS = "getWalmartVerifyIdentityJS"
+    static let getWalmartCheckErrorJS = "getWalmartCheckErrorJS"
+    static let getWalmartIdentificationJS = "getWalmartIdentificationJS"
+    static let getWalmartSignInRequiredJS = "getWalmartSignInRequiredJS"
+    //Instacart script keys
+    static let getInstacartIdentification = "getInstacartIdentification"
+    static let getInstcartinjectLoginJS = "getInstacartInjectLoginJS"
+    static let getInstacartErrorPasswordInjectJS = "getInstacartErrorPasswordInjectJS"
+    static let getInstacartWrongPasswordInjectJS = "getInstacartWrongPasswordInjectJS"
+    static let getInstacartErrorEmailInjectJS = "getInstacartErrorEmailInjectJS"
+    static let getInstacartFlashMessage = "getInstacartFlashMessage"
+    static let getInstacartOnClick = "getInstacartOnClick"
+    static let getInstacartProcide = "getInstacartProcide"
+    static let getInstacartVerificationCodeJS = "getInstacartVerificationCodeJS"
+    static let getInstcartCaptchaClosed = "getInstacartCaptchaClosed"
+    static let getInstacartverificationCodeSuccess = "getInstacartVerificationCodeSuccess"
 }

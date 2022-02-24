@@ -19,7 +19,7 @@ class BSCSVScrapper: NSObject {
     var fetchRequestSource: FetchRequestSource!
     var scrapeTimer = BSTimer()
     var scrapingTimer: Int64 = 0
-
+    
     init(webview: WKWebView, scrapingMode: ScrapingMode, scraperListener: ScraperProgressListener) {
         self.webView = webview
         self.scrapingMode = scrapingMode
@@ -89,7 +89,7 @@ class BSCSVScrapper: NSObject {
                 case .captcha:
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedCaptcha, eventAttributes: logEventAttributes)
                 case .generateReport:
-                        self.timerHandler.startTimer(action: Actions.ReportGenerationJSCallback)
+                    self.timerHandler.startTimer(action: Actions.ReportGenerationJSCallback)
                     //Logging event for report generation
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectReportGeneration, eventAttributes: logEventAttributes)
                 case .downloadReport:
@@ -107,7 +107,7 @@ class BSCSVScrapper: NSObject {
         case .captcha,.downloadReport, .email, .generateReport, .identification, .password, .error: break
         case .dateRange:
             if let response = response {
-                    self.timerHandler.startTimer(action: Actions.GetOldestPossibleYearJSCallback)
+                self.timerHandler.startTimer(action: Actions.GetOldestPossibleYearJSCallback)
                 let strResult = response as! String
                 if (!strResult.isEmpty) {
                     let year = Int(strResult) ?? 0
@@ -250,33 +250,61 @@ class BSCSVScrapper: NSObject {
     }
     
     private func getOldestPossibleYear() -> String {
-        return "(function() {var listOfYears = document.getElementById('report-year-start');" +
-            "var oldestYear = 0;" +
-            "for (i = 0; i < listOfYears.options.length; i++) {" +
-            "if(!isNaN(listOfYears.options[i].value) && (listOfYears.options[i].value < oldestYear || oldestYear ==0))" +
-            "{ oldestYear = listOfYears.options[i].value;}" +
-            "} return oldestYear })()"
+        var getOldestPossibleYear = ""
+        self.getScript(orderSource: .Amazon, scriptKey: AppConstants.getOldestPossibleYear) { script in
+            if !script.isEmpty {
+                getOldestPossibleYear = script
+            } else {
+                if self.scrapingMode == .Background {
+                    let errorMessage = ASLException(errorMessages: Strings.ErrorScriptNotFound + "getOldestPossibleYear for amazon", errorTypes: .authChallenge, errorEventLog: .authentication, errorScrappingType: ScrappingType.html)
+                    self.bsScrapper!.onAuthenticationFailure(error: errorMessage, orderSource: self.account.source)
+                } else {
+                    self.logEvents(message: Strings.ErrorScriptNotFound + "getOldestPossibleYear for amazon", section: SectionType.connection.rawValue, status: EventState.fail.rawValue, type: FailureTypes.other.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
+                    let error = ASLException(errorMessage: Strings.ErrorScriptNotFound + "getOldestPossibleYear for amazon", errorType: .authError)
+                    FirebaseAnalyticsUtil.logSentryError(error: error)
+                }
+            }
+        }
+        return getOldestPossibleYear
     }
     
     private func injectGenerateReportJS() {
-        if let reportConfig = reportConfig {
-            let js = "javascript:" +
-                "document.getElementById('report-type').value = '" + AppConstants.amazonReportType + "';" +
-                "document.getElementById('report-month-start').value = '" + reportConfig.startMonth + "';" +
-                "document.getElementById('report-day-start').value = '" + reportConfig.startDate + "';" +
-                "document.getElementById('report-year-start').value = '" + reportConfig.startYear + "';" +
-                "document.getElementById('report-month-end').value = '" + reportConfig.endMonth + "';" +
-                "document.getElementById('report-day-end').value = '" + reportConfig.endDate + "';" +
-                "document.getElementById('report-year-end').value = '" + reportConfig.endYear + "';" +
-                "document.getElementById('report-confirm').click()"
-            evaluateJS(jsType: .generateReport, javascript: js)
+        self.getScript(orderSource: .Amazon, scriptKey: AppConstants.getGenerateReportScript) { script in
+            if !script.isEmpty {
+                if let reportConfig = self.reportConfig {
+                    let amazonReportType = script.replacingOccurrences(of: "$AppConstants.amazonReportTypeE$", with: AppConstants.amazonReportType).replacingOccurrences(of: "$reportConfig.startMonth$", with: reportConfig.startMonth).replacingOccurrences(of: "$reportConfig.startDate$", with: reportConfig.startDate).replacingOccurrences(of: "$reportConfig.startYear$", with: reportConfig.startYear).replacingOccurrences(of: "$reportConfig.endMonth$", with: reportConfig.endMonth).replacingOccurrences(of: "$reportConfig.endDate$", with: reportConfig.endDate).replacingOccurrences(of: "$reportConfig.endYear$", with: reportConfig.endYear)
+                    self.evaluateJS(jsType: .generateReport, javascript: amazonReportType)
+                }
+            } else {
+                if self.scrapingMode == .Background {
+                    let errorMessage = ASLException(errorMessages: Strings.ErrorScriptNotFound + "injectGenerateReportJS for amazon", errorTypes: .authChallenge, errorEventLog: .authentication, errorScrappingType: ScrappingType.html)
+                    FirebaseAnalyticsUtil.logSentryError(error: errorMessage)
+                    self.bsScrapper!.onAuthenticationFailure(error: errorMessage, orderSource: self.account.source)
+                } else {
+                    self.logEvents(message: Strings.ErrorScriptNotFound + "injectGenerateReportJS for amazon", section: SectionType.connection.rawValue, status: EventState.fail.rawValue, type: FailureTypes.other.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
+                    let error = ASLException(errorMessage: Strings.ErrorScriptNotFound + "injectGenerateReportJS for amazon", errorType: .authError)
+                    FirebaseAnalyticsUtil.logSentryError(error: error)
+                }
+            }
         }
     }
     
     private func injectDownloadReportJS() {
-        let js = "javascript:" +
-            "document.getElementById(window['download-cell-'+new URLSearchParams(window.location.search).get(\"reportId\")].id).click()"
-        evaluateJS(jsType: .downloadReport, javascript: js)
+         self.getScript(orderSource: .Amazon, scriptKey: AppConstants.getDownloadReport) { script in
+            if !script.isEmpty {
+                self.evaluateJS(jsType: .downloadReport, javascript: script)
+            } else {
+                if self.scrapingMode == .Background {
+                    let errorMessage = ASLException(errorMessages: Strings.ErrorScriptNotFound + "injectDownloadReportJS for amazon", errorTypes: .authChallenge, errorEventLog: .authentication, errorScrappingType: ScrappingType.html)
+                    FirebaseAnalyticsUtil.logSentryError(error: errorMessage)
+                    self.bsScrapper!.onAuthenticationFailure(error: errorMessage, orderSource: self.account.source)
+                } else {
+                    self.logEvents(message: Strings.ErrorScriptNotFound + "injectDownloadReportJS for amazon", section: SectionType.connection.rawValue, status: EventState.fail.rawValue, type: FailureTypes.other.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
+                    let error = ASLException(errorMessage: Strings.ErrorScriptNotFound + "injectDownloadReportJS for amazon", errorType: .authError)
+                    FirebaseAnalyticsUtil.logSentryError(error: error)
+                }
+            }
+        }
     }
     
     func shouldIntercept(navigationResponse response: URLResponse) -> Bool {
@@ -589,6 +617,12 @@ class BSCSVScrapper: NSObject {
                 let aslException = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
                 scraperListener.onServicesDown(error: aslException)
             }
+        }
+    }
+    
+    private func getScript(orderSource: OrderSource, scriptKey: String, completionHandler: @escaping (String) -> Void) {
+        BSScriptFileManager.shared.getAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
+           completionHandler(script)
         }
     }
 }

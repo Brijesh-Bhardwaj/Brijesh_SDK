@@ -406,7 +406,6 @@ extension ConnectKrogerAccountVC: BSAuthenticaorDelegate {
     }
     
     func didReceiveLoginChallenge(error: String) {
-        //TODO
         let userId = self.account.userID
         let isError: (Bool, String) = (true,error)
         LibContext.shared.webAuthErrorPublisher.send((isError.0, isError.1))

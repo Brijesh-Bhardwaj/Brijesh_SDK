@@ -116,6 +116,13 @@ struct Strings {
     static let PageLoadTime = "pageLoadTime"
     static let ScrapingTime = "scrapingTime"
     static let ScrapeTime = "scrapeTime"
+    static let JSAuthVersionAmazon = "js_auth_version_amazon"
+    static let JSAuthVersionInstacart = "js_auth_version_instacart"
+    static let JSAuthVersionKroger = "js_auth_version_kroger"
+    static let JSAuthVersionWalmart = "js_auth_version_walmart"
+    static let MultiAuthError = "Multiple authentication attempts failed"
+    static let scrapingMode = "scrapingContext"
+
 
     //Sentry error message
     static let ErrorAPIReponseDateRange = "Error while getting date range"
@@ -131,6 +138,14 @@ struct Strings {
     static let HeaderFetchingOrders = "Updating %@ Orders"
     static let HeaderFetchingPendingOrders = "Updating Pending %@ Orders"
     static let FetchSuccessMessage = "%@ orders updated successfully"
+    static let ManualSuccessMessage = "Your account has been scanned successfully and incentive will be credited in 72hrs"
     static let FetchFailureMessage = "%@ orders update failed"
     static let TimeOutFailureMessage = "Updated your orders partially. Please try again later."
+    static let OnlineTimeOutFailureMessage = "Downloading online orders is taking awhile.  If you would like to continue downloading please press continue"
+   static let OnlineHeaderFetchingOrders = "Update Online Orders"
+    static let OnlineHeaderPendingFetchingOrders = "Downloading pending Online Orders"
+   static let OnlineSuccessMessage = "Your online orders have been updated!  Your weekly incentive will be awarded within the next 72 hours"
+    static let OnlineFetchFailureMessage = "Downloading orders update failed"
+    static let OnlineIncentiveMessage = "Incentives are awarded one time per week for downloading online orders.  In order to qualify for the incentive you must have at least 1 online order for the week."
+    static let OnlineFetchingOrders = "Downloading Online Orders"
 }

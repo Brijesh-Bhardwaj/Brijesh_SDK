@@ -116,7 +116,7 @@ class AccountsManager {
             } else {
                 if let account = accountDetails.first, let accountInDb = accountsInDB.first {
                     if account.platformId.caseInsensitiveCompare(accountInDb.userID) == ComparisonResult.orderedSame {
-                        accountsInDB.first?.isFirstConnectedAccount = account.firstaccount
+                        accountInDb.isFirstConnectedAccount = account.firstaccount
                         
                         //Update connected account state from backend to DB if db has connectionInProgress state
                         if account.status == AccountState.Connected.rawValue
@@ -195,7 +195,6 @@ class AccountsManager {
     }
     
     func shouldShowAlert(showNotification: Bool, orderSource: OrderSource, completion: @escaping (Bool) -> Void) {
-        //TODO:- Add orderSource
         ConfigManager.shared.getConfigurations(orderSource: orderSource) { (configurations, error) in
             if let configuration = configurations {
                 let numberOfCapchaRetry = Utils.getKeyForNumberOfCaptchaRetry(orderSorce: orderSource)

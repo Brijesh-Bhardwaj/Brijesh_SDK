@@ -128,50 +128,77 @@ internal class AmazonAuthenticator: Authenticator {
     }
     
     private func injectAuthErrorVerificationJS() {
-        let js = "(function() { var element = document.getElementById('auth-error-message-box');" +
-            "if (element != null && element.innerHTML !== null) " +
-            "{return element.getElementsByClassName('a-list-item')[0].innerText;} else {" +
-            " return ''}})()"
-        
-        self.viewModel.jsPublisher.send((.error, js))
+       self.getScript(orderSource: .Amazon, scriptKey: AppConstants.checkIfSignInErrorAmazon) { script in
+            if !script.isEmpty {
+                self.viewModel.jsPublisher.send((.error, script))
+            } else {
+                self.logEvent(message: Strings.ErrorScriptNotFound + "injectAuthErrorVerificationJS for amazon")
+                FirebaseAnalyticsUtil.logSentryError(error: ASLException(errorMessage: Strings.ErrorScriptNotFound + "injectAuthErrorVerificationJS for amazon", errorType: .authError))
+                self.viewModel.authError.send((isError: true, errorMsg: AppConstants.msgTimeout))
+            }
+        }
     }
     
     private func injectEmailJS() {
-        let email = self.viewModel.userAccount.userID
-        let js = "javascript:" +
-            "document.getElementById('ap_email_login').value = '" + email + "';" + "document.querySelector('#accordion-row-login #continue #continue').click()"
-        
-        self.viewModel.jsPublisher.send((.email, js))
+     self.getScript(orderSource: .Amazon, scriptKey: AppConstants.getEmailAmazon) { script in
+            if !script.isEmpty {
+                let email = self.viewModel.userAccount.userID
+                let emailLoginJS = script.replacingOccurrences(of: "$email$", with: email)
+                self.viewModel.jsPublisher.send((.email, emailLoginJS))
+            } else {
+                self.logEvent(message: Strings.ErrorScriptNotFound + "injectEmailJS for amazon")
+                FirebaseAnalyticsUtil.logSentryError(error: ASLException(errorMessage:  Strings.ErrorScriptNotFound + "injectEmailJS for amazon", errorType: .authError))
+                self.viewModel.authError.send((isError: true, errorMsg: AppConstants.msgTimeout))
+            }
+        }
     }
     
     private func injectPasswordJS() {
-        let password = self.viewModel.userAccount.userPassword
-        let js = "javascript:" +
-            "document.getElementById('ap_password').value = '" + password + "';" +
-            "document.getElementById('signInSubmit').click()"
-        
-        self.viewModel.jsPublisher.send((.password, js))
+        self.getScript(orderSource: .Amazon, scriptKey: AppConstants.getPasswordAmazon) { script in
+                if !script.isEmpty {
+                    let password = self.viewModel.userAccount.userPassword
+                    let passwordLoginJS = script.replacingOccurrences(of: "$password$", with: password)
+                    self.viewModel.jsPublisher.send((.password, passwordLoginJS))
+                } else {
+                    self.logEvent(message: Strings.ErrorScriptNotFound + "injectPasswordJS for amazon")
+                    FirebaseAnalyticsUtil.logSentryError(error: ASLException(errorMessage: Strings.ErrorScriptNotFound + "injectPasswordJS for amazon", errorType: .authError))
+                    self.viewModel.authError.send((isError: true, errorMsg: AppConstants.msgTimeout))
+                }
+        }
     }
     
     private func injectFieldIdentificationJS() {
-        let js = "(function() { var element = document.getElementById('ap_email_login');" +
-            "if (element != null && element.innerHTML !== null) " +
-            " { return 'emailId' } else { " +
-            " var element = document.getElementById('ap_password');" +
-            " if (element != null && element.innerHTML !== null) " +
-            " { return 'pwd'} else { return 'other' }}})()"
-        
-        self.viewModel.jsPublisher.send((.identification, js))
+        self.getScript(orderSource: .Amazon, scriptKey: AppConstants.getSignInPromptTypeAmazon) { script in
+                if !script.isEmpty {
+                    self.viewModel.jsPublisher.send((.identification, script))
+                } else {
+                    self.logEvent(message: Strings.ErrorScriptNotFound + "injectFieldIdentificationJS for amazon")
+                    FirebaseAnalyticsUtil.logSentryError(error: ASLException(errorMessage: Strings.ErrorScriptNotFound + "injectFieldIdentificationJS for amazon", errorType: .authError))
+                    self.viewModel.authError.send((isError: true, errorMsg: AppConstants.msgTimeout))
+                }
+        }
     }
     
     private func injectCaptchaIdentificationJS() {
-        let js = "(function() { var element = document.getElementById('auth-captcha-guess');" +
-            "if (element != null && element.innerHTML !== null) " +
-            "{return 'captcha'} else {" +
-            " return null}})()"
-        
-        self.viewModel.jsPublisher.send((.captcha, js))
-        
+        self.getScript(orderSource: .Amazon, scriptKey: AppConstants.captchaAmazon) { script in
+            if !script.isEmpty {
+                self.viewModel.jsPublisher.send((.captcha, script))
+            } else {
+                self.logEvent(message: Strings.ErrorScriptNotFound + "injectCaptchaIdentificationJS for amazon")
+                FirebaseAnalyticsUtil.logSentryError(error: ASLException(errorMessage: Strings.ErrorScriptNotFound + "injectCaptchaIdentificationJS for amazon", errorType: .authError))
+                self.viewModel.authError.send((isError: true, errorMsg: AppConstants.msgTimeout))
+            }
+        }
+    }
+    
+    private func logEvent(message: String) {
+        let eventLogs = EventLogs(panelistId: self.viewModel.userAccount.panelistID, platformId:self.viewModel.userAccount.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
+        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.viewModel.userAccount.source.value) {  response, error in
+            
+            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                self.sendServicesDownCallback()
+            }
+        }
     }
     
     private func updateAccountWithExceptionState(message: String) {
@@ -239,7 +266,6 @@ internal class AmazonAuthenticator: Authenticator {
                                       EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue]
 
                 if let response = response  {
-                    //TODO Add response in attributes
                     logEventAttributes[EventConstant.Status] = EventStatus.Success
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.APIRegisterUser, eventAttributes: logEventAttributes)
                 } else {
@@ -279,5 +305,11 @@ internal class AmazonAuthenticator: Authenticator {
     func sendServicesDownCallback() {
         let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
         self.scraperListener.onServicesDown(error: error)
+    }
+    
+    private func getScript(orderSource: OrderSource, scriptKey: String, completionHandler: @escaping (String) -> Void) {
+        BSScriptFileManager.shared.getAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
+            completionHandler(script)
+        }
     }
 }

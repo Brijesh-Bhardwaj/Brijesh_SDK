@@ -54,6 +54,7 @@ class AccountListViewController: UIViewController, UITableViewDataSource
     override func viewWillAppear(_ animated: Bool) {
         self.navigationController?.setNavigationBarHidden(true, animated: animated)
         self.loadAccounts()
+        self.isUserEligible()
     }
     
     func connectAccount(section: Int) {
@@ -147,6 +148,20 @@ class AccountListViewController: UIViewController, UITableViewDataSource
             account.fetchOrders(orderExtractionListener: self.backgroundOrderExtractionListner, source: .general)
         }
     }
+    
+     func isUserEligible() {
+         do {
+             try OrdersExtractor.isUserEligibleForIncentive() { response in
+                 if response {
+                     print("!!!! isUserEligible true ",response)
+                 } else {
+                     print("!!!! isUserEligible false ",response)
+                 }
+             }
+         } catch {
+             
+         }
+     }
     
     func loadAccounts() {
         do {

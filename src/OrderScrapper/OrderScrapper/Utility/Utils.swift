@@ -83,6 +83,19 @@ class Utils {
             return ""
         }
     }
+    
+    static func getKeyForAuthJSVersion(orderSorce: OrderSource) -> String {
+        switch orderSorce {
+        case .Amazon:
+            return Strings.JSAuthVersionAmazon
+        case .Instacart:
+            return Strings.JSAuthVersionInstacart
+        case .Kroger:
+            return Strings.JSAuthVersionKroger
+        case .Walmart:
+            return Strings.JSAuthVersionWalmart
+        }
+    }
 
     static func getJsonString(object: Any) -> String {
         //        let jsonEncoder = JSONEncoder()

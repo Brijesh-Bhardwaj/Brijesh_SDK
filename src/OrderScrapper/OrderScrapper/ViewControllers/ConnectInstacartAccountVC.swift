@@ -38,70 +38,84 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
         if self.fetchRequestSource == .manual {
             self.connectAccountView?.hideCancelScrapeBtn = false
         }
-        self.baseAuthenticator?.authenticate(account: self.account, configurations: self.configurations) { authenticated, error in
-            if authenticated  {
-                self.publishProgress(step: .scrape)
-                if self.account.accountState == .NeverConnected {
-                    let userId = self.account.userID
-                    _ = AmazonService.registerConnection(platformId: userId, status: AccountState.ConnectionInProgress.rawValue, message: AppConstants.msgAccountConnected, orderStatus: OrderStatus.Initiated.rawValue, orderSource: OrderSource.Instacart.value) { response, error in
-                        if let response = response  {
-                            self.timerHandler.stopTimer()
-                            self.account.accountState = .ConnectionInProgress
-                            self.addUserAccountInDB()
-                            self.account.isFirstConnectedAccount = response.firstaccount
-                            var logConnectAccountEventAttributes:[String:String] = [:]
-                            logConnectAccountEventAttributes = [EventConstant.OrderSource: OrderSource.Instacart.value,
-                                                                EventConstant.OrderSourceID: self.account.userID,
-                                                                EventConstant.Status: EventStatus.Connected]
-                            FirebaseAnalyticsUtil.logEvent(eventType: EventType.AccountConnect, eventAttributes: logConnectAccountEventAttributes)
-                            
-                            self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping)
-                            self.scrapeHtml()
-                        } else {
-                            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
-                                self.handleServicesDown()
-                            } else {
-                                if self.networkReconnct {
-                                    print("#### Network Reconnect")
+        BSScriptFileManager.shared.getAuthenticationScripts(orderSource: .Instacart, isAuthScript: ScriptType.auth.rawValue) { response in
+            if response {
+                self.baseAuthenticator?.authenticate(account: self.account, configurations: self.configurations) { authenticated, error in
+                    if authenticated  {
+                        self.publishProgress(step: .scrape)
+                        if self.account.accountState == .NeverConnected {
+                            let userId = self.account.userID
+                            _ = AmazonService.registerConnection(platformId: userId, status: AccountState.ConnectionInProgress.rawValue, message: AppConstants.msgAccountConnected, orderStatus: OrderStatus.Initiated.rawValue, orderSource: OrderSource.Instacart.value) { response, error in
+                                if let response = response  {
+                                    self.timerHandler.stopTimer()
+                                    self.account.accountState = .ConnectionInProgress
+                                    self.addUserAccountInDB()
+                                    self.account.isFirstConnectedAccount = response.firstaccount
+                                    var logConnectAccountEventAttributes:[String:String] = [:]
+                                    logConnectAccountEventAttributes = [EventConstant.OrderSource: OrderSource.Instacart.value,
+                                                                        EventConstant.OrderSourceID: self.account.userID,
+                                                                        EventConstant.Status: EventStatus.Connected]
+                                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.AccountConnect, eventAttributes: logConnectAccountEventAttributes)
+                                    
+                                    self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping)
                                     self.scrapeHtml()
-                                    self.networkReconnct = false
                                 } else {
-                                    print("#### Account Register Error")
-                                    self.didReceiveLoginChallenge(error: AppConstants.userAccountConnected)
-                                    if let error = error {
-                                        FirebaseAnalyticsUtil.logSentryError(error: error)
+                                    if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                                        self.handleServicesDown()
+                                    } else {
+                                        if self.networkReconnct {
+                                            self.scrapeHtml()
+                                            self.networkReconnct = false
+                                        } else {
+                                            self.didReceiveLoginChallenge(error: AppConstants.userAccountConnected)
+                                            if let error = error {
+                                                FirebaseAnalyticsUtil.logSentryError(error: error)
+                                            }
+                                            //Remove webview in case error occured while register so it won't reload in case of network off
+                                            self.removeWebview()
+                                        }
                                     }
-                                    //Remove webview in case error occured while register so it won't reload in case of network off
-                                    self.removeWebview()
                                 }
                             }
+                        } else {
+                            if self.account.accountState != .Connected {
+                                self.account.accountState = .ConnectionInProgress
+                            }
+                            self.updateAccountStatusToConnected(orderStatus: OrderStatus.Initiated.rawValue)
+                            self.addUserAccountInDB()
+                            
+                            if self.fetchRequestSource == .manual {
+                                self.getTimerValue { timerValue in
+                                    self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping, timerInterval: TimeInterval(timerValue))
+                                    self.scrapeHtml()
+                                }
+                            } else {
+                                self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping)
+                                self.scrapeHtml()
+                            }
+                            
                         }
-                    }
-                } else {
-                    if self.account.accountState != .Connected {
-                        self.account.accountState = .ConnectionInProgress
-                    }
-                    self.updateAccountStatusToConnected(orderStatus: OrderStatus.Initiated.rawValue)
-                    self.addUserAccountInDB()
-                   
-                    if self.fetchRequestSource == .manual {
-                       self.getTimerValue { timerValue in
-                        self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping, timerInterval: TimeInterval(timerValue))
-                        self.scrapeHtml()
-                        }
+                        //On authentication add user account details to DB
                     } else {
-                        self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping)
-                        self.scrapeHtml()
+                        if let error = error {
+                            self.didReceiveLoginChallenge(error: AppConstants.msgTimeout)
+                            let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: error.errorMessage, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
+                            self.logEvents(logEvents: eventLogs)
+                            FirebaseAnalyticsUtil.logSentryError(error: ASLException(errorMessage: error.errorMessage, errorType: .authError))
+                        } else {
+                            self.didReceiveLoginChallenge(error: Strings.ErrorOnWebViewLoading)
+                            let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: Strings.ErrorOnWebViewLoading, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
+                            self.logEvents(logEvents: eventLogs)
+                            FirebaseAnalyticsUtil.logSentryError(error: ASLException(errorMessage: Strings.ErrorOnWebViewLoading, errorType: .authError))
+                        }
+                        self.webClient.stopLoading()
+                        self.baseAuthenticator?.onNetworkDisconnected()
                     }
-                   
                 }
-                //On authentication add user account details to DB
             } else {
-                //TODO :- need to review this
-                self.didReceiveLoginChallenge(error: Strings.ErrorOnWebViewLoading)
+                self.didReceiveLoginChallenge(error: AppConstants.authScriptNotFound)
             }
         }
-        
     }
     
     //MARK:- Protected Methods
@@ -134,7 +148,6 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
     }
     
     override func didStartPageNavigation(url: URL?) {
-        //TODO - Add sentry meesage
         if let url = url {
         print("@@@ didStartPageNavigation called",url)
         }
@@ -256,6 +269,7 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
                         self.connectAccountView?.successView.hideOkButton = false
                         self.connectAccountView?.successView.hideCancelButton = true
                         self.connectAccountView?.successView.hideContinueButton = true
+                        self.connectAccountView.successView.successIncentiveMessage = true
                         self.connectAccountView?.fetchSuccess = self.getSuccessMessage()
                         if let statusImage = self.getStatusImage() {
                             self.connectAccountView?.statusImage = statusImage
@@ -412,6 +426,7 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
         self.connectAccountView?.successView.hideOkButton = true
         self.connectAccountView?.successView.hideCancelButton = false
         self.connectAccountView?.successView.hideContinueButton = false
+        self.connectAccountView.successView.successIncentiveMessage = true
         self.connectAccountView?.connectAccountTitle.text = self.getHeaderTitle()
         self.connectAccountView?.fetchSuccess = self.getSuccessMessage()
         if let statusImage = self.getStatusImage() {
