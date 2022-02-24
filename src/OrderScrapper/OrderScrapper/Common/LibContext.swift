@@ -26,6 +26,7 @@ class LibContext {
     var timeoutValue: Double!
     var servicesStatusListener: ServicesStatusListener!
     var manualScrapeTimeOutMessage: String!
+    var manualScrapeSuccess: String!
     var scrapeCompletionPublisher = PassthroughSubject<((Bool, OrderFetchSuccessType?), ASLException?), Never>()
     var webAuthErrorPublisher = PassthroughSubject<(Bool, String), Never>()
     var authenticationErrorPublisher = PassthroughSubject<Bool, Never>()

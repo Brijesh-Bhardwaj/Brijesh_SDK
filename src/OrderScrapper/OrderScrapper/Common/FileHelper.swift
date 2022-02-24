@@ -9,9 +9,12 @@ struct Directories {
     static let Reports = "Reports"
     static let Amazon = "Amazon"
     static let Scripts = "Scripts"
+    static let Instcart = "Instacart"
+    static let Walmart = "Walmart"
 }
 struct File {
     static let ScrapperScript = "ScrapperScript.txt"
+    static let AuthenticationScript = "AuthScript.txt"
 }
 
 class FileHelper {
@@ -104,10 +107,14 @@ class FileHelper {
                 .appendingPathComponent(Directories.Amazon)
         case .Instacart:
             downloadDirectoryURL = documentsURL
+                .appendingPathComponent(Directories.Scripts)
+                .appendingPathComponent(Directories.Instcart)
         case .Kroger:
             downloadDirectoryURL = documentsURL
         case .Walmart:
             downloadDirectoryURL = documentsURL
+                .appendingPathComponent(Directories.Scripts)
+                .appendingPathComponent(Directories.Walmart)
         }
         try? FileManager.default.createDirectory(at: downloadDirectoryURL, withIntermediateDirectories: true, attributes: nil)
         return downloadDirectoryURL
@@ -126,15 +133,20 @@ class FileHelper {
     }
     
     //Get script file URL for the given order source
-    static func getScriptFilePath(orderSource: OrderSource) -> URL {
-        let fileName = String(orderSource.value) + File.ScrapperScript
+    static func getScriptFilePath(orderSource: OrderSource, isAuthScript: String) -> URL {
+        var fileName = ""
+        if isAuthScript == ScriptType.auth.rawValue {
+            fileName = String(orderSource.value) + File.AuthenticationScript
+        } else {
+            fileName = String(orderSource.value) + File.ScrapperScript
+        }
         let filePath = FileHelper.getScriptDownloadPath(fileName: fileName, orderSource: orderSource)
         return filePath
     }
     
     //Check script file exist or not for given order source
-    static func isScriptFileExist(orderSource: OrderSource) -> Bool {
-        let filePath = FileHelper.getScriptFilePath(orderSource: orderSource)
+    static func isScriptFileExist(orderSource: OrderSource, isAuthScript: String) -> Bool {
+        let filePath = FileHelper.getScriptFilePath(orderSource: orderSource, isAuthScript: isAuthScript)
         let fileManager = FileManager.default
         return fileManager.fileExists(atPath: filePath.path)
     }

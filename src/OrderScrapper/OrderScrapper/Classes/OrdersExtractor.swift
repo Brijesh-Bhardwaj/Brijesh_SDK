@@ -63,7 +63,7 @@ public class OrdersExtractor {
                 FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_init_library")
             }
         }
-//        //get scripts for the order sources
+//        get scripts for the order sources
 //        BSScriptFileManager.shared.loadScriptFile()
 
         _ = AmazonService.getConfigs() {configs, error in
@@ -147,6 +147,53 @@ public class OrdersExtractor {
         }
     }
     
+    public static func scanOnlineOrders(orderExtractionListener: OrderExtractionListener, accounts: Account?...) throws {
+        if OrdersExtractor.isInitialized {
+            AmazonOrderScrapper.shared.scanAllOrders(accounts: accounts, orderExtractionListener: orderExtractionListener)
+        } else {
+            let error =  ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
+            let panelistId = LibContext.shared.authProvider.getPanelistID()
+            var logEventAttributes:[String:String] = [:]
+            logEventAttributes = [EventConstant.PanelistID: panelistId,
+                                  EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                                  EventConstant.Status: EventStatus.Success]
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.ConfigsMissing, eventAttributes: logEventAttributes)
+            throw error
+        }
+    }
+    
+    public static func isUserEligibleForIncentive(completionHandler: @escaping (Bool) -> Void) throws {
+        if OrdersExtractor.isInitialized {
+            var localTimeZoneIdentifier: String { return TimeZone.current.identifier }
+            _ = AmazonService.getIncentiveFlag(timeZone: localTimeZoneIdentifier) { response, error in
+                if response != nil {
+                    if let shouldShowButton = response?.isFlagEnabled {
+                        if shouldShowButton {
+                            completionHandler(shouldShowButton)
+                        } else {
+                            completionHandler(false)
+                        }
+                    } else {
+                        completionHandler(false)
+                    }
+                } else {
+                    completionHandler(false)
+                    let aslException = ASLException(error: nil, errorMessage: error!.errorMessage, failureType: nil)
+                    FirebaseAnalyticsUtil.logSentryError(error: aslException)
+                }
+            }
+        } else {
+            let error =  ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
+            let panelistId = LibContext.shared.authProvider.getPanelistID()
+            var logEventAttributes:[String:String] = [:]
+            logEventAttributes = [EventConstant.PanelistID: panelistId,
+                                  EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
+                                  EventConstant.Status: EventStatus.Success]
+            FirebaseAnalyticsUtil.logEvent(eventType: EventType.ConfigsMissing, eventAttributes: logEventAttributes)
+            throw error
+            completionHandler(false)
+        }
+    }
     private static func registerFonts() {
         UIFont.registerFont(withFilenameString: "SF-Pro-Rounded-Bold.otf")
         UIFont.registerFont(withFilenameString: "SF-Pro-Rounded-Regular.otf")

@@ -21,7 +21,7 @@ class BSDataUploader {
         self.listener = listener
     }
     
-    func addData(data: Dictionary<String, Any>, orderDetail: OrderDetails, orderState: String) {
+    func addData(data: Dictionary<String, Any>, orderDetail: OrderDetails, orderState: String, scrapingContext: String, scrapingSessionStatus: String?, scrapingSessionStartedAt: String?) {
         if !data.isEmpty {
             let uploadOperation = DataUploadOperation()
             uploadOperation.orderId = String(orderDetail.orderId)
@@ -33,6 +33,9 @@ class BSDataUploader {
             uploadOperation.orderState = orderState
             uploadOperation.orderSectionType = String(orderDetail.orderSectionType!)
             uploadOperation.uploadRetryCount = orderDetail.uploadRetryCount
+            uploadOperation.scrapingContext = scrapingContext
+            uploadOperation.scrapingSessionStatus = scrapingSessionStatus
+            uploadOperation.scrapingSessionStartedAt = scrapingSessionStartedAt
             
             uploadOperation.completionBlock = { [weak self] in
                 guard let self = self else {
@@ -63,6 +66,9 @@ class DataUploadOperation: Operation {
     var uploadRetryCount: Int16?
     var listingScrapeTime: Int?
     var listingOrderCount: Int?
+    var scrapingContext: String?
+    var scrapingSessionStatus: String?
+    var scrapingSessionStartedAt: String?
     
     public override var isAsynchronous: Bool {
         return true
@@ -90,7 +96,7 @@ class DataUploadOperation: Operation {
             state = .finished
         } else {
             state = .executing
-            let orderRequest = OrderRequest(panelistId: self.panelistId, platformId: self.userId, fromDate: dateRange.fromDate!, toDate: dateRange.toDate!, status: self.orderState!, data: [data], listingScrapeTime: 0, listingOrderCount: 0)
+            let orderRequest = OrderRequest(panelistId: self.panelistId, platformId: self.userId, fromDate: dateRange.fromDate!, toDate: dateRange.toDate!, status: self.orderState!, data: [data], listingScrapeTime: 0, listingOrderCount: 0, scrapingSessionContext: self.scrapingContext, scrapingSessionStatus: self.scrapingSessionStatus, scrapingSessionStartedAt: self.scrapingSessionStartedAt)
             if orderSource == OrderSource.Instacart.value || orderSource == OrderSource.Walmart.value {
                 if self.orderState == OrderState.Completed.rawValue {
                    if self.orderSource == OrderSource.Instacart.value {

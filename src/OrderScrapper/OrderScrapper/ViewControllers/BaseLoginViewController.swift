@@ -153,7 +153,6 @@ class BaseLoginViewController: UIViewController, LoginViewDelegate {
                 self.presentConnectVC(userID: userId, password: password)
             }
         }
-        //TODO :- OrderSource   
         FirebaseAnalyticsUtil.logUserProperty(orderSourceId: userId, orderSource: self.account.source)
     }
     

@@ -46,26 +46,42 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
     }
     
     private func injectAuthErrorVerificationJS() {
-        let js = JSUtils.getAuthErrorVerificationJS()
-        DispatchQueue.main.async {
-            self.webClient.evaluateJavaScript(js) { (response, error) in
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
-                    guard let self = self else {return}
-                    
-                    if let response = response as? String {
-                        if (response.isEmpty) {
-                            self.injectCaptchaIdentificationJS()
-                        } else {
-                            if response.contains(AppConstants.AmazonErrorMessage) {
-                                if self.otherRetryCount >= 2 {
-                                    self.injectEmailJS()
-                                    self.otherRetryCount = self.otherRetryCount + 1
+        self.getScript(orderSource: .Amazon, scriptKey: AppConstants.checkIfSignInErrorAmazon) { script in
+            if !script.isEmpty {
+                DispatchQueue.main.async {
+                    self.webClient.evaluateJavaScript(script) { (response, error) in
+                        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
+                            guard let self = self else {return}
+                            
+                            if let response = response as? String {
+                                if (response.isEmpty) {
+                                    self.injectCaptchaIdentificationJS()
                                 } else {
-                                    let error = ASLException(errorMessage: AppConstants.AmazonErrorMessage, errorType: .authChallenge)
-                                    self.completionHandler?(false,error)
+                                    if response.contains(AppConstants.AmazonErrorMessage) {
+                                        if self.otherRetryCount >= 2 {
+                                            self.injectEmailJS()
+                                            self.otherRetryCount = self.otherRetryCount + 1
+                                        } else {
+                                            let error = ASLException(errorMessage: AppConstants.AmazonErrorMessage, errorType: .authChallenge)
+                                            self.completionHandler?(false,error)
+                                        }
+                                    } else {
+                                        let error = ASLException(errorMessage: Strings.ErrorOccuredWhileInjectingJS , errorType: .authError)
+                                        var logEventAttributes:[String:String] = [:]
+                                        guard let userId = self.account?.userID else {return}
+                                        guard let panelistId = self.account?.panelistID else {return}
+                                        logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                                              EventConstant.OrderSourceID: userId,
+                                                              EventConstant.PanelistID: panelistId,
+                                                              EventConstant.ScrappingType: ScrappingType.html.rawValue,
+                                                              EventConstant.Status: EventStatus.Failure]
+                                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                                        
+                                        self.completionHandler?(false,error)
+                                    }
                                 }
                             } else {
-                                let error = ASLException(errorMessage: Strings.ErrorOccuredWhileInjectingJS , errorType: .authError)
+                                let error = ASLException(errorMessage: Strings.ErrorOccuredWhileInjectingJS, errorType: .authError)
                                 var logEventAttributes:[String:String] = [:]
                                 guard let userId = self.account?.userID else {return}
                                 guard let panelistId = self.account?.panelistID else {return}
@@ -79,103 +95,122 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
                                 self.completionHandler?(false,error)
                             }
                         }
-                    } else {
-                        let error = ASLException(errorMessage: Strings.ErrorOccuredWhileInjectingJS, errorType: .authError)
-                        var logEventAttributes:[String:String] = [:]
-                        guard let userId = self.account?.userID else {return}
-                        guard let panelistId = self.account?.panelistID else {return}
-                        logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
-                                              EventConstant.OrderSourceID: userId,
-                                              EventConstant.PanelistID: panelistId,
-                                              EventConstant.ScrappingType: ScrappingType.html.rawValue,
-                                              EventConstant.Status: EventStatus.Failure]
-                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
-                        
-                        self.completionHandler?(false,error)
                     }
                 }
+            } else {
+                // Completion handler if script not found
+                let error = ASLException(errorMessages:Strings.ErrorScriptNotFound, errorTypes: .authChallenge, errorEventLog: .captcha, errorScrappingType: .html)
+                self.completionHandler?(false, error)
             }
         }
     }
     private func injectCaptchaIdentificationJS() {
-        let js = JSUtils.getCaptchaIdentificationJS()
-        DispatchQueue.main.async {
-            self.webClient.evaluateJavaScript(js) { (response, error) in
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
-                    guard let self = self else {return}
-                    
-                    if let response = response as? String {
-                        if response.contains("captcha") {
-                            let error = ASLException(errorMessages:Strings.ErrorCaptchaPageLoaded, errorTypes: .authChallenge, errorEventLog: .captcha, errorScrappingType: .html)
-                            FirebaseAnalyticsUtil.logSentryError(error: error)
-                            self.completionHandler?(false, error)
+         self.getScript(orderSource: .Amazon, scriptKey: AppConstants.captchaAmazon) { script in
+            if !script.isEmpty {
+                DispatchQueue.main.async {
+                    self.webClient.evaluateJavaScript(script) { (response, error) in
+                        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
+                            guard let self = self else {return}
                             
-                            guard let userId = self.account?.userID else {return}
-                            guard let panelistId = self.account?.panelistID else {return}
-                            var logEventAttributes:[String:String] = [:]
-                            logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
-                                                  EventConstant.OrderSourceID: userId,
-                                                  EventConstant.PanelistID: panelistId,
-                                                  EventConstant.ScrappingType: ScrappingType.html.rawValue,
-                                                  EventConstant.Status: EventStatus.Success]
-                            FirebaseAnalyticsUtil.logEvent(eventType: EventType.EncounteredCaptcha, eventAttributes: logEventAttributes)
-                        } else {
-                            self.injectFieldIdentificationJS()
+                            if let response = response as? String {
+                                if response.contains("captcha") {
+                                    let error = ASLException(errorMessages:Strings.ErrorCaptchaPageLoaded, errorTypes: .authChallenge, errorEventLog: .captcha, errorScrappingType: .html)
+                                    FirebaseAnalyticsUtil.logSentryError(error: error)
+                                    self.completionHandler?(false, error)
+                                    
+                                    guard let userId = self.account?.userID else {return}
+                                    guard let panelistId = self.account?.panelistID else {return}
+                                    var logEventAttributes:[String:String] = [:]
+                                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                                          EventConstant.OrderSourceID: userId,
+                                                          EventConstant.PanelistID: panelistId,
+                                                          EventConstant.ScrappingType: ScrappingType.html.rawValue,
+                                                          EventConstant.Status: EventStatus.Success]
+                                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.EncounteredCaptcha, eventAttributes: logEventAttributes)
+                                } else {
+                                    self.injectFieldIdentificationJS()
+                                }
+                            } else {
+                                self.injectFieldIdentificationJS()
+                            }
                         }
-                    } else {
-                        self.injectFieldIdentificationJS()
                     }
                 }
+                
+            } else {
+                // Completion handler if script not found
+                let error = ASLException(errorMessages:Strings.ErrorScriptNotFound + "injectCaptchaIdentificationJS for amazon bg", errorTypes: .authChallenge, errorEventLog: .captcha, errorScrappingType: .html)
+                self.completionHandler?(false, error)
             }
         }
+           
     }
+    
     private func injectFieldIdentificationJS() {
-        let js = JSUtils.getFieldIdentificationJS()
-        DispatchQueue.main.async {
-            self.webClient.evaluateJavaScript(js) { (response, error) in
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
-                    guard let self = self else { return }
-                    if let response = response as? String {
-                        if response.contains("other") {
-                            let error = ASLException(errorMessages:Strings.ErrorOtherUrlLoaded, errorTypes: .authChallenge, errorEventLog: .unknownURL, errorScrappingType: .html)
-                            let exception = NSException(name: AppConstants.bsOrderFailed, reason: Strings.ErrorOtherUrlLoaded)
-                            FirebaseAnalyticsUtil.logSentryException(exception: exception)
-                            FirebaseAnalyticsUtil.logSentryError(error: error)
-                            self.completionHandler?(false, error)
-                        } else if response.contains("emailId") {
-                            self.injectEmailJS()
-                        } else {
-                            self.injectPasswordJS()
+         self.getScript(orderSource: .Amazon, scriptKey: AppConstants.getSignInPromptTypeAmazon) { script in
+            if !script.isEmpty {
+                DispatchQueue.main.async {
+                    self.webClient.evaluateJavaScript(script) { (response, error) in
+                        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
+                            guard let self = self else { return }
+                            if let response = response as? String {
+                                if response.contains("other") {
+                                    let error = ASLException(errorMessages:Strings.ErrorOtherUrlLoaded, errorTypes: .authChallenge, errorEventLog: .unknownURL, errorScrappingType: .html)
+                                    let exception = NSException(name: AppConstants.bsOrderFailed, reason: Strings.ErrorOtherUrlLoaded)
+                                    FirebaseAnalyticsUtil.logSentryException(exception: exception)
+                                    FirebaseAnalyticsUtil.logSentryError(error: error)
+                                    self.completionHandler?(false, error)
+                                } else if response.contains("emailId") {
+                                    self.injectEmailJS()
+                                } else {
+                                    self.injectPasswordJS()
+                                }
+                            }
                         }
                     }
                 }
+            } else {
+                // Completion handler if script not found
+                let error = ASLException(errorMessages:Strings.ErrorScriptNotFound + "injectFieldIdentificationJS for amazon bg", errorTypes: .authChallenge, errorEventLog: .captcha, errorScrappingType: .html)
+                self.completionHandler?(false, error)
             }
         }
+         
     }
+    
     private func injectEmailJS() {
         guard let email = self.account?.userID else {
             self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorUserIdIsNil, errorType: .authError))
             return
         }
-        let js = JSUtils.getEmailInjectJS(email: email)
-        DispatchQueue.main.async {
-            self.webClient.evaluateJavaScript(js) { (response, error) in
-                var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Amazon.value,
-                                                          EventConstant.OrderSourceID: email]
-                if error != nil {
-                    let authError = ASLException(errorMessages:Strings.ErrorEmailJSInjectionFailed, errorTypes: .authError, errorEventLog: .authentication, errorScrappingType: .html)
-                    self.completionHandler?(false, authError)
-                    
-                    logEventAttributes[EventConstant.ErrorReason] = error.debugDescription
-                    logEventAttributes[EventConstant.Status] = EventStatus.Failure
-                } else {
-                    print("### injectEmailJS")
-                    logEventAttributes[EventConstant.Status] = EventStatus.Success
+        self.getScript(orderSource: .Amazon, scriptKey: AppConstants.getEmailAmazon) { script in
+            if !script.isEmpty {
+                let emailJS = script.replacingOccurrences(of: "$email$", with: email)
+                DispatchQueue.main.async {
+                    self.webClient.evaluateJavaScript(emailJS) { (response, error) in
+                        var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                                                  EventConstant.OrderSourceID: email]
+                        if error != nil {
+                            let authError = ASLException(errorMessages:Strings.ErrorEmailJSInjectionFailed, errorTypes: .authError, errorEventLog: .authentication, errorScrappingType: .html)
+                            self.completionHandler?(false, authError)
+                            
+                            logEventAttributes[EventConstant.ErrorReason] = error.debugDescription
+                            logEventAttributes[EventConstant.Status] = EventStatus.Failure
+                        } else {
+                            print("### injectEmailJS")
+                            logEventAttributes[EventConstant.Status] = EventStatus.Success
+                        }
+                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSInjectUserName, eventAttributes: logEventAttributes)
+                    }
                 }
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSInjectUserName, eventAttributes: logEventAttributes)
+            } else {
+                // Completion handler if script not found
+                let error = ASLException(errorMessages:Strings.ErrorScriptNotFound + "injectEmailJS for amazon bg", errorTypes: .authChallenge, errorEventLog: .captcha, errorScrappingType: .html)
+                self.completionHandler?(false, error)
             }
         }
     }
+    
     private func injectPasswordJS() {
         guard let email = self.account?.userID else {
             let error = ASLException(errorMessage: Strings.ErrorUserIdIsNil, errorType: .authError)
@@ -189,27 +224,41 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
             self.completionHandler?(false,error)
             return
         }
-        let js = JSUtils.getPasswordInjectJS(password: password)
-        DispatchQueue.main.async {
-            self.webClient.evaluateJavaScript(js) { (response, error) in
-                var logEventAttributes:[String:String] = [:]
-                if error != nil {
-                    let authError = ASLException(errorMessages:Strings.ErrorPasswordJSInjectionFailed, errorTypes: .authError, errorEventLog: .authentication, errorScrappingType: .html)
-                    self.completionHandler?(false, authError)
-                    
-                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
-                                          EventConstant.OrderSourceID: email,
-                                          EventConstant.ErrorReason: error.debugDescription,
-                                          EventConstant.Status: EventStatus.Failure]
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSInjectPassword, eventAttributes: logEventAttributes)
-                } else {
-                    print("### injectPasswordJS")
-                    logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
-                                          EventConstant.OrderSourceID: email,
-                                          EventConstant.Status: EventStatus.Success]
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSInjectPassword, eventAttributes: logEventAttributes)
+        self.getScript(orderSource: .Amazon, scriptKey: AppConstants.getPasswordAmazon) { script in
+            if !script.isEmpty {
+                let passwordJS = script.replacingOccurrences(of: "$password$", with: password)
+                DispatchQueue.main.async {
+                    self.webClient.evaluateJavaScript(passwordJS) { (response, error) in
+                        var logEventAttributes:[String:String] = [:]
+                        if error != nil {
+                            let authError = ASLException(errorMessages:Strings.ErrorPasswordJSInjectionFailed, errorTypes: .authError, errorEventLog: .authentication, errorScrappingType: .html)
+                            self.completionHandler?(false, authError)
+                            
+                            logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                                  EventConstant.OrderSourceID: email,
+                                                  EventConstant.ErrorReason: error.debugDescription,
+                                                  EventConstant.Status: EventStatus.Failure]
+                            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSInjectPassword, eventAttributes: logEventAttributes)
+                        } else {
+                            print("### injectPasswordJS")
+                            logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
+                                                  EventConstant.OrderSourceID: email,
+                                                  EventConstant.Status: EventStatus.Success]
+                            FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSInjectPassword, eventAttributes: logEventAttributes)
+                        }
+                    }
                 }
+            } else {
+                // Completion handler if script not found
+                let error = ASLException(errorMessages:Strings.ErrorScriptNotFound + "injectPasswordJS for amazon bg", errorTypes: .authChallenge, errorEventLog: .captcha, errorScrappingType: .html)
+                self.completionHandler?(false, error)
             }
+        }
+    }
+    
+    private func getScript(orderSource: OrderSource, scriptKey: String, completionHandler: @escaping (String) -> Void) {
+        BSScriptFileManager.shared.getAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
+          completionHandler(script)
         }
     }
 }

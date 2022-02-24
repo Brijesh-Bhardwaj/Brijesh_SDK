@@ -159,9 +159,16 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
             self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorUserIdIsNil, errorType: .authError))
             return
         }
-        let js = JSUtils.getWalmartIdentificationJS(email: email, password: password)
-        self.evaluateJS(javascript: js) { response, error in
-            print("$$$$$ getIdentificationJS",response)
+        self.getScript(orderSource: .Walmart, scriptKey: AppConstants.getWalmartIdentificationJS) { script in
+            if !script.isEmpty {
+                let passwordJS = script.replacingOccurrences(of: "$email$", with: email)
+                let signInJS = passwordJS.replacingOccurrences(of: "$password$", with: password)
+                self.evaluateJS(javascript: signInJS) { response, error in
+                    print("$$$$$ getIdentificationJS",response)
+                }
+            } else {
+                self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorScriptNotFound + "getIdentificationJS for walmart", errorType: .authError))
+            }
         }
     }
     
@@ -179,18 +186,22 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
     }
     func checkError() {
         print("@@@@ check error called")
-        let js = JSUtils.getWACheckErrorJS()
-        self.evaluateJS(javascript: js) { response, error in
-            if let response = response as? String {
-                // TODO: check for the response
-                self.timerHandler.stopTimer()
-                self.authenticationDelegate?.didReceiveLoginChallenge(error: response)
-                self.notifyAuthError(errorMessage: response)
-                self.webClient.scriptMessageHandler?.removeScriptMessageListener()
+        self.getScript(orderSource: .Walmart, scriptKey: AppConstants.getWalmartCheckErrorJS) { script in
+            if !script.isEmpty {
+                self.evaluateJS(javascript: script) { response, error in
+                    if let response = response as? String {
+                        self.timerHandler.stopTimer()
+                        self.authenticationDelegate?.didReceiveLoginChallenge(error: response)
+                        self.notifyAuthError(errorMessage: response)
+                        self.webClient.scriptMessageHandler?.removeScriptMessageListener()
+                    } else {
+                        self.timerHandler.stopTimer()
+                        self.webClient.scriptMessageHandler?.removeScriptMessageListener()
+                        self.completionHandler?(false,ASLException(errorMessage: Strings.ErrorInInjectingScript, errorType: .authError))
+                    }
+                }
             } else {
-                self.timerHandler.stopTimer()
-                self.webClient.scriptMessageHandler?.removeScriptMessageListener()
-                self.completionHandler?(false,ASLException(errorMessage: Strings.ErrorInInjectingScript, errorType: .authError))
+                self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorScriptNotFound + "checkError for walmart", errorType: .authError))
             }
         }
     }
@@ -280,6 +291,12 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
     private func sendServicesDownCallback() {
         if let scraperListener = scraperListener {
             scraperListener.onServicesDown(error: nil)
+        }
+    }
+    
+    private func getScript(orderSource: OrderSource, scriptKey: String, completionHandler: @escaping (String) -> Void) {
+        BSScriptFileManager.shared.getAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
+            completionHandler(script)
         }
     }
 }

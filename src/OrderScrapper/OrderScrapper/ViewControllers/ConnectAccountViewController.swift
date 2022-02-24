@@ -83,7 +83,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         if let statusImage = self.getStatusImage() {
             self.fetchSuccessView?.imageView = statusImage
         }
-        if self.fetchRequestSource == .manual {
+        if self.fetchRequestSource == .manual || self.fetchRequestSource == .online {
             self.progressView?.hideCancelScrapeBtn = false
         }
         self.scraperListener = self
@@ -210,7 +210,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 scraper.stopScrapping()
             }
         }
-        if fetchRequestSource == .manual {
+        if fetchRequestSource == .manual || fetchRequestSource == .online {
             DispatchQueue.main.async {
                 self.progressView?.scrapePercentage.text = ""
             }
@@ -408,6 +408,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 if let statusImage = self.getStatusImage() {
                     self.fetchSuccessView?.imageView = statusImage
                 }
+                self.fetchSuccessView.successIncentiveMessage = self.getIncentiveSuccessMessage()
                 self.contentView?.bringSubviewToFront(self.fetchSuccessView)
             }
         })
@@ -421,6 +422,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 if let statusImage = self.getStatusImage() {
                     self.fetchSuccessView?.imageView = statusImage
                 }
+                self.fetchSuccessView.successIncentiveMessage = self.getIncentiveSuccessMessage()
                 self.contentView?.bringSubviewToFront(self.fetchSuccessView)
             }
         })
@@ -547,6 +549,22 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 if let statusImage = self.getStatusImage() {
                     self.fetchSuccessView?.imageView = statusImage
                 }
+                self.fetchSuccessView?.successIncentiveMessage = self.getIncentiveSuccessMessage()
+                self.contentView?.bringSubviewToFront(self.fetchSuccessView)
+            }
+        } else {
+            DispatchQueue.main.async {
+                self.backButton?.isEnabled = false
+                self.backButton?.isHidden = true
+                self.isTimeOut = false
+                self.fetchSuccessView?.fetchSuccess = self.getSuccessMessage()
+                self.fetchSuccessView.successIncentiveMessage = true
+                self.fetchSuccessView?.hideOkButton = false
+                self.fetchSuccessView?.hideCancelButton = true
+                self.fetchSuccessView?.hideContinueButton = true
+                if let statusImage = self.getStatusImage() {
+                    self.fetchSuccessView?.imageView = statusImage
+                }
                 self.contentView?.bringSubviewToFront(self.fetchSuccessView)
             }
         }
@@ -597,7 +615,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                     self.handleServicesDown()
                 }
             }
-            if self.fetchRequestSource == .manual && action == Actions.ForegroundHtmlScrapping {
+            if (self.fetchRequestSource == .manual || self.fetchRequestSource == .online) && action == Actions.ForegroundHtmlScrapping {
                 logEventss(failureType: FailureTypes.timeout.rawValue, eventState: EventState.fail.rawValue, scrapingType: ScrappingType.html.rawValue)
             } else if (action == Actions.ForegroundHtmlScrapping) {
                 self.webContentView?.stopLoading()
@@ -619,9 +637,11 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     
     private func getHeaderTitle() -> String {
         let source = self.fetchRequestSource ?? .general
-        if source == .manual {
+        if source == .manual  {
             return String.init(format: Strings.HeaderFetchOrders, OrderSource.Amazon.value)
-        } else {
+        } else if source == .online{
+            return Strings.OnlineHeaderFetchingOrders
+        }else {
             return Utils.getString(key: Strings.HeadingConnectAmazonAccount)
         }
     }
@@ -633,6 +653,13 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 return String.init(format: Strings.HeaderFetchingPendingOrders, OrderSource.Amazon.value)
             } else {
                 return String.init(format: Strings.HeaderFetchingOrders, OrderSource.Amazon.value)
+            }
+
+        } else if source == .online {
+            if isUploadingPreviousOrder {
+                return Strings.OnlineHeaderPendingFetchingOrders
+            } else {
+                return Strings.OnlineFetchingOrders
             }
         } else {
             return Utils.getString(key: Strings.HeadingConnectingAmazonAccount)
@@ -647,17 +674,34 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             } else if isFetchSkipped || isFailureButAccountConnected {
                 return String.init(format: Strings.FetchFailureMessage, OrderSource.Amazon.value)
             } else {
-                return String.init(format: Strings.FetchSuccessMessage, OrderSource.Amazon.value)
+                return LibContext.shared.manualScrapeSuccess
+            }
+        } else if source == .online {
+            if isTimeOut {
+                return Strings.OnlineTimeOutFailureMessage
+            } else if isFetchSkipped || isFailureButAccountConnected {
+                return Strings.OnlineFetchFailureMessage
+            } else {
+                return Strings.OnlineSuccessMessage
             }
         } else {
             return AppConstants.amazonAccountConnectedSuccess
         }
     }
     
+    private func getIncentiveSuccessMessage() -> Bool {
+        let source = self.fetchRequestSource ?? .general
+        if source == .online {
+            return false
+        } else {
+            return true
+        }
+    }
+    
     //TODO:- Need to change
     private func getSuccessMessage(action: String) -> String {
         let source = self.fetchRequestSource ?? .general
-        if source == .manual {
+        if source == .manual  {
             if isTimeOut {
                 if action == Actions.ForegroundHtmlScrapping {
                     return LibContext.shared.manualScrapeTimeOutMessage
@@ -669,6 +713,19 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             } else {
                 return String.init(format: Strings.FetchSuccessMessage, OrderSource.Amazon.value)
             }
+        } else if source == .online {
+            if isTimeOut {
+                if action == Actions.ForegroundHtmlScrapping {
+                    return Strings.OnlineTimeOutFailureMessage
+                } else {
+                    return Strings.OnlineFetchFailureMessage
+                }
+            } else if isFetchSkipped || isFailureButAccountConnected {
+                return Strings.OnlineFetchFailureMessage
+            } else {
+                return Strings.OnlineSuccessMessage
+            }
+            
         } else {
             return AppConstants.amazonAccountConnectedSuccess
         }
@@ -676,7 +733,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     
     private func getStatusImage() -> UIImage? {
         let source = self.fetchRequestSource ?? .general
-        if source == .manual {
+        if source == .manual || source == .online {
             if isTimeOut  {
                 return Utils.getImage(named: IconNames.SuccessScreen)
             } else if isFetchSkipped || isFailureButAccountConnected {
@@ -691,7 +748,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     
     private func getStatusImage(action: String) -> UIImage? {
         let source = self.fetchRequestSource ?? .general
-        if source == .manual {
+        if source == .manual || source == .online {
             if isTimeOut  {
                 if action == Actions.ForegroundHtmlScrapping {
                     return Utils.getImage(named: IconNames.SuccessScreen)
@@ -732,6 +789,11 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     }
     
     private func cancelManualScrape() {
+        if self.navigationHelper.backgroundScrapper != nil {
+            self.navigationHelper.backgroundScrapper.stopScrapping()
+            self.navigationHelper.backgroundScrapper.scraperListener = nil
+            self.navigationHelper.backgroundScrapper = nil
+        }
         let result = (true, OrderFetchSuccessType.fetchSkippedByUser)
         LibContext.shared.scrapeCompletionPublisher.send((result, nil))
     }
@@ -758,11 +820,13 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             if let statusImage = self.getStatusImage(action: action) {
                 self.fetchSuccessView?.imageView = statusImage
             }
-            if self.fetchRequestSource == .manual {
+            if self.fetchRequestSource == .manual || self.fetchRequestSource == .online {
+                self.fetchSuccessView?.successIncentiveMessage = true
                 self.fetchSuccessView?.hideOkButton = true
                 self.fetchSuccessView?.hideCancelButton = false
                 self.fetchSuccessView?.hideContinueButton = false
             } else {
+                self.fetchSuccessView?.successIncentiveMessage = true
                 self.fetchSuccessView?.hideOkButton = false
                 self.fetchSuccessView?.hideCancelButton = true
                 self.fetchSuccessView?.hideContinueButton = true
