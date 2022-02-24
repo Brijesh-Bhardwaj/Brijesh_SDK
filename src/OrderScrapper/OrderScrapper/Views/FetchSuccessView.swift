@@ -73,7 +73,7 @@ class FetchSuccessView: UIView {
     
     var successIncentiveMessage: Bool {
         get {
-            return false
+            return true
         }
         set {
             incentiveMessage.isHidden = newValue
