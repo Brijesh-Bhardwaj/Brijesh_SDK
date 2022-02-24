@@ -286,6 +286,7 @@ class ConnectWalmartAccountVC: BaseAccountConnectVC {
                         self.connectAccountView?.successView.hideOkButton = false
                         self.connectAccountView?.successView.hideCancelButton = true
                         self.connectAccountView?.successView.hideContinueButton = true
+                        self.connectAccountView.successView.successIncentiveMessage = true
                         self.connectAccountView?.fetchSuccess = self.getSuccessMessage()
                         if let statusImage = self.getStatusImage() {
                             self.connectAccountView?.statusImage = statusImage
@@ -391,6 +392,7 @@ class ConnectWalmartAccountVC: BaseAccountConnectVC {
             self.connectAccountView?.successView.hideOkButton = true
             self.connectAccountView?.successView.hideCancelButton = false
             self.connectAccountView?.successView.hideContinueButton = false
+            self.connectAccountView.successView.successIncentiveMessage = true
             self.connectAccountView?.connectAccountTitle.text = self.getHeaderTitle()
             self.connectAccountView?.fetchSuccess = self.getSuccessMessage()
             if let statusImage = self.getStatusImage() {
