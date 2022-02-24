@@ -654,7 +654,6 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             } else {
                 return String.init(format: Strings.HeaderFetchingOrders, OrderSource.Amazon.value)
             }
-
         } else if source == .online {
             if isUploadingPreviousOrder {
                 return Strings.OnlineHeaderPendingFetchingOrders
