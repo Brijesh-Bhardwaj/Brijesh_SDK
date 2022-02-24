@@ -408,6 +408,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 if let statusImage = self.getStatusImage() {
                     self.fetchSuccessView?.imageView = statusImage
                 }
+                self.fetchSuccessView.successIncentiveMessage = self.getIncentiveSuccessMessage()
                 self.contentView?.bringSubviewToFront(self.fetchSuccessView)
             }
         })
@@ -421,6 +422,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 if let statusImage = self.getStatusImage() {
                     self.fetchSuccessView?.imageView = statusImage
                 }
+                self.fetchSuccessView.successIncentiveMessage = self.getIncentiveSuccessMessage()
                 self.contentView?.bringSubviewToFront(self.fetchSuccessView)
             }
         })
