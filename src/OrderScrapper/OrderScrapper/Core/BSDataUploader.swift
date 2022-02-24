@@ -69,6 +69,7 @@ class DataUploadOperation: Operation {
     var scrapingContext: String?
     var scrapingSessionStatus: String?
     var scrapingSessionStartedAt: String?
+
     
     public override var isAsynchronous: Bool {
         return true

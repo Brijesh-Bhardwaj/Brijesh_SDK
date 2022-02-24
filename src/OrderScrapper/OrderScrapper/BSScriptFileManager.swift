@@ -170,7 +170,6 @@ class BSScriptFileManager {
                     } else {
                         UserDefaults.standard.setValue(jsVersion, forKey: Utils.getKeyForJSVersion(orderSorce: orderSource))
                     }
-                   
                     completion(script)
                     
                     logEventRetrieveScriptAttributes[EventConstant.Status] = EventStatus.Success

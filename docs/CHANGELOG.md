@@ -9,7 +9,7 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Added : This section to enlist the additions/implementations 
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
-  
+
 ## [2.0.6] - 2022-02-24
  ### Added
  - Added online scraping for amazon for first phase release of RPA_863

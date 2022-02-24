@@ -120,5 +120,4 @@ struct AppConstants {
     static let getInstacartVerificationCodeJS = "getInstacartVerificationCodeJS"
     static let getInstcartCaptchaClosed = "getInstacartCaptchaClosed"
     static let getInstacartverificationCodeSuccess = "getInstacartVerificationCodeSuccess"
-
 }
