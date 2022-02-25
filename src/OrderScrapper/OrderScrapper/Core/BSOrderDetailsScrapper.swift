@@ -23,6 +23,7 @@ class BSOrderDetailsScrapper {
     var isScrapingComplete = false
     let lock = NSLock()
     var scrapingSessionStartedAt: String? = nil
+
     
     lazy var scrapeQueue: [String] = {
         return Array<String>()
