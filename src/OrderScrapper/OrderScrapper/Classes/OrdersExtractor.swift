@@ -184,14 +184,7 @@ public class OrdersExtractor {
             }
         } else {
             let error =  ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
-            let panelistId = LibContext.shared.authProvider.getPanelistID()
-            var logEventAttributes:[String:String] = [:]
-            logEventAttributes = [EventConstant.PanelistID: panelistId,
-                                  EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue,
-                                  EventConstant.Status: EventStatus.Success]
-            FirebaseAnalyticsUtil.logEvent(eventType: EventType.ConfigsMissing, eventAttributes: logEventAttributes)
             throw error
-            completionHandler(false)
         }
     }
     private static func registerFonts() {
