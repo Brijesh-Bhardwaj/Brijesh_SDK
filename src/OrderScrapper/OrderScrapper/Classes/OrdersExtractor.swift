@@ -169,20 +169,25 @@ public class OrdersExtractor {
                 if response != nil {
                     if let shouldShowButton = response?.isFlagEnabled {
                         if shouldShowButton {
+                            LibContext.shared.isIncetiveFlag = true
                             completionHandler(shouldShowButton)
                         } else {
+                            LibContext.shared.isIncetiveFlag = false
                             completionHandler(false)
                         }
                     } else {
+                        LibContext.shared.isIncetiveFlag = false
                         completionHandler(false)
                     }
                 } else {
+                    LibContext.shared.isIncetiveFlag = false
                     completionHandler(false)
                     let aslException = ASLException(error: nil, errorMessage: error!.errorMessage, failureType: nil)
                     FirebaseAnalyticsUtil.logSentryError(error: aslException)
                 }
             }
         } else {
+            LibContext.shared.isIncetiveFlag = false
             let error =  ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
             throw error
         }
