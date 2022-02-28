@@ -60,7 +60,7 @@
                     </connections>
                 </button>
                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6i4-Je-4Ig">
-                    <rect key="frame" x="124" y="613" width="180" height="45"/>
+                    <rect key="frame" x="124" y="593" width="180" height="45"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="45" id="Ogg-Yr-RcZ"/>
                         <constraint firstAttribute="width" constant="180" id="p5a-9G-gR1"/>
@@ -74,7 +74,7 @@
                     </connections>
                 </button>
                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="R5H-xN-d3b">
-                    <rect key="frame" x="124" y="688" width="180" height="45"/>
+                    <rect key="frame" x="124" y="663" width="180" height="45"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="180" id="YcF-nd-Mxt"/>
                         <constraint firstAttribute="height" constant="45" id="qjr-Nx-UX9"/>
@@ -88,7 +88,7 @@
                     </connections>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="N3Y-XW-KiF">
-                    <rect key="frame" x="10" y="583" width="408" height="100"/>
+                    <rect key="frame" x="10" y="583" width="408" height="75"/>
                     <string key="text">Incentives are awarded one time per week for downloading online orders.  In order to qualify for the incentive you must have at least 1 online order for the week.</string>
                     <fontDescription key="fontDescription" name="SFProRounded-Regular" family="SF Pro Rounded" pointSize="16"/>
                     <nil key="textColor"/>
@@ -107,11 +107,11 @@
                 <constraint firstItem="N3Y-XW-KiF" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="10" id="PA5-zf-S8h"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="N3Y-XW-KiF" secondAttribute="trailing" constant="10" id="Qf4-tD-ece"/>
                 <constraint firstItem="Led-aZ-txw" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="QpS-5i-DTl"/>
-                <constraint firstItem="R5H-xN-d3b" firstAttribute="top" secondItem="6i4-Je-4Ig" secondAttribute="bottom" constant="30" id="beE-JY-uan"/>
+                <constraint firstItem="R5H-xN-d3b" firstAttribute="top" secondItem="6i4-Je-4Ig" secondAttribute="bottom" constant="25" id="beE-JY-uan"/>
                 <constraint firstItem="N3Y-XW-KiF" firstAttribute="top" secondItem="WKm-pC-VSr" secondAttribute="bottom" constant="20" id="eSb-D2-6Al"/>
                 <constraint firstItem="hEp-DX-0xU" firstAttribute="centerY" secondItem="vUN-kp-3ea" secondAttribute="centerY" id="eZo-a9-VST"/>
                 <constraint firstItem="WKm-pC-VSr" firstAttribute="top" secondItem="hEp-DX-0xU" secondAttribute="bottom" constant="50" id="jPL-qE-Kh4"/>
-                <constraint firstItem="6i4-Je-4Ig" firstAttribute="top" secondItem="WKm-pC-VSr" secondAttribute="bottom" constant="50" id="lW0-Y8-2P4"/>
+                <constraint firstItem="6i4-Je-4Ig" firstAttribute="top" secondItem="WKm-pC-VSr" secondAttribute="bottom" constant="30" id="lW0-Y8-2P4"/>
                 <constraint firstItem="6i4-Je-4Ig" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="uj7-EK-qjy"/>
                 <constraint firstItem="R5H-xN-d3b" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="xQe-mK-nvW"/>
             </constraints>

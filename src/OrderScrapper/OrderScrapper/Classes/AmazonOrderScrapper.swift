@@ -195,7 +195,12 @@ class AmazonOrderScrapper {
                         self.backgroundScrapper.stopScrapping()
                         self.backgroundScrapper = nil
                     }
-                    self.performForegroundScraping(account, orderExtractionListener, .online)
+                    let isIncentiveFlag = LibContext.shared.isIncetiveFlag
+                    if isIncentiveFlag {
+                        self.performForegroundScraping(account, orderExtractionListener, .online)
+                    } else {
+                        self.performForegroundScraping(account, orderExtractionListener, .manual)
+                    }
                 }
             }
         }
