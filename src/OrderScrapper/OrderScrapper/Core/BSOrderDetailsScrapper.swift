@@ -23,7 +23,7 @@ class BSOrderDetailsScrapper {
     var isScrapingComplete = false
     let lock = NSLock()
     var scrapingSessionStartedAt: String? = nil
-
+    
     
     lazy var scrapeQueue: [String] = {
         return Array<String>()
@@ -208,38 +208,40 @@ class BSOrderDetailsScrapper {
     }
     
     func getOrdersDetailsCountOnConnection(completion: @escaping (Int) -> Void) {
-        var orderDetailsCount = 0
         let orderSource = self.params.account.source
         ConfigManager.shared.getConfigurations(orderSource: orderSource) { (configurations, error) in
-            if let configuration = configurations {
-                let orderUploadRetryCount = configuration.orderUploadRetryCount ?? AppConstants.orderUploadRetryCount
-                if let toDate = self.dateRange?.toDate, let fromDate = self.dateRange?.fromDate {
-                    orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: orderSource.value, panelistID: self.params.account.panelistID, userID: self.params.account.userID, orderSectionType: SectionType.connection.rawValue, orderUploadRetryCount: orderUploadRetryCount, endDate: toDate, startDate: fromDate)
-                }
-                
-                var logEventAttributes:[String:String] = [:]
-                logEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
-                                      EventConstant.PanelistID: self.params.account.panelistID,
-                                      EventConstant.OrderSourceID: self.params.account.userID,
-                                      EventConstant.Status: EventStatus.Success]
-                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrappedOrderDetailsFromDB, eventAttributes: logEventAttributes)
-                completion(orderDetailsCount)
-            } else {
-                if let error = error {
-                    var logEventAttributes:[String:String] = [:]
+            DispatchQueue.global().async {
+                var orderDetailsCount = 0
+                if let configuration = configurations {
+                    let orderUploadRetryCount = configuration.orderUploadRetryCount ?? AppConstants.orderUploadRetryCount
+                    if let toDate = self.dateRange?.toDate, let fromDate = self.dateRange?.fromDate {
+                        orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: orderSource.value, panelistID: self.params.account.panelistID, userID: self.params.account.userID, orderSectionType: SectionType.connection.rawValue, orderUploadRetryCount: orderUploadRetryCount, endDate: toDate, startDate: fromDate)
+                    }
                     
+                    var logEventAttributes:[String:String] = [:]
                     logEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
                                           EventConstant.PanelistID: self.params.account.panelistID,
                                           EventConstant.OrderSourceID: self.params.account.userID,
-                                          EventConstant.EventName: EventType.ExceptionWhileGettingConfiguration,
-                                          EventConstant.Status: EventStatus.Failure]
-                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                                          EventConstant.Status: EventStatus.Success]
+                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrappedOrderDetailsFromDB, eventAttributes: logEventAttributes)
+                    completion(orderDetailsCount)
+                } else {
+                    if let error = error {
+                        var logEventAttributes:[String:String] = [:]
+                        
+                        logEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
+                                              EventConstant.PanelistID: self.params.account.panelistID,
+                                              EventConstant.OrderSourceID: self.params.account.userID,
+                                              EventConstant.EventName: EventType.ExceptionWhileGettingConfiguration,
+                                              EventConstant.Status: EventStatus.Failure]
+                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                    }
+                    let orderUploadRetryCount =  AppConstants.orderUploadRetryCount
+                    if let toDate = self.dateRange?.toDate, let fromDate = self.dateRange?.fromDate {
+                        orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: orderSource.value, panelistID: self.params.account.panelistID, userID: self.params.account.userID, orderSectionType: SectionType.connection.rawValue, orderUploadRetryCount: orderUploadRetryCount, endDate: toDate, startDate: fromDate)
+                    }
+                    completion(orderDetailsCount)
                 }
-                let orderUploadRetryCount =  AppConstants.orderUploadRetryCount
-                if let toDate = self.dateRange?.toDate, let fromDate = self.dateRange?.fromDate {
-                    orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: orderSource.value, panelistID: self.params.account.panelistID, userID: self.params.account.userID, orderSectionType: SectionType.connection.rawValue, orderUploadRetryCount: orderUploadRetryCount, endDate: toDate, startDate: fromDate)
-                }
-                completion(orderDetailsCount)
             }
         }
     }
@@ -370,22 +372,24 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
     }
     
     func updateUploadRetryCount(orderDetails: OrderDetails) {
-        var uploadRetryCount: Int16 = 0
-        if let count = orderDetail.uploadRetryCount {
-            uploadRetryCount = count
-        }
-        print("### orderRetryCount failed",uploadRetryCount, orderDetail.orderId)
-        uploadRetryCount = uploadRetryCount + 1
-        if let userId = orderDetail.userID, let panelistId = orderDetail.panelistID {
-            do {
-                try CoreDataManager.shared.updateRetryCountInOrderDetails(userId: userId, panelistId: panelistId, orderSource: self.params.account.source.value, orderId: orderDetail.orderId, retryCount: uploadRetryCount)
-            } catch let error {
-                print(AppConstants.tag, "updateOrderDetailsWithExceptionState", error.localizedDescription)
-                let logEventAttributes:[String:String] = [EventConstant.PanelistID: panelistId,
-                                                          EventConstant.OrderSourceID: userId,
-                                                          EventConstant.OrderSource: self.params.account.source.value,
-                                                          EventConstant.Status: EventStatus.Failure]
-                FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+        DispatchQueue.global().async {
+            var uploadRetryCount: Int16 = 0
+            if let count = self.orderDetail.uploadRetryCount {
+                uploadRetryCount = count
+            }
+            print("### orderRetryCount failed",uploadRetryCount, self.orderDetail.orderId)
+            uploadRetryCount = uploadRetryCount + 1
+            if let userId = self.orderDetail.userID, let panelistId = self.orderDetail.panelistID {
+                do {
+                    try CoreDataManager.shared.updateRetryCountInOrderDetails(userId: userId, panelistId: panelistId, orderSource: self.params.account.source.value, orderId: self.orderDetail.orderId, retryCount: uploadRetryCount)
+                } catch let error {
+                    print(AppConstants.tag, "updateOrderDetailsWithExceptionState", error.localizedDescription)
+                    let logEventAttributes:[String:String] = [EventConstant.PanelistID: panelistId,
+                                                              EventConstant.OrderSourceID: userId,
+                                                              EventConstant.OrderSource: self.params.account.source.value,
+                                                              EventConstant.Status: EventStatus.Failure]
+                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                }
             }
         }
     }

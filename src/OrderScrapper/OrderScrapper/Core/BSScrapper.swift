@@ -74,11 +74,13 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
         windowManager.attachHeadlessView(view: webClient)
         self.account = account
         getScrapeSessionTimer = DateUtils.getSessionTimer(getSessionTimeForOnline: fetchRequestSource ?? .general)
-        let dbOrderDetails = self.getOrderDetails()
-        if dbOrderDetails.count > 0 {
-            self.uploadPreviousOrders()
-        } else {
-            self.extractNewOrders()
+        DispatchQueue.global().async {
+            let dbOrderDetails = self.getOrderDetails()
+            if dbOrderDetails.count > 0 {
+                self.uploadPreviousOrders()
+            } else {
+                self.extractNewOrders()
+            }
         }
     }
     
