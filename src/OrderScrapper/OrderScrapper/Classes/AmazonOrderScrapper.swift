@@ -102,44 +102,51 @@ class AmazonOrderScrapper {
         self.disconnectOperation[source] = accountDisconnectedListener
         
         _ = AmazonService.updateStatus(platformId: account.userID, status: AccountState.ConnectedAndDisconnected.rawValue, message: AppConstants.msgDisconnected, orderStatus: OrderStatus.None.rawValue, orderSource: source.value) { response, error in
-            let panelistId = LibContext.shared.authProvider.getPanelistID()
-            if response != nil {
-                self.terminateScrapping(account: account)
-                AmazonService.cancelAPI()
-                CoreDataManager.shared.deleteAccounts(userId: account.userID, panelistId: panelistId, orderSource: account.source.rawValue)
-                CoreDataManager.shared.deleteOrderDetails(userID: account.userID, panelistID: panelistId, orderSource: source.value)
-                WebCacheCleaner.clear(completionHandler: nil)
-                if let accountDisconnectListener = self.disconnectOperation[source] {
-                    accountDisconnectListener.onAccountDisconnected(account: account)
-                    self.disconnectOperation.removeValue(forKey: source)
-                }
-                let numberOfCapchaRetry = Utils.getKeyForNumberOfCaptchaRetry(orderSorce: source)
-                UserDefaults.standard.setValue(0, forKey: numberOfCapchaRetry)
-            } else {
-                if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
-                    let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
-                    LibContext.shared.servicesStatusListener.onServicesFailure(exception: error)
-                } else {var logEventAttributes:[String:String] = [:]
-                    logEventAttributes = [EventConstant.OrderSource: orderSource,
-                                          EventConstant.PanelistID: panelistId,
-                                          EventConstant.OrderSourceID: account.userID]
-                    if let error = error {
-                        logEventAttributes[EventConstant.EventName] = EventType.UpdateStatusAPIFailedWhileDisconnect
-                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
-                    } else {
-                        FirebaseAnalyticsUtil.logEvent(eventType: EventType.UpdateStatusAPIFailedWhileDisconnect, eventAttributes: logEventAttributes)
+            
+            DispatchQueue.global().async {
+                let panelistId = LibContext.shared.authProvider.getPanelistID()
+                if response != nil {
+                    self.terminateScrapping(account: account)
+                    AmazonService.cancelAPI()
+                    CoreDataManager.shared.deleteAccounts(userId: account.userID, panelistId: panelistId, orderSource: account.source.rawValue)
+                    CoreDataManager.shared.deleteOrderDetails(userID: account.userID, panelistID: panelistId, orderSource: source.value)
+                    WebCacheCleaner.clear(completionHandler: nil)
+                    DispatchQueue.main.async {
+                        if let accountDisconnectListener = self.disconnectOperation[source] {
+                            accountDisconnectListener.onAccountDisconnected(account: account)
+                            self.disconnectOperation.removeValue(forKey: source)
+                        }
                     }
-                    
-                    var errorMsg: String = "Failed while disconnecting account"
-                    if let error = error as? APIError{
-                        errorMsg = error.errorMessage
+                    let numberOfCapchaRetry = Utils.getKeyForNumberOfCaptchaRetry(orderSorce: source)
+                    UserDefaults.standard.setValue(0, forKey: numberOfCapchaRetry)
+                } else {
+                    if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
+                        let error = ASLException(error: nil, errorMessage: Strings.ErrorServicesDown, failureType: .servicesDown)
+                        LibContext.shared.servicesStatusListener.onServicesFailure(exception: error)
+                    } else {var logEventAttributes:[String:String] = [:]
+                        logEventAttributes = [EventConstant.OrderSource: orderSource,
+                                              EventConstant.PanelistID: panelistId,
+                                              EventConstant.OrderSourceID: account.userID]
+                        if let error = error {
+                            logEventAttributes[EventConstant.EventName] = EventType.UpdateStatusAPIFailedWhileDisconnect
+                            FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                        } else {
+                            FirebaseAnalyticsUtil.logEvent(eventType: EventType.UpdateStatusAPIFailedWhileDisconnect, eventAttributes: logEventAttributes)
+                        }
+                        
+                        var errorMsg: String = "Failed while disconnecting account"
+                        if let error = error as? APIError{
+                            errorMsg = error.errorMessage
+                        }
+                        let error = ASLException(errorMessage: errorMsg, errorType: nil)
+                        DispatchQueue.main.async {
+                            if let accountDisconnectListener = self.disconnectOperation[source] {
+                                accountDisconnectListener.onAccountDisconnectionFailed(account: account, error: error)
+                                self.disconnectOperation.removeValue(forKey: source)
+                            }
+                        }
+                        FirebaseAnalyticsUtil.logSentryError(error: error)
                     }
-                    let error = ASLException(errorMessage: errorMsg, errorType: nil)
-                    if let accountDisconnectListener = self.disconnectOperation[source] {
-                        accountDisconnectListener.onAccountDisconnectionFailed(account: account, error: error)
-                        self.disconnectOperation.removeValue(forKey: source)
-                    }
-                    FirebaseAnalyticsUtil.logSentryError(error: error)
                 }
             }
         }
