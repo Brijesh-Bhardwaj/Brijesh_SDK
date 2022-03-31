@@ -1,1 +1,1 @@
- - Issue fixes added for the ticket RPA-1062
+ - Issue fixes added for the ticket RPA-1035

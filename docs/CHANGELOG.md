@@ -10,6 +10,10 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
 
+## [2.0.8] - 2022-03-31
+ ### Added
+ - Issue fixes added for the ticket RPA-1035
+ 
 ## [2.0.7] - 2022-03-10
  ### Added
  - Issue fixes added for the ticket RPA-1062
