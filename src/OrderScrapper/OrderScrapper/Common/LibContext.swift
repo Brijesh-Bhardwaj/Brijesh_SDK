@@ -24,6 +24,15 @@ class LibContext {
     var viewPresenter: ViewPresenter!
     var orderExtractorConfig : OrderExtractorConfig!
     var timeoutValue: Double!
+    var timerValue: Double! {
+        get {
+            if self.timeoutValue == nil {
+                self.timeoutValue = AppConstants.timeoutCounter
+            }
+            return self.timeoutValue
+        } 
+    }
+     
     var servicesStatusListener: ServicesStatusListener!
     var manualScrapeTimeOutMessage: String!
     var manualScrapeSuccess: String!
