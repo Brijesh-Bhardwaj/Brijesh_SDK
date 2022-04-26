@@ -24,7 +24,7 @@ class TimerHandler {
             self.timer = nil
         }
         print("### TimerHandler: Timer Started ")
-        timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(LibContext.shared.timeoutValue), repeats: false) { timer in
+        timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(LibContext.shared.timerValue), repeats: false) { timer in
 //            WebCacheCleaner.clear(completionHandler: nil)
             FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_timeout_for_\(action)")
             self.timerCallback?.onTimerTriggered(action: action)

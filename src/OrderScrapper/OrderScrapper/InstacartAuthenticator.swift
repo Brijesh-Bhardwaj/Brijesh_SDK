@@ -29,7 +29,7 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
                         self.completionHandler?(true, nil)
                     }
                 } else if (url.contains(loginSubURL) || loginSubURL.contains(url)) {
-                    self.onContinueBrowser()
+                    self.onLoginScript()
                 } else {
                     self.authenticationDelegate = nil
                     if let completionHandler = self.completionHandler {

@@ -10,7 +10,18 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
 
-## [2.0.6] - 2022-02-24
+## [2.0.9] - 2022-04-25
+ ### Added
+ - RPA-863 phase-2 changes completed
+ 
+## [2.0.8] - 2022-03-31
+ ### Added
+ - Issue fixes added for the ticket RPA-1035
+ 
+## [2.0.7] - 2022-03-10
+ ### Added
+ - Issue fixes added for the ticket RPA-1062
+
  ### Added
  - Added online scraping for amazon for first phase release of RPA_863
  - Moved authentication scripts for all order sources  to server side (RPA- 833)

@@ -25,7 +25,7 @@ class AmazonService {
     private static let orderUpload = "order_history/upload_orders"
     private static let GetConfigs = "scraper_config"
     private static let PostEvents = "scrapping/push_events"
-    private static let GetIncnetiveFlagReponse = "scraper_config/show_incentive_flag"
+    private static let GetIncnetiveFlagReponse = "scraper_config/show_incentive_flag_all_retailers"
     
     
     static func getDateRange(platformId: String, orderSource: String, forceScrape: Bool,
@@ -325,9 +325,16 @@ class AmazonService {
          return client
      }
     
-    static func getIncentiveFlag(timeZone: String, completionHandler: @escaping (IncnetiveFlagReponse?, ASLException?) -> Void) -> APIClient {
-        let encodedParameter = timeZone.replacingOccurrences(of: "/", with: "%2F")
-        let relativeURL = GetIncnetiveFlagReponse + "?timezone=" + encodedParameter
+    static func getIncentiveFlag(timeZone: String, sessionTimerStarted: String?, completionHandler: @escaping (IncnetiveFlagReponse?, ASLException?) -> Void) -> APIClient {
+        let encodedParameter = timeZone.addingPercentEncoding(withAllowedCharacters: .alphanumerics)
+        var relativeURL: String = ""
+        if sessionTimerStarted != nil {
+            let sessionTimerValue = sessionTimerStarted!.addingPercentEncoding(withAllowedCharacters: .alphanumerics)
+            relativeURL = GetIncnetiveFlagReponse + "?timezone=" + encodedParameter! + "&sessionStartTime=" + sessionTimerValue!
+        } else {
+            relativeURL = GetIncnetiveFlagReponse + "?timezone=" + encodedParameter!
+        }
+        
          let client = NetworkClient<APIResponse<IncnetiveFlagReponse>>(relativeURL: relativeURL, requestMethod: .get)
          
          client.executeAPI() { (response, error) in

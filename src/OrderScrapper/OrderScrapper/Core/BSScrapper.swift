@@ -74,14 +74,19 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
         windowManager.attachHeadlessView(view: webClient)
         self.account = account
         getScrapeSessionTimer = DateUtils.getSessionTimer(getSessionTimeForOnline: fetchRequestSource ?? .general)
-        let dbOrderDetails = self.getOrderDetails()
-        if dbOrderDetails.count > 0 {
-            self.uploadPreviousOrders()
-        } else {
+        if self.fetchRequestSource == .online || self.fetchRequestSource == .manual {
             self.extractNewOrders()
+        } else {
+            DispatchQueue.global().async {
+                let dbOrderDetails = self.getOrderDetails()
+                if dbOrderDetails.count > 0 {
+                    self.uploadPreviousOrders()
+                } else {
+                    self.extractNewOrders()
+                }
+            }
         }
     }
-    
     func stopScrapping() {
         DispatchQueue.main.async {
             self.webClient.navigationDelegate = nil
@@ -131,8 +136,13 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     }
     
     private func uploadPreviousOrders() {
-        extractingOldOrders = true
-        updateProgressViewLabel(isUploadingPreviousOrder: true)
+        if fetchRequestSource == .online || fetchRequestSource == .manual {
+            extractingOldOrders = false
+            updateProgressViewLabel(isUploadingPreviousOrder: false)
+        } else {
+            extractingOldOrders = true
+            updateProgressViewLabel(isUploadingPreviousOrder: true)
+        }
         ConfigManager.shared.getConfigurations(orderSource: self.orderSource) { (configuration, error) in
             if let configuration = configuration {
                 self.configuration = configuration
@@ -165,6 +175,8 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     
     private func extractNewOrders() {
         extractingOldOrders = false
+
+        updateProgressValue(progressValue: 20)
         updateProgressViewLabel(isUploadingPreviousOrder: false)
         if let listener = self.scraperListener {
             listener.updateProgressStep(htmlScrappingStep: .startScrapping)
@@ -370,7 +382,12 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     }
     
     func updateProgressValue(progressValue: Float) {
-        //Do nothing
+        print("!!!! updateProgressValue called in bsscraper",progressValue)
+        if let source = self.fetchRequestSource, source == .online || source == .manual {
+            if let listener = self.scraperListener {
+                listener.updateProgressValue(progressValue: progressValue)
+            }
+        }
     }
     
     func updateStepMessage(stepMessage: String) {
@@ -512,6 +529,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                         DispatchQueue.global().async { [self] in
                             insertOrderDetailsToDB(orderDetails: orderDetails) { dataInserted in
                                 if dataInserted {
+                                    updateProgressValue(progressValue: 50)
                                     self.didInsertToDB()
                                 } else {
                                     self.stopScrapping()
@@ -522,15 +540,17 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                             }
                         }
                     } else {
-                        self.stopScrapping()
-                        
-                        //For Walmart and Instacart update account state to Connected if all connection scrape orders uploaded
-                        updateAccountAsConnected(account: self.account)
-                        self.uploadOrderHistory(listingScrapeTime: listingScrapeTime, listingOrderCount: 0, status: OrderStatus.Completed.rawValue)
-                        if let listener = self.scraperListener {
-                            listener.updateProgressStep(htmlScrappingStep: .complete)
+                        if self.fetchRequestSource == .online || self.fetchRequestSource == .manual {
+                            let dbOrderDetails = self.getOrderDetails()
+                            if dbOrderDetails.count > 0 {
+                                updateProgressValue(progressValue: 50)
+                                self.uploadPreviousOrders()
+                            } else {
+                                self.scrapingSuccessCallback(listingScrapeTime: listingScrapeTime)
+                            }
+                        } else {
+                            self.scrapingSuccessCallback(listingScrapeTime: listingScrapeTime)
                         }
-                        self.completionHandler((true, .fetchCompleted), nil)
                     }
 
                     let userId = account!.userID
@@ -703,8 +723,8 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                                       EventConstant.OrderSourceID: self.account!.userID,
                                       EventConstant.Status: EventStatus.Success]
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgInjectJSForOrderDetail, eventAttributes: logEventAttributes)
-                
-                BSOrderDetailsScrapper(scrapperParams: self.getScraperParams()).scrapeOrderDetailPage(script: script, orderDetails: orderDetails, mode: self.scrappingMode, source: self.fetchRequestSource, dateRange: self.dateRange, scraperListener: self.scraperListener, isNewSession: self.isNewSession, scrapingSessionStartedAt: self.getScrapeSessionTimer)
+                let orders = self.removeDuplicateElements(orders: orderDetails)
+                BSOrderDetailsScrapper(scrapperParams: self.getScraperParams()).scrapeOrderDetailPage(script: script, orderDetails: orders, mode: self.scrappingMode, source: self.fetchRequestSource, dateRange: self.dateRange, scraperListener: self.scraperListener, isNewSession: self.isNewSession, scrapingSessionStartedAt: self.getScrapeSessionTimer)
                 print("### BSScrapper started scrapeOrderDetailPage")
                 
             } else {
@@ -724,6 +744,16 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.ExceptionWhileLoadingScrapingScript, eventAttributes: logEventAttributes)
             }
         }
+    }
+    
+    private func removeDuplicateElements(orders: [OrderDetails]) -> [OrderDetails] {
+        var uniqueOrders = [OrderDetails]()
+        for order in orders {
+            if !uniqueOrders.contains(where: {$0.orderId == order.orderId }) {
+                uniqueOrders.append(order)
+            }
+        }
+        return uniqueOrders
     }
     
     private func logEvent(status: String) {
@@ -822,5 +852,19 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                 }
             }
         }
+    }
+    
+    private func scrapingSuccessCallback(listingScrapeTime: Int64) {
+        // API call to back end
+        self.stopScrapping()
+        
+        //For Walmart and Instacart update account state to Connected if all connection scrape orders uploaded
+        updateAccountAsConnected(account: self.account)
+        updateProgressValue(progressValue: 50)
+        self.uploadOrderHistory(listingScrapeTime: listingScrapeTime, listingOrderCount: 0, status: OrderStatus.Completed.rawValue)
+        if let listener = self.scraperListener {
+            listener.updateProgressStep(htmlScrappingStep: .complete)
+        }
+        self.completionHandler((true, .fetchCompleted), nil)
     }
 }

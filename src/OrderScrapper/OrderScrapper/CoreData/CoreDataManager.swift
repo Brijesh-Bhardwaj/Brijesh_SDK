@@ -4,6 +4,7 @@
 import Foundation
 import CoreData
 import Sentry
+import SwiftUI
 
 class CoreDataManager {
     private static var instance: CoreDataManager!
@@ -17,7 +18,7 @@ class CoreDataManager {
     
     private init() {}
     
-    private let dispatchQueue = DispatchQueue(label:"CoreDataQueue")
+    private let dispatchQueue = DispatchQueue(label: "CoreDataQueue", qos: .default, attributes: .concurrent, autoreleaseFrequency: .inherit, target: .global())
     
     lazy var persistentContainer: NSPersistentContainer = {
         //TODO:- Do we need to handle this
@@ -33,12 +34,17 @@ class CoreDataManager {
         }
         return container
     }()
+    
+    lazy var dbContext: NSManagedObjectContext = {
+        return persistentContainer.newBackgroundContext()
+    }()
     /*
      * Add account details into the UserAccount table
      */
+    //TODO - Need to change
     public func addAccount(userId: String, password: String, accountStatus: String, orderSource: Int16, panelistId: String) {
         dispatchQueue.sync {
-            let context = persistentContainer.viewContext
+            let context = dbContext
             context.performAndWait {
                 let fetchRequest = NSFetchRequest<UserAccountMO>(entityName: AppConstants.entityName)
                 let userIdPredicate = NSPredicate(format: "\(AppConstants.userAccountColumnUserId) == [c] %@", userId)
@@ -79,10 +85,10 @@ class CoreDataManager {
     /*
      * fetch user accounts by OrderSource type
      */
-    public func fetch(orderSource: OrderSource?, panelistId: String)->[UserAccountMO] {
+    public func fetch(orderSource: OrderSource?, panelistId: String)-> [UserAccountMO]{
         dispatchQueue.sync {
             var accounts = [UserAccountMO]()
-            let context = persistentContainer.viewContext
+            let context = dbContext
             context.performAndWait {
                 let fetchRequest = NSFetchRequest<UserAccountMO>(entityName: AppConstants.entityName)
                 var predicates:[NSPredicate] = [NSPredicate]()
@@ -111,7 +117,7 @@ class CoreDataManager {
      */
     public func updateUserAccount(userId: String, accountStatus: String, panelistId: String, orderSource: Int16) throws {
         try dispatchQueue.sync {
-            let context = persistentContainer.viewContext
+            let context = dbContext
             context.performAndWait {
                 do {
                     let fetchRequest = NSFetchRequest<UserAccountMO>(entityName: AppConstants.entityName)
@@ -142,7 +148,7 @@ class CoreDataManager {
     
     public func deleteAccounts(userId: String, panelistId: String, orderSource: Int16) {
         dispatchQueue.sync {
-            let context = persistentContainer.viewContext
+            let context = dbContext
             context.performAndWait {
                 let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.entityName)
                 
@@ -170,7 +176,7 @@ class CoreDataManager {
     }
     public func deleteAccountsByPanelistId(panelistId: String) {
         dispatchQueue.sync {
-            let context = persistentContainer.viewContext
+            let context = dbContext
             context.performAndWait {
                 let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.entityName)
                 
@@ -197,7 +203,7 @@ class CoreDataManager {
     
     public func deleteAccountByOrderSource(orderSource: Int16, panelistId: String) {
         dispatchQueue.sync {
-            let context = persistentContainer.viewContext
+            let context = dbContext
             context.performAndWait {
                 let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.entityName)
                 
@@ -224,14 +230,14 @@ class CoreDataManager {
     }
     public func createNewAccount() -> UserAccountMO {
         dispatchQueue.sync {
-                let context = persistentContainer.viewContext
+                let context = dbContext
                 let entity = NSEntityDescription.entity(forEntityName: AppConstants.entityName, in: context)!
                 return NSManagedObject(entity: entity, insertInto: nil) as! UserAccountMO
         }
     }
     public func insertOrderDetails(orderDetails: [OrderDetails], completionHandler: @escaping (Bool) -> Void) {
         dispatchQueue.sync {
-            let context = persistentContainer.viewContext
+            let context = dbContext
             context.performAndWait {
                 for orderData in orderDetails {
                     let orderDetail = NSEntityDescription.insertNewObject(forEntityName: AppConstants.orderDetailEntity, into: context) as! OrderDetailsMO
@@ -268,7 +274,7 @@ class CoreDataManager {
     public func fetchOrderDetails(orderSource: String, panelistID: String, userID: String) -> [OrderDetailsMO] {
         dispatchQueue.sync {
             var orderDetails = [OrderDetailsMO]()
-            let context = persistentContainer.viewContext
+            let context = dbContext
             context.performAndWait {
                 let fetchRequest = NSFetchRequest<OrderDetailsMO>(entityName: AppConstants.orderDetailEntity)
                 
@@ -297,7 +303,7 @@ class CoreDataManager {
     public func getCountForOrderDetailsByOrderSection(orderSource: String, panelistID: String, userID: String, orderSectionType: String, orderUploadRetryCount: Int, endDate: String, startDate: String) -> Int {
         dispatchQueue.sync {
             var orderDetails = [OrderDetailsMO]()
-            let context = persistentContainer.viewContext
+            let context = dbContext
             context.performAndWait {
                 let fetchRequest = NSFetchRequest<OrderDetailsMO>(entityName: AppConstants.orderDetailEntity)
                 
@@ -327,7 +333,7 @@ class CoreDataManager {
     
     public func updateRetryCountInOrderDetails(userId: String, panelistId: String, orderSource: String, orderId: String, retryCount: Int16) throws {
          dispatchQueue.sync {
-            let context = persistentContainer.viewContext
+            let context = dbContext
             context.performAndWait {
                 do {
                     let fetchRequest = NSFetchRequest<OrderDetailsMO>(entityName: AppConstants.orderDetailEntity)
@@ -354,7 +360,7 @@ class CoreDataManager {
     }
     public func deleteOrderDetails(userID: String, panelistID: String, orderSource: String) {
         dispatchQueue.sync {
-            let context = persistentContainer.viewContext
+            let context = dbContext
             context.performAndWait {
                 let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.orderDetailEntity)
                 
@@ -382,7 +388,7 @@ class CoreDataManager {
     }
     public func deleteOrderDetailsByOrderID(orderID: String, orderSource: String) {
         dispatchQueue.sync {
-            let context = persistentContainer.viewContext
+            let context = dbContext
             context.performAndWait {
                 let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.orderDetailEntity)
                 
@@ -404,6 +410,37 @@ class CoreDataManager {
                 } catch let error as NSError  {
                     print(error.userInfo)
                     FirebaseAnalyticsUtil.logSentryError(error: error)
+                }
+            }
+        }
+    }
+    
+    public func deleteOrderDetailsByBatch(orderIDList: [OrderId], orderSource: String) {
+        dispatchQueue.sync {
+            for orderID in orderIDList{
+                let context = persistentContainer.viewContext
+                context.performAndWait {
+                    let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.orderDetailEntity)
+                    
+                    let orderIDPredicate =  NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderID) = %@", orderID.orderId)
+                    let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) == %@", orderSource)
+                    
+                    fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderIDPredicate,  orderSourcePredicate])
+                    do {
+                        let result = try context.fetch(fetchRequest)
+                        let resultData = result as? [OrderDetailsMO]
+                        if let resultData = resultData {
+                            for orderDetails in resultData {
+                                context.delete(orderDetails)
+                            }
+                            if context.hasChanges {
+                                try context.save()
+                            }
+                        }
+                    } catch let error as NSError  {
+                        print(error.userInfo)
+                        FirebaseAnalyticsUtil.logSentryError(error: error)
+                    }
                 }
             }
         }

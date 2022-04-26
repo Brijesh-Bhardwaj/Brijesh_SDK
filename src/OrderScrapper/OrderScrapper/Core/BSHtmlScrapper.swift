@@ -330,7 +330,7 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
     
     private func authenticate() {
         self.params.authenticator.authenticate(account: self.params.account,
-                                               configurations: self.params.configuration) { [weak self] authenticated, error in
+                                               configurations: self.params.configuration, scrapingMode: self.params.scrappingMode) { [weak self] authenticated, error in
             guard let self = self else { return }
             
             if authenticated {
