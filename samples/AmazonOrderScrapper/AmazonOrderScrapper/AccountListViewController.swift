@@ -8,6 +8,8 @@ import Firebase
 
 class AccountListViewController: UIViewController, UITableViewDataSource
                                  , UITableViewDelegate, ConnectAccountDelegate, AccountActionDelegate, UNUserNotificationCenterDelegate {
+    
+
     @IBOutlet weak var tableView: UITableView!
     private let Amazon = "Amazon"
     private let Instacart = "Instacart"
@@ -16,7 +18,9 @@ class AccountListViewController: UIViewController, UITableViewDataSource
     private let userNotificationCenter = UNUserNotificationCenter.current()
     var panelistID: String!
     var authToken: String!
+    @IBOutlet weak var scanOnlineOrders: UIButton!
     var accountData: [String : [Account]] = [:]
+    var connectedAccountData:[Account] = []
     var accounts:[Account] = []
     var currentAccount: Account!
     
@@ -55,6 +59,23 @@ class AccountListViewController: UIViewController, UITableViewDataSource
         self.navigationController?.setNavigationBarHidden(true, animated: animated)
         self.loadAccounts()
         self.isUserEligible()
+    }
+    
+    @IBAction func scanOnlineOrders(_ sender: Any) {
+        connectedAccountData.removeAll()
+        for data in accountData {
+            let numberOfAccount = data.value.count
+            if numberOfAccount > 0 {
+                if(data.value[0].accountState == AccountState.Connected || data.value[0].accountState == AccountState.ConnectionInProgress){
+                    connectedAccountData.append(contentsOf: data.value)
+                }
+            }
+        }
+        do {
+            try OrdersExtractor.scanOnlineOrders(orderExtractionListener: self.foregroundOrderExtractionListner, accounts: connectedAccountData)
+        }catch {
+
+        }
     }
     
     func connectAccount(section: Int) {
@@ -153,6 +174,7 @@ class AccountListViewController: UIViewController, UITableViewDataSource
          do {
              try OrdersExtractor.isUserEligibleForIncentive() { response in
                  if response {
+                     
                      print("!!!! isUserEligible true ",response)
                  } else {
                      print("!!!! isUserEligible false ",response)
@@ -161,6 +183,7 @@ class AccountListViewController: UIViewController, UITableViewDataSource
          } catch {
              
          }
+         
      }
     
     func loadAccounts() {

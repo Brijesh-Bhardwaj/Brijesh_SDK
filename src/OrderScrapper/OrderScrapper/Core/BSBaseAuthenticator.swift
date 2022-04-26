@@ -22,6 +22,7 @@ class BSBaseAuthenticator: NSObject, BSAuthenticator, TimerCallbacks {
     var listnerAdded = false
     let panelistID = LibContext.shared.authProvider.getPanelistID()
     var scraperListener: ScraperProgressListener?
+    var scrapingMode: String?
     
     lazy var timerHandler: TimerHandler = {
         return TimerHandler(timerCallback: self)
@@ -35,6 +36,7 @@ class BSBaseAuthenticator: NSObject, BSAuthenticator, TimerCallbacks {
     
     func authenticate(account: Account,
                       configurations: Configurations,
+                      scrapingMode: String?,
                       completionHandler: @escaping ((Bool, ASLException?) -> Void)) {
         self.account = account
         self.completionHandler = completionHandler
@@ -42,6 +44,7 @@ class BSBaseAuthenticator: NSObject, BSAuthenticator, TimerCallbacks {
         self.webClient.navigationDelegate = webClientDelegate
         self.webClient.loadUrl(url: configurations.login)
         self.configurations = configurations
+        self.scrapingMode = scrapingMode
     }
     
     func onPageFinish(url: String) throws {
@@ -70,6 +73,18 @@ class BSBaseAuthenticator: NSObject, BSAuthenticator, TimerCallbacks {
     func isForegroundAuthentication() -> Bool {
         return false
     }
+    
+    func showWebClient() {
+        let view = webClient.superview
+        webClient.isHidden = false
+        view?.bringSubviewToFront(webClient)
+    }
+    
+    func hideWebClient() {
+        let view = webClient.superview
+        webClient.isHidden = true
+        view?.bringSubviewToFront(webClient)
+    }
 }
 
 extension BSBaseAuthenticator: BSWebNavigationObserver {
@@ -97,6 +112,8 @@ extension BSBaseAuthenticator: BSWebNavigationObserver {
                     self.authenticationDelegate?.didReceiveAuthenticationChallenge(authError: false)
                 }
             }
+            //TODO check 
+            hideWebClient()
         } else {
             return
         }

@@ -126,8 +126,12 @@ class BSWalmartAuthenticator: BSBaseAuthenticator {
     
     func authChallenge() {
         self.webClient.scriptMessageHandler?.removeScriptMessageListener()
-        let error = ASLException(errorMessages: Strings.ErrorCaptchaPageLoaded, errorTypes: .authChallenge, errorEventLog: .captcha, errorScrappingType: .html)
-        self.completionHandler?(false, error)
+        if let scrapingMode = scrapingMode, scrapingMode == ScrapingMode.Foreground.rawValue {
+            showWebClient()
+        } else {
+            let error = ASLException(errorMessages: Strings.ErrorCaptchaPageLoaded, errorTypes: .authChallenge, errorEventLog: .captcha, errorScrappingType: .html)
+            self.completionHandler?(false, error)
+        }
     }
     
     

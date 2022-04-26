@@ -182,6 +182,14 @@ class BaseAccountConnectVC: UIViewController, BSWebNavigationObserver, TimerCall
 }
 
 extension BaseAccountConnectVC: ConnectAccountViewDelegate {
+    func didTapTryAgain() {
+        //
+    }
+    
+    func didTapDone() {
+        //
+    }
+    
     func didTapBackButton() {
         if self.shouldAllowBack {
             self.timerHandler.stopTimer()

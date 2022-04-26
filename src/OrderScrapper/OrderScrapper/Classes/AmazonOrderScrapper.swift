@@ -89,7 +89,7 @@ class AmazonOrderScrapper {
     func connectAccount(account: Account, orderExtractionListener: OrderExtractionListener) {
         isScrappingGoingOn = true
         self.setupCompletionHandler(account, orderExtractionListener)
-        self.terminateScrapping(account: account)
+        self.terminateScrapping()
         let viewController = self.getAccountsView(account: account)
     
         DispatchQueue.main.async {
@@ -102,11 +102,10 @@ class AmazonOrderScrapper {
         self.disconnectOperation[source] = accountDisconnectedListener
         
         _ = AmazonService.updateStatus(platformId: account.userID, status: AccountState.ConnectedAndDisconnected.rawValue, message: AppConstants.msgDisconnected, orderStatus: OrderStatus.None.rawValue, orderSource: source.value) { response, error in
-            
             DispatchQueue.global().async {
                 let panelistId = LibContext.shared.authProvider.getPanelistID()
                 if response != nil {
-                    self.terminateScrapping(account: account)
+                    self.terminateScrapping()
                     AmazonService.cancelAPI()
                     CoreDataManager.shared.deleteAccounts(userId: account.userID, panelistId: panelistId, orderSource: account.source.rawValue)
                     CoreDataManager.shared.deleteOrderDetails(userID: account.userID, panelistID: panelistId, orderSource: source.value)
@@ -156,7 +155,7 @@ class AmazonOrderScrapper {
                               source: FetchRequestSource) -> RetailerScrapingStatus {
         var scrappingProcess = RetailerScrapingStatus.Other
         if source == .notification || source == .manual{
-            self.terminateScrapping(account: account)
+            self.terminateScrapping()
             if isScrappingGoingOn && self.backgroundScrapper != nil {
                 self.backgroundScrapper.stopScrapping()
                 self.backgroundScrapper = nil
@@ -192,25 +191,27 @@ class AmazonOrderScrapper {
         return scrappingProcess
     }
     
-    func scanAllOrders(accounts: [Account?],
+    func scanAllRetailers(accounts: [Account],
                        orderExtractionListener: OrderExtractionListener)  {
-        for account in accounts {
-            if let account = account {
-                if account.source == .Amazon {
-                    self.terminateScrapping(account: account)
-                    if self.backgroundScrapper != nil {
-                        self.backgroundScrapper.stopScrapping()
-                        self.backgroundScrapper = nil
-                    }
-                    let isIncentiveFlag = LibContext.shared.isIncetiveFlag
-                    if isIncentiveFlag {
-                        self.performForegroundScraping(account, orderExtractionListener, .online)
-                    } else {
-                        self.performForegroundScraping(account, orderExtractionListener, .manual)
-                    }
-                }
-            }
-        }
+        self.terminateScrapping()
+        let storyboard = UIStoryboard(name: "OSLibUI", bundle: Bundle(identifier: AppConstants.identifier))
+        let viewController = storyboard.instantiateViewController(identifier: "OnlineScrapingControllerVC") as! OnlineScrapingController
+        viewController.modalPresentationStyle = .fullScreen
+        viewController.accounts.append(contentsOf: accounts)
+        self.viewPresenter.presentView(view: viewController)
+//        for account in accounts {
+//            if let account = account {
+//                if account.source == .Amazon {
+//                    self.terminateScrapping(account: account)
+//                    if self.backgroundScrapper != nil {
+//                        self.backgroundScrapper.stopScrapping()
+//                        self.backgroundScrapper = nil
+//                    }
+//                    self.performForegroundScraping(account, orderExtractionListener, .online)
+//                }
+//            }
+//        }
+
     }
     
     private func scrappingQueue() {
@@ -358,28 +359,28 @@ class AmazonOrderScrapper {
         case .Amazon:
             let storyboard = UIStoryboard(name: "OSLibUI", bundle: AppConstants.bundle)
             let viewController = storyboard.instantiateViewController(identifier: "RegisterAccountVC") as AmazonLogin
-            viewController.account = account as? UserAccountMO
+            viewController.account = account as? UserAccount
             viewController.modalPresentationStyle = .fullScreen
             
             return viewController
         case .Instacart:
             let storyboard = UIStoryboard(name: "OSLibUI", bundle: AppConstants.bundle)
             let viewController = storyboard.instantiateViewController(identifier: "InstacartRegisterAccountVC") as InstacartLogin
-            viewController.account = account as? UserAccountMO
+            viewController.account = account as? UserAccount
             viewController.modalPresentationStyle = .fullScreen
             
             return viewController
         case .Kroger:
             let storyboard = UIStoryboard(name: "OSLibUI", bundle: AppConstants.bundle)
             let viewController = storyboard.instantiateViewController(identifier: "KrogerRegisterAccountVC") as KrogerLogin
-            viewController.account = account as? UserAccountMO
+            viewController.account = account as? UserAccount
             viewController.modalPresentationStyle = .fullScreen
             
             return viewController
         case .Walmart:
             let storyboard = UIStoryboard(name: "OSLibUI", bundle: AppConstants.bundle)
             let viewController = storyboard.instantiateViewController(identifier: "WalmartRegisterAccountVC") as WalmartLogin
-            viewController.account = account as? UserAccountMO
+            viewController.account = account as? UserAccount
             viewController.modalPresentationStyle = .fullScreen
             
             return viewController
@@ -514,7 +515,7 @@ class AmazonOrderScrapper {
         }
     }
     
-    private func terminateScrapping(account: Account) {
+    private func terminateScrapping() {
         if self.backgroundScrapper != nil {
             self.backgroundScrapper.stopScrapping()
             self.backgroundScrapper = nil

@@ -161,8 +161,7 @@ class BSCSVScrapper: NSObject {
             let loginSubURL = getSubURL(from: self.param!.configuration.login, delimeter: "/?")
             if ((urlString.contains(loginSubURL) || loginSubURL.contains(urlString)) && !loginDetected) {
                 self.loginDetected = true
-                self.param!.authenticator.authenticate(account: self.param!.account,
-                                                       configurations: self.param!.configuration) { [weak self] authenticated, error in
+                self.param!.authenticator.authenticate(account: self.param!.account, configurations: self.param!.configuration, scrapingMode: ScrapingMode.Background.rawValue) { [weak self] authenticated, error in
                     guard let self = self else { return }
                     
                     if authenticated {
@@ -520,7 +519,7 @@ class BSCSVScrapper: NSObject {
      * add user account details in DB
      */
     private func addUserAccountInDB() {
-        let account = self.account as! UserAccountMO
+        let account = self.account as! UserAccount
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         CoreDataManager.shared.addAccount(userId: account.userID, password: account.password, accountStatus: AccountState.Connected.rawValue, orderSource: account.orderSource, panelistId: panelistId)
     }

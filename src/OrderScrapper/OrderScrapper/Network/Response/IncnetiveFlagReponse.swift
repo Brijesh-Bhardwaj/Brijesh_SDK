@@ -8,7 +8,8 @@
 import Foundation
 
 
-struct IncnetiveFlagReponse: Codable {
+class IncnetiveFlagReponse: Codable {
     let isFlagEnabled: Bool
     let currentDay: String
+    let lastWeekOrderCount: LastWeekOrderCount
 }

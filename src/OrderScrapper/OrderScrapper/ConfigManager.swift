@@ -49,6 +49,25 @@ class ConfigManager {
                             LibContext.shared.manualScrapeTimeOutMessage = scrapperConfig.urls.manualScrapeTimeoutMessage ?? Strings.TimeOutFailureMessage
                             scrapperConfig.urls.manualScrapeSuccess = scrapperConfig.messages.manualScrapeSuccess
                             LibContext.shared.manualScrapeSuccess = scrapperConfig.urls.manualScrapeSuccess ?? Strings.ManualSuccessMessage
+                            scrapperConfig.urls.onlineScrapingSuccessNote = scrapperConfig.messages.onlineScrapingSuccessNote
+                            LibContext.shared.onlineScrapingSuccessNote = scrapperConfig.urls.onlineScrapingSuccessNote ?? Strings.OnlineIncentiveMessage
+                            scrapperConfig.urls.onlineScrapingSuccessMessage = scrapperConfig.messages.onlineScrapingSuccessMessage
+                            LibContext.shared.onlineScrapingSuccessMessage = scrapperConfig.urls.onlineScrapingSuccessMessage ?? Strings.OnlineSuccessMessage
+                            scrapperConfig.urls.onlineScrapingTimeoutMessage = scrapperConfig.messages.onlineScrapingTimeoutMessage
+                            LibContext.shared.onlineScrapingTimeoutMessage = scrapperConfig.urls.onlineScrapingTimeoutMessage ?? Strings.OnlineScrapingTimeoutMessage
+                            scrapperConfig.urls.noOrdersInWeekMessage = scrapperConfig.messages.noOrdersInWeekMessage
+                            LibContext.shared.noOrdersInWeekMessage = scrapperConfig.urls.noOrdersInWeekMessage ?? Strings.OnlineZeroOrders
+                            scrapperConfig.urls.manualScrapeNote = scrapperConfig.messages.manualScrapeNote
+                            LibContext.shared.manualScrapeNote = scrapperConfig.urls.manualScrapeNote ?? Strings.ManualScrapeNote
+                            scrapperConfig.urls.onlineZeroOrdersNote = scrapperConfig.messages.onlineZeroOrdersNote
+                            LibContext.shared.onlineZeroOrdersNote = scrapperConfig.urls.onlineZeroOrdersNote ?? Strings.ZeroOrdersNote
+                            scrapperConfig.urls.uploadBatchSize = scrapperConfig.orderUpload.uploadBatchSize
+                            scrapperConfig.urls.onlineScrapingFailedMessage = scrapperConfig.messages.onlineScrapingFailedMessage
+                            LibContext.shared.onlineScrapingFailedMessage = scrapperConfig.urls.onlineScrapingFailedMessage ?? Strings.OnlineFetchFailureMessage
+                            scrapperConfig.urls.manualNoNewOrdersNote = scrapperConfig.messages.manualNoNewOrdersNote
+                            LibContext.shared.noNewManualOrdersNote = scrapperConfig.urls.manualNoNewOrdersNote ?? Strings.noNewOrdersNote
+                            scrapperConfig.urls.manualNoNewOrdersMessage = scrapperConfig.messages.manualNoNewOrdersMessage
+                            LibContext.shared.noNewManualOrders = scrapperConfig.urls.manualNoNewOrdersMessage ?? Strings.noNewOrders
                             self.configs[orderSource] = scrapperConfig.urls
                             break
                         }

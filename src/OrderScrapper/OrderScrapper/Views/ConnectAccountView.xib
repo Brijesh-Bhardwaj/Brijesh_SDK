@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -23,6 +23,7 @@
                 <outlet property="contentView" destination="utl-uX-vUz" id="3eL-Cx-aIo"/>
                 <outlet property="exceptionView" destination="eoh-eF-X4C" id="lPa-F1-eA7"/>
                 <outlet property="networkErrorView" destination="UoM-bn-uIb" id="sgJ-aZ-8cY"/>
+                <outlet property="onlineSuccessView" destination="nth-WJ-vK6" id="nIg-pl-RTY"/>
                 <outlet property="progressView" destination="Rhh-Zg-bOD" id="0Ru-mR-Ka6"/>
                 <outlet property="successView" destination="Jic-1P-kC8" id="FOR-2P-FTr"/>
             </connections>
@@ -70,6 +71,10 @@
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="806.5"/>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 </view>
+                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nth-WJ-vK6" customClass="OnlineSuccessView" customModule="OrderScrapper">
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="806.5"/>
+                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Rhh-Zg-bOD" customClass="ProgressView" customModule="OrderScrapper">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="806.5"/>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -80,13 +85,17 @@
                                 <constraint firstItem="Jic-1P-kC8" firstAttribute="leading" secondItem="4L1-tP-q8U" secondAttribute="leading" id="0ed-Yh-NfT"/>
                                 <constraint firstAttribute="bottom" secondItem="Jic-1P-kC8" secondAttribute="bottom" id="0sn-KM-t5D"/>
                                 <constraint firstItem="Rhh-Zg-bOD" firstAttribute="leading" secondItem="4L1-tP-q8U" secondAttribute="leading" id="7Ti-z8-3jl"/>
+                                <constraint firstItem="nth-WJ-vK6" firstAttribute="top" secondItem="4L1-tP-q8U" secondAttribute="top" id="Cxl-Vg-3Z5"/>
                                 <constraint firstItem="Rhh-Zg-bOD" firstAttribute="top" secondItem="4L1-tP-q8U" secondAttribute="top" id="DfY-hW-tbZ"/>
                                 <constraint firstItem="UoM-bn-uIb" firstAttribute="leading" secondItem="4L1-tP-q8U" secondAttribute="leading" id="Ef8-XH-K27"/>
+                                <constraint firstAttribute="trailing" secondItem="nth-WJ-vK6" secondAttribute="trailing" id="Hzk-On-NBf"/>
                                 <constraint firstAttribute="trailing" secondItem="Jic-1P-kC8" secondAttribute="trailing" id="KRw-bk-GoM"/>
                                 <constraint firstItem="eoh-eF-X4C" firstAttribute="leading" secondItem="4L1-tP-q8U" secondAttribute="leading" id="MYd-fj-s1n"/>
                                 <constraint firstItem="eoh-eF-X4C" firstAttribute="top" secondItem="4L1-tP-q8U" secondAttribute="top" id="QEI-ZJ-ot9"/>
                                 <constraint firstAttribute="trailing" secondItem="eoh-eF-X4C" secondAttribute="trailing" id="QMt-Mn-0HQ"/>
                                 <constraint firstAttribute="bottom" secondItem="eoh-eF-X4C" secondAttribute="bottom" id="UEr-sb-dAz"/>
+                                <constraint firstItem="nth-WJ-vK6" firstAttribute="leading" secondItem="4L1-tP-q8U" secondAttribute="leading" id="Wrr-Ih-Fd7"/>
+                                <constraint firstAttribute="bottom" secondItem="nth-WJ-vK6" secondAttribute="bottom" id="eYT-Gf-TRi"/>
                                 <constraint firstAttribute="trailing" secondItem="Rhh-Zg-bOD" secondAttribute="trailing" id="jeL-3v-ggk"/>
                                 <constraint firstAttribute="bottom" secondItem="Rhh-Zg-bOD" secondAttribute="bottom" id="mhX-bp-XnI"/>
                                 <constraint firstItem="Jic-1P-kC8" firstAttribute="top" secondItem="4L1-tP-q8U" secondAttribute="top" id="qmD-up-Cy4"/>

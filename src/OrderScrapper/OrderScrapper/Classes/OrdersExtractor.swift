@@ -126,7 +126,7 @@ public class OrdersExtractor {
     public static func registerAccount(orderSource: OrderSource,
                                        orderExtractionListner: OrderExtractionListener) throws {
         if isInitialized {
-            let account = CoreDataManager.shared.createNewAccount()
+            let account = UserAccount()
             account.userId = ""
             account.password = ""
             account.accountState = .NeverConnected
@@ -147,9 +147,9 @@ public class OrdersExtractor {
         }
     }
     
-    public static func scanOnlineOrders(orderExtractionListener: OrderExtractionListener, accounts: Account?...) throws {
+    public static func scanOnlineOrders(orderExtractionListener: OrderExtractionListener, accounts: [Account]) throws {
         if OrdersExtractor.isInitialized {
-            AmazonOrderScrapper.shared.scanAllOrders(accounts: accounts, orderExtractionListener: orderExtractionListener)
+            AmazonOrderScrapper.shared.scanAllRetailers(accounts: accounts, orderExtractionListener: orderExtractionListener)
         } else {
             let error =  ASLException(errorMessage: Strings.ErrorConfigsMissing, errorType: nil)
             let panelistId = LibContext.shared.authProvider.getPanelistID()
@@ -165,11 +165,13 @@ public class OrdersExtractor {
     public static func isUserEligibleForIncentive(completionHandler: @escaping (Bool) -> Void) throws {
         if OrdersExtractor.isInitialized {
             var localTimeZoneIdentifier: String { return TimeZone.current.identifier }
-            _ = AmazonService.getIncentiveFlag(timeZone: localTimeZoneIdentifier) { response, error in
+            _ = AmazonService.getIncentiveFlag(timeZone: localTimeZoneIdentifier, sessionTimerStarted: nil) { response, error in
                 if response != nil {
+                    LibContext.shared.lastWeekOrders = response?.lastWeekOrderCount
                     if let shouldShowButton = response?.isFlagEnabled {
                         if shouldShowButton {
                             LibContext.shared.isIncetiveFlag = true
+                            
                             completionHandler(shouldShowButton)
                         } else {
                             LibContext.shared.isIncetiveFlag = false

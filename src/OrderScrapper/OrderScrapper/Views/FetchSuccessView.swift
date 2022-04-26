@@ -11,6 +11,8 @@ class FetchSuccessView: UIView {
     var buttonClickHandler: (() -> Void)?
     var scrapeContinueClickHandler: (() -> Void)?
     var scrapeLaterClickHandler: (() -> Void)?
+    var doneButtonClickHandler: (() -> Void)?
+    var retryButtonClickHandler: (() -> Void)?
     
     @IBOutlet var contentView: UIView!
     
@@ -25,6 +27,10 @@ class FetchSuccessView: UIView {
     @IBOutlet weak var okButton: UIButton!
     
     @IBOutlet weak var incentiveMessage: UILabel!
+    
+    @IBOutlet weak var retryButton: UIButton!
+    
+    @IBOutlet weak var doneButton: UIButton!
     
     var fetchSuccess: String {
         get {
@@ -71,12 +77,30 @@ class FetchSuccessView: UIView {
         }
     }
     
-    var successIncentiveMessage: Bool {
+    var successIncentiveMessage: String {
         get {
-            return true
+            return ""
         }
         set {
-            incentiveMessage.isHidden = newValue
+            self.incentiveMessage.text = newValue
+        }
+    }
+    
+    var hideRetryButton: Bool {
+        get {
+            return false
+        }
+        set {
+            retryButton.isHidden = newValue
+        }
+    }
+    
+    var hideDoneButton: Bool {
+        get {
+            return false
+        }
+        set {
+            doneButton.isHidden = newValue
         }
     }
     
@@ -107,6 +131,20 @@ class FetchSuccessView: UIView {
         if let scrapeLaterClickHandler = scrapeLaterClickHandler {
             scrapeLaterClickHandler()
             print("###### didClickCancelButton")
+        }
+    }
+    
+    @IBAction func didClickDoneButton(_ sender: Any) {
+        if let doneButtonClickHandler = doneButtonClickHandler {
+            doneButtonClickHandler()
+            print("###### didClickDoneButton")
+        }
+    }
+    
+    @IBAction func didRetryClickButton(_ sender: Any) {
+        if let retryButtonClickHandler = retryButtonClickHandler {
+            retryButtonClickHandler()
+            print("###### didRetryClickButton")
         }
     }
     

@@ -9,7 +9,7 @@ class BaseLoginViewController: UIViewController, LoginViewDelegate {
     private var authErrorSubscriber: AnyCancellable? = nil
     private var showPassword = false
     var loginView: LoginView!
-    var account: UserAccountMO!
+    var account: UserAccount!
     
     // MARK: - Lifecycle Methods
     deinit {
@@ -185,7 +185,7 @@ class BaseLoginViewController: UIViewController, LoginViewDelegate {
         throw ASLException(errorMessage: Strings.ErrorLabelStringNotPassed, errorType: nil)
     }
     
-    func getViewController(account: UserAccountMO) throws -> UIViewController {
+    func getViewController(account: UserAccount) throws -> UIViewController {
         throw ASLException(errorMessage: Strings.ErrorViewControllerNotPassed, errorType: nil)
     }
 }

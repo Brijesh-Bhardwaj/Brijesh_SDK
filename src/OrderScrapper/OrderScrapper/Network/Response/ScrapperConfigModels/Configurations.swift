@@ -17,6 +17,18 @@ class Configurations: Codable {
     var manualScrapeReportTimeout: Double?
     var manualScrapeTimeoutMessage: String?
     var manualScrapeSuccess: String?
+    var onlineScrapingSuccessNote: String?
+    var onlineScrapingSuccessMessage: String?
+    var onlineScrapingTimeoutMessage: String?
+    var noOrdersInWeekMessage: String?
+    var uploadBatchSize: Int?
+    var manualScrapeNote: String?
+    var onlineZeroOrdersNote: String?
+    var onlineScrapingFailedMessage: String?
+    var manualNoNewOrdersMessage: String?
+    var manualNoNewOrdersNote: String?
+
+    
     init(login: String) {
         self.login = login
         self.details = ""
@@ -36,9 +48,20 @@ class OrderUpload: Codable {
     var orderUploadRetryCount: Int?
     var manualScrapeTimeout: Double?
     var manualScrapeReportTimeout: Double?
+    var uploadBatchSize: Int?
 }
 
 class Messages: Codable {
     var manualScrapeTimeoutMessage: String?
     var manualScrapeSuccess: String?
+    var onlineScrapingSuccessNote: String?
+    var onlineScrapingSuccessMessage: String?
+    var onlineScrapingTimeoutMessage: String?
+    var noOrdersInWeekMessage: String?
+    var manualScrapeNote: String?
+    var onlineZeroOrdersNote: String?
+    var onlineScrapingFailedMessage: String?
+    var manualNoNewOrdersMessage: String?
+    var manualNoNewOrdersNote: String?
+    
 }
