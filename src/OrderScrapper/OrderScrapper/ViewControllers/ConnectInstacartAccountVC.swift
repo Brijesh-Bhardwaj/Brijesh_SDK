@@ -40,7 +40,7 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
         }
         BSScriptFileManager.shared.getAuthenticationScripts(orderSource: .Instacart, isAuthScript: ScriptType.auth.rawValue) { response in
             if response {
-                self.baseAuthenticator?.authenticate(account: self.account, configurations: self.configurations) { authenticated, error in
+                self.baseAuthenticator?.authenticate(account: self.account, configurations: self.configurations, scrapingMode: ScrapingMode.Foreground.rawValue) { authenticated, error in
                     if authenticated  {
                         self.publishProgress(step: .scrape)
                         if self.account.accountState == .NeverConnected {
@@ -269,12 +269,12 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
                         self.connectAccountView?.successView.hideOkButton = false
                         self.connectAccountView?.successView.hideCancelButton = true
                         self.connectAccountView?.successView.hideContinueButton = true
-                        self.connectAccountView.successView.successIncentiveMessage = true
+                        self.connectAccountView.successView.successIncentiveMessage = ""
                         self.connectAccountView?.fetchSuccess = self.getSuccessMessage()
                         if let statusImage = self.getStatusImage() {
                             self.connectAccountView?.statusImage = statusImage
                         }
-                        self.connectAccountView?.bringSubviewToFront(self.connectAccountView.successView)
+                        self.showSuccessScreen()
                         self.removeWebview()
                         self.timerHandler.stopTimer()
                     } else {
@@ -296,7 +296,7 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
     
     // MARK: - Private Methods
     private func addUserAccountInDB() {
-        let account = self.account  as! UserAccountMO
+        let account = self.account  as! UserAccount
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         CoreDataManager.shared.addAccount(userId: account.userID, password: account.password, accountStatus: self.account.accountState.rawValue, orderSource: account.orderSource, panelistId: panelistId)
     }
@@ -384,7 +384,7 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
             } else if successType == .failureButAccountConnected || successType == .fetchSkipped {
                 return String.init(format: Strings.FetchFailureMessage, OrderSource.Instacart.value)
             } else {
-                return String.init(format: Strings.FetchSuccessMessage, OrderSource.Instacart.value)
+                return LibContext.shared.manualScrapeSuccess
             }
         } else {
             return AppConstants.instacartAccountConnectedSuccess
@@ -426,7 +426,7 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
         self.connectAccountView?.successView.hideOkButton = true
         self.connectAccountView?.successView.hideCancelButton = false
         self.connectAccountView?.successView.hideContinueButton = false
-        self.connectAccountView.successView.successIncentiveMessage = true
+        self.connectAccountView.successView.successIncentiveMessage = ""
         self.connectAccountView?.connectAccountTitle.text = self.getHeaderTitle()
         self.connectAccountView?.fetchSuccess = self.getSuccessMessage()
         if let statusImage = self.getStatusImage() {
@@ -441,6 +441,18 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
         print("####### reStartTimerForManualScraping")
         self.getTimerValue { timerValue in
             self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping, timerInterval: TimeInterval(timerValue))
+        }
+    }
+    
+    private func showSuccessScreen() {
+        if  successType == .failureButAccountConnected || successType == .fetchSkipped || isTimeOut {
+            self.connectAccountView?.bringSubviewToFront(self.connectAccountView.successView)
+        } else {
+            self.connectAccountView.onlineSuccessView.successMessage.text = LibContext.shared.manualScrapeSuccess
+            self.connectAccountView.onlineSuccessView.successNoteMessage.text = LibContext.shared.manualScrapeNote
+            self.connectAccountView.onlineSuccessView.successHeader.text = "Congratulations!"
+            self.connectAccountView.onlineSuccessView.okButton.setTitle("Great!", for: .normal)
+            self.connectAccountView?.bringSubviewToFront(self.connectAccountView.onlineSuccessView)
         }
     }
 }

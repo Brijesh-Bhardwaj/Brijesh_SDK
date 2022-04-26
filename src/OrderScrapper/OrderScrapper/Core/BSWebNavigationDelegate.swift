@@ -53,7 +53,7 @@ internal class BSWebNavigationDelegate: NSObject, WKNavigationDelegate {
         }
     }
     
-    private func removeObserver() {
+    func removeObserver() {
         self.observer = nil
     }
 }

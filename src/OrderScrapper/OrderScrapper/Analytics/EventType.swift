@@ -48,6 +48,7 @@ struct EventType {
     static let BgInjectJSForOrderListing = "bg_inject_js_against_order_listing_page"
     static let BgScrappingOrderListResultSuccess = "bg_scrapping_order_list_result_success"
     static let BgScrappingOrderListResultFailure = "bg_scrapping_order_list_result_failure"
+    static let BgScrppingBatchSizeFailure = "bg_scrapping_order_batchCount_failure"
    
     static let ScrappingDetails = "scrapping_step_details"
     static let StepAuthentication = "step_authentication"

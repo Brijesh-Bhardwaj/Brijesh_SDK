@@ -23,7 +23,7 @@ class BSInstacartAuthenticator: BSBaseAuthenticator {
                     self.completionHandler?(true, nil)
                 }
             } else if (url.contains(loginSubURL) || loginSubURL.contains(url)) {
-                self.onContinueBrowser()
+                self.onLoginScript()
             } else {
                 self.authenticationDelegate = nil
                 if let completionHandler = self.completionHandler {
@@ -279,9 +279,12 @@ class BSInstacartAuthenticator: BSBaseAuthenticator {
         let userId = self.account?.userID
         var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Instacart.value,
                                                   EventConstant.OrderSourceID: userId!]
-        let error = ASLException(errorMessages: data, errorTypes: .authChallenge, errorEventLog: .captcha, errorScrappingType: .html)
-        self.completionHandler?(false, error)
-        
+        if let scrapingMode = scrapingMode, scrapingMode == ScrapingMode.Foreground.rawValue {
+            showWebClient()
+        } else {
+            let error = ASLException(errorMessages: data, errorTypes: .authChallenge, errorEventLog: .captcha, errorScrappingType: .html)
+            self.completionHandler?(false, error)
+        }
         logEventAttributes[EventConstant.ErrorReason] = EventType.JSDetectedDeviceAuth
         logEventAttributes[EventConstant.Status] = EventStatus.Success
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedDeviceAuth, eventAttributes: logEventAttributes)
@@ -327,8 +330,17 @@ extension BSInstacartAuthenticator: ScriptMessageListener {
                 self.webClient.scriptMessageHandler?.removeScriptMessageListener()
             } else if data.contains("Email field Availablity callback") {
                 print("$$$ data",data)
-                if !isAuthenticated {
-                    self.onSignIn()
+                //TODO check
+                if let scrapingMode = scrapingMode, scrapingMode == ScrapingMode.Foreground.rawValue {
+                    hideWebClient()
+                    if !isAuthenticated {
+                        self.onSignIn()
+                    }
+                } else {
+                    //TODO In case of manual scrape we need to reset the flag when we show the webView
+                    if !isAuthenticated {
+                        self.onSignIn()
+                    }
                 }
             } else if data.contains("Captcha_open") {
                 print("$$$ data",data)
@@ -337,7 +349,6 @@ extension BSInstacartAuthenticator: ScriptMessageListener {
                 print("$$$ data",data)
                 self.onWrongCredentials()
             }
-            
         }
     }
 }

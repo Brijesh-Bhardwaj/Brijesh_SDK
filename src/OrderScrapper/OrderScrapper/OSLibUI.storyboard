@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ee2-wd-kaO">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ee2-wd-kaO">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -350,6 +350,10 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="414" height="806.5"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                             </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VcH-wO-W21" customClass="OnlineSuccessView" customModule="OrderScrapper">
+                                                <rect key="frame" x="0.0" y="-0.5" width="414" height="806.5"/>
+                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                            </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Tjk-XJ-jFz" customClass="ProgressView" customModule="OrderScrapper">
                                                 <rect key="frame" x="0.0" y="0.0" width="414" height="806.5"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -357,8 +361,10 @@
                                         </subviews>
                                         <color key="backgroundColor" name="color_background_error_view"/>
                                         <constraints>
+                                            <constraint firstItem="VcH-wO-W21" firstAttribute="top" secondItem="H1R-Nk-j1B" secondAttribute="top" constant="-0.5" id="3t9-cL-UG8"/>
                                             <constraint firstAttribute="trailing" secondItem="Y7l-Mz-NWh" secondAttribute="trailing" id="5hb-dU-tIA"/>
                                             <constraint firstAttribute="bottom" secondItem="5Jv-2P-8uP" secondAttribute="bottom" id="Cto-O8-rYH"/>
+                                            <constraint firstAttribute="bottom" secondItem="VcH-wO-W21" secondAttribute="bottom" constant="0.5" id="M0Z-QN-FKO"/>
                                             <constraint firstItem="5Jv-2P-8uP" firstAttribute="leading" secondItem="H1R-Nk-j1B" secondAttribute="leading" id="Mg7-tt-OjE"/>
                                             <constraint firstItem="Tjk-XJ-jFz" firstAttribute="leading" secondItem="H1R-Nk-j1B" secondAttribute="leading" id="NAm-B0-up4"/>
                                             <constraint firstAttribute="trailing" secondItem="5Jv-2P-8uP" secondAttribute="trailing" id="NRF-pG-gm0"/>
@@ -369,10 +375,12 @@
                                             <constraint firstItem="Tjk-XJ-jFz" firstAttribute="top" secondItem="H1R-Nk-j1B" secondAttribute="top" id="X9O-O7-AL2"/>
                                             <constraint firstAttribute="bottom" secondItem="Y7l-Mz-NWh" secondAttribute="bottom" id="Z7i-Bd-ai1"/>
                                             <constraint firstItem="5Jv-2P-8uP" firstAttribute="top" secondItem="H1R-Nk-j1B" secondAttribute="top" id="a33-i4-460"/>
+                                            <constraint firstAttribute="trailing" secondItem="VcH-wO-W21" secondAttribute="trailing" id="bf1-FR-q62"/>
                                             <constraint firstItem="Y7l-Mz-NWh" firstAttribute="leading" secondItem="H1R-Nk-j1B" secondAttribute="leading" id="gwR-fG-iBt"/>
                                             <constraint firstAttribute="trailing" secondItem="vH1-VO-eJX" secondAttribute="trailing" id="mKB-ih-Eho"/>
                                             <constraint firstAttribute="trailing" secondItem="Tjk-XJ-jFz" secondAttribute="trailing" id="oDR-iH-UnX"/>
                                             <constraint firstAttribute="bottom" secondItem="vH1-VO-eJX" secondAttribute="bottom" id="rYe-xh-hmm"/>
+                                            <constraint firstItem="VcH-wO-W21" firstAttribute="leading" secondItem="H1R-Nk-j1B" secondAttribute="leading" id="z06-vW-eYX"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -422,6 +430,7 @@
                         <outlet property="fetchSuccessView" destination="vH1-VO-eJX" id="PM0-1y-Pu7"/>
                         <outlet property="headerLabel" destination="UBa-ar-y88" id="PKW-8n-7pi"/>
                         <outlet property="networkErrorView" destination="Y7l-Mz-NWh" id="JTC-RQ-eS7"/>
+                        <outlet property="onlineSuccessView" destination="VcH-wO-W21" id="kcK-m1-y9T"/>
                         <outlet property="progressView" destination="Tjk-XJ-jFz" id="yZa-Pz-rAc"/>
                         <outlet property="webContentView" destination="7ep-0r-Jf5" id="2Ha-Hl-J3n"/>
                     </connections>
@@ -578,6 +587,21 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NPf-xg-ilW" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-2250.7246376811595" y="-1356.0267857142856"/>
+        </scene>
+        <!--Online Scraping Controller-->
+        <scene sceneID="cNr-PF-qeV">
+            <objects>
+                <viewController storyboardIdentifier="OnlineScrapingControllerVC" id="804-Bd-slX" customClass="OnlineScrapingController" customModule="OrderScrapper" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="FG5-fb-CWy">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="Dbg-7o-xUm"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="HRa-0C-Qjn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-3183" y="-677"/>
         </scene>
     </scenes>
     <resources>

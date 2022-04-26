@@ -84,6 +84,7 @@ class BSKrogerAuthenticator: BSBaseAuthenticator {
         var logEventAttributes:[String:String] = [:]
         if data.contains("pop up or ad blockers") {
             let error = ASLException(errorMessages:data, errorTypes: .authChallenge, errorEventLog: .authentication, errorScrappingType: .html)
+            //TODO handle auth challenge in case of foreground(manual) scraping. For that show web view
             self.completionHandler?(false, error)
         } else {
             let error = ASLException(errorMessages:data, errorTypes: .authError, errorEventLog: .authentication, errorScrappingType: .html)

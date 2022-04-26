@@ -59,6 +59,7 @@ class DateUtils {
     static func getSessionTimer(getSessionTimeForOnline: FetchRequestSource) -> String? {
         let date = NSDate()
         let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone(identifier: "UTC")
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         
         if getSessionTimeForOnline == .online {

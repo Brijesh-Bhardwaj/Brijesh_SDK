@@ -54,6 +54,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     @IBOutlet weak var progressView: ProgressView!
     @IBOutlet weak var headerLabel: UILabel!
     @IBOutlet weak var backButton: UIButton!
+    @IBOutlet weak var onlineSuccessView: OnlineSuccessView!
     
     // MARK: - Public Methods
     
@@ -252,6 +253,11 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         self.fetchSuccessView.scrapeContinueClickHandler = {[weak self] in
             guard let self = self else { return }
             self.continueManualScraping()
+        }
+        
+        self.onlineSuccessView.buttonClickHandler = { [weak self] in
+            guard let self = self else { return }
+            self.successHandler()
         }
     }
     
@@ -549,8 +555,8 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 if let statusImage = self.getStatusImage() {
                     self.fetchSuccessView?.imageView = statusImage
                 }
-                self.fetchSuccessView?.successIncentiveMessage = self.getIncentiveSuccessMessage()
-                self.contentView?.bringSubviewToFront(self.fetchSuccessView)
+                self.fetchSuccessView?.incentiveMessage.text = self.getIncentiveSuccessMessage()
+                self.showSuccessScreen()
             }
         } else {
             DispatchQueue.main.async {
@@ -558,7 +564,7 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 self.backButton?.isHidden = true
                 self.isTimeOut = false
                 self.fetchSuccessView?.fetchSuccess = self.getSuccessMessage()
-                self.fetchSuccessView.successIncentiveMessage = true
+                self.fetchSuccessView.incentiveMessage.text = ""
                 self.fetchSuccessView?.hideOkButton = false
                 self.fetchSuccessView?.hideCancelButton = true
                 self.fetchSuccessView?.hideContinueButton = true
@@ -688,12 +694,12 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         }
     }
     
-    private func getIncentiveSuccessMessage() -> Bool {
+    private func getIncentiveSuccessMessage() -> String {
         let source = self.fetchRequestSource ?? .general
         if source == .online {
-            return false
+            return LibContext.shared.onlineScrapingSuccessNote
         } else {
-            return true
+            return ""
         }
     }
     
@@ -820,12 +826,12 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 self.fetchSuccessView?.imageView = statusImage
             }
             if self.fetchRequestSource == .manual || self.fetchRequestSource == .online {
-                self.fetchSuccessView?.successIncentiveMessage = true
+                self.fetchSuccessView?.incentiveMessage.text = ""
                 self.fetchSuccessView?.hideOkButton = true
                 self.fetchSuccessView?.hideCancelButton = false
                 self.fetchSuccessView?.hideContinueButton = false
             } else {
-                self.fetchSuccessView?.successIncentiveMessage = true
+                self.fetchSuccessView?.incentiveMessage.text = ""
                 self.fetchSuccessView?.hideOkButton = false
                 self.fetchSuccessView?.hideCancelButton = true
                 self.fetchSuccessView?.hideContinueButton = true
@@ -868,6 +874,22 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
     func updateProgressHeaderLabel(isUploadingPreviousOrder: Bool) {
         DispatchQueue.main.async {
             self.progressView?.headerText = self.getHeaderMessage(isUploadingPreviousOrder: isUploadingPreviousOrder)
+        }
+    }
+    
+    private func showSuccessScreen() {
+        if self.fetchRequestSource == .manual {
+            if isFetchSkipped || isFailureButAccountConnected || isTimeOut {
+                self.contentView?.bringSubviewToFront(self.fetchSuccessView)
+            } else {
+                self.onlineSuccessView.successMessage.text = LibContext.shared.manualScrapeSuccess
+                self.onlineSuccessView.successNoteMessage.text = LibContext.shared.manualScrapeNote
+                self.onlineSuccessView.successHeader.text = "Congratulations!"
+                self.onlineSuccessView.okButton.setTitle("Great!", for: .normal)
+                self.contentView?.bringSubviewToFront(self.onlineSuccessView)
+            }
+        } else {
+            self.contentView?.bringSubviewToFront(self.fetchSuccessView)
         }
     }
 }

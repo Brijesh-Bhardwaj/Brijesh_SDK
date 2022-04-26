@@ -10,6 +10,7 @@ struct AppConstants {
     static let identifier: String  = "ai.blackstraw.orderscrapper"
     static let numberOfSteps: Float = 6
     static let steps: Float = 3
+    static let progressValue: Float = 100
     static let timeoutCounter: Double = 15
     static let timeoutManualScrape: Double = 1800
     static let timeoutManualScrapeCSV: Double = 150
@@ -94,6 +95,7 @@ struct AppConstants {
     static let authScriptFileNotFound = "auth file not found"
     static let ScriptParseError = "Script parsing error"
     static let authScriptNotFound = "Error while executing request please try again later"
+    static let uploadBatchSize = 5
     // NOTE: - Do not change this keys unless it is changed from backend Authentication script key constants
     static let getEmailAmazon = "validateEmailId"
     static let getPasswordAmazon = "signInWithPassword"

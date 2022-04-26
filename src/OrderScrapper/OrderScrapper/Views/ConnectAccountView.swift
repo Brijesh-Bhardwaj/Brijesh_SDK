@@ -14,6 +14,8 @@ protocol ConnectAccountViewDelegate {
     func didTapCancelScraping()
     func didTapContinueScraping()
     func didTapScrapeLater()
+    func didTapTryAgain()
+    func didTapDone()
 }
 
 class ConnectAccountView: UIView {
@@ -28,6 +30,7 @@ class ConnectAccountView: UIView {
     @IBOutlet weak var successView: FetchSuccessView!
     @IBOutlet weak var progressView: ProgressView!
     
+    @IBOutlet weak var onlineSuccessView: OnlineSuccessView!
     var delegate: ConnectAccountViewDelegate?
     
     var headerText: String {
@@ -66,6 +69,15 @@ class ConnectAccountView: UIView {
         }
     }
     
+    var successIncentiveMessage: String {
+        get {
+            return ""
+        }
+        set {
+            self.successView.incentiveMessage.text = newValue
+        }
+    }
+    
     var statusImage: UIImage {
         get {
             return UIImage(named: "")!
@@ -93,6 +105,15 @@ class ConnectAccountView: UIView {
         }
     }
     
+    var successHeaderMessage: String {
+        get {
+            return ""
+        }
+        set {
+            self.onlineSuccessView.successHeader.text = newValue
+        }
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         initView()
@@ -148,6 +169,21 @@ class ConnectAccountView: UIView {
             guard let self = self else { return }
             self.delegate?.didTapScrapeLater()
             print("######## scrapeLater")
+        }
+        
+        self.successView.retryButtonClickHandler = { [weak self] in
+            guard let self = self else { return }
+            self.delegate?.didTapTryAgain()
+        }
+        
+        self.successView.doneButtonClickHandler = { [weak self] in
+            guard let self = self else { return }
+            self.delegate?.didTapDone()
+        }
+        
+        self.onlineSuccessView.buttonClickHandler = { [weak self] in
+            guard let self = self else { return }
+            self.delegate?.didTapSuccessButton()
         }
     }
     

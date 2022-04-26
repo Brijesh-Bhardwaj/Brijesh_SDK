@@ -21,10 +21,12 @@
                 <outlet property="cancelButton" destination="R5H-xN-d3b" id="xY7-YR-dPt"/>
                 <outlet property="contentView" destination="iN0-l3-epB" id="Rd2-9y-c4W"/>
                 <outlet property="continueButton" destination="6i4-Je-4Ig" id="gIM-lw-iXA"/>
+                <outlet property="doneButton" destination="NOr-e9-Iv6" id="sZA-H9-ywd"/>
                 <outlet property="fetchSuccessMessage" destination="hEp-DX-0xU" id="Nlw-uY-tC0"/>
                 <outlet property="fetchView" destination="Led-aZ-txw" id="4NP-KH-wGW"/>
                 <outlet property="incentiveMessage" destination="N3Y-XW-KiF" id="v9L-1E-rfz"/>
                 <outlet property="okButton" destination="WKm-pC-VSr" id="t2i-IK-Dex"/>
+                <outlet property="retryButton" destination="iIf-c8-MkI" id="AOW-uX-ePg"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -87,19 +89,50 @@
                         <action selector="didClickCancelButton:" destination="-1" eventType="touchUpInside" id="YOH-B6-Uuv"/>
                     </connections>
                 </button>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="N3Y-XW-KiF">
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="N3Y-XW-KiF">
                     <rect key="frame" x="10" y="583" width="408" height="75"/>
-                    <string key="text">Incentives are awarded one time per week for downloading online orders.  In order to qualify for the incentive you must have at least 1 online order for the week.</string>
                     <fontDescription key="fontDescription" name="SFProRounded-Regular" family="SF Pro Rounded" pointSize="16"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iIf-c8-MkI">
+                    <rect key="frame" x="124" y="583" width="180" height="45"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="45" id="7yM-zU-SI9"/>
+                        <constraint firstAttribute="width" constant="180" id="S1w-qc-aa5"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" name="SFProRounded-Bold" family="SF Pro Rounded" pointSize="15"/>
+                    <state key="normal" title="Retry" backgroundImage="image_btn_bg">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </state>
+                    <connections>
+                        <action selector="didClickContinueButton:" destination="-1" eventType="touchUpInside" id="6kJ-D0-IHX"/>
+                        <action selector="didRetryClickButton:" destination="-1" eventType="touchUpInside" id="H4t-Z2-q4d"/>
+                    </connections>
+                </button>
+                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NOr-e9-Iv6">
+                    <rect key="frame" x="124" y="683" width="180" height="45"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="180" id="TeZ-59-NBS"/>
+                        <constraint firstAttribute="height" constant="45" id="z10-LM-mUl"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" name="SFProRounded-Bold" family="SF Pro Rounded" pointSize="15"/>
+                    <state key="normal" title="Done" backgroundImage="image_btn_bg">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </state>
+                    <connections>
+                        <action selector="didClickContinueButton:" destination="-1" eventType="touchUpInside" id="bpz-k1-buO"/>
+                        <action selector="didClickDoneButton:" destination="-1" eventType="touchUpInside" id="p0V-1F-x3r"/>
+                    </connections>
+                </button>
             </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" red="1" green="0.93333333330000001" blue="0.73725490199999999" alpha="1" colorSpace="calibratedRGB"/>
             <constraints>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="NOr-e9-Iv6" secondAttribute="trailing" constant="124" id="5nv-iv-6Cn"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="hEp-DX-0xU" secondAttribute="trailing" constant="10" id="66g-5M-wIH"/>
                 <constraint firstItem="hEp-DX-0xU" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="ExN-YQ-bpx"/>
+                <constraint firstItem="NOr-e9-Iv6" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="124" id="HE5-Vv-MHj"/>
                 <constraint firstItem="hEp-DX-0xU" firstAttribute="top" secondItem="Led-aZ-txw" secondAttribute="bottom" constant="35" id="LR5-6w-Lwm"/>
                 <constraint firstItem="R5H-xN-d3b" firstAttribute="top" secondItem="N3Y-XW-KiF" secondAttribute="bottom" constant="5" id="LTH-07-dXU"/>
                 <constraint firstItem="WKm-pC-VSr" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="O3B-r2-b7K"/>
@@ -107,13 +140,18 @@
                 <constraint firstItem="N3Y-XW-KiF" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="10" id="PA5-zf-S8h"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="N3Y-XW-KiF" secondAttribute="trailing" constant="10" id="Qf4-tD-ece"/>
                 <constraint firstItem="Led-aZ-txw" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="QpS-5i-DTl"/>
+                <constraint firstItem="iIf-c8-MkI" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="124" id="UyB-TT-Yug"/>
+                <constraint firstItem="iIf-c8-MkI" firstAttribute="top" secondItem="WKm-pC-VSr" secondAttribute="bottom" constant="20" id="bXK-EF-PAa"/>
                 <constraint firstItem="R5H-xN-d3b" firstAttribute="top" secondItem="6i4-Je-4Ig" secondAttribute="bottom" constant="25" id="beE-JY-uan"/>
                 <constraint firstItem="N3Y-XW-KiF" firstAttribute="top" secondItem="WKm-pC-VSr" secondAttribute="bottom" constant="20" id="eSb-D2-6Al"/>
+                <constraint firstItem="NOr-e9-Iv6" firstAttribute="top" secondItem="N3Y-XW-KiF" secondAttribute="bottom" constant="25" id="eV9-hk-BrA"/>
                 <constraint firstItem="hEp-DX-0xU" firstAttribute="centerY" secondItem="vUN-kp-3ea" secondAttribute="centerY" id="eZo-a9-VST"/>
+                <constraint firstItem="R5H-xN-d3b" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="j4J-Ox-eK8"/>
                 <constraint firstItem="WKm-pC-VSr" firstAttribute="top" secondItem="hEp-DX-0xU" secondAttribute="bottom" constant="50" id="jPL-qE-Kh4"/>
                 <constraint firstItem="6i4-Je-4Ig" firstAttribute="top" secondItem="WKm-pC-VSr" secondAttribute="bottom" constant="30" id="lW0-Y8-2P4"/>
                 <constraint firstItem="6i4-Je-4Ig" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="uj7-EK-qjy"/>
                 <constraint firstItem="R5H-xN-d3b" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="xQe-mK-nvW"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="iIf-c8-MkI" secondAttribute="trailing" constant="124" id="yv0-SR-6MD"/>
             </constraints>
             <nil key="simulatedTopBarMetrics"/>
             <nil key="simulatedBottomBarMetrics"/>

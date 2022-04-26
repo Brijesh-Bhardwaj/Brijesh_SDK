@@ -85,7 +85,7 @@ class CoreDataManager {
     /*
      * fetch user accounts by OrderSource type
      */
-    public func fetch(orderSource: OrderSource?, panelistId: String)->[UserAccountMO] {
+    public func fetch(orderSource: OrderSource?, panelistId: String)-> [UserAccountMO]{
         dispatchQueue.sync {
             var accounts = [UserAccountMO]()
             let context = dbContext
@@ -410,6 +410,37 @@ class CoreDataManager {
                 } catch let error as NSError  {
                     print(error.userInfo)
                     FirebaseAnalyticsUtil.logSentryError(error: error)
+                }
+            }
+        }
+    }
+    
+    public func deleteOrderDetailsByBatch(orderIDList: [OrderId], orderSource: String) {
+        dispatchQueue.sync {
+            for orderID in orderIDList{
+                let context = persistentContainer.viewContext
+                context.performAndWait {
+                    let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: AppConstants.orderDetailEntity)
+                    
+                    let orderIDPredicate =  NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderID) = %@", orderID.orderId)
+                    let orderSourcePredicate = NSPredicate(format: "\(AppConstants.orderDetailsColumnOrderSource) == %@", orderSource)
+                    
+                    fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [orderIDPredicate,  orderSourcePredicate])
+                    do {
+                        let result = try context.fetch(fetchRequest)
+                        let resultData = result as? [OrderDetailsMO]
+                        if let resultData = resultData {
+                            for orderDetails in resultData {
+                                context.delete(orderDetails)
+                            }
+                            if context.hasChanges {
+                                try context.save()
+                            }
+                        }
+                    } catch let error as NSError  {
+                        print(error.userInfo)
+                        FirebaseAnalyticsUtil.logSentryError(error: error)
+                    }
                 }
             }
         }

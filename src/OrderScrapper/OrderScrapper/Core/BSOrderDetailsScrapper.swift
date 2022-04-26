@@ -23,7 +23,10 @@ class BSOrderDetailsScrapper {
     var isScrapingComplete = false
     let lock = NSLock()
     var scrapingSessionStartedAt: String? = nil
-    
+    var batchList: [Dictionary<String,Any>] = []
+    var bactchProcessCount: Int = 0
+    var currentBatchDateRange:DateRange? = nil
+
     
     lazy var scrapeQueue: [String] = {
         return Array<String>()
@@ -120,7 +123,7 @@ class BSOrderDetailsScrapper {
         }
     }
     
-    private func uploadScrapeData(data: Dictionary<String, Any>) {
+    private func uploadScrapeData(data: [Dictionary<String, Any>]) {
         if !queue.isEmpty() {
             print("$$$$ scrapeQueue",OrderState.Inprogress.rawValue)
             if let orderDetail = orderDetail {
@@ -129,7 +132,8 @@ class BSOrderDetailsScrapper {
         } else {
             self.getOrdersDetailsCountOnConnection { [weak self] orderDetailsUploadCount in
                 guard let self = self else {return}
-                if orderDetailsUploadCount == 0 || orderDetailsUploadCount == 1 {
+                if orderDetailsUploadCount <= self.batchList.count {
+                    self.batchList = []
                     if let orderDetail = self.orderDetail {
                         print("$$$$ scrapeQueue",OrderState.Completed.rawValue)
                         self.dataUploader.addData(data: data, orderDetail: orderDetail,orderState: OrderState.Completed.rawValue, scrapingContext: self.scrappingMode!.rawValue, scrapingSessionStatus: self.getScrapingSessionStatus(), scrapingSessionStartedAt: self.scrapingSessionStartedAt)
@@ -169,6 +173,7 @@ class BSOrderDetailsScrapper {
             ConfigManager.shared.getConfigurations(orderSource: self.params.account.source) { (configurations, error) in
                 if let configuration = configurations {
                     let orderDetailDelay = configuration.orderDetailDelay ?? 1
+                    print("##### orderDetailDelay",orderDetailDelay)
                     DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(orderDetailDelay)) { [weak self] in
                         guard let self = self else { return }
                         self.scrapeOrder()
@@ -208,40 +213,38 @@ class BSOrderDetailsScrapper {
     }
     
     func getOrdersDetailsCountOnConnection(completion: @escaping (Int) -> Void) {
+        var orderDetailsCount = 0
         let orderSource = self.params.account.source
         ConfigManager.shared.getConfigurations(orderSource: orderSource) { (configurations, error) in
-            DispatchQueue.global().async {
-                var orderDetailsCount = 0
-                if let configuration = configurations {
-                    let orderUploadRetryCount = configuration.orderUploadRetryCount ?? AppConstants.orderUploadRetryCount
-                    if let toDate = self.dateRange?.toDate, let fromDate = self.dateRange?.fromDate {
-                        orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: orderSource.value, panelistID: self.params.account.panelistID, userID: self.params.account.userID, orderSectionType: SectionType.connection.rawValue, orderUploadRetryCount: orderUploadRetryCount, endDate: toDate, startDate: fromDate)
-                    }
-                    
+            if let configuration = configurations {
+                let orderUploadRetryCount = configuration.orderUploadRetryCount ?? AppConstants.orderUploadRetryCount
+                if let toDate = self.orderDetail?.endDate, let fromDate = self.orderDetail?.startDate ,let sectionType = self.orderDetail?.orderSectionType{
+                    orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: orderSource.value, panelistID: self.params.account.panelistID, userID: self.params.account.userID, orderSectionType: sectionType, orderUploadRetryCount: orderUploadRetryCount, endDate: toDate, startDate: fromDate)
+                }
+                
+                var logEventAttributes:[String:String] = [:]
+                logEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
+                                      EventConstant.PanelistID: self.params.account.panelistID,
+                                      EventConstant.OrderSourceID: self.params.account.userID,
+                                      EventConstant.Status: EventStatus.Success]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrappedOrderDetailsFromDB, eventAttributes: logEventAttributes)
+                completion(orderDetailsCount)
+            } else {
+                if let error = error {
                     var logEventAttributes:[String:String] = [:]
+                    
                     logEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
                                           EventConstant.PanelistID: self.params.account.panelistID,
                                           EventConstant.OrderSourceID: self.params.account.userID,
-                                          EventConstant.Status: EventStatus.Success]
-                    FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgRetrieveScrappedOrderDetailsFromDB, eventAttributes: logEventAttributes)
-                    completion(orderDetailsCount)
-                } else {
-                    if let error = error {
-                        var logEventAttributes:[String:String] = [:]
-                        
-                        logEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
-                                              EventConstant.PanelistID: self.params.account.panelistID,
-                                              EventConstant.OrderSourceID: self.params.account.userID,
-                                              EventConstant.EventName: EventType.ExceptionWhileGettingConfiguration,
-                                              EventConstant.Status: EventStatus.Failure]
-                        FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
-                    }
-                    let orderUploadRetryCount =  AppConstants.orderUploadRetryCount
-                    if let toDate = self.dateRange?.toDate, let fromDate = self.dateRange?.fromDate {
-                        orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: orderSource.value, panelistID: self.params.account.panelistID, userID: self.params.account.userID, orderSectionType: SectionType.connection.rawValue, orderUploadRetryCount: orderUploadRetryCount, endDate: toDate, startDate: fromDate)
-                    }
-                    completion(orderDetailsCount)
+                                          EventConstant.EventName: EventType.ExceptionWhileGettingConfiguration,
+                                          EventConstant.Status: EventStatus.Failure]
+                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
                 }
+                let orderUploadRetryCount =  AppConstants.orderUploadRetryCount
+                if let toDate = self.dateRange?.toDate, let fromDate = self.dateRange?.fromDate {
+                    orderDetailsCount = CoreDataManager.shared.getCountForOrderDetailsByOrderSection(orderSource: orderSource.value, panelistID: self.params.account.panelistID, userID: self.params.account.userID, orderSectionType: SectionType.connection.rawValue, orderUploadRetryCount: orderUploadRetryCount, endDate: toDate, startDate: fromDate)
+                }
+                completion(orderDetailsCount)
             }
         }
     }
@@ -268,6 +271,37 @@ class BSOrderDetailsScrapper {
                     }
                 }
             }
+        }
+    }
+    
+    private func getBatchCount(completionHandler: @escaping(Int) -> Void) {
+        let orderSource = self.params.account.source
+        ConfigManager.shared.getConfigurations(orderSource: orderSource) { (configurations, error) in
+            if let configuration = configurations {
+                let uploadBatchSize = configuration.uploadBatchSize ?? AppConstants.uploadBatchSize
+                
+                var logEventAttributes:[String:String] = [:]
+                logEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
+                                      EventConstant.PanelistID: self.params.account.panelistID,
+                                      EventConstant.OrderSourceID: self.params.account.userID,
+                                      EventConstant.Status: EventStatus.Success]
+                FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgScrppingBatchSizeFailure, eventAttributes: logEventAttributes)
+                completionHandler(uploadBatchSize)
+            } else {
+                if let error = error {
+                    var logEventAttributes:[String:String] = [:]
+                    
+                    logEventAttributes = [EventConstant.OrderSource: self.params.account.source.value,
+                                          EventConstant.PanelistID: self.params.account.panelistID,
+                                          EventConstant.OrderSourceID: self.params.account.userID,
+                                          EventConstant.EventName: EventType.ExceptionWhileGettingConfiguration,
+                                          EventConstant.Status: EventStatus.Failure]
+                    FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
+                }
+                let uploadBatchSize = AppConstants.uploadBatchSize
+                completionHandler(uploadBatchSize)
+            }
+            
         }
     }
 }
@@ -307,7 +341,11 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                             print("### onHtmlScrappingSucess for OrderDetail", response)
                             if var orderDetails = jsCallBackResult["data"] as? Dictionary<String,Any> {
                                 orderDetails[Strings.ScrapingTime] = scrapeTime
-                                self.uploadScrapeData(data: orderDetails)
+                                if fetchRequestSource == .online || fetchRequestSource == .manual || scrappingMode == .Background {
+                                    self.handleBatchProcess(data: orderDetails)
+                                }else{
+                                    self.uploadScrapeData(data: [orderDetails])
+                                }
                             }
                             self.scrapeNextOrder()
                             //TODO Check
@@ -344,6 +382,52 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                         }
                     }
                 }
+            }
+        }
+    }
+    
+    func handleBatchProcess(data: Dictionary<String, Any>){
+        let dateRange = DateRange(fromDate: orderDetail.startDate, toDate: orderDetail.endDate, enableScraping: true, lastOrderId: nil, scrappingType: nil, showNotification: false)
+        
+        //Set the current batch date range
+        if(batchList.count == 0){
+            currentBatchDateRange = DateRange(fromDate: orderDetail.startDate, toDate: orderDetail.endDate, enableScraping: true, lastOrderId: nil, scrappingType: nil, showNotification: false)
+        }
+        //If the current date range and batch date range are equal means do the action
+        if(dateRange.fromDate == currentBatchDateRange?.fromDate && dateRange.toDate == currentBatchDateRange?.toDate ){
+            //If batch list count is less than configuration count means append the data into list
+            
+            //TODO:- Do we need to optimize getting the batch size once for a ordersource
+            self.getBatchCount() { response in
+                print("#### batch count",response)
+                if (self.batchList.count <= response ) {
+                    self.batchList.append(data)
+                } else {
+                    //If batch list count is greater than configuration count means upload the batch and add the next item into batch list
+                    self.uploadScrapeData(data: self.batchList)
+                    self.batchList = []
+                    self.currentBatchDateRange = DateRange(fromDate: self.orderDetail.startDate, toDate: self.orderDetail.endDate, enableScraping: true, lastOrderId: nil, scrappingType: nil, showNotification: false)
+                    self.batchList.append(data)
+                }
+                
+                //If queue is empty means upload the batch and clear the batch list
+                if(self.queue.isEmpty()){
+                    self.uploadScrapeData(data: self.batchList)
+                }
+            }
+        } else {
+            //If date range is not same means upload the current batch and clear the batch list.
+            self.uploadScrapeData(data: batchList)
+            batchList = []
+            
+            //If queue is empty means upload the batch.
+            if queue.isEmpty(){
+                batchList.append(data)
+                self.uploadScrapeData(data: batchList)
+            }else{
+                //If queue is not empty means append the data into batch list
+                currentBatchDateRange = DateRange(fromDate: orderDetail.startDate, toDate: orderDetail.endDate, enableScraping: true, lastOrderId: nil, scrappingType: nil, showNotification: false)
+                batchList.append(data)
             }
         }
     }

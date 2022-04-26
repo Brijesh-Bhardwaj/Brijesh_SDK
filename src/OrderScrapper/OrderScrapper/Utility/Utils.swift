@@ -96,7 +96,27 @@ class Utils {
             return Strings.JSAuthVersionWalmart
         }
     }
-
+    
+    static func isPreviousWeeksOrders(sessionTimer: String?, completionHandler: @escaping(Bool) -> Void) {
+        var localTimeZoneIdentifier: String { return TimeZone.current.identifier }
+        _ = AmazonService.getIncentiveFlag(timeZone: localTimeZoneIdentifier, sessionTimerStarted: sessionTimer) { response, error in
+            if response != nil {
+                LibContext.shared.lastWeekOrders = response?.lastWeekOrderCount
+                    completionHandler(true)
+                } else {
+                    let  lastWeekOrder = LastWeekOrderCount()
+                    lastWeekOrder.walmart = 0
+                    lastWeekOrder.instacart = 0
+                    lastWeekOrder.amazon = 0
+                    LibContext.shared.lastWeekOrders = lastWeekOrder
+                completionHandler(false)
+                let aslException = ASLException(error: nil, errorMessage: error!.errorMessage, failureType: nil)
+                FirebaseAnalyticsUtil.logSentryError(error: aslException)
+            }
+        }
+    }
+    
+    
     static func getJsonString(object: Any) -> String {
         //        let jsonEncoder = JSONEncoder()
         //        let jsonData = try jsonEncoder.encode(object)

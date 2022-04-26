@@ -419,7 +419,8 @@ class AmazonNavigationHelper: NavigationHelper {
         contentController.add(scriptMessageHandler, name: "iOS")
         let config = WKWebViewConfiguration()
         config.userContentController = contentController
-        let frame = CGRect(x: 0, y: 0, width: 250, height: 400)
+        let screenSize: CGRect = UIScreen.main.bounds
+        let frame = CGRect(x: 0, y: 0, width: screenSize.width, height: screenSize.height)
         let webClient = BSWebClient(frame: frame, configuration: config, scriptMessageHandler: scriptMessageHandler)
         let account = self.viewModel.userAccount!
         
@@ -460,7 +461,7 @@ class AmazonNavigationHelper: NavigationHelper {
      * add user account details in DB
      */
     private func addUserAccountInDB() {
-        let account = self.viewModel.userAccount as! UserAccountMO
+        let account = self.viewModel.userAccount as! UserAccount
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         CoreDataManager.shared.addAccount(userId: account.userID, password: account.password, accountStatus: AccountState.Connected.rawValue, orderSource: account.orderSource, panelistId: panelistId)
     }

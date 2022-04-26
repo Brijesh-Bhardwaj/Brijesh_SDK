@@ -19,6 +19,8 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
                 let loginSubURL = self.getSubURL(from: configurations.login, delimeter: self.LoginURLDelimiter)
                 if (url.contains(loginSubURL) || loginSubURL.contains(url)) {
                     self.injectAuthErrorVerificationJS()
+                } else if let scrapingMode = self.scrapingMode, scrapingMode == ScrapingMode.Foreground.rawValue && (url.contains(AmazonURL.authApproval) || url.contains(AmazonURL.twoFactorAuth)) {
+                    self.showWebClient()
                 } else {
                     if let completionHandler = self.completionHandler {
                         completionHandler(true, nil)
@@ -116,7 +118,11 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
                                 if response.contains("captcha") {
                                     let error = ASLException(errorMessages:Strings.ErrorCaptchaPageLoaded, errorTypes: .authChallenge, errorEventLog: .captcha, errorScrappingType: .html)
                                     FirebaseAnalyticsUtil.logSentryError(error: error)
-                                    self.completionHandler?(false, error)
+                                    if let scrapingMode = self.scrapingMode, scrapingMode == ScrapingMode.Foreground.rawValue {
+                                        self.showWebClient()
+                                    } else {
+                                        self.completionHandler?(false, error)
+                                    }
                                     
                                     guard let userId = self.account?.userID else {return}
                                     guard let panelistId = self.account?.panelistID else {return}

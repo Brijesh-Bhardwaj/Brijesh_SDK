@@ -26,7 +26,8 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
         self.baseAuthenticator = KrogerAuthenticator(webClient: self.webClient, delegate: self.webClientDelegate, scraperListener: self)
         self.baseAuthenticator?.authenticationDelegate = self
         self.publishProgress(step: .authentication)
-        self.baseAuthenticator?.authenticate(account: self.account, configurations: self.configurations) { authenticated, error in
+        self.baseAuthenticator?.authenticate(account: self.account, configurations: self.configurations,
+                                             scrapingMode: ScrapingMode.Foreground.rawValue) { authenticated, error in
             if authenticated  {
                 self.publishProgress(step: .scrape)
                 if self.account.accountState == .NeverConnected {
@@ -279,7 +280,7 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
     }
     // MARK: - Private Methods
     private func addUserAccountInDB() {
-        let account = self.account  as! UserAccountMO
+        let account = self.account  as! UserAccount
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         CoreDataManager.shared.addAccount(userId: account.userID, password: account.password, accountStatus: self.account.accountState.rawValue, orderSource: account.orderSource, panelistId: panelistId)
     }
@@ -363,7 +364,7 @@ class ConnectKrogerAccountVC: BaseAccountConnectVC {
             } else if isTimeOut {
                 return LibContext.shared.manualScrapeTimeOutMessage
             } else {
-                return String.init(format: Strings.FetchSuccessMessage, OrderSource.Kroger.value)
+                return LibContext.shared.manualScrapeSuccess
             }
         } else {
             return Utils.getString(key: Strings.KrogerAccountConnectedSuccessMsg)

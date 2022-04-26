@@ -29,7 +29,7 @@ class KrogerLogin: BaseLoginViewController {
         return Utils.getString(key: Strings.ValidationKrogerPleaseEnterValidEmail)
     }
     
-    override func getViewController(account: UserAccountMO) throws -> UIViewController {
+    override func getViewController(account: UserAccount) throws -> UIViewController {
         let storyboard = UIStoryboard(name: "OSLibUI", bundle: Bundle(identifier: AppConstants.identifier))
         let viewController = storyboard
             .instantiateViewController(identifier: viewControllerIdentifier) as! ConnectKrogerAccountVC

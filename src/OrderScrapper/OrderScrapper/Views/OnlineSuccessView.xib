@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="SF-Pro-Rounded-Bold.otf">
+            <string>SFProRounded-Bold</string>
+        </array>
+        <array key="SF-Pro-Rounded-Regular.otf">
+            <string>SFProRounded-Regular</string>
+        </array>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="OnlineSuccessView" customModule="OrderScrapper" customModuleProvider="target">
+            <connections>
+                <outlet property="completeButton" destination="DoT-1G-NmH" id="Lqg-EN-ARI"/>
+                <outlet property="contentView" destination="AY8-6r-7Ni" id="cnW-sV-iEZ"/>
+                <outlet property="okButton" destination="Tis-Iq-WLj" id="a67-OM-63p"/>
+                <outlet property="successHeader" destination="DoT-1G-NmH" id="zqg-JO-hcE"/>
+                <outlet property="successMessage" destination="Hmf-PJ-RWL" id="6s6-ZT-e4e"/>
+                <outlet property="successNoteMessage" destination="Yln-F4-RLW" id="rW4-hO-8qm"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="AY8-6r-7Ni">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="coinsGroup" translatesAutoresizingMaskIntoConstraints="NO" id="qiJ-9m-Hms">
+                    <rect key="frame" x="1.5" y="338.5" width="411" height="282"/>
+                </imageView>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="center" spacing="40" translatesAutoresizingMaskIntoConstraints="NO" id="wtM-u0-ZuM">
+                    <rect key="frame" x="10.5" y="64" width="393" height="668.5"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DoT-1G-NmH">
+                            <rect key="frame" x="196.5" y="0.0" width="0.0" height="0.0"/>
+                            <fontDescription key="fontDescription" name="SFProRounded-Bold" family="SF Pro Rounded" pointSize="27"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hmf-PJ-RWL">
+                            <rect key="frame" x="196.5" y="192" width="0.0" height="0.0"/>
+                            <fontDescription key="fontDescription" name="SFProRounded-Regular" family="SF Pro Rounded" pointSize="21"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Tis-Iq-WLj">
+                            <rect key="frame" x="32" y="384.5" width="329" height="92"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                            <state key="normal" backgroundImage="btn_redeem_blue"/>
+                            <connections>
+                                <action selector="didClickOkButton:" destination="-1" eventType="touchUpInside" id="Um5-Xv-dXk"/>
+                            </connections>
+                        </button>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Yln-F4-RLW">
+                            <rect key="frame" x="196.5" y="668.5" width="0.0" height="0.0"/>
+                            <fontDescription key="fontDescription" name="SFProRounded-Regular" family="SF Pro Rounded" pointSize="18"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="Tis-Iq-WLj" firstAttribute="centerX" secondItem="wtM-u0-ZuM" secondAttribute="centerX" id="WeH-s2-7rf"/>
+                    </constraints>
+                </stackView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="lxF-Fd-614"/>
+            <color key="backgroundColor" name="btn_color"/>
+            <constraints>
+                <constraint firstItem="qiJ-9m-Hms" firstAttribute="bottom" secondItem="lxF-Fd-614" secondAttribute="bottom" multiplier="0.72" id="7Xz-8U-QTs"/>
+                <constraint firstItem="qiJ-9m-Hms" firstAttribute="centerX" secondItem="lxF-Fd-614" secondAttribute="centerX" id="EXk-1E-doH"/>
+                <constraint firstItem="wtM-u0-ZuM" firstAttribute="centerX" secondItem="lxF-Fd-614" secondAttribute="centerX" id="GYK-pz-3eU"/>
+                <constraint firstItem="wtM-u0-ZuM" firstAttribute="top" secondItem="lxF-Fd-614" secondAttribute="top" constant="20" id="KVd-1C-bar"/>
+                <constraint firstItem="wtM-u0-ZuM" firstAttribute="bottom" secondItem="lxF-Fd-614" secondAttribute="bottom" multiplier="0.85" id="s7C-Un-V8D"/>
+                <constraint firstItem="wtM-u0-ZuM" firstAttribute="width" secondItem="lxF-Fd-614" secondAttribute="width" multiplier="0.95" id="uoY-j1-o80"/>
+            </constraints>
+            <nil key="simulatedTopBarMetrics"/>
+            <nil key="simulatedBottomBarMetrics"/>
+            <point key="canvasLocation" x="91.121495327102792" y="98.16414686825054"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="btn_redeem_blue" width="329" height="92"/>
+        <image name="coinsGroup" width="411" height="282"/>
+        <namedColor name="btn_color">
+            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>

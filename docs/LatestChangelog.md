@@ -1,1 +1,1 @@
- - Issue fixes added for the ticket RPA-1035
+- RPA-863 phase-2 changes completed
