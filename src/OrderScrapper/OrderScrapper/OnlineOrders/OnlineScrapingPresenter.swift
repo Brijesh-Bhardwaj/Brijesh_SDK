@@ -334,7 +334,7 @@ extension OnlineScrapingPresenterImpl: OnlineScrapingPresenter {
             
         case .doLater:
             if backgroundScrapper != nil {
-                self.backgroundScrapper.stopScrapping()
+                self.backgroundScrapper.stopOnlineScrapping()
                 self.backgroundScrapper.scraperListener = nil
                 self.backgroundScrapper = nil
             }

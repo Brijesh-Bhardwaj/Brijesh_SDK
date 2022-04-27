@@ -95,6 +95,12 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
         }
     }
     
+    func stopOnlineScrapping() {
+        DispatchQueue.main.async {
+            self.webClient.stopLoading()
+            self.cleanUp()
+        }
+    }
     func isScrapping() {
     }
     

@@ -38,7 +38,6 @@ class DateUtils {
         guard let dateStr = dateStr else { return nil }
         
         let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone(identifier: "UTC")
         dateFormatter.dateFormat = "M/d/yyyy"
         
         if let date = dateFormatter.date(from: dateStr) {
