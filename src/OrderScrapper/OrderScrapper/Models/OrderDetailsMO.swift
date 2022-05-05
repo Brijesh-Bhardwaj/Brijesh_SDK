@@ -17,5 +17,6 @@ class OrderDetailsMO: NSManagedObject {
     @NSManaged var endDate: String
     @NSManaged var orderSectionType: String
     @NSManaged var uploadRetryCount: Int16
+    @NSManaged var sessionID: String
     
 }

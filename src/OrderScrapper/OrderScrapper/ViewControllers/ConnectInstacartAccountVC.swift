@@ -20,6 +20,7 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
     var loginView: LoginView!
     var backgroundScrapper: BSScrapper!
     private var showLoadView = false
+    private var isAuthenticationCompleted = false
     private var configurations: Configurations {
         Configurations(login: baseURL)
     }
@@ -38,6 +39,7 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
         if self.fetchRequestSource == .manual {
             self.connectAccountView?.hideCancelScrapeBtn = false
         }
+        LibContext.shared.timeoutType = TimeoutTypes.timeoutAuth.rawValue
         BSScriptFileManager.shared.getAuthenticationScripts(orderSource: .Instacart, isAuthScript: ScriptType.auth.rawValue) { response in
             if response {
                 self.baseAuthenticator?.authenticate(account: self.account, configurations: self.configurations, scrapingMode: ScrapingMode.Foreground.rawValue) { authenticated, error in
@@ -99,13 +101,11 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
                     } else {
                         if let error = error {
                             self.didReceiveLoginChallenge(error: AppConstants.msgTimeout)
-                            let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: error.errorMessage, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
-                            self.logEvents(logEvents: eventLogs)
+                            self.logEvents(message:error.errorMessage,failureType: TimeoutTypes.timeoutAuth.rawValue)
                             FirebaseAnalyticsUtil.logSentryError(error: ASLException(errorMessage: error.errorMessage, errorType: .authError))
                         } else {
                             self.didReceiveLoginChallenge(error: Strings.ErrorOnWebViewLoading)
-                            let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: Strings.ErrorOnWebViewLoading, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
-                            self.logEvents(logEvents: eventLogs)
+                            self.logEvents(message: Strings.ErrorOnWebViewLoading,failureType: TimeoutTypes.timeoutAuth.rawValue)
                             FirebaseAnalyticsUtil.logSentryError(error: ASLException(errorMessage: Strings.ErrorOnWebViewLoading, errorType: .authError))
                         }
                         self.webClient.stopLoading()
@@ -195,14 +195,22 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
                     self.handleServicesDown()
                 }
             }
-            
-            let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
-            self.logEvents(logEvents: eventLogs)
+            chooseTimeoutOption()
+            //self.logEvents(logEvents: eventLogs)
         }
     }
     
-    private func logEvents(logEvents: EventLogs) {
-        _ = AmazonService.logEvents(eventLogs: logEvents, orderSource: self.account.source.value) { response, error in
+    private func chooseTimeoutOption(){
+        if(isAuthenticationCompleted){
+            self.logEvents(message: AppConstants.msgTimeout, failureType: LibContext.shared.timeoutType)
+        }else{
+            self.logEvents(message: AppConstants.msgTimeout, failureType: TimeoutTypes.timeoutAuth.rawValue)
+        }
+    }
+    
+    private func logEvents(message: String,failureType:String) {
+        let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: failureType, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue,url: self.webClient.url?.absoluteString)
+        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.account.source.value) { response, error in
             if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
                 self.handleServicesDown()
             }
@@ -314,6 +322,7 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
     }
     
     private func scrapeHtml() {
+        isAuthenticationCompleted = true
         var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Instacart.value,
                                                   EventConstant.OrderSourceID: account.userID,
                                                   EventConstant.PanelistID: account.panelistID]

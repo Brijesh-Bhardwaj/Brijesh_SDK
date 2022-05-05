@@ -44,8 +44,11 @@ class LibContext {
     var onlineScrapingSuccessMessage: String!
     var onlineScrapingTimeoutMessage: String!
     var lastWeekOrders: LastWeekOrderCount?
+    var isAnyOrderToScrape: Bool = false
     var noOrdersInWeekMessage: String!
     var manualScrapeNote:String!
+    //var isListScrapping:Bool = false
+    var timeoutType :String!
     var onlineZeroOrdersNote:String!
     var onlineScrapingFailedMessage: String!
     var noNewManualOrders:String!

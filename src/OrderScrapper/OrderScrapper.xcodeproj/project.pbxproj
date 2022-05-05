@@ -121,6 +121,7 @@
 		9DC677E326F3272F008D895D /* BSInstacartAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC677E226F3272F008D895D /* BSInstacartAuthenticator.swift */; };
 		9DC9794727620678007FA9C0 /* RetailerScrapingStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC9794627620678007FA9C0 /* RetailerScrapingStatus.swift */; };
 		9DF81DEC266A3A0F001CFCCF /* OrderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF81DEB266A3A0F001CFCCF /* OrderRequest.swift */; };
+		A3433BA827FF009400B10E8D /* TimeoutTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3433BA727FF009400B10E8D /* TimeoutTypes.swift */; };
 		E1155D12261D9B2900739735 /* SF-Pro-Rounded-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E1155D04261D9B2600739735 /* SF-Pro-Rounded-Bold.otf */; };
 		E1155D15261D9B2900739735 /* SF-Pro-Rounded-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = E1155D07261D9B2700739735 /* SF-Pro-Rounded-Regular.otf */; };
 		E1155D28261DC1F200739735 /* GradientButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1155D27261DC1F200739735 /* GradientButton.swift */; };
@@ -334,6 +335,8 @@
 		9DC677E226F3272F008D895D /* BSInstacartAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSInstacartAuthenticator.swift; sourceTree = "<group>"; };
 		9DC9794627620678007FA9C0 /* RetailerScrapingStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailerScrapingStatus.swift; sourceTree = "<group>"; };
 		9DF81DEB266A3A0F001CFCCF /* OrderRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderRequest.swift; sourceTree = "<group>"; };
+		A3433BA727FF009400B10E8D /* TimeoutTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeoutTypes.swift; sourceTree = "<group>"; };
+		A3433BA92806B20400B10E8D /* CoreDataModel v4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CoreDataModel v4.xcdatamodel"; sourceTree = "<group>"; };
 		E1155D04261D9B2600739735 /* SF-Pro-Rounded-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Rounded-Bold.otf"; sourceTree = "<group>"; };
 		E1155D07261D9B2700739735 /* SF-Pro-Rounded-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Rounded-Regular.otf"; sourceTree = "<group>"; };
 		E1155D27261DC1F200739735 /* GradientButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientButton.swift; sourceTree = "<group>"; };
@@ -693,6 +696,7 @@
 				9D83BCA727511DA60092762C /* OrderState.swift */,
 				9DC9794627620678007FA9C0 /* RetailerScrapingStatus.swift */,
 				9D81375F27A982120087FEE7 /* ScriptType.swift */,
+				A3433BA727FF009400B10E8D /* TimeoutTypes.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -1028,6 +1032,7 @@
 				E148DC9A2605CB1E001430BE /* FileHelper.swift in Sources */,
 				9DA8027D26D79B4100AEBD0D /* FailureTypes.swift in Sources */,
 				1C65D32C26669DC200548A84 /* ScrapeResponse.swift in Sources */,
+				A3433BA827FF009400B10E8D /* TimeoutTypes.swift in Sources */,
 				9D86409F26A15E5B002FA8B8 /* AccountsManager.swift in Sources */,
 				9DB6749526D6964E00A6DA26 /* EventLogs.swift in Sources */,
 				9D83BCA827511DA60092762C /* OrderState.swift in Sources */,
@@ -1477,11 +1482,12 @@
 		1CD2B51126031A710016F752 /* CoreDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				A3433BA92806B20400B10E8D /* CoreDataModel v4.xcdatamodel */,
 				9D847CDB276A03F500349958 /* CoreDataModel v3.xcdatamodel */,
 				9D812DA1265F791D00629376 /* CoreDataModel v2.xcdatamodel */,
 				1CD2B51226031A710016F752 /* CoreDataModel.xcdatamodel */,
 			);
-			currentVersion = 9D847CDB276A03F500349958 /* CoreDataModel v3.xcdatamodel */;
+			currentVersion = A3433BA92806B20400B10E8D /* CoreDataModel v4.xcdatamodel */;
 			path = CoreDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

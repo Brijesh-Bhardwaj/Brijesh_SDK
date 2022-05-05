@@ -38,7 +38,6 @@ class DateUtils {
         guard let dateStr = dateStr else { return nil }
         
         let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone(identifier: "UTC")
         dateFormatter.dateFormat = "M/d/yyyy"
         
         if let date = dateFormatter.date(from: dateStr) {
@@ -56,17 +55,11 @@ class DateUtils {
         return dateFormatter.string(from: date)
     }
     
-    static func getSessionTimer(getSessionTimeForOnline: FetchRequestSource) -> String? {
+    static func getSessionTimer() -> String? {
         let date = NSDate()
         let dateFormatter = DateFormatter()
         dateFormatter.timeZone = TimeZone(identifier: "UTC")
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        
-        if getSessionTimeForOnline == .online {
-            return dateFormatter.string(from: date as Date)
-        } else {
-            return nil
-        }
-        
+        return dateFormatter.string(from: date as Date)
     }
 }

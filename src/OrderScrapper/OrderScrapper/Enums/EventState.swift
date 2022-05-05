@@ -7,4 +7,5 @@ import Foundation
 public enum EventState: String {
     case success
     case fail
+    case Info
 }

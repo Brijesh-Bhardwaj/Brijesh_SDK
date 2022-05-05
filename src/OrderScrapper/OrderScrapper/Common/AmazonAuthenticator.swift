@@ -94,7 +94,7 @@ internal class AmazonAuthenticator: Authenticator {
                 case .captcha:
                     if let response = response as? String {
                         if response.contains("captcha") {
-                            self.updateAccountWithExceptionState(message: AppConstants.msgCapchaEncountered)
+                            self.updateAccountWithExceptionState(message: AppConstants.msgCapchaEncountered,failureTypes: FailureTypes.captcha.rawValue,eventState: EventState.Info.rawValue)
                             self.viewModel.showWebView.send(true)
                             
                             var logEventAttributes:[String:String] = [:]
@@ -192,7 +192,7 @@ internal class AmazonAuthenticator: Authenticator {
     }
     
     private func logEvent(message: String) {
-        let eventLogs = EventLogs(panelistId: self.viewModel.userAccount.panelistID, platformId:self.viewModel.userAccount.userID, section: SectionType.connection.rawValue, type: FailureTypes.timeout.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
+        let eventLogs = EventLogs(panelistId: self.viewModel.userAccount.panelistID, platformId:self.viewModel.userAccount.userID, section: SectionType.connection.rawValue, type: TimeoutTypes.timeoutAuth.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue,url:"")
         _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.viewModel.userAccount.source.value) {  response, error in
             
             if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
@@ -201,7 +201,7 @@ internal class AmazonAuthenticator: Authenticator {
         }
     }
     
-    private func updateAccountWithExceptionState(message: String) {
+    private func updateAccountWithExceptionState(message: String,failureTypes:String,eventState:String) {
         let userId = self.viewModel.userAccount.userID
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         let accountState = self.viewModel.userAccount.accountState
@@ -241,7 +241,7 @@ internal class AmazonAuthenticator: Authenticator {
             }
         }
 
-        let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.captcha.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
+        let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  failureTypes, status: eventState, message: message, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue,url:"")
         _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource) { response, error in
 
             if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
@@ -281,7 +281,7 @@ internal class AmazonAuthenticator: Authenticator {
                 }
             }
 
-            let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
+            let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue,url:"")
             _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource) { response, error in
 
                 if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
@@ -289,7 +289,7 @@ internal class AmazonAuthenticator: Authenticator {
                 }
             }
         } else {
-            self.updateAccountWithExceptionState(message: AppConstants.msgAuthError)
+            self.updateAccountWithExceptionState(message: AppConstants.msgAuthError,failureTypes:FailureTypes.authentication.rawValue,eventState: EventState.fail.rawValue)
         }
         self.viewModel.authError.send((true, errorMessage))
         WebCacheCleaner.clear(completionHandler: nil)

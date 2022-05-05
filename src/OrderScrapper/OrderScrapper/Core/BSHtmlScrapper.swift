@@ -58,6 +58,7 @@ class BSHtmlScrapper {
         self.url = url
         self.loginDetected = false
         self.params.webClient.loadListingUrl(url: url)
+        logPushEvent(url: url)
     }
     
     private func getSubURL(from url: String, delimeter: String) -> String {
@@ -329,6 +330,7 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
     }
     
     private func authenticate() {
+        LibContext.shared.timeoutType = TimeoutTypes.timeoutAuth.rawValue
         self.params.authenticator.authenticate(account: self.params.account,
                                                configurations: self.params.configuration, scrapingMode: self.params.scrappingMode) { [weak self] authenticated, error in
             guard let self = self else { return }
@@ -388,4 +390,10 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
         }
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgJSDetectOtherURL, eventAttributes: logOtherUrlEventAttributes)
     }
+    
+    private func logPushEvent(url:String){
+        let eventLogs = EventLogs(panelistId: self.params.account.panelistID, platformId:self.params.account.userID, section: SectionType.orderUpload.rawValue, type: FailureTypes.none.rawValue, status: EventState.Info.rawValue, message: AppConstants.currentURLOnScrapping, fromDate: self.dateRange?.fromDate, toDate: self.dateRange?.toDate, scrapingType: ScrappingType.report.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue,url: url)
+        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: params.account.source.value) { response, error in}
+    }
+    
 }

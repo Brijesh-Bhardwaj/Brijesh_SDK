@@ -122,4 +122,13 @@ struct AppConstants {
     static let getInstacartVerificationCodeJS = "getInstacartVerificationCodeJS"
     static let getInstcartCaptchaClosed = "getInstacartCaptchaClosed"
     static let getInstacartverificationCodeSuccess = "getInstacartVerificationCodeSuccess"
+    static let scrappingTransition = "Background to "
+    static let generalScrappingInitiated = "Background scraping has been initiated"
+    static let doItLaterMessage = "User clicked the do it later"
+    static let stopMessage = "User clicked the stop"
+    static let retryMessage = "User clicked the retry"
+    static let continueMessage = "User clicked the continue"
+    static let transitionForConfiguredDay = " scrapping started for configured day"
+    static let transitionForNonConfiguredDay = " scrapping started for non configured day"
+    static let currentURLOnScrapping = "Current web page while scrapping"
 }

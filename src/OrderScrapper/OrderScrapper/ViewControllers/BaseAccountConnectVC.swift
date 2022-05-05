@@ -220,6 +220,7 @@ extension BaseAccountConnectVC: ConnectAccountViewDelegate {
     }
     
     func didTapCancelScraping() {
+        self.logEvent(message: AppConstants.stopMessage, failureType:FailureTypes.none.rawValue)
         stopScrapping()
         WebCacheCleaner.clear(completionHandler: nil)
         let result = (true, OrderFetchSuccessType.fetchSkippedByUser)
@@ -227,6 +228,7 @@ extension BaseAccountConnectVC: ConnectAccountViewDelegate {
     }
     
     func didTapScrapeLater() {
+        self.logEvent(message: AppConstants.doItLaterMessage, failureType:FailureTypes.none.rawValue)
         stopScrapping()
         WebCacheCleaner.clear(completionHandler: nil)
         let result = (true, OrderFetchSuccessType.fetchSkippedByUser)
@@ -234,8 +236,14 @@ extension BaseAccountConnectVC: ConnectAccountViewDelegate {
     }
     
     func didTapContinueScraping() {
+        self.logEvent(message: AppConstants.continueMessage, failureType:FailureTypes.none.rawValue)
         reStartTimerForManualScraping()
         self.connectAccountView?.bringSubviewToFront(self.connectAccountView.progressView)
+    }
+    
+    private func logEvent(message:String,failureType: String) {
+        let eventLogs = EventLogs(panelistId: account.panelistID, platformId: account.userID, section: SectionType.orderUpload.rawValue , type: failureType, status: EventState.Info.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: self.fetchRequestSource.rawValue,url: "")
+        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: account.source.value) { response, error in}
     }
 }
 

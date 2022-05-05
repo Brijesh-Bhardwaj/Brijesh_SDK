@@ -76,7 +76,7 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
             self.authenticationDelegate?.didReceiveLoginChallenge(error: AppConstants.msgTimeout)
             
             if let panelistId = self.account?.panelistID, let userId = self.account?.userID {
-                let eventLogs = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type: FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
+                let eventLogs = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type: LibContext.shared.timeoutType, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue,url: webClient.url?.absoluteString)
                 self.logEvents(logEvents: eventLogs)
             }
         }
@@ -302,6 +302,8 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
         let userId = self.account?.userID
         var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Instacart.value,
                                                   EventConstant.OrderSourceID: userId ?? ""]
+        
+        self.updateAccountWithExceptionState(message: AppConstants.msgCapchaEncountered,failureTypes: FailureTypes.captcha.rawValue,eventState: EventState.Info.rawValue)
         self.timerHandler.stopTimer()
         self.authenticationDelegate?.didReceiveAuthenticationChallenge(authError: true)
         self.verificationCodeSuccess()
@@ -337,7 +339,7 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
                     self.sendServicesDownCallback()
                 }
             }
-            let eventLog = EventLogs(panelistId: panelistId, platformId: userId! , section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
+            let eventLog = EventLogs(panelistId: panelistId, platformId: userId! , section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue,url: webClient.url?.absoluteString)
             if let orderSource = account?.source.value {
                 _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource) { response, error in
                     if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
@@ -347,11 +349,11 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
             }
            
         } else {
-            self.updateAccountWithExceptionState(message: AppConstants.msgAuthError)
+            self.updateAccountWithExceptionState(message: AppConstants.msgAuthError,failureTypes: FailureTypes.authentication.rawValue,eventState: EventState.fail.rawValue)
         }
         WebCacheCleaner.clear(completionHandler: nil)
     }
-    private func updateAccountWithExceptionState(message: String) {
+    private func updateAccountWithExceptionState(message: String,failureTypes:String,eventState:String) {
         let userId = account!.userID
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         let accountState = account!.accountState
@@ -384,7 +386,7 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
                 self.sendServicesDownCallback()
             }
         }
-        let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
+        let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  failureTypes, status: eventState, message: message, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue,url: webClient.url?.absoluteString)
         _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource) { response, error in
             if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
                 self.sendServicesDownCallback()

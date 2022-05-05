@@ -13,4 +13,6 @@ protocol NavigationHelper {
     func navigateWith(url: URL?)
     
     func shouldShowWebViewFor(url: URL?) -> Bool
+    
+    var isAuthenticationCompleted: Bool { get set }
 }

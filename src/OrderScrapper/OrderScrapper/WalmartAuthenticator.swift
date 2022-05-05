@@ -121,7 +121,7 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
             self.authenticationDelegate?.didReceiveLoginChallenge(error: AppConstants.msgTimeout)
             
             if let panelistId = self.account?.panelistID, let userId = self.account?.userID {
-                let eventLogs = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type: FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
+                let eventLogs = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type: LibContext.shared.timeoutType, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue,url: webClient.url?.absoluteString)
                 self.logEvents(logEvents: eventLogs)
             }
         }
@@ -235,7 +235,7 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
                         self.sendServicesDownCallback()
                     }
                 }
-                let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
+                let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: errorMessage, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue,url: webClient.url?.absoluteString)
                 _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource) { response, error in
                     if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
                         self.sendServicesDownCallback()
@@ -244,11 +244,11 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
             }
            
         } else {
-            self.updateAccountWithExceptionState(message: AppConstants.msgAuthError)
+            self.updateAccountWithExceptionState(message: AppConstants.msgAuthError,failureTypes:FailureTypes.authentication.rawValue,eventState: EventState.fail.rawValue)
         }
         WebCacheCleaner.clear(completionHandler: nil)
     }
-    private func updateAccountWithExceptionState(message: String) {
+    private func updateAccountWithExceptionState(message: String,failureTypes:String,eventState:String) {
         let userId = account!.userID
         let panelistId = LibContext.shared.authProvider.getPanelistID()
         let accountState = account!.accountState
@@ -281,7 +281,7 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
                 self.sendServicesDownCallback()
             }
         }
-        let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
+        let eventLog = EventLogs(panelistId: panelistId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue,url: webClient.url?.absoluteString)
         _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: orderSource.value) { response, error in
             if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
                 self.sendServicesDownCallback()
@@ -315,8 +315,7 @@ extension WalmartAuthenticator: ScriptMessageListener {
                     logEventAttributes[EventConstant.Status] = EventStatus.Failure
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectSignIn, eventAttributes: logEventAttributes)
                 } else if data.contains("verify_identity") {
-                    self.timerHandler.stopTimer()
-                    self.authenticationDelegate?.didReceiveAuthenticationChallenge(authError: true)
+                    authChallenge()
                     var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Walmart.value,
                                                               EventConstant.OrderSourceID: account!.userID]
                     logEventAttributes[EventConstant.Status] = EventStatus.Success
@@ -329,8 +328,7 @@ extension WalmartAuthenticator: ScriptMessageListener {
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectSignIn, eventAttributes: logEventAttributes)
                 } else if data.contains("Captcha is open") {
                     print("#### Captcha is open")
-                    self.timerHandler.stopTimer()
-                    self.authenticationDelegate?.didReceiveAuthenticationChallenge(authError: true)
+                    authChallenge()
                     var logEventAttributes:[String:String] = [EventConstant.OrderSource: OrderSource.Walmart.value,
                                                               EventConstant.OrderSourceID: account!.userID]
                     logEventAttributes[EventConstant.Status] = EventStatus.Success
@@ -342,4 +340,9 @@ extension WalmartAuthenticator: ScriptMessageListener {
                 }
             }
         }
+    private func authChallenge(){
+        self.timerHandler.stopTimer()
+        self.authenticationDelegate?.didReceiveAuthenticationChallenge(authError: true)
+        self.updateAccountWithExceptionState(message: AppConstants.msgCapchaEncountered,failureTypes: FailureTypes.captcha.rawValue,eventState: EventState.Info.rawValue)
+    }
 }

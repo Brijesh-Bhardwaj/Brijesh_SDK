@@ -244,14 +244,17 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         }
         self.progressView.buttonClickHandler = {[weak self] in
             guard let self = self else { return }
+            self.logEvent(message: AppConstants.stopMessage)
             self.cancelManualScrape()
         }
         self.fetchSuccessView.scrapeLaterClickHandler = {[weak self] in
             guard let self = self else { return }
+            self.logEvent(message: AppConstants.doItLaterMessage)
             self.cancelManualScrape()
         }
         self.fetchSuccessView.scrapeContinueClickHandler = {[weak self] in
             guard let self = self else { return }
+            self.logEvent(message: AppConstants.continueMessage)
             self.continueManualScraping()
         }
         
@@ -474,17 +477,8 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
         }
     }
     
-    private func logEvents(logEvents: EventLogs) {
-        _ = AmazonService.logEvents(eventLogs: logEvents, orderSource: self.viewModel.userAccount.source.value) { response, error in
-            if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
-                print("#### servicesDown")
-                self.handleServicesDown()
-            }
-        }
-    }
-    
-    private func logEventss(failureType: String, eventState: String, scrapingType: String?) {
-        let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: failureType, status: eventState, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: scrapingType, scrapingContext: ScrapingMode.Foreground.rawValue)
+    private func logpushEvent(failureType: String, eventState: String, scrapingType: String?) {
+        let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId:self.account.userID, section: SectionType.connection.rawValue, type: failureType, status: eventState, message: AppConstants.msgTimeout, fromDate: nil, toDate: nil, scrapingType: scrapingType, scrapingContext: ScrapingMode.Foreground.rawValue,url:self.webContentView.url?.absoluteString)
 
         _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.viewModel.userAccount.source.value) { response, error in
             if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
@@ -622,22 +616,31 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
                 }
             }
             if (self.fetchRequestSource == .manual || self.fetchRequestSource == .online) && action == Actions.ForegroundHtmlScrapping {
-                logEventss(failureType: FailureTypes.timeout.rawValue, eventState: EventState.fail.rawValue, scrapingType: ScrappingType.html.rawValue)
+                chooseTimeoutOption(scrapingType:ScrappingType.html.rawValue)
             } else if (action == Actions.ForegroundHtmlScrapping) {
                 self.webContentView?.stopLoading()
                 self.webContentView?.navigationDelegate = nil
-                logEventss(failureType: FailureTypes.timeout.rawValue, eventState: EventState.fail.rawValue, scrapingType: ScrappingType.html.rawValue)
+                chooseTimeoutOption(scrapingType:ScrappingType.html.rawValue)
             } else {
-                logEventss(failureType: FailureTypes.timeout.rawValue, eventState: EventState.fail.rawValue, scrapingType: ScrappingType.report.rawValue)
+                chooseTimeoutOption(scrapingType:ScrappingType.report.rawValue)
             }
             //On timeout show error on success view. For manual scrapping show 'Contunue' and 'Do It Later' buttons
             showSuccessView(action: action)
         } else {
             self.timerHandler?.stopTimer()
-            logEventss(failureType: FailureTypes.authentication.rawValue, eventState: EventState.success.rawValue, scrapingType: nil)
+            logpushEvent(failureType: FailureTypes.authentication.rawValue, eventState: EventState.success.rawValue, scrapingType: nil)
             LibContext.shared.webAuthErrorPublisher.send((true, AppConstants.msgTimeout))
             WebCacheCleaner.clear(completionHandler: nil)
             self.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    
+    private func chooseTimeoutOption(scrapingType:String){
+        if(self.navigationHelper.isAuthenticationCompleted){
+            logpushEvent(failureType: LibContext.shared.timeoutType, eventState: EventState.fail.rawValue, scrapingType: scrapingType)
+        }else{
+            logpushEvent(failureType: TimeoutTypes.timeoutAuth.rawValue, eventState: EventState.fail.rawValue, scrapingType: scrapingType)
         }
     }
     
@@ -963,5 +966,10 @@ extension ConnectAccountViewController: WKNavigationDelegate {
         }
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.WebContentProcessDidTerminate, eventAttributes: logEventAttributes)
         
+    }
+    
+    private func logEvent(message:String) {
+        let eventLogs = EventLogs(panelistId: self.account.panelistID, platformId: account.userID, section: SectionType.orderUpload.rawValue , type: FailureTypes.none.rawValue, status: EventState.Info.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: self.fetchRequestSource?.rawValue,url: "")
+        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: account.source.value) { response, error in}
     }
 }

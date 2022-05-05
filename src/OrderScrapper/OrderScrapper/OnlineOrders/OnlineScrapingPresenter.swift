@@ -60,6 +60,9 @@ final class OnlineScrapingPresenterImpl: NSObject, TimerCallbacks {
         if action == Actions.ForegroundHtmlScrapping {
             print("!!!! onTimerTriggered called")
             self.view?.displaySubview(subview: .timeout, params: SubviewParams(header: nil, title: nil, message: LibContext.shared.onlineScrapingTimeoutMessage, continueButton: false, doItLater: false, IncetiveMessage: "", okButton: true, successImage: getStatusImage(value: true), doneButton: true, retryButton: true))
+            if let account = self.getAccountByScrapingIndex(scrapingIndex: currentScrapingIndex){
+                self.logEvent(account: account,message: AppConstants.msgTimeout, failureType: LibContext.shared.timeoutType)
+            }
         }
     }
     
@@ -170,7 +173,16 @@ final class OnlineScrapingPresenterImpl: NSObject, TimerCallbacks {
                 self.getTimerValue(account: account) { timerValue in
                     print("!!!! timer value",timerValue)
                     self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping, timerInterval: timerValue)
+                    var message = ""
+                    if(self.fetchRequestSource == .online){
+                        message = account.source.value.capitalized + AppConstants.transitionForConfiguredDay
+                    }else{
+                        message = account.source.value.capitalized + AppConstants.transitionForNonConfiguredDay
+                    }
+                    
+                    self.logEvent(account: account, message: message,failureType:FailureTypes.none.rawValue)    
                     self.backgroundScrapper.startScrapping(account: account)
+                    
                 }
             } else {
                 currentScrapingIndex += 1
@@ -232,6 +244,7 @@ final class OnlineScrapingPresenterImpl: NSObject, TimerCallbacks {
     
     private func getSuccessMessage() -> String {
         
+
         if !LibContext.shared.hasNoOrdersInLastWeek() {
             if self.fetchRequestSource == .manual {
                 return LibContext.shared.noNewManualOrders
@@ -286,7 +299,7 @@ final class OnlineScrapingPresenterImpl: NSObject, TimerCallbacks {
             } else {
                 successTitle = "0 Orders"
             }
-            
+
         }
         return successTitle
     }
@@ -317,29 +330,36 @@ extension OnlineScrapingPresenterImpl: OnlineScrapingPresenter {
             self.view?.goBackToPreviousScreen()
         case .retry:
             guard let networkMonitor = self.networkMonitor else { return }
-            
+            if let account = self.getAccountByScrapingIndex(scrapingIndex: currentScrapingIndex){
+                logEvent(account: account, message: AppConstants.retryMessage,failureType:FailureTypes.none.rawValue)
+            }
             if networkMonitor.hasNetwork() {
                 self.view?.displaySubview(subview: .progress, params: nil)
                 self.beginScraping()
             }
         case .stop:
             self.view?.goBackToPreviousScreen()
+            if let account = self.getAccountByScrapingIndex(scrapingIndex: currentScrapingIndex){
+                logEvent(account: account, message: AppConstants.stopMessage,failureType:FailureTypes.none.rawValue)
+            }
         case .continueOperation:
             if let account = self.getAccountByScrapingIndex(scrapingIndex: currentScrapingIndex) {
                 self.view?.displaySubview(subview: .progress, params: nil)
                 self.getTimerValue(account: account) { timerValue in
                     self.timerHandler.startTimer(action: Actions.ForegroundHtmlScrapping, timerInterval: TimeInterval(timerValue))
                 }
+                logEvent(account: account, message: AppConstants.continueMessage,failureType:FailureTypes.none.rawValue)
             }
             
         case .doLater:
             if backgroundScrapper != nil {
-                self.backgroundScrapper.stopScrapping()
+                self.backgroundScrapper.stopOnlineScrapping()
                 self.backgroundScrapper.scraperListener = nil
                 self.backgroundScrapper = nil
             }
             if let account = self.getAccountByScrapingIndex(scrapingIndex: currentScrapingIndex) {
                 self.updateOnlineAccountState(account: account, status: OnlineAccountState.Failed.rawValue)
+                logEvent(account: account, message: AppConstants.doItLaterMessage,failureType:FailureTypes.none.rawValue)
             }
             if currentScrapingIndex <= accounts.count {
                 self.view?.displaySubview(subview: .progress, params: nil)
@@ -371,7 +391,7 @@ extension OnlineScrapingPresenterImpl: OnlineScrapingPresenter {
         //TODO : - Error handling required
         if !isScraping {
             self.setupAccountsForScraping()
-            getScrapeSessionTimer = DateUtils.getSessionTimer(getSessionTimeForOnline: .online)
+            getScrapeSessionTimer = DateUtils.getSessionTimer()
             self.scrapeAccount()
             self.isScraping = true
         }
@@ -444,5 +464,10 @@ extension OnlineScrapingPresenterImpl: ScraperProgressListener {
             self.setHeader(isUploadingPreviousOrders: isUploadingPreviousOrder, orderSource: account.source.value)
         }
        
+    }
+    
+    private func logEvent(account:Account,message:String,failureType: String) {
+        let eventLogs = EventLogs(panelistId: account.panelistID, platformId: account.userID, section: SectionType.orderUpload.rawValue , type: failureType, status: EventState.Info.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: self.fetchRequestSource.rawValue,url: "")
+        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: account.source.value) { response, error in}
     }
 }

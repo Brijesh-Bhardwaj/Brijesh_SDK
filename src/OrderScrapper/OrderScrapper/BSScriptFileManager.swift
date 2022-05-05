@@ -221,12 +221,12 @@ class BSScriptFileManager {
                     }
                 }
             } catch {
-                let logEvents = EventLogs(panelistId: LibContext.shared.authProvider.getPanelistID(), platformId: nil, section: SectionType.connection.rawValue, type: FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: AppConstants.ScriptParseError, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
+                let logEvents = EventLogs(panelistId: LibContext.shared.authProvider.getPanelistID(), platformId: nil, section: SectionType.connection.rawValue, type: FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: AppConstants.ScriptParseError, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue,url: "")
                 self.logEvent(eventLog: logEvents, orderSource: orderSource)
                 print("Something went wrong file format is wrong")
             }
         } else {
-            let logEvents = EventLogs(panelistId: LibContext.shared.authProvider.getPanelistID(), platformId: nil, section: SectionType.connection.rawValue, type: FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: AppConstants.authScriptFileNotFound, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
+            let logEvents = EventLogs(panelistId: LibContext.shared.authProvider.getPanelistID(), platformId: nil, section: SectionType.connection.rawValue, type: FailureTypes.authentication.rawValue, status: EventState.fail.rawValue, message: AppConstants.authScriptFileNotFound, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue,url:"")
             self.logEvent(eventLog: logEvents, orderSource: orderSource)
             print("File not found")
          }

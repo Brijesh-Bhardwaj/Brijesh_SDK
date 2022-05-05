@@ -26,6 +26,7 @@ class BSOrderDetailsScrapper {
     var batchList: [Dictionary<String,Any>] = []
     var bactchProcessCount: Int = 0
     var currentBatchDateRange:DateRange? = nil
+    var scrapingSessionEndedAt: String? = nil
     
     lazy var scrapeQueue: [String] = {
         return Array<String>()
@@ -63,6 +64,7 @@ class BSOrderDetailsScrapper {
         self.totalOrderCount = orderDetails.count
         self.isNewSession = isNewSession
         self.scrapingSessionStartedAt = scrapingSessionStartedAt
+        self.scrapingSessionEndedAt = nil
         scrapeOrder()
     }
     
@@ -126,7 +128,7 @@ class BSOrderDetailsScrapper {
         if !queue.isEmpty() {
             print("$$$$ scrapeQueue",OrderState.Inprogress.rawValue)
             if let orderDetail = orderDetail {
-                self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue, scrapingContext: self.scrappingMode!.rawValue, scrapingSessionStatus: self.getScrapingSessionStatus(), scrapingSessionStartedAt: self.scrapingSessionStartedAt)
+                self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue, scrapingContext: self.scrappingMode!.rawValue, scrapingSessionStatus: self.getScrapingSessionStatus(), scrapingSessionStartedAt: self.scrapingSessionStartedAt,scrapingSessionEndeddAt: nil)
             }
         } else {
             self.getOrdersDetailsCountOnConnection { [weak self] orderDetailsUploadCount in
@@ -135,12 +137,12 @@ class BSOrderDetailsScrapper {
                     self.batchList = []
                     if let orderDetail = self.orderDetail {
                         print("$$$$ scrapeQueue",OrderState.Completed.rawValue)
-                        self.dataUploader.addData(data: data, orderDetail: orderDetail,orderState: OrderState.Completed.rawValue, scrapingContext: self.scrappingMode!.rawValue, scrapingSessionStatus: self.getScrapingSessionStatus(), scrapingSessionStartedAt: self.scrapingSessionStartedAt)
+                        self.dataUploader.addData(data: data, orderDetail: orderDetail,orderState: OrderState.Completed.rawValue, scrapingContext: self.scrappingMode!.rawValue, scrapingSessionStatus: self.getScrapingSessionStatus(), scrapingSessionStartedAt: self.scrapingSessionStartedAt,scrapingSessionEndeddAt: self.getScrapingEndSessionTimer())
                     }
                 } else {
                     if let orderDetail = self.orderDetail {
                         print("$$$$ scrapeQueue",OrderState.Inprogress.rawValue)
-                        self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue, scrapingContext: self.scrappingMode!.rawValue, scrapingSessionStatus: self.getScrapingSessionStatus(), scrapingSessionStartedAt: self.scrapingSessionStartedAt)
+                        self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue, scrapingContext: self.scrappingMode!.rawValue, scrapingSessionStatus: self.getScrapingSessionStatus(), scrapingSessionStartedAt: self.scrapingSessionStartedAt,scrapingSessionEndeddAt: self.getScrapingEndSessionTimer())
                     }
                 }
             }
@@ -152,8 +154,17 @@ class BSOrderDetailsScrapper {
             if !queue.isEmpty() {
                 return OrderStatus.InProgress.rawValue
             } else {
+                self.scrapingSessionEndedAt = DateUtils.getSessionTimer()
                 return OrderStatus.Completed.rawValue
             }
+        } else {
+            return nil
+        }
+    }
+    
+    private func getScrapingEndSessionTimer() -> String? {
+        if fetchRequestSource == .online || fetchRequestSource == .manual {
+            return  DateUtils.getSessionTimer()
         } else {
             return nil
         }
@@ -436,6 +447,9 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
         if error.errorType == .multiAuthError {
             WebCacheCleaner.clear(completionHandler: nil)
             self.params.listener.onHtmlScrappingFailure(error: error)
+            if let scrappingMode = self.scrappingMode {
+                logPushEvent(error:error,scrappingMode:scrappingMode.rawValue)
+            }
         } else if error.errorType == ErrorType.authError || error.errorType == ErrorType.authChallenge {
             self.params.listener.onScrapeDataUploadCompleted(complete: false, error: error)
             
@@ -447,11 +461,17 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                                                       EventConstant.Status: EventStatus.Failure]
             if let scrappingMode = self.scrappingMode {
                 logEventAttributes[EventConstant.ScrappingMode] = scrappingMode.rawValue
+                logPushEvent(error:error,scrappingMode:scrappingMode.rawValue)
             }
             FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
         } else {
             self.scrapeNextOrder()
         }
+    }
+    
+    private func logPushEvent(error: ASLException,scrappingMode:String){
+        let eventLogs = EventLogs(panelistId: orderDetail.panelistID ?? "", platformId: orderDetail.userID ?? "", section: SectionType.orderUpload.rawValue , type: error.errorEventLog!.rawValue, status: EventState.fail.rawValue, message: error.errorMessage, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrapingType: error.errorScrappingType?.rawValue, scrapingContext: scrappingMode,url: self.params.webClient.url?.absoluteString)
+        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: orderDetail.orderSource ?? "") { response, error in}
     }
     
     func updateUploadRetryCount(orderDetails: OrderDetails) {

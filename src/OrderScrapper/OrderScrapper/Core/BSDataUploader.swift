@@ -21,7 +21,7 @@ class BSDataUploader {
         self.listener = listener
     }
     
-    func addData(data: [Dictionary<String, Any>], orderDetail: OrderDetails, orderState: String, scrapingContext: String, scrapingSessionStatus: String?, scrapingSessionStartedAt: String?) {
+    func addData(data: [Dictionary<String, Any>], orderDetail: OrderDetails, orderState: String, scrapingContext: String, scrapingSessionStatus: String?, scrapingSessionStartedAt: String?,scrapingSessionEndeddAt: String?) {
         if !data.isEmpty {
             let uploadOperation = DataUploadOperation()
             uploadOperation.orderId = String(orderDetail.orderId)
@@ -36,6 +36,8 @@ class BSDataUploader {
             uploadOperation.scrapingContext = scrapingContext
             uploadOperation.scrapingSessionStatus = scrapingSessionStatus
             uploadOperation.scrapingSessionStartedAt = scrapingSessionStartedAt
+            uploadOperation.scrapingSessionEndedAt = scrapingSessionEndeddAt
+            uploadOperation.sessionId = orderDetail.sessionID
             
             uploadOperation.completionBlock = { [weak self] in
                 guard let self = self else {
@@ -69,6 +71,8 @@ class DataUploadOperation: Operation {
     var scrapingContext: String?
     var scrapingSessionStatus: String?
     var scrapingSessionStartedAt: String?
+    var scrapingSessionEndedAt: String?
+    var sessionId: String?
 
     
     public override var isAsynchronous: Bool {
@@ -97,7 +101,7 @@ class DataUploadOperation: Operation {
             state = .finished
         } else {
             state = .executing
-            let orderRequest = OrderRequest(panelistId: self.panelistId, platformId: self.userId, fromDate: dateRange.fromDate!, toDate: dateRange.toDate!, status: self.orderState!, data: data, listingScrapeTime: 0, listingOrderCount: 0, scrapingSessionContext: self.scrapingContext, scrapingSessionStatus: self.scrapingSessionStatus, scrapingSessionStartedAt: self.scrapingSessionStartedAt)
+            let orderRequest = OrderRequest(panelistId: self.panelistId, platformId: self.userId, fromDate: dateRange.fromDate!, toDate: dateRange.toDate!, status: self.orderState!, data: data, listingScrapeTime: 0, listingOrderCount: 0, scrapingSessionContext: self.scrapingContext, scrapingSessionStatus: self.scrapingSessionStatus, scrapingSessionStartedAt: self.scrapingSessionStartedAt,scrapingSessionEndedAt: self.scrapingSessionEndedAt,sessionId: self.sessionId)
             if orderSource == OrderSource.Instacart.value || orderSource == OrderSource.Walmart.value {
                 if self.orderState == OrderState.Completed.rawValue {
                    if self.orderSource == OrderSource.Instacart.value {
@@ -125,10 +129,13 @@ class DataUploadOperation: Operation {
                     } else {
                         self.updateUploadRetryCount()
                         logEventAttributes[EventConstant.Status] = EventStatus.Failure
+                        let jsonString = String(describing: orderRequest)
                         if let error = error {
+                            self.logPushEvent(message: error.error.debugDescription + " " + jsonString)
                             logEventAttributes[EventConstant.EventName] = EventType.UploadOrdersAPIFailed
                             FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
                         } else {
+                            self.logPushEvent(message: jsonString)
                             FirebaseAnalyticsUtil.logEvent(eventType: EventType.UploadOrdersAPIFailed, eventAttributes: logEventAttributes)
                         }
                     }
@@ -141,6 +148,12 @@ class DataUploadOperation: Operation {
     
     public func finish() {
         state = .finished
+    }
+    
+    private func logPushEvent(message: String){
+        let eventLogs = EventLogs(panelistId: self.panelistId ?? "", platformId: self.userId ?? "", section: SectionType.orderUpload.rawValue , type: FailureTypes.orderUploadApiFailure.rawValue, status: EventState.fail.rawValue, message: message, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrapingType: ScrappingType.html.rawValue, scrapingContext: self.scrapingContext,url: "")
+        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.orderSource ?? "") {
+            response, error in}
     }
     
     func updateUploadRetryCount() {

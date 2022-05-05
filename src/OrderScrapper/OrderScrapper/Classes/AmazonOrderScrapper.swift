@@ -162,6 +162,7 @@ class AmazonOrderScrapper {
             }
             FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_foreground_scrapping \(account.source)")
             print("####### FetchRequestSource ", source.rawValue)
+            logPushEvent(message:AppConstants.scrappingTransition + source.rawValue.capitalized,account: account,scrapingContext: source.rawValue)
             self.performForegroundScraping(account, orderExtractionListener, source)
         } else {
             let isScrappingSource = self.isScrapping[account.source] ?? false || self.isScrappingGoingOn
@@ -170,6 +171,7 @@ class AmazonOrderScrapper {
                 print("isScrappingSource",isScrappingSource)
                 let dataQueue = self.queue.dataQueue
                 let details = ScrapingAccountInfo(account: account, orderExtractionListner: orderExtractionListener, source: source)
+                logPushEvent(message:AppConstants.generalScrappingInitiated,account: account,scrapingContext: ScrapingMode.Background.rawValue.lowercased())
                 var dataPresent = false
                 for data in dataQueue {
                     if data == details {
@@ -199,18 +201,11 @@ class AmazonOrderScrapper {
         viewController.modalPresentationStyle = .fullScreen
         viewController.accounts.append(contentsOf: accounts)
         self.viewPresenter.presentView(view: viewController)
-//        for account in accounts {
-//            if let account = account {
-//                if account.source == .Amazon {
-//                    self.terminateScrapping(account: account)
-//                    if self.backgroundScrapper != nil {
-//                        self.backgroundScrapper.stopScrapping()
-//                        self.backgroundScrapper = nil
-//                    }
-//                    self.performForegroundScraping(account, orderExtractionListener, .online)
-//                }
-//            }
-//        }
+        for account in accounts {
+            //For all three ordersource means need to remove break here.
+            logPushEvent(message:AppConstants.scrappingTransition + FetchRequestSource.online.rawValue.capitalized,account: account,scrapingContext: ScrapingMode.Online.rawValue.lowercased())
+            break
+        }
     }
     
     private func scrappingQueue() {
@@ -231,7 +226,7 @@ class AmazonOrderScrapper {
                                                                   EventConstant.Status: EventStatus.Success]
                         let error = ASLException(errorMessage: AppConstants.ErrorBgScrappingCoolOff , errorType: nil)
                         if let orderSource = (scrappingData?.account.source.value) {
-                            let logEvent = EventLogs(panelistId: scrappingData?.account.panelistID ?? "", platformId: scrappingData?.account.userID ?? "", section: SectionType.orderUpload.rawValue, type: FailureTypes.other.rawValue, status: EventState.fail.rawValue, message: AppConstants.ErrorBgScrappingCoolOff, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Background.rawValue)
+                            let logEvent = EventLogs(panelistId: scrappingData?.account.panelistID ?? "", platformId: scrappingData?.account.userID ?? "", section: SectionType.orderUpload.rawValue, type: FailureTypes.other.rawValue, status: EventState.Info.rawValue, message: AppConstants.ErrorBgScrappingCoolOff, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Background.rawValue,url:"")
                                                 
                             _ = AmazonService.logEvents(eventLogs: logEvent, orderSource: orderSource ) { response, error in}
                         }
@@ -268,6 +263,12 @@ class AmazonOrderScrapper {
                 completion(false)
             }
         }
+    }
+    
+    private func logPushEvent(message:String,account: Account,scrapingContext:String){
+        let logEvent = EventLogs(panelistId: account.panelistID , platformId: account.userID , section: SectionType.scrapingTransition.rawValue, type: FailureTypes.other.rawValue, status: EventState.Info.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: scrapingContext,url:"")
+                                 
+         _ = AmazonService.logEvents(eventLogs: logEvent, orderSource: account.source.value ) { response, error in}
     }
     
     private func performForegroundScraping(_ account: Account,

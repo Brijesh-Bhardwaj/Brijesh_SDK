@@ -126,6 +126,10 @@ class BSAmazonAuthenticator: BSBaseAuthenticator {
                                     
                                     guard let userId = self.account?.userID else {return}
                                     guard let panelistId = self.account?.panelistID else {return}
+                                    
+                                    let eventLog = EventLogs(panelistId: userId, platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.captcha.rawValue, status: EventState.Info.rawValue, message: AppConstants.msgCapchaEncountered, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue,url: self.webClient.url?.absoluteString)
+                                    _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: OrderSource.Walmart.value) { response, error in}
+                                    
                                     var logEventAttributes:[String:String] = [:]
                                     logEventAttributes = [EventConstant.OrderSource: OrderSource.Amazon.value,
                                                           EventConstant.OrderSourceID: userId,

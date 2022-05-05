@@ -132,6 +132,9 @@ class BSWalmartAuthenticator: BSBaseAuthenticator {
             let error = ASLException(errorMessages: Strings.ErrorCaptchaPageLoaded, errorTypes: .authChallenge, errorEventLog: .captcha, errorScrappingType: .html)
             self.completionHandler?(false, error)
         }
+        let eventLog = EventLogs(panelistId: self.account?.panelistID ?? "", platformId: self.account?.userID ?? "", section: SectionType.connection.rawValue, type:  FailureTypes.captcha.rawValue, status: EventState.Info.rawValue, message: AppConstants.msgCapchaEncountered, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue,url: webClient.url?.absoluteString)
+        _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: OrderSource.Walmart.value) { response, error in}
+
     }
     
     

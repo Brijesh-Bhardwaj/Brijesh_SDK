@@ -35,6 +35,8 @@ public enum Step: Int16 {
 }
 
 class AmazonNavigationHelper: NavigationHelper {
+    var isAuthenticationCompleted: Bool = false
+    
     @ObservedObject var viewModel: WebViewModel
     private var currentStep: Step!
     private var timer: Timer?
@@ -46,7 +48,7 @@ class AmazonNavigationHelper: NavigationHelper {
     var backgroundScrapper: BSScrapper!
     var isGenerateReport: Bool = false
     var fetchRequestSource: FetchRequestSource?
-
+    
     private lazy var CSVScrapper: BSCSVScrapper = {
         return BSCSVScrapper(webview: self.webView, scrapingMode: .Foreground, scraperListener: self.scraperListener)
     }()
@@ -91,6 +93,7 @@ class AmazonNavigationHelper: NavigationHelper {
             } else {
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
                     guard let self = self else {return}
+                    LibContext.shared.timeoutType = TimeoutTypes.timeoutAuth.rawValue
                     BSScriptFileManager.shared.getAuthenticationScripts(orderSource: .Amazon, isAuthScript: ScriptType.auth.rawValue) { response in
                         if response {
                             self.authenticator.authenticate()
@@ -121,7 +124,7 @@ class AmazonNavigationHelper: NavigationHelper {
                                       EventConstant.Status: EventStatus.Success]
             FirebaseAnalyticsUtil.logEvent(eventType: eventType, eventAttributes: logAuthEventAttributes)
             
-            let eventLogs = EventLogs(panelistId: self.viewModel.userAccount.panelistID, platformId:self.viewModel.userAccount.userID, section: SectionType.connection.rawValue, type: FailureTypes.other.rawValue, status: EventState.success.rawValue, message: "Authentication challenge", fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
+            let eventLogs = EventLogs(panelistId: self.viewModel.userAccount.panelistID, platformId:self.viewModel.userAccount.userID, section: SectionType.connection.rawValue, type: FailureTypes.other.rawValue, status: EventState.success.rawValue, message: "Authentication challenge", fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue,url: urlString)
             logEvents(logEvents: eventLogs)
         } else if (urlString.contains(AmazonURL.generateReport)) {
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
@@ -204,7 +207,7 @@ class AmazonNavigationHelper: NavigationHelper {
                                           EventConstant.URL: urlString]
             FirebaseAnalyticsUtil.logEvent(eventType: EventType.StepOtherURLLoaded, eventAttributes: logOtherUrlEventAttributes)
             
-            let eventLogs = EventLogs(panelistId: self.viewModel.userAccount.panelistID, platformId:self.viewModel.userAccount.userID, section: SectionType.connection.rawValue, type: FailureTypes.other.rawValue, status: EventState.fail.rawValue, message: "unknow URL", fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue)
+            let eventLogs = EventLogs(panelistId: self.viewModel.userAccount.panelistID, platformId:self.viewModel.userAccount.userID, section: SectionType.connection.rawValue, type: FailureTypes.other.rawValue, status: EventState.fail.rawValue, message: "unknow URL", fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue,url: urlString)
             logEvents(logEvents: eventLogs)
             guard let currentStep = self.currentStep else {
                 return
@@ -402,12 +405,14 @@ class AmazonNavigationHelper: NavigationHelper {
     }
     
     private func scrapeReport(response: DateRange) {
+        isAuthenticationCompleted = true
         if let account = self.viewModel.userAccount {
             self.CSVScrapper.scrapeOrders(response: response, account: account, timerHandler: self.timerHandler, param: nil)
         }
     }
     
     private func scrapeHtml() {
+        isAuthenticationCompleted = true
         if self.backgroundScrapper != nil {
             self.backgroundScrapper.scraperListener = nil
             self.backgroundScrapper = nil

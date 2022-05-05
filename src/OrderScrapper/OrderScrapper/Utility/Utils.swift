@@ -97,6 +97,7 @@ class Utils {
         }
     }
     
+
     static func isPreviousWeeksOrders(sessionTimer: String?, completionHandler: @escaping(Bool) -> Void) {
         var localTimeZoneIdentifier: String { return TimeZone.current.identifier }
         _ = AmazonService.getIncentiveFlag(timeZone: localTimeZoneIdentifier, sessionTimerStarted: sessionTimer) { response, error in
@@ -104,7 +105,7 @@ class Utils {
                 LibContext.shared.lastWeekOrders = response?.lastWeekOrderCount
                     completionHandler(true)
                 } else {
-                    let  lastWeekOrder = LastWeekOrderCount()
+                    let lastWeekOrder = LastWeekOrderCount()
                     lastWeekOrder.walmart = 0
                     lastWeekOrder.instacart = 0
                     lastWeekOrder.amazon = 0
@@ -116,6 +117,13 @@ class Utils {
         }
     }
     
+    static func isListScrapping(isListScrapping: Bool) {
+        if (isListScrapping) {
+            LibContext.shared.timeoutType = TimeoutTypes.timeoutOrderList.rawValue
+        }else{
+            LibContext.shared.timeoutType = TimeoutTypes.timeoutOrderDetail.rawValue
+        }
+    }
     
     static func getJsonString(object: Any) -> String {
         //        let jsonEncoder = JSONEncoder()

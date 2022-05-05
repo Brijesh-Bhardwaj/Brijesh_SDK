@@ -285,6 +285,8 @@ class BSInstacartAuthenticator: BSBaseAuthenticator {
             let error = ASLException(errorMessages: data, errorTypes: .authChallenge, errorEventLog: .captcha, errorScrappingType: .html)
             self.completionHandler?(false, error)
         }
+        let eventLog = EventLogs(panelistId: self.account?.panelistID ?? "", platformId: userId, section: SectionType.connection.rawValue, type:  FailureTypes.captcha.rawValue, status: EventState.Info.rawValue, message: AppConstants.msgCapchaEncountered, fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue,url: webClient.url?.absoluteString)
+        _ = AmazonService.logEvents(eventLogs: eventLog, orderSource: OrderSource.Instacart.value) { response, error in}
         logEventAttributes[EventConstant.ErrorReason] = EventType.JSDetectedDeviceAuth
         logEventAttributes[EventConstant.Status] = EventStatus.Success
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectedDeviceAuth, eventAttributes: logEventAttributes)
