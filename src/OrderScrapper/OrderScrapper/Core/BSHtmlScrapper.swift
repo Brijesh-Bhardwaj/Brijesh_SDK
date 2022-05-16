@@ -392,7 +392,7 @@ extension BSHtmlScrapper: BSWebNavigationObserver {
     }
     
     private func logPushEvent(url:String){
-        let eventLogs = EventLogs(panelistId: self.params.account.panelistID, platformId:self.params.account.userID, section: SectionType.orderUpload.rawValue, type: FailureTypes.none.rawValue, status: EventState.Info.rawValue, message: AppConstants.currentURLOnScrapping, fromDate: self.dateRange?.fromDate, toDate: self.dateRange?.toDate, scrapingType: ScrappingType.report.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue,url: url)
+        let eventLogs = EventLogs(panelistId: self.params.account.panelistID, platformId:self.params.account.userID, section: SectionType.orderUpload.rawValue, type: FailureTypes.none.rawValue, status: EventState.Info.rawValue, message: AppConstants.currentURLOnScrapping, fromDate: self.dateRange?.fromDate, toDate: self.dateRange?.toDate, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue,url: url)
         _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: params.account.source.value) { response, error in}
     }
     

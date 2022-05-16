@@ -34,6 +34,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     var scraperParams: BSHtmlScrapperParams! = nil
     var getScrapeSessionTimer: String? = nil
     var scrapingSessionEndedAt: String? = nil
+    var sessionId: String? = nil
     
     private func getBSHtmlScrapper () -> BSHtmlScrapper {
         if bsHtmlScrapper == nil {
@@ -380,7 +381,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     }
     
     private func logPushEvent(panelistID:String,platformId:String,failureType:String,orderSource:String){
-        let eventLogs = EventLogs(panelistId: panelistID, platformId:platformId, section: SectionType.orderUpload.rawValue, type: failureType, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: self.dateRange?.fromDate, toDate: self.dateRange?.toDate, scrapingType: ScrappingType.report.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue,url: webClient.url?.absoluteString)
+        let eventLogs = EventLogs(panelistId: panelistID, platformId:platformId, section: SectionType.orderUpload.rawValue, type: failureType, status: EventState.fail.rawValue, message: AppConstants.msgTimeout, fromDate: self.dateRange?.fromDate, toDate: self.dateRange?.toDate, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue,url: webClient.url?.absoluteString)
         _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: orderSource) { response, error in
             self.sendServicesDownCallback(error: error)
         }
@@ -835,6 +836,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     private func getscrapingSessionStatus(listingOrderCount: Int) -> String? {
         if fetchRequestSource == .online && isNewSession {
             if listingOrderCount == 0 {
+                self.sessionId = UUID().uuidString
                 self.scrapingSessionEndedAt = DateUtils.getSessionTimer()
                 return OrderStatus.Completed.rawValue
             } else {
@@ -847,7 +849,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     
     private func uploadOrderHistory(listingScrapeTime: Int64, listingOrderCount: Int, status: String) {
         if let fromDate = self.dateRange?.fromDate, let toDate = self.dateRange?.toDate, let userID = self.account?.userID {
-            let orderRequest = OrderRequest(panelistId: self.panelistID, platformId: userID, fromDate: fromDate, toDate: toDate, status: status, data: [], listingScrapeTime: listingScrapeTime, listingOrderCount: listingOrderCount, scrapingSessionContext: getScrapingMode(), scrapingSessionStatus: getscrapingSessionStatus(listingOrderCount: listingOrderCount), scrapingSessionStartedAt: getScrapeSessionTimer,scrapingSessionEndedAt: self.scrapingSessionEndedAt,sessionId: UUID().uuidString)
+            let orderRequest = OrderRequest(panelistId: self.panelistID, platformId: userID, fromDate: fromDate, toDate: toDate, status: status, data: [], listingScrapeTime: listingScrapeTime, listingOrderCount: listingOrderCount, scrapingSessionContext: getScrapingMode(), scrapingSessionStatus: getscrapingSessionStatus(listingOrderCount: listingOrderCount), scrapingSessionStartedAt: getScrapeSessionTimer,scrapingSessionEndedAt: self.scrapingSessionEndedAt,sessionId: self.sessionId)
             _ = AmazonService.uploadOrderHistory(orderRequest: orderRequest, orderSource: self.orderSource.value) { response, error in
                 DispatchQueue.global().async {
                     var logEventAttributes:[String:String] = [:]

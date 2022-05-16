@@ -251,6 +251,7 @@ class CoreDataManager {
                     orderDetail.endDate = orderData.endDate!
                     orderDetail.orderSectionType = orderData.orderSectionType!
                     orderDetail.uploadRetryCount = orderData.uploadRetryCount!
+                    orderDetail.sessionID = orderData.sessionID!
                     
                     do {
                         if context.hasChanges {
