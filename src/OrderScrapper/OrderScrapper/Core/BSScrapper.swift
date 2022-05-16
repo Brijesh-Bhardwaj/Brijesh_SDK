@@ -34,7 +34,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     var scraperParams: BSHtmlScrapperParams! = nil
     var getScrapeSessionTimer: String? = nil
     var scrapingSessionEndedAt: String? = nil
-    var sessionId: String? = nil
+    var sessionId: String? = UUID().uuidString
     
     private func getBSHtmlScrapper () -> BSHtmlScrapper {
         if bsHtmlScrapper == nil {
@@ -645,7 +645,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
             } else {
                 orderSectionType = SectionType.orderUpload.rawValue
             }
-            let sessionId = UUID().uuidString
+//            let sessionId = UUID().uuidString
             for orderDetail in orderDetails {
                 orderDetail.userID = String(self.account!.userID)
                 orderDetail.panelistID = String(self.account!.panelistID)
@@ -655,7 +655,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                 orderDetail.date = DateUtils.getDate(dateStr: orderDetail.orderDate)
                 orderDetail.orderSectionType = orderSectionType
                 orderDetail.uploadRetryCount = 0
-                orderDetail.sessionID = sessionId
+                orderDetail.sessionID = self.sessionId
             }
             CoreDataManager.shared.insertOrderDetails(orderDetails: orderDetails) { status in
                 DispatchQueue.main.async {
@@ -836,7 +836,6 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     private func getscrapingSessionStatus(listingOrderCount: Int) -> String? {
         if fetchRequestSource == .online && isNewSession {
             if listingOrderCount == 0 {
-                self.sessionId = UUID().uuidString
                 self.scrapingSessionEndedAt = DateUtils.getSessionTimer()
                 return OrderStatus.Completed.rawValue
             } else {
