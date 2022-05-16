@@ -33,6 +33,7 @@ class BSScrapper: NSObject, TimerCallbacks, ScraperProgressListener {
     var bsHtmlScrapper: BSHtmlScrapper! = nil
     var scraperParams: BSHtmlScrapperParams! = nil
     var getScrapeSessionTimer: String? = nil
+    var scrapingSessionEndedAt: String? = nil
     
     private func getBSHtmlScrapper () -> BSHtmlScrapper {
         if bsHtmlScrapper == nil {
@@ -834,6 +835,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     private func getscrapingSessionStatus(listingOrderCount: Int) -> String? {
         if fetchRequestSource == .online && isNewSession {
             if listingOrderCount == 0 {
+                self.scrapingSessionEndedAt = DateUtils.getSessionTimer()
                 return OrderStatus.Completed.rawValue
             } else {
                 return OrderStatus.InProgress.rawValue
@@ -845,7 +847,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     
     private func uploadOrderHistory(listingScrapeTime: Int64, listingOrderCount: Int, status: String) {
         if let fromDate = self.dateRange?.fromDate, let toDate = self.dateRange?.toDate, let userID = self.account?.userID {
-            let orderRequest = OrderRequest(panelistId: self.panelistID, platformId: userID, fromDate: fromDate, toDate: toDate, status: status, data: [], listingScrapeTime: listingScrapeTime, listingOrderCount: listingOrderCount, scrapingSessionContext: getScrapingMode(), scrapingSessionStatus: getscrapingSessionStatus(listingOrderCount: listingOrderCount), scrapingSessionStartedAt: getScrapeSessionTimer,scrapingSessionEndedAt: DateUtils.getSessionTimer(),sessionId: UUID().uuidString)
+            let orderRequest = OrderRequest(panelistId: self.panelistID, platformId: userID, fromDate: fromDate, toDate: toDate, status: status, data: [], listingScrapeTime: listingScrapeTime, listingOrderCount: listingOrderCount, scrapingSessionContext: getScrapingMode(), scrapingSessionStatus: getscrapingSessionStatus(listingOrderCount: listingOrderCount), scrapingSessionStartedAt: getScrapeSessionTimer,scrapingSessionEndedAt: self.scrapingSessionEndedAt,sessionId: UUID().uuidString)
             _ = AmazonService.uploadOrderHistory(orderRequest: orderRequest, orderSource: self.orderSource.value) { response, error in
                 DispatchQueue.global().async {
                     var logEventAttributes:[String:String] = [:]

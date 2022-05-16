@@ -376,6 +376,10 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
                             } else {
                                 error = Strings.ErrorOrderExtractionFailed
                             }
+                            let errorMessage = ASLException(errorMessage: error, errorType: .none )
+                            if let scrappingMode = self.scrappingMode {
+                                logPushEvent(error: errorMessage,scrappingMode:scrappingMode.rawValue)
+                            }
                             var logEventAttributes:[String:String] = [:]
                             logEventAttributes = [EventConstant.OrderSource: orderDetail.orderSource ?? "",
                                                   EventConstant.PanelistID: orderDetail.panelistID ?? "",
