@@ -151,7 +151,7 @@ class DataUploadOperation: Operation {
     }
     
     private func logPushEvent(message: String){
-        let eventLogs = EventLogs(panelistId: self.panelistId ?? "", platformId: self.userId ?? "", section: SectionType.orderUpload.rawValue , type: FailureTypes.orderUploadApiFailure.rawValue, status: EventState.fail.rawValue, message: message, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrapingType: ScrappingType.html.rawValue, scrapingContext: self.scrapingContext,url: "")
+        let eventLogs = EventLogs(panelistId: self.panelistId ?? "", platformId: self.userId ?? "", section: SectionType.orderUpload.rawValue , type: FailureTypes.orderUploadApiFailure.rawValue, status: EventState.fail.rawValue, message: message, fromDate: self.dateRange?.fromDate ?? "", toDate: self.dateRange?.toDate ?? "", scrapingType: ScrappingType.html.rawValue, scrapingContext: self.scrapingContext,url: "")
         _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.orderSource ?? "") {
             response, error in}
     }

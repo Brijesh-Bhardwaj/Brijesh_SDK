@@ -474,7 +474,7 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
     }
     
     private func logPushEvent(error: ASLException,scrappingMode:String){
-        let eventLogs = EventLogs(panelistId: orderDetail.panelistID ?? "", platformId: orderDetail.userID ?? "", section: SectionType.orderUpload.rawValue , type: error.errorEventLog!.rawValue, status: EventState.fail.rawValue, message: error.errorMessage, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrapingType: error.errorScrappingType?.rawValue, scrapingContext: scrappingMode,url: self.params.webClient.url?.absoluteString)
+        let eventLogs = EventLogs(panelistId: orderDetail.panelistID ?? "", platformId: orderDetail.userID ?? "", section: SectionType.orderUpload.rawValue , type: FailureTypes.orderUpload.rawValue, status: EventState.fail.rawValue, message: error.errorMessage, fromDate: self.dateRange?.fromDate ?? "", toDate: self.dateRange?.toDate ?? "", scrapingType: ScrappingType.html.rawValue, scrapingContext: scrappingMode,url: self.params.webClient.url?.absoluteString)
         _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: orderDetail.orderSource ?? "") { response, error in}
     }
     

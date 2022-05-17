@@ -557,6 +557,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                         if self.fetchRequestSource == .online || self.fetchRequestSource == .manual {
                             let dbOrderDetails = self.getOrderDetails()
                             if dbOrderDetails.count > 0 {
+                                self.uploadOrderHistory(listingScrapeTime: listingScrapeTime, listingOrderCount: 0, status: OrderStatus.InProgress.rawValue)
                                 updateProgressValue(progressValue: 50)
                                 self.uploadPreviousOrders()
                             } else {
@@ -613,7 +614,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     func onHtmlScrappingFailure(error: ASLException) {
         self.stopScrapping()
         let userId = account!.userID
-        let eventLogs = EventLogs(panelistId: self.panelistID, platformId: userId, section: getSectionType() , type: error.errorEventLog!.rawValue, status: EventState.fail.rawValue, message: error.errorMessage, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrapingType: error.errorScrappingType?.rawValue, scrapingContext: getScrappingContext(),url: webClient.url?.absoluteString)
+        let eventLogs = EventLogs(panelistId: self.panelistID, platformId: userId, section: getSectionType() , type: error.errorEventLog!.rawValue, status: EventState.fail.rawValue, message: error.errorMessage, fromDate: self.dateRange?.fromDate ?? "", toDate: self.dateRange?.toDate ?? "", scrapingType: error.errorScrappingType?.rawValue, scrapingContext: getScrappingContext(),url: webClient.url?.absoluteString)
         _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.orderSource.value) { response, error in
             self.sendServicesDownCallback(error: error)
         }
@@ -774,7 +775,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     }
     
     private func logEvent(status: String,message:String) {
-        let eventLogs = EventLogs(panelistId: self.panelistID, platformId: self.account!.userID, section: getSectionType() , type: FailureTypes.none.rawValue, status: status, message: message, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrapingType: ScrappingType.html.rawValue, scrapingContext: self.getScrappingContext(),url: webClient.url?.absoluteString)
+        let eventLogs = EventLogs(panelistId: self.panelistID, platformId: self.account!.userID, section: getSectionType() , type: FailureTypes.none.rawValue, status: status, message: message, fromDate: self.dateRange?.fromDate ?? "", toDate: self.dateRange?.toDate ?? "", scrapingType: ScrappingType.html.rawValue, scrapingContext: self.getScrappingContext(),url: webClient.url?.absoluteString)
         _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.orderSource.value) { response, error in
             self.sendServicesDownCallback(error: error)
         }
@@ -876,7 +877,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     }
     
     private func logPushEvent(message:String){
-        let eventLogs = EventLogs(panelistId: self.panelistID , platformId: account?.userID ?? "", section: SectionType.orderUpload.rawValue , type: FailureTypes.none.rawValue, status: EventState.fail.rawValue, message: message, fromDate: self.dateRange?.fromDate!, toDate: self.dateRange?.toDate!, scrapingType: ScrappingType.html.rawValue, scrapingContext: getScrapingMode(),url: "")
+        let eventLogs = EventLogs(panelistId: self.panelistID , platformId: account?.userID ?? "", section: SectionType.orderUpload.rawValue , type: FailureTypes.none.rawValue, status: EventState.fail.rawValue, message: message, fromDate: self.dateRange?.fromDate ?? "", toDate: self.dateRange?.toDate ?? "", scrapingType: ScrappingType.html.rawValue, scrapingContext: getScrapingMode(),url: "")
         _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.orderSource.value ) { response, error in}
     }
     
