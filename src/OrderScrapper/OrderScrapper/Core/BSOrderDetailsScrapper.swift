@@ -126,9 +126,9 @@ class BSOrderDetailsScrapper {
     
     private func uploadScrapeData(data: [Dictionary<String, Any>]) {
         if !queue.isEmpty() {
-            print("$$$$ scrapeQueue",OrderState.Inprogress.rawValue)
+            print("$$$$ scrapeQueue",OrderState.InProgress.rawValue)
             if let orderDetail = orderDetail {
-                self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue, scrapingContext: self.scrappingMode!.rawValue, scrapingSessionStatus: self.getScrapingSessionStatus(), scrapingSessionStartedAt: self.scrapingSessionStartedAt,scrapingSessionEndeddAt: nil)
+                self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.InProgress.rawValue, scrapingContext: self.scrappingMode!.rawValue, scrapingSessionStatus: self.getScrapingSessionStatus(), scrapingSessionStartedAt: self.scrapingSessionStartedAt,scrapingSessionEndeddAt: nil)
             }
         } else {
             self.getOrdersDetailsCountOnConnection { [weak self] orderDetailsUploadCount in
@@ -141,8 +141,8 @@ class BSOrderDetailsScrapper {
                     }
                 } else {
                     if let orderDetail = self.orderDetail {
-                        print("$$$$ scrapeQueue",OrderState.Inprogress.rawValue)
-                        self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.Inprogress.rawValue, scrapingContext: self.scrappingMode!.rawValue, scrapingSessionStatus: self.getScrapingSessionStatus(), scrapingSessionStartedAt: self.scrapingSessionStartedAt,scrapingSessionEndeddAt: self.getScrapingEndSessionTimer())
+                        print("$$$$ scrapeQueue",OrderState.InProgress.rawValue)
+                        self.dataUploader.addData(data: data, orderDetail: orderDetail, orderState: OrderState.InProgress.rawValue, scrapingContext: self.scrappingMode!.rawValue, scrapingSessionStatus: self.getScrapingSessionStatus(), scrapingSessionStartedAt: self.scrapingSessionStartedAt,scrapingSessionEndeddAt: self.getScrapingEndSessionTimer())
                     }
                 }
             }
@@ -326,6 +326,7 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
     }
     
     func onHtmlScrappingSucess(response: String) {
+        LibContext.shared.timeoutType = TimeoutTypes.timeoutOrderDetail.rawValue
         let jsonData = response.data(using: .utf8)!
         let object = try? JSONSerialization.jsonObject(with: jsonData, options: [])
         
@@ -448,6 +449,7 @@ extension BSOrderDetailsScrapper: BSHtmlScrappingStatusListener {
     
     func onHtmlScrappingFailure(error: ASLException) {
         print("### onHtmlScrappingFailure ")
+        LibContext.shared.timeoutType = TimeoutTypes.timeoutOrderDetail.rawValue
         if error.errorType == .multiAuthError {
             WebCacheCleaner.clear(completionHandler: nil)
             self.params.listener.onHtmlScrappingFailure(error: error)

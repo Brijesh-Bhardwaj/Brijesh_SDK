@@ -508,6 +508,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     
     func onHtmlScrappingSucess(response: String) {
         do {
+            LibContext.shared.timeoutType = TimeoutTypes.timeoutOrderList.rawValue
             let jsonData = response.data(using: .utf8)!
             let scrapeResponse = try JSONDecoder().decode(JSCallback<[OrderDetails]>.self, from: jsonData)
             print("#### onHtmlScrappingSucess BSCrapper ", response)
@@ -612,6 +613,7 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
     }
     
     func onHtmlScrappingFailure(error: ASLException) {
+        LibContext.shared.timeoutType = TimeoutTypes.timeoutOrderList.rawValue
         self.stopScrapping()
         let userId = account!.userID
         let eventLogs = EventLogs(panelistId: self.panelistID, platformId: userId, section: getSectionType() , type: error.errorEventLog!.rawValue, status: EventState.fail.rawValue, message: error.errorMessage, fromDate: self.dateRange?.fromDate ?? "", toDate: self.dateRange?.toDate ?? "", scrapingType: error.errorScrappingType?.rawValue, scrapingContext: getScrappingContext(),url: webClient.url?.absoluteString)

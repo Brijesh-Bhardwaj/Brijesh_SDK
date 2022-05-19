@@ -6,6 +6,6 @@
 import Foundation
 
 enum OrderState: String {
-    case Inprogress
+    case InProgress
     case Completed
 }
