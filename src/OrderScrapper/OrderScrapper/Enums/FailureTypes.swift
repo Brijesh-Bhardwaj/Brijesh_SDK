@@ -17,4 +17,5 @@ public enum FailureTypes: String {
     case servicesDown
     case orderUploadApiFailure
     case orderUpload
+    case jsDetailFail
 }

@@ -24,7 +24,7 @@ struct OrderRequest {
     let sessionId: String?
     
     func toDictionary() -> [String: Any] {
-        return [OrderJsonKey.panelistId.rawValue: panelistId.lowercased(), OrderJsonKey.platformId.rawValue: platformId.lowercased(), OrderJsonKey.toDate.rawValue: toDate, OrderJsonKey.fromDate.rawValue: fromDate, OrderJsonKey.data.rawValue: data, OrderJsonKey.status.rawValue: status, OrderJsonKey.listingScrapeTime.rawValue: listingScrapeTime, OrderJsonKey.listingOrderCount.rawValue: listingOrderCount, OrderJsonKey.scrapingSessionStatus.rawValue: scrapingSessionStatus,OrderJsonKey.scrapingSessionContext.rawValue: scrapingSessionContext,
+        return [OrderJsonKey.panelistId.rawValue: panelistId.lowercased(), OrderJsonKey.platformId.rawValue: platformId.lowercased(), OrderJsonKey.toDate.rawValue: toDate, OrderJsonKey.fromDate.rawValue: fromDate, OrderJsonKey.data.rawValue: data, OrderJsonKey.status.rawValue: status, OrderJsonKey.listingScrapeTime.rawValue: listingScrapeTime, OrderJsonKey.listingOrderCount.rawValue: listingOrderCount, OrderJsonKey.scrapingSessionStatus.rawValue: scrapingSessionStatus,OrderJsonKey.scrapingSessionContext.rawValue: scrapingSessionContext?.lowercased(),
             OrderJsonKey.scrapingSessionStartedAt.rawValue: scrapingSessionStartedAt,OrderJsonKey.scrapingSessionEndedAt.rawValue: scrapingSessionEndedAt,OrderJsonKey.sessionId.rawValue: sessionId]
     }
 }

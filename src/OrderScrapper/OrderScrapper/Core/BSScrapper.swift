@@ -491,12 +491,16 @@ extension BSScrapper: BSHtmlScrappingStatusListener {
                     listener.updateProgressStep(htmlScrappingStep: .complete)
                     FirebaseAnalyticsUtil.logEvent(eventType: EventType.StepComplete, eventAttributes: logEventAttributes)
                 }
-                self.logEvent(status: EventState.success.rawValue,message:AppConstants.ScrappingCompleted)
+                DispatchQueue.main.async {
+                    self.logEvent(status: EventState.success.rawValue,message:AppConstants.ScrappingCompleted)
+                }
                 self.completionHandler((true, .fetchCompleted), nil)
                 logEventAttributes[EventConstant.Status] = EventStatus.Success
                 FirebaseAnalyticsUtil.logEvent(eventType: EventType.BgAPIUploadOrderDetails, eventAttributes: logEventAttributes)
             } else {
-                self.logEvent(status: EventState.fail.rawValue,message: Strings.ErrorOrderExtractionFailed)
+                DispatchQueue.main.async {
+                    self.logEvent(status: EventState.fail.rawValue,message: Strings.ErrorOrderExtractionFailed)
+                }
                 self.completionHandler((false, nil), error!)
                 logEventAttributes[EventConstant.Status] = EventStatus.Failure
                 logEventAttributes[EventConstant.Reason] = Strings.ErrorOrderExtractionFailed

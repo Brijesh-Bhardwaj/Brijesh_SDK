@@ -109,8 +109,8 @@ class AmazonOrderScrapper {
                     AmazonService.cancelAPI()
                     CoreDataManager.shared.deleteAccounts(userId: account.userID, panelistId: panelistId, orderSource: account.source.rawValue)
                     CoreDataManager.shared.deleteOrderDetails(userID: account.userID, panelistID: panelistId, orderSource: source.value)
-                    WebCacheCleaner.clear(completionHandler: nil)
                     DispatchQueue.main.async {
+                        WebCacheCleaner.clear(completionHandler: nil)
                         if let accountDisconnectListener = self.disconnectOperation[source] {
                             accountDisconnectListener.onAccountDisconnected(account: account)
                             self.disconnectOperation.removeValue(forKey: source)

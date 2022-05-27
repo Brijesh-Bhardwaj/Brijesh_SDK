@@ -34,8 +34,8 @@ class ConnectInstacartAccountVC: BaseAccountConnectVC {
         self.shouldAllowBack = false
         self.baseAuthenticator?.authenticationDelegate = self
         self.publishProgress(step: .authentication)
-        webClient.isHidden = true
-        self.view.bringSubviewToFront(self.webClient)
+//        webClient.isHidden = true
+//        self.view.bringSubviewToFront(self.webClient)
         if self.fetchRequestSource == .manual {
             self.connectAccountView?.hideCancelScrapeBtn = false
         }
@@ -485,6 +485,7 @@ extension ConnectInstacartAccountVC: BSAuthenticaorDelegate {
     func didReceiveLoginChallenge(error: String) {
         let userId = self.account.userID
         let isError: (Bool, String) = (true,error)
+        self.webClient.stopLoading()
         LibContext.shared.webAuthErrorPublisher.send((isError.0, isError.1))
         WebCacheCleaner.clear(completionHandler: nil)
         self.dismiss(animated: true, completion: nil)
