@@ -1,1 +1,1 @@
-- RPA-863 phase-2 changes completed
+- RPA-1517 Added fix for the CSV scraping changes in amazon
