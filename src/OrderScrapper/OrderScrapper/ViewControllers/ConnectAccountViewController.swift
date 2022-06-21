@@ -601,7 +601,10 @@ class ConnectAccountViewController: UIViewController, ScraperProgressListener, T
             action == Actions.DownloadReportJSInjection ||
             action == Actions.ReportGenerationJSCallback ||
             action == Actions.ForegroundHtmlScrapping ||
-            action == Actions.ForegroundCSVScrapping {
+            action == Actions.ForegroundCSVScrapping ||
+            action == Actions.ForegroundCSVScrappingBegin {
+            
+            
             
             self.isFailureButAccountConnected = true
             

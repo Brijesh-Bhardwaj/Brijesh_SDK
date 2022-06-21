@@ -105,6 +105,7 @@ struct AppConstants {
     static let getOldestPossibleYear = "getOldestPossibleYear"
     static let checkIfSignInErrorAmazon = "checkIfSignInError"
     static let getSignInPromptTypeAmazon = "getSignInPromptType"
+    static let isReportReady = "isReportReady"
     // Walmart script keys
     static let getWalmartVerifyIdentityJS = "getWalmartVerifyIdentityJS"
     static let getWalmartCheckErrorJS = "getWalmartCheckErrorJS"
