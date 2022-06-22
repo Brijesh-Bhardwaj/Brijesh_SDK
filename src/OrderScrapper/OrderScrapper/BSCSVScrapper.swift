@@ -197,11 +197,11 @@ class BSCSVScrapper: NSObject {
             }
         } else if (urlString.contains(AmazonURL.reportSuccess)) {
             //No handling required
-        } else if (urlString.contains(AmazonURL.generateReport)) {
+        } else if (urlString.contains(AmazonURL.generateReport) || urlString.contains(AmazonURL.generatereportURL)) {
             FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_CSVScrapper_generate_report_url \(urlString)")
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
                 guard let self = self else {return}
-                self.evaluateJS(jsType: .dateRange, javascript: self.getOldestPossibleYear())
+                self.checkCurrentReportPage(key: AppConstants.isReportReady)
             }
         } else {
             if scrapingMode == .Background {
@@ -271,8 +271,9 @@ class BSCSVScrapper: NSObject {
         self.getScript(orderSource: .Amazon, scriptKey: AppConstants.getGenerateReportScript) { script in
             if !script.isEmpty {
                 if let reportConfig = self.reportConfig {
-                    let amazonReportType = script.replacingOccurrences(of: "$AppConstants.amazonReportTypeE$", with: AppConstants.amazonReportType).replacingOccurrences(of: "$reportConfig.startMonth$", with: reportConfig.startMonth).replacingOccurrences(of: "$reportConfig.startDate$", with: reportConfig.startDate).replacingOccurrences(of: "$reportConfig.startYear$", with: reportConfig.startYear).replacingOccurrences(of: "$reportConfig.endMonth$", with: reportConfig.endMonth).replacingOccurrences(of: "$reportConfig.endDate$", with: reportConfig.endDate).replacingOccurrences(of: "$reportConfig.endYear$", with: reportConfig.endYear)
-                    self.evaluateJS(jsType: .generateReport, javascript: amazonReportType)
+                    let script = script.replacingOccurrences(of: "$ generateReport.startMonth $", with: reportConfig.startMonth).replacingOccurrences(of: "$ generateReport.startDay $", with: reportConfig.startDate).replacingOccurrences(of: "$ generateReport.startYear $", with: reportConfig.startYear).replacingOccurrences(of: "$ generateReport.endMonth $", with: reportConfig.endMonth).replacingOccurrences(of: "$ generateReport.endDay $", with: reportConfig.endDate).replacingOccurrences(of: "$ generateReport.endYear $", with: reportConfig.endYear)
+                    print(script)
+                    self.evaluateJS(jsType: .generateReport, javascript: script)
                 }
             } else {
                 if self.scrapingMode == .Background {
@@ -622,6 +623,31 @@ class BSCSVScrapper: NSObject {
     private func getScript(orderSource: OrderSource, scriptKey: String, completionHandler: @escaping (String) -> Void) {
         BSScriptFileManager.shared.getAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
            completionHandler(script)
+        }
+    }
+    
+    private func checkCurrentReportPage(key: String) {
+        self.getScript(orderSource: .Amazon, scriptKey: key) { script in
+            if !script.isEmpty {
+                self.webView.evaluateJavaScript(script) { response, error in
+                    if let response = response as? String {
+                        if response == "true" {
+                            //self.injectDownloadReportJS()
+                        } else {
+                            self.evaluateJS(jsType: .dateRange, javascript: self.getOldestPossibleYear())
+                        }
+                    }
+                }
+            } else {
+                if self.scrapingMode == .Background {
+                    let errorMessage = ASLException(errorMessages: Strings.ErrorScriptNotFound + "checkCurrentReportPage for amazon", errorTypes: .authChallenge, errorEventLog: .authentication, errorScrappingType: ScrappingType.html)
+                    self.bsScrapper!.onAuthenticationFailure(error: errorMessage, orderSource: self.account.source)
+                } else {
+                    self.logEvents(message: Strings.ErrorScriptNotFound + "checkCurrentReportPage for amazon", section: SectionType.connection.rawValue, status: EventState.fail.rawValue, type: FailureTypes.other.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue)
+                    let error = ASLException(errorMessage: Strings.ErrorScriptNotFound + "checkCurrentReportPage for amazon", errorType: .authError)
+                    FirebaseAnalyticsUtil.logSentryError(error: error)
+                }
+            }
         }
     }
 }

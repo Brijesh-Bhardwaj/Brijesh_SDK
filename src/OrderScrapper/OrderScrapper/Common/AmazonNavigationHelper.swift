@@ -19,6 +19,7 @@ struct AmazonURL {
     static let resetPassword    =   "ap/forgotpassword/reverification"
     static let reportSuccess    =   "gp/b2b/reports?"
     static let orderHistory     =   "/gp/your-account/order-history"
+    static let generatereportURL =  "/b2b/reports"
 }
 
 public enum Step: Int16 {
@@ -126,7 +127,7 @@ class AmazonNavigationHelper: NavigationHelper {
             
             let eventLogs = EventLogs(panelistId: self.viewModel.userAccount.panelistID, platformId:self.viewModel.userAccount.userID, section: SectionType.connection.rawValue, type: FailureTypes.other.rawValue, status: EventState.success.rawValue, message: "Authentication challenge", fromDate: nil, toDate: nil, scrapingType: nil, scrapingContext: ScrapingMode.Foreground.rawValue,url: urlString)
             logEvents(logEvents: eventLogs)
-        } else if (urlString.contains(AmazonURL.generateReport)) {
+        } else if (urlString.contains(AmazonURL.generatereportURL) || urlString.contains(AmazonURL.generateReport)) {
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
                 guard let self = self else {return}
                 
@@ -248,6 +249,7 @@ class AmazonNavigationHelper: NavigationHelper {
             || urlString.contains(AmazonURL.generateReport)
             || urlString.contains(AmazonURL.resetPassword)
             || urlString.contains(AmazonURL.reportSuccess)
+            || urlString.contains(AmazonURL.generatereportURL)
         
         // Always hide for known URLs
         if knownURLs {
@@ -347,6 +349,7 @@ class AmazonNavigationHelper: NavigationHelper {
                             }
                        
                         } else {
+                            self.timerHandler.startTimer(action: Actions.ForegroundCSVScrappingBegin)
                             self.scrapeReport(response: response)
                         }
                     } else {

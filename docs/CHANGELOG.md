@@ -10,6 +10,11 @@ All notable changes to OrderScrapper iOS project will be documented in this file
   - Changed : This section to enlist the changes to existing implementations
   - Notes : Any extra notes/remarks for the release
 
+
+## [2.1.0] - 2022-06-21
+ ### Added
+ - RPA-1517  Added fix for the CSV scraping changes in amazon
+ 
 ## [2.0.9] - 2022-04-26
  ### Added
  - RPA-863 phase-2 changes completed

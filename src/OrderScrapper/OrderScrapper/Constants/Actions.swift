@@ -14,4 +14,5 @@ struct Actions {
     static let WalmartOrderListPageLoading = "walmart_order_list_page_loading"
     static let ForegroundHtmlScrapping = "foreground_html_scrapping"
     static let ForegroundCSVScrapping = "foreground_csv_scrapping"
+    static let ForegroundCSVScrappingBegin = "foreground_csv_scrapping_started"
 }

@@ -6,6 +6,82 @@ import Foundation
 
 class JSUtils {
     
+    static func newScript() -> String {
+        return "(async function () { " +
+        "const monthNames = [\"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\", \"August\", \"September\", \"October\", \"November\", \"December\"]; " +
+        "const delay = function (ms) { " +
+            "return new Promise(resolve => setTimeout(() => resolve(), ms));" +
+        "}; " +
+        "var startBreak = false;" +
+
+        // Set Start Date
+        "document.querySelector('#startDateCalendar input').click();" +
+        "startDay = \"$ generateReport.startDay $\";" +
+        "startDay = startDay.replace(/^0+/, '');" +
+        "startMonth = \"$ generateReport.startMonth $\";" +
+        "startMonth = startMonth.replace(/^0+/, '');" +
+        "startYear = \"$ generateReport.startYear $\"; " +
+
+        // Set End Date
+        "endDay = \"$ generateReport.endDay $\";" +
+        "endDay = endDay.replace(/^0+/, '');" +
+        "endMonth = \"$ generateReport.endMonth $\";" +
+       " endMonth = endMonth.replace(/^0+/, '');" +
+        "endYear = \"$ generateReport.endYear $\";" +
+
+        "while (document.querySelectorAll('#a-popover-content-1 a')[0].classList.toString().indexOf('a-cal-paginate-prev') > -1) { " +
+            "if (document.querySelector('.a-cal-month-header').textContent.trim() == monthNames[startMonth - 1] + ' ' + startYear) {" +
+               " startBreak = true;" +
+               " break;" +
+            "}" +
+            "if(!startBreak) {" +
+                "document.querySelectorAll('#a-popover-content-1 a')[0].click();" +
+            "}" +
+            "await delay(50);" +
+        "}" +
+        "var dateBox = Array.from(document.querySelectorAll('#a-popover-content-1 a')).filter(function (v) { return v.textContent.trim() == startDay });" +
+        "if (dateBox.length) {" +
+            "dateBox[0].click();" +
+       " }" +
+        // Set End Date
+       " document.querySelector('#report-useToday').click();" +
+        "await delay(200);" +
+        "document.getElementById('report-confirm').click();" +
+   " })();"
+    }
+    
+    static func checkPage() -> String{
+        return "(function () { " +
+        "var isRequesSt = Array.from(document.querySelectorAll('.a-box-inner')).filter(v => v.textContent.trim() === 'Request Status'); " +
+        "return isRequesSt.length || document.querySelector('#form-submission-succeeded') ? 'true' : 'false';" +
+    "})();"
+    }
+    
+    static func  getOldestPossibleYear() -> String {
+        return "(function() { return \"2005\" })()"
+    }
+   
+    
+    static func downloadScript() -> String {
+        return "(async function () { " +
+        "const delay = function (ms) { " +
+            "return new Promise(resolve => setTimeout(() => resolve(), ms));" +
+        "}; " +
+       " await delay(100);" +
+        "var reportTable = document.querySelector('table.a-bordered');" +
+        "var row = reportTable.querySelectorAll('tr')[1];" +
+        "while(!row.querySelector('td[id*=\"download-cell\"] a')) {" +
+            "console.log('Awaiting for completion');" +
+           " await delay(10);" +
+       " }" +
+        "if (row.querySelector('td[id*=\"download-cell\"] a')) {" +
+           " console.log('Download the report');" +
+            "row.querySelector('td[id*=\"download-cell\"] a').click();" +
+        "}" +
+    "})();"
+    }
+    
+  
     static func getAuthErrorVerificationJS() -> String {
         return "(function() { var element = document.getElementById('auth-error-message-box');" +
             "if (element != null && element.innerHTML !== null) " +
