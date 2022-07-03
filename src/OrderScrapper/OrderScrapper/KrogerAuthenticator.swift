@@ -210,7 +210,9 @@ internal class KrogerAuthenticator: BSBaseAuthenticator {
             orderStatus = OrderStatus.None.rawValue
             do {
                 try CoreDataManager.shared.updateUserAccount(userId: userId, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: panelistId, orderSource: account!.source.rawValue)
+
             } catch let error {
+
                 print(AppConstants.tag, "updateAccountWithExceptionState", error.localizedDescription)
             }
         case .ConnectedButScrappingFailed:
@@ -237,6 +239,8 @@ internal class KrogerAuthenticator: BSBaseAuthenticator {
             scraperListener.onServicesDown(error: nil)
         }
     }
+
+    
 }
 
 extension KrogerAuthenticator : ScriptMessageListener {

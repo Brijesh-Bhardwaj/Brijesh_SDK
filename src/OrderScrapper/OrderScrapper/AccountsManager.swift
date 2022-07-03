@@ -139,6 +139,8 @@ class AccountsManager {
                 completionHandler(dictionary)
                 return
             }
+            self.logPushEvent( orderSource: orderSource.value,message: AppConstants.user_account_not_exist)
+
         }
         
         if let account = accountDetails.first, let accountInDb = accountsInDB.first {
@@ -193,6 +195,8 @@ class AccountsManager {
                     completionHandler(dictionary)
                     return
                 }
+                self.logPushEvent( orderSource: orderSource.value,message: AppConstants.user_account_not_exist)
+
             }
         } else {
                 if let account = accountDetails.first, let accountInDb = accountsInDB.first {
@@ -243,14 +247,21 @@ class AccountsManager {
                                 dictionary[orderSource.value] = accountInfo
                             }
                         }
+                self.logPushEvent( orderSource: orderSource.value,message: AppConstants.user_account_not_exist)
+
                     }
                 } else {
                     let accountInfo = AccountInfo(accounts: accountsInDB, hasNeverConnected: hasNeverConnected)
                     dictionary[orderSource.value] = accountInfo
                 }
+            
+            
                 completionHandler(dictionary)
                 return
             }
+
+        
+
     }
     
     func getAccountsForOrderSource(listOfAccounts: [GetAccountsResponse], orderSource: OrderSource) -> GetAccountsResponse? {
@@ -282,6 +293,11 @@ class AccountsManager {
             accounts[0].accountState = .ConnectedButScrappingFailed
         }
         return accounts
+    }
+    private func logPushEvent( orderSource:String ,message:String){
+
+        let eventLogs = EventLogs(panelistId: LibContext.shared.authProvider.getPanelistID(), platformId:nil, section: SectionType.orderUpload.rawValue, type: FailureTypes.none.rawValue, status: EventState.Info.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue,url:nil)
+        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: orderSource ) { response, error in}
     }
 }
 

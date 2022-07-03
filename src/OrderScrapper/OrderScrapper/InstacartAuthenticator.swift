@@ -10,7 +10,8 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
     private let URLDelimiter = "/store"
     var isAuthenticated: Bool = false
     var isNetworkDisconnect = false
-    
+    var scriptDataAv = true
+    var count = 0
     override func onPageFinish(url: String) throws {
         print("####",url)
         if let configurations = configurations {
@@ -141,7 +142,7 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
         
         logEventAttributes[EventConstant.Status] = EventStatus.Success
         FirebaseAnalyticsUtil.logEvent(eventType: EventType.JSDetectSignIn, eventAttributes: logEventAttributes)
-        
+        self.isAuthenticated = true
         self.getScript(orderSource: .Instacart, scriptKey: AppConstants.getInstcartinjectLoginJS) { script in
             if !script.isEmpty {
                 let passwordJS = script.replacingOccurrences(of: "$email$", with: email)
@@ -373,7 +374,10 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
             } catch let error {
                 print(AppConstants.tag, "updateAccountWithExceptionState", error.localizedDescription)
                 FirebaseAnalyticsUtil.logSentryError(error: error)
+                logPushEvent( message: AppConstants.Failure_in_db_insertion)
+
             }
+            logPushEvent( message: AppConstants.authFail)
         case .ConnectedButScrappingFailed:
             status = AccountState.ConnectedButException.rawValue
             orderStatus = OrderStatus.Failed.rawValue
@@ -410,12 +414,32 @@ internal class InstacartAuthenticator: BSBaseAuthenticator {
             scraperListener.onServicesDown(error: nil)
         }
     }
-    
     private func getScript(orderSource: OrderSource, scriptKey: String, completionHandler: @escaping(String) -> Void) {
-        BSScriptFileManager.shared.getAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
-           completionHandler(script)
-        }
+            BSScriptFileManager.shared.getAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
+//                var scriptData = script
+//                            if scriptKey == AppConstants.getInstcartinjectLoginJS {
+//                                if self.count == 0 {
+//                                    scriptData = ""
+//                                    self.count += 1
+//                                }
+//                            }
+                if !script.isEmpty {
+                    completionHandler(script)
+                } else {
+                    BSScriptFileManager.shared.getNewAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
+                        print("!!!! Script found",script)
+                        completionHandler(script)
+                    }
+                }
+            }
     }
+    
+    private func logPushEvent(message:String){
+        let orderSource = account!.source.value
+        let eventLogs = EventLogs(panelistId: LibContext.shared.authProvider.getPanelistID(), platformId:nil, section: SectionType.orderUpload.rawValue, type: FailureTypes.none.rawValue, status: EventState.Info.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue,url:webClient.url?.absoluteString)
+        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: orderSource) { response, error in}
+    }
+    
 }
 
 extension InstacartAuthenticator: ScriptMessageListener {
@@ -465,4 +489,5 @@ extension InstacartAuthenticator: ScriptMessageListener {
             }
         }
     }
+
 }

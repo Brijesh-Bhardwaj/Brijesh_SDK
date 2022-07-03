@@ -152,11 +152,19 @@ class BSWalmartAuthenticator: BSBaseAuthenticator {
             }
         }
     }
-    
-    private func getScript(orderSource: OrderSource, scriptKey: String, completionHandler: @escaping (String) -> Void) {
-        BSScriptFileManager.shared.getAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
-            completionHandler(script)
-        }
+
+    private func getScript(orderSource: OrderSource, scriptKey: String, completionHandler: @escaping(String) -> Void) {
+            BSScriptFileManager.shared.getAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
+                if !script.isEmpty {
+                    print("!!!! Script found on first",script)
+                    completionHandler(script)
+                } else {
+                    BSScriptFileManager.shared.getNewAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
+                        print("!!!! Script found",script)
+                        completionHandler(script)
+                    }
+                }
+            }
     }
 }
 

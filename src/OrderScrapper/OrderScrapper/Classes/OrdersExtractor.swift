@@ -59,7 +59,7 @@ public class OrdersExtractor {
         //get Scrapper config details
         ConfigManager.shared.loadConfigs(orderSources: [.Amazon,.Instacart,.Kroger,.Walmart]) { scrapeConfigs, error in
             if let scrapeConfigs = scrapeConfigs {
-                FirebaseAnalyticsUtil.initSentrySDK(scrapeConfigs: scrapeConfigs)
+               // FirebaseAnalyticsUtil.initSentrySDK(scrapeConfigs: scrapeConfigs)
                 FirebaseAnalyticsUtil.logSentryMessage(message: "Blackstraw_init_library")
             }
         }

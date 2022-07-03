@@ -93,7 +93,10 @@ class AccountsViewController: UIViewController, UNUserNotificationCenterDelegate
             self.disconnectButton.setTitle("Disconnect", for: .normal)
             self.actionButton.isHidden = false
         }
+        
     }
+    
+    
     
     private func showViewForNoAccount() {
         hideAccountView(hide: true)

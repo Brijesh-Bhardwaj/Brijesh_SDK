@@ -13,7 +13,6 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
     var timer: Timer? = nil
     var retryCount = 0
     var pageLoadRetryCount = 0
-    
     override func onPageFinish(url: String) throws {
         print("#### walmart",url)
         if let configurations = configurations {
@@ -161,12 +160,14 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
         }
         self.getScript(orderSource: .Walmart, scriptKey: AppConstants.getWalmartIdentificationJS) { script in
             if !script.isEmpty {
-                let passwordJS = script.replacingOccurrences(of: "$email$", with: email)
+            let passwordJS = script.replacingOccurrences(of: "$email$", with: email)
                 let signInJS = passwordJS.replacingOccurrences(of: "$password$", with: password)
                 self.evaluateJS(javascript: signInJS) { response, error in
                     print("$$$$$ getIdentificationJS",response)
                 }
-            } else {
+            }
+            
+            else {
                 self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorScriptNotFound + "getIdentificationJS for walmart", errorType: .authError))
             }
         }
@@ -200,7 +201,8 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
                         self.completionHandler?(false,ASLException(errorMessage: Strings.ErrorInInjectingScript, errorType: .authError))
                     }
                 }
-            } else {
+                            }
+            else {
                 self.completionHandler?(false, ASLException(errorMessage: Strings.ErrorScriptNotFound + "checkError for walmart", errorType: .authError))
             }
         }
@@ -266,9 +268,13 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
             do {
                 try CoreDataManager.shared.updateUserAccount(userId: userId, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: panelistId, orderSource: orderSource.rawValue)
             } catch let error {
+                logPushEvent( message: AppConstants.Failure_in_db_insertion)
+
                 print(AppConstants.tag, "updateAccountWithExceptionState", error.localizedDescription)
                 FirebaseAnalyticsUtil.logSentryError(error: error)
             }
+            logPushEvent( message: AppConstants.authFail)
+
         case .ConnectedButScrappingFailed:
             status = AccountState.ConnectedButException.rawValue
             orderStatus = OrderStatus.Failed.rawValue
@@ -293,12 +299,26 @@ internal class WalmartAuthenticator: BSBaseAuthenticator {
             scraperListener.onServicesDown(error: nil)
         }
     }
-    
-    private func getScript(orderSource: OrderSource, scriptKey: String, completionHandler: @escaping (String) -> Void) {
-        BSScriptFileManager.shared.getAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
-            completionHandler(script)
-        }
+    private func getScript(orderSource: OrderSource, scriptKey: String, completionHandler: @escaping(String) -> Void) {
+            BSScriptFileManager.shared.getAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
+                if !script.isEmpty {
+                    completionHandler(script)
+                } else {
+                    BSScriptFileManager.shared.getNewAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
+                        print("!!!! Script found",script)
+                        completionHandler(script)
+                    }
+                }
+            }
     }
+    
+    private func logPushEvent(message:String){
+        let orderSource = account!.source.value
+
+        let eventLogs = EventLogs(panelistId: LibContext.shared.authProvider.getPanelistID(), platformId:nil, section: SectionType.orderUpload.rawValue, type: FailureTypes.none.rawValue, status: EventState.Info.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue,url: webClient.url?.absoluteString)
+        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: orderSource) { response, error in}
+    }
+    
 }
 
 extension WalmartAuthenticator: ScriptMessageListener {

@@ -132,4 +132,10 @@ struct AppConstants {
     static let transitionForConfiguredDay = " scrapping started for configured day"
     static let transitionForNonConfiguredDay = " scrapping started for non configured day"
     static let currentURLOnScrapping = "Current web page while scrapping"
+    static let currentURLLoading = "Current url on connection"
+    static let authFail = "Error occured while Authentication proccess"
+    static let user_account_not_exist = "user account doesn't exists in the SDK"
+    static let Failure_in_db_insertion = "Failed while inserting account to SDK db"
+
+
 }

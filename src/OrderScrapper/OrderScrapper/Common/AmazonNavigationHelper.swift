@@ -189,10 +189,15 @@ class AmazonNavigationHelper: NavigationHelper {
                     try CoreDataManager.shared.updateUserAccount(userId: self.viewModel.userAccount.userID, accountStatus: AccountState.ConnectedButException.rawValue, panelistId: self.viewModel.userAccount.panelistID, orderSource: self.viewModel.userAccount.source.rawValue)
                 } catch {
                     print("updateAccountWithExceptionState")
+                    self.logPushEvent( message: AppConstants.Failure_in_db_insertion)
+
                 }
+                self.logPushEvent( message: AppConstants.authFail)
             }
             self.viewModel.authError.send((isError: true, errorMsg: AppConstants.msgResetPassword))
             self.timerHandler?.stopTimer()
+            
+
         } else if (urlString.contains(AmazonURL.reportSuccess)) {
             //No handling required
         } else {
@@ -540,5 +545,12 @@ class AmazonNavigationHelper: NavigationHelper {
             }
             completion(timerValue)
         }
+    }
+    
+    
+    
+    private func logPushEvent(message:String){
+        let eventLogs = EventLogs(panelistId:  self.viewModel.userAccount.panelistID, platformId:self.viewModel.userAccount.userID, section: SectionType.orderUpload.rawValue, type: FailureTypes.none.rawValue, status: EventState.Info.rawValue, message: message, fromDate: nil, toDate:nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue,url: webView.url?.absoluteString)
+        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.viewModel.userAccount.source.value) { response, error in}
     }
 }

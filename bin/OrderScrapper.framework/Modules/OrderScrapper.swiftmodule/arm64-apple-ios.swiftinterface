@@ -1,0 +1,307 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.5.2 (swiftlang-1300.0.47.5 clang-1300.0.29.30)
+// swift-module-flags: -target arm64-apple-ios13.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -Onone -module-name OrderScrapper
+import Alamofire
+import CSV
+import Combine
+import CoreData
+import Foundation
+import Network
+@_exported import OrderScrapper
+import RNCryptor
+import Sentry
+import Swift
+import SwiftUI
+import UIKit
+import WebKit
+import _Concurrency
+public enum Step : Swift.Int16 {
+  case authentication
+  case generateReport
+  case downloadReport
+  case parseReport
+  case uploadReport
+  case complete
+  public init?(rawValue: Swift.Int16)
+  public typealias RawValue = Swift.Int16
+  public var rawValue: Swift.Int16 {
+    get
+  }
+}
+public enum OrderSource : Swift.Int16 {
+  case Amazon
+  case Instacart
+  case Kroger
+  case Walmart
+  public init?(rawValue: Swift.Int16)
+  public typealias RawValue = Swift.Int16
+  public var rawValue: Swift.Int16 {
+    get
+  }
+}
+public enum ScriptType : Swift.String {
+  case auth
+  case scrape
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum FailureTypes : Swift.String {
+  case captcha
+  case unknownURL
+  case timeout
+  case other
+  case pageNotLoded
+  case authentication
+  case csvDownload
+  case notify
+  case none
+  case jsFailed
+  case servicesDown
+  case orderUploadApiFailure
+  case orderUpload
+  case jsDetailFail
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum TimeoutTypes : Swift.String {
+  case timeoutAuth
+  case timeoutOrderList
+  case timeoutOrderDetail
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public protocol Account {
+  var userID: Swift.String { get }
+  var accountState: OrderScrapper.AccountState { get set }
+  var userPassword: Swift.String { get }
+  var isFirstConnectedAccount: Swift.Bool { get set }
+  var panelistID: Swift.String { get set }
+  var source: OrderScrapper.OrderSource { get }
+  func connect(orderExtractionListener: OrderScrapper.OrderExtractionListener)
+  func disconnect(accountDisconnectedListener: OrderScrapper.AccountDisconnectedListener)
+  func fetchOrders(orderExtractionListener: OrderScrapper.OrderExtractionListener, source: OrderScrapper.FetchRequestSource) -> OrderScrapper.RetailerScrapingStatus
+}
+extension UIKit.UIColor {
+  public convenience init?(hex: Swift.String)
+}
+public protocol AccountDisconnectedListener {
+  func onAccountDisconnected(account: OrderScrapper.Account)
+  func onAccountDisconnectionFailed(account: OrderScrapper.Account, error: OrderScrapper.ASLException)
+}
+@_hasMissingDesignatedInitializers public class ScrapingAccountInfo : Swift.Equatable {
+  public static func == (lhs: OrderScrapper.ScrapingAccountInfo, rhs: OrderScrapper.ScrapingAccountInfo) -> Swift.Bool
+  @objc deinit
+}
+public enum OrderFetchSuccessType {
+  case fetchCompleted
+  case fetchSkipped
+  case failureButAccountConnected
+  case fetchSkippedByUser
+  public static func == (a: OrderScrapper.OrderFetchSuccessType, b: OrderScrapper.OrderFetchSuccessType) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public protocol AccountReconnectListener {
+  func onAccountReconnectListenerFailuer()
+}
+@_hasMissingDesignatedInitializers public class ASLException : Swift.Error {
+  final public let errorMessage: Swift.String
+  final public let errorType: OrderScrapper.ErrorType?
+  final public let errorEventLog: OrderScrapper.FailureTypes?
+  final public let errorScrappingType: OrderScrapper.ScrappingType?
+  final public let error: Swift.Error?
+  @objc deinit
+}
+public class AccountInfo {
+  public init()
+  public init(accounts: [OrderScrapper.Account]?, hasNeverConnected: Swift.Bool)
+  public var account: [OrderScrapper.Account]?
+  public var hasNeverConnected: Swift.Bool
+  @objc deinit
+}
+public enum ErrorType {
+  case userAborted
+  case authError
+  case authChallenge
+  case multiAuthError
+  public static func == (a: OrderScrapper.ErrorType, b: OrderScrapper.ErrorType) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+@_inheritsConvenienceInitializers @objc(UserAccount) public class UserAccountMO : CoreData.NSManagedObject, OrderScrapper.Account {
+  public var userID: Swift.String {
+    get
+    set(newValue)
+  }
+  public var userPassword: Swift.String {
+    get
+    set(newValue)
+  }
+  public var accountState: OrderScrapper.AccountState {
+    get
+    set(newValue)
+  }
+  public var isFirstConnectedAccount: Swift.Bool {
+    get
+    set(newValue)
+  }
+  public var panelistID: Swift.String {
+    get
+    set(newValue)
+  }
+  public var source: OrderScrapper.OrderSource {
+    get
+  }
+  public func connect(orderExtractionListener: OrderScrapper.OrderExtractionListener)
+  public func disconnect(accountDisconnectedListener: OrderScrapper.AccountDisconnectedListener)
+  public func fetchOrders(orderExtractionListener: OrderScrapper.OrderExtractionListener, source: OrderScrapper.FetchRequestSource) -> OrderScrapper.RetailerScrapingStatus
+  @objc override dynamic public init(entity: CoreData.NSEntityDescription, insertInto context: CoreData.NSManagedObjectContext?)
+  @objc deinit
+}
+public enum FetchRequestSource : Swift.String {
+  case notification
+  case general
+  case manual
+  case online
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum RetailerScrapingStatus : Swift.String {
+  case InProgress
+  case Other
+  case Enqueued
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum AccountState : Swift.String {
+  case NeverConnected
+  case Connected
+  case ConnectedAndDisconnected
+  case ConnectedButException
+  case ConnectedButScrappingFailed
+  case ConnectionInProgress
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public protocol ServicesStatusListener {
+  func onServicesFailure(exception: OrderScrapper.ASLException)
+}
+public protocol ViewPresenter {
+  func presentView(view: UIKit.UIViewController)
+  func dismissView()
+}
+public enum EventState : Swift.String {
+  case success
+  case fail
+  case Info
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public protocol AnalyticsProvider {
+  func logEvent(eventType: Swift.String, eventAttributes: Swift.Dictionary<Swift.String, Swift.String>)
+  func setUserProperty(userProperty: Swift.String, userPropertyValue: Swift.String)
+}
+public enum HtmlScrappingStep : Swift.Int16 {
+  case startScrapping
+  case listing
+  case complete
+  public init?(rawValue: Swift.Int16)
+  public typealias RawValue = Swift.Int16
+  public var rawValue: Swift.Int16 {
+    get
+  }
+}
+@_hasMissingDesignatedInitializers public class OrderDetails : Swift.Codable {
+  @objc deinit
+  public func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
+}
+@_hasMissingDesignatedInitializers public class OrdersExtractor {
+  public static func initialize(authProvider: OrderScrapper.AuthProvider, viewPresenter: OrderScrapper.ViewPresenter, analyticsProvider: OrderScrapper.AnalyticsProvider?, orderExtractionConfig: OrderScrapper.OrderExtractorConfig, servicesStatusListener: OrderScrapper.ServicesStatusListener) throws
+  public static func getAccounts(orderSource: OrderScrapper.OrderSource?..., completionHandler: @escaping ([Swift.String : OrderScrapper.AccountInfo]) -> Swift.Void) throws
+  public static func registerAccount(orderSource: OrderScrapper.OrderSource, orderExtractionListner: OrderScrapper.OrderExtractionListener) throws
+  public static func scanOnlineOrders(orderExtractionListener: OrderScrapper.OrderExtractionListener, accounts: [OrderScrapper.Account]) throws
+  public static func isUserEligibleForIncentive(completionHandler: @escaping (Swift.Bool) -> Swift.Void) throws
+  @objc deinit
+}
+public class OrderExtractorConfig {
+  public init()
+  public var baseURL: Swift.String
+  public var appName: Swift.String
+  public var appVersion: Swift.String
+  public var deviceId: Swift.String
+  @objc deinit
+}
+public protocol OrderExtractionListener {
+  func onOrderExtractionSuccess(successType: OrderScrapper.OrderFetchSuccessType, account: OrderScrapper.Account)
+  func onOrderExtractionFailure(error: OrderScrapper.ASLException, account: OrderScrapper.Account)
+  func showNotification(account: OrderScrapper.Account)
+}
+public enum ScrappingType : Swift.String {
+  case report
+  case html
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+@_hasMissingDesignatedInitializers public class UserAccount : OrderScrapper.Account {
+  public var userID: Swift.String {
+    get
+    set(newValue)
+  }
+  public var userPassword: Swift.String {
+    get
+    set(newValue)
+  }
+  public var accountState: OrderScrapper.AccountState {
+    get
+    set(newValue)
+  }
+  public var isFirstConnectedAccount: Swift.Bool {
+    get
+    set(newValue)
+  }
+  public var panelistID: Swift.String {
+    get
+    set(newValue)
+  }
+  public var source: OrderScrapper.OrderSource {
+    get
+  }
+  public func connect(orderExtractionListener: OrderScrapper.OrderExtractionListener)
+  public func disconnect(accountDisconnectedListener: OrderScrapper.AccountDisconnectedListener)
+  public func fetchOrders(orderExtractionListener: OrderScrapper.OrderExtractionListener, source: OrderScrapper.FetchRequestSource) -> OrderScrapper.RetailerScrapingStatus
+  @objc deinit
+}
+public protocol AuthProvider {
+  func getAuthToken() -> Swift.String
+  func getPanelistID() -> Swift.String
+  func refreshAuthToken(completionHandler: (Swift.String?, Swift.Error?) -> Swift.Void)
+}

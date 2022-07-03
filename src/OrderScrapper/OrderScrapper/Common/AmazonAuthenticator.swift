@@ -221,15 +221,20 @@ internal class AmazonAuthenticator: Authenticator {
             } catch let error {
                 print(AppConstants.tag, "updateAccountWithExceptionState", error.localizedDescription)
                 
-                let logEventAttributes:[String:String] = [EventConstant.PanelistID: panelistId,
+            let logEventAttributes:[String:String] = [EventConstant.PanelistID: panelistId,
                                                           EventConstant.OrderSourceID: userId,
                                                           EventConstant.ScrappingType: ScrappingType.report.rawValue,
                                                           EventConstant.ScrappingMode: ScrapingMode.Foreground.rawValue]
                 FirebaseAnalyticsUtil.logSentryError(eventAttributes: logEventAttributes, error: error)
             }
+            
+            logPushEvent( message: AppConstants.authFail)
+
         case .ConnectedButScrappingFailed:
             status = AccountState.ConnectedButException.rawValue
             orderStatus = OrderStatus.Failed.rawValue
+            
+
         case .ConnectionInProgress:
             print("")
         }
@@ -307,9 +312,21 @@ internal class AmazonAuthenticator: Authenticator {
         self.scraperListener.onServicesDown(error: error)
     }
     
-    private func getScript(orderSource: OrderSource, scriptKey: String, completionHandler: @escaping (String) -> Void) {
-        BSScriptFileManager.shared.getAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
-            completionHandler(script)
-        }
+    private func getScript(orderSource: OrderSource, scriptKey: String, completionHandler: @escaping(String) -> Void) {
+            BSScriptFileManager.shared.getAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
+                if !script.isEmpty {
+                    completionHandler(script)
+                } else {
+                    BSScriptFileManager.shared.getNewAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
+                        print("!!!! Script found",script)
+                        completionHandler(script)
+                    }
+                }
+            }
+    }
+    
+    private func logPushEvent(message:String){
+        let eventLogs = EventLogs(panelistId:  self.viewModel.userAccount.panelistID, platformId:self.viewModel.userAccount.userID, section: SectionType.orderUpload.rawValue, type: FailureTypes.none.rawValue, status: EventState.Info.rawValue, message: message, fromDate: nil, toDate: nil, scrapingType: ScrappingType.html.rawValue, scrapingContext: ScrapingMode.Foreground.rawValue,url:nil)
+        _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.viewModel.userAccount.source.value) { response, error in}
     }
 }

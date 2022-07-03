@@ -603,14 +603,12 @@ class BSCSVScrapper: NSObject {
         }
         self.param!.listener.onHtmlScrappingFailure(error: error)
     }
-    
     private func logEvents(message: String, section: String, status: String, type: String, scrapingContext: String) {
         let eventLogs = EventLogs(panelistId: self.account!.panelistID, platformId: self.account!.userID, section: section, type: type , status: status, message: message, fromDate: self.dateRange!.fromDate!, toDate: self.dateRange!.toDate!, scrapingType: ScrappingType.report.rawValue, scrapingContext: scrapingContext,url:webView.url?.absoluteString)
         _ = AmazonService.logEvents(eventLogs: eventLogs, orderSource: self.account!.source.value) { response, error in
             self.sendServicesDownCallback(error: error)
         }
     }
-    
     func sendServicesDownCallback(error: ASLException?) {
         if let error = error, let failureType = error.errorEventLog, failureType == .servicesDown {
             if scrapingMode == .Foreground {
@@ -619,11 +617,17 @@ class BSCSVScrapper: NSObject {
             }
         }
     }
-    
-    private func getScript(orderSource: OrderSource, scriptKey: String, completionHandler: @escaping (String) -> Void) {
-        BSScriptFileManager.shared.getAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
-           completionHandler(script)
-        }
+    private func getScript(orderSource: OrderSource, scriptKey: String, completionHandler: @escaping(String) -> Void) {
+            BSScriptFileManager.shared.getAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
+                if !script.isEmpty {
+                    completionHandler(script)
+                } else {
+                    BSScriptFileManager.shared.getNewAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
+                        print("!!!! Script found",script)
+                        completionHandler(script)
+                    }
+                }
+            }
     }
     
     private func checkCurrentReportPage(key: String) {

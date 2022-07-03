@@ -265,4 +265,26 @@ class BSScriptFileManager {
             }
         }
     }
+    
+    func getNewAuthScript(orderSource: OrderSource, scriptKey: String, completionHandler: @escaping (String) -> Void) {
+            print("!!!!!//////////////////////////////// redownload for script started")
+            var srciptData = ""
+            UserDefaults.standard.setValue("", forKey: Utils.getKeyForAuthJSVersion(orderSorce: orderSource))
+            self.getAuthenticationScripts(orderSource: orderSource, isAuthScript: ScriptType.auth.rawValue) { response in
+                if response {
+                    if let scriptKeys = self.authenticationScripts[orderSource] {
+                        if let scriptData = scriptKeys[scriptKey] {
+                            srciptData = scriptData
+                            completionHandler(srciptData)
+                                print(srciptData)
+                        }
+                    } else {
+                        completionHandler(srciptData)
+                        print(srciptData)
+                    }
+                } else {
+                    completionHandler(srciptData)
+                }
+            }
+        }
 }

@@ -68,6 +68,7 @@ class BSInstacartAuthenticator: BSBaseAuthenticator {
         }
     }
     
+    
     func getIdentificationJS() {
         self.addScriptListener()
         self.getScript(orderSource: .Instacart, scriptKey: AppConstants.getInstacartIdentification) { script in
@@ -306,10 +307,19 @@ class BSInstacartAuthenticator: BSBaseAuthenticator {
         }
     }
     
-    private func getScript(orderSource: OrderSource, scriptKey: String, completionHandler: @escaping (String) -> Void) {
-        BSScriptFileManager.shared.getAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
-            completionHandler(script)
-        }
+    private func getScript(orderSource: OrderSource, scriptKey: String, completionHandler: @escaping(String) -> Void) {
+            BSScriptFileManager.shared.getAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
+                
+                
+                if !script.isEmpty {
+                    completionHandler(script)
+                } else {
+                    BSScriptFileManager.shared.getNewAuthScript(orderSource: orderSource, scriptKey: scriptKey) { script in
+                        print("!!!! Script found",script)
+                        completionHandler(script)
+                    }
+                }
+            }
     }
 }
 
